@@ -1,0 +1,19 @@
+{% extends './base.nunj' %}
+
+{% block styles %}
+    {{ super() }}
+    <link href="https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.css" rel="stylesheet">
+    <link href="/styles/desktop.css" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.js"></script>
+    <script src="/scripts/index.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div id="app">
+        <div class="map" id="map"></div>
+    </div>
+{% endblock %}

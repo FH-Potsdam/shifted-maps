@@ -1,0 +1,10 @@
+{
+  "secret": null,
+  "moves": {
+    "client_id": null,
+    "client_secret": null
+  },
+  "mongodb": {
+    "uri": "mongodb://localhost/shifted-maps"
+  }
+}

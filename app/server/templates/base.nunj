@@ -1,0 +1,17 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Shifted Maps</title>
+    <meta name="description" content="Shifted Maps">
+    <meta name="author" content="Lennart Hildebrandt, Heike Otten (University of Applied Sciences Potsdam)">
+
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    {% block content %}
+
+    {% endblock %}
+    {% block scripts %}{% endblock %}
+</body>
+</html>
