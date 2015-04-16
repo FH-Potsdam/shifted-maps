@@ -1,34 +1,31 @@
 var express = require('express'),
   JSONStream = require('../services/api/json-stream'),
+  geocode = require('../services/geocode'),
   User = require('../models/user'),
   Place = require('../models/place'),
   Connection = require('../models/connection');
 
 var router = express.Router();
 
-router.use(function(req, res, next) {
-  var stream = new JSONStream();
+router.get('/geocode/:latitude,:longitude', function(req, res, next) {
+  geocode([req.params.latitude, req.params.longitude], function(error, value) {
+    if (error)
+      return next(error);
 
-  stream.pipe(res);
-  req.stream = stream;
-  next();
+    res.json(value);
+  });
 });
 
-router.get('/users', function(req) {
-  User.find()
-    .stream().pipe(req.stream);
-});
-
-router.get('/user/places', function(req) {
+router.get('/user/places', function(req, res) {
   Place.find()
-    .stream().pipe(req.stream);
+    .stream().pipe(new JSONStream()).pipe(res);
 });
 
-router.get('/user/connections', function(req) {
+router.get('/user/connections', function(req, res) {
   Connection.find()
     .populate('_from')
     .populate('_to')
-    .stream().pipe(req.stream);
+    .stream().pipe(new JSONStream()).pipe(res);
 });
 
 module.exports = router;

@@ -36,10 +36,4 @@ router.get('/test', function(req, res) {
   res.render('obeo-test.nunj');
 });
 
-router.get('/geocode', function(req, res) {
-  geocode({ latitude: 52.520007, longitude: 13.404954 }, function(error, response, body) {
-    res.send(body);
-  });
-});
-
 module.exports = router;

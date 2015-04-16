@@ -1,5 +1,6 @@
 var mongoose = require('../services/mongoose'),
   _ = require('lodash'),
+  geolib = require('geolib'),
   moment = require('moment');
 
 var visitSchema = new mongoose.Schema({
@@ -17,14 +18,15 @@ var placeSchema = new mongoose.Schema({
   location: {
     type: [Number],
     index: '2d',
+    required: true,
     get: function(location) {
       return { longitude: location[0], latitude: location[1] };
     },
     set: function(location) {
-      return [location.longitude, location.latitude];
+      return [geolib.longitude(location), geolib.latitude(location)];
     }
   },
-  title: String,
+  name: String,
   visits: { type: [visitSchema], select: false },
   __v: { type: Number, select: false }
 });
@@ -44,5 +46,6 @@ placeSchema.virtual('duration').get(function() {
 placeSchema.virtual('frequency').get(function() {
   return this.visits.length;
 });
+
 
 module.exports = mongoose.model('Place', placeSchema);

@@ -2,6 +2,8 @@
   "name": "shifted-maps-web",
   "private": true,
   "dependencies": {
+    "cacheman": "~1.1.0",
+    "cacheman-mongo": "~0.2.1",
     "chalk": "~1.0.0",
     "common-errors": "~0.4.18",
     "connect-mongo": "~0.8.0",
