@@ -1,7 +1,8 @@
 var passport = require('passport'),
+  moment = require('moment'),
   config = require('../config'),
   User = require('../models/user'),
-  MovesStrategy = require('./moves').Strategy;
+  MovesStrategy = require('./moves/strategy');
 
 passport.use(
   new MovesStrategy({
@@ -19,10 +20,10 @@ passport.use(
         user = new User({
           _id: profile.userId,
           accessToken: accessToken,
-          refreshToken: refreshToken
+          refreshToken: refreshToken,
+          firstDate: moment(profile.firstDate, 'YYYYMMDD').toDate()
         });
 
-        user.expiresIn(profile.expiresIn);
         user.save();
       }
 

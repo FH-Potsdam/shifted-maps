@@ -2,20 +2,31 @@ var mongoose = require('../services/mongoose'),
   _ = require('lodash'),
   moment = require('moment');
 
-var visitSchema = new Schema({
+var visitSchema = new mongoose.Schema({
   startAt: Date,
-  endAt: Date
+  endAt: Date,
+  __v: { type: Number, select: false }
 });
 
 visitSchema.virtual('duration').get(function() {
-  return moment(this.startAt).diff(this.endAt, 's');
+  return moment(this.endAt).diff(this.startAt, 's');
 });
 
 var placeSchema = new mongoose.Schema({
   _id: Number,
-  location: { type: [Number], index: '2d' },
+  location: {
+    type: [Number],
+    index: '2d',
+    get: function(location) {
+      return { longitude: location[0], latitude: location[1] };
+    },
+    set: function(location) {
+      return [location.longitude, location.latitude];
+    }
+  },
   title: String,
-  visits: [visitSchema]
+  visits: { type: [visitSchema], select: false },
+  __v: { type: Number, select: false }
 });
 
 placeSchema.virtual('firstVisitAt').get(function() {
@@ -28,6 +39,10 @@ placeSchema.virtual('lastVisitAt').get(function() {
 
 placeSchema.virtual('duration').get(function() {
   return _.chain(this.visits).map('duration').sum().value();
+});
+
+placeSchema.virtual('frequency').get(function() {
+  return this.visits.length;
 });
 
 module.exports = mongoose.model('Place', placeSchema);

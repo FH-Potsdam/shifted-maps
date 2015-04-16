@@ -6,6 +6,7 @@ var express = require('express'),
   templating = require('./nunjucks-env'),
   auth = require('./routes/auth'),
   map = require('./routes/map'),
+  api = require('./routes/api'),
   home = require('./routes/home'),
   config = require('./config'),
   passport = require('./services/passport'),
@@ -45,6 +46,7 @@ function checkAuth(req, res, next) {
 
 // Visualization route middleware
 app.use('/map', checkAuth, map);
+app.use('/api', checkAuth, api);
 app.use('/auth', auth);
 app.use(home);
 
