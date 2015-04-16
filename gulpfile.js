@@ -42,11 +42,11 @@ gulp.task('compress', function() {
 
 gulp.task('watch', function() {
   watch('app/client/styles/**/*.scss', function(event) {
-    gulp.start('sass');
+    gulp.start(['sass', 'compress']);
     server.notify(event);
   });
   watch(['app/client/**/*.js', 'app/shared/**/*.js'], function(event) {
-    gulp.start('browserify');
+    gulp.start(['browserify', 'compress']);
     server.notify(event);
   });
   watch('app/server/**/*.js', function(event) {
@@ -65,4 +65,4 @@ function swallowError(error) {
   this.emit('end');
 }
 
-gulp.task('default', ['serve', 'browserify', 'sass', 'watch']);
+gulp.task('default', ['serve', 'browserify', 'sass', 'compress', 'watch']);
