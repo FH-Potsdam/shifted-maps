@@ -1,8 +1,13 @@
 {
-  "secret": null,
+  "session": {
+    "secret": null
+  },
   "moves": {
     "client_id": null,
     "client_secret": null
+  },
+  "mapbox": {
+    "geocoding_index": "mapbox.places"
   },
   "mongodb": {
     "uri": "mongodb://localhost/shifted-maps"
