@@ -22,7 +22,8 @@ router.get('/', function(req, res) {
         firstDate.add(1, 'M');
         fetchSegments();
       })
-      .fail(function() {
+      .fail(function(error) {
+        console.log(error);
         stream.end();
       });
   }

@@ -37,7 +37,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
-  User.findById(id).exec(function(error, user) {
+  User.findById(id).select('+accessToken').exec(function(error, user) {
     done(error, user);
   });
 });
