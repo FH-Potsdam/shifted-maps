@@ -1,3 +1,9 @@
+# JetBrains project directory
 .idea
+
+# Node dependencies
 node_modules
+
+# Senstive configuration files
 server.json
+client.json
