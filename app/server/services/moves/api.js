@@ -20,7 +20,8 @@ Api.request = function(getURL, accessToken, options) {
   });
 
   options = _.extend(options || {}, {
-    url: url.format(apiURLObject)
+    url: url.format(apiURLObject),
+    gzip: true
   });
 
   return oboe(options);

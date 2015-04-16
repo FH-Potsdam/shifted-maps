@@ -31,4 +31,8 @@ router.get('/', function(req, res) {
   fetchSegments();
 });
 
+router.get('/test', function(req, res) {
+  res.render('obeo-test.nunj');
+});
+
 module.exports = router;
