@@ -11,8 +11,6 @@ var AppView = Backbone.View.extend({
   render: function() {
     var mapView = new MapView({ el: '#map' });
 
-    mapView.map._initPathRoot();
-
     new VisView({
       el: mapView.map.getPanes().overlayPane
     });

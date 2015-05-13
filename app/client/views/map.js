@@ -2,9 +2,7 @@ var Backbone = require("backbone"),
   config = require("../config");
 
 var MapView = Backbone.View.extend({
-  initialize: function(options) {
-    this.options = options;
-
+  initialize: function() {
     this.render();
   },
 

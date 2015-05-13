@@ -8,3 +8,6 @@ node_modules
 server.json
 client.json
 architecture.md
+
+# Compiled assets
+public/scripts

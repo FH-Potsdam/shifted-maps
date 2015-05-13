@@ -21,9 +21,8 @@ var movesStreams = {};
  * @returns Stream
  */
 function getMovesStream(user) {
-  if (movesStreams[user.id] != null) {
+  if (movesStreams[user.id] != null)
     return movesStreams[user.id];
-  }
 
   var movesStream = new MovesSegmentReader(user.accessToken, user.lastUpdateAt),
     transformer = new MovesTransformer();
@@ -45,6 +44,17 @@ function getMovesStream(user) {
 
   return movesStream[user.id] = transformer;
 }
+
+// HTTP Caching for API requests
+router.use(function(req, res, next) {
+  res.setHeader('cache-control', 'public');
+  res.setHeader('last-modified', req.user.lastUpdateAt.toString());
+
+  if (req.fresh)
+    return res.sendStatus(304);
+
+  next();
+});
 
 router.get('/user/places', function(req, res) {
   var apiStream = CombinedStream.create(),
@@ -103,9 +113,5 @@ router.get('/user/connections', function(req, res) {
     .pipe(new JSONStream())
     .pipe(res);
 });
-
-// Awesome idea:
-// - Use d3.layout.force
-// - Return nodes and their links if alpha drops under 0.005
 
 module.exports = router;
