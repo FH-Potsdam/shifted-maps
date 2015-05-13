@@ -39,15 +39,16 @@ app.use(express.static(__dirname + '/../../public'));
 
 function checkAuth(req, res, next) {
   if (!req.user)
-    return res.redirect('/auth');
+    return res.redirect('/auth?redirect=' + req.originalUrl);
 
-  next('route');
+  next();
 }
 
 // Visualization route middleware
 app.use('/map', checkAuth, map);
 app.use('/api', checkAuth, api);
 app.use('/auth', auth);
+
 app.use(home);
 
 module.exports = app;

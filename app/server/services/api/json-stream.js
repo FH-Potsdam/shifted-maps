@@ -1,4 +1,5 @@
 var util = require('util'),
+  _ = require('lodash'),
   Transform = require('stream').Transform;
 
 function JSONStream(options) {
@@ -7,6 +8,9 @@ function JSONStream(options) {
 
   Transform.call(this, options);
 
+  this._toJSON = options.toJSON || function(object) {
+    return object.toJSON();
+  };
   this._firstPush = true;
 }
 
@@ -20,7 +24,7 @@ JSONStream.prototype._transform = function(object, encoding, callback) {
     chunk = '[';
   }
 
-  this.push(chunk + JSON.stringify(object));
+  this.push(chunk + JSON.stringify(this._toJSON(object)));
   callback();
 };
 

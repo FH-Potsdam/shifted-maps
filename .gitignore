@@ -7,3 +7,4 @@ node_modules
 # Senstive configuration files
 server.json
 client.json
+architecture.md

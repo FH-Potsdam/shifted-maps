@@ -5,37 +5,48 @@ var express = require('express'),
 
 var router = express.Router();
 
+function redirect(req, res) {
+  var redirectURL = null;
+
+  if (req.query.redirect != null)
+    redirectURL = url.parse(req.query.redirect).path;
+
+  if (redirectURL == null)
+    redirectURL = '/map';
+
+  res.redirect(redirectURL);
+}
+
 router.get('/', function(req, res, next) {
-  var callbackURL = config.moves.callback_url,
-    redirectURL = req.param.redirect;
+  var callbackURL = config.moves.callback_url;
 
   // Add redirect to query param
-  if (redirectURL != null) {
+  if (req.query.redirect != null) {
     var callbackURLObject = url.parse(callbackURL, true);
 
-    callbackURLObject.query.redirect = redirectURL;
+    callbackURLObject.query.redirect = req.query.redirect;
     callbackURL = url.format(callbackURLObject);
   }
 
+  // Authenticate
   passport.authenticate('moves', {
     callbackURL: callbackURL
-  })(req, res, next);
+  }, function(error, user) {
+    if (error)
+      return next(error);
+
+    // OAuth error
+    if (!user)
+      return res.send(req.query.error);
+
+    // Login user
+    req.login(user, next);
+  })(req, res);
+}, redirect);
+
+router.get('/logout', function(req, res) {
+  req.logout();
+  res.redirect('/');
 });
-
-router.get('/callback',
-  passport.authenticate('moves', { failureRedirect: '/auth' }),
-  function(req, res) {
-    var redirectURL = null;
-
-    if (req.param.redirect != null) {
-      redirectURL = url.parse(req.param.redirect).path;
-    }
-
-    if (redirectURL == null) {
-      redirectURL = '/map';
-    }
-
-    res.redirect(redirectURL);
-  });
 
 module.exports = router;

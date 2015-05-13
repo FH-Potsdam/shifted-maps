@@ -3,20 +3,24 @@ var mongoose = require('../services/mongoose'),
   geolib = require('geolib'),
   moment = require('moment');
 
-var visitSchema = new mongoose.Schema({
-  startAt: Date,
-  endAt: Date,
-  __v: { type: Number, select: false }
+var VisitSchema = new mongoose.Schema({
+  startAt: { type: Date, required: true },
+  endAt: { type: Date, required: true }
 });
 
-visitSchema.virtual('duration').get(function() {
+VisitSchema.virtual('duration').get(function() {
   return moment(this.endAt).diff(this.startAt, 's');
 });
 
-var placeSchema = new mongoose.Schema({
+VisitSchema.path('startAt').validate(function(value) {
+  return moment(value).isBefore(this.endAt);
+}, 'startAt must be before endAt');
+
+var PlaceSchema = new mongoose.Schema({
   _id: Number,
+  _user: { type: Number, ref: 'User', required: true, index: true, select: false },
   location: {
-    type: [Number],
+    type: mongoose.Schema.Types.Mixed,
     index: '2d',
     required: true,
     get: function(location) {
@@ -27,25 +31,52 @@ var placeSchema = new mongoose.Schema({
     }
   },
   name: String,
-  visits: { type: [visitSchema], select: false },
-  __v: { type: Number, select: false }
+  visits: [VisitSchema],
+  type: { type: String, required: true }
 });
 
-placeSchema.virtual('firstVisitAt').get(function() {
-  return _.min(this.visits, 'startAt').startAt;
+PlaceSchema.set('toJSON', {
+  getters: true,
+  versionKey: false,
+  transform: function(connection, ret) {
+    delete ret.visits;
+    delete ret.id;
+  }
 });
 
-placeSchema.virtual('lastVisitAt').get(function() {
-  return _.max(this.visits, 'endAt').endAt;
+PlaceSchema.pre('validate', function(place, next) {
+  place.visits = _.sortBy(place.visits, 'startAt');
+  next();
 });
 
-placeSchema.virtual('duration').get(function() {
+PlaceSchema.path('visits').validate(function(visits) {
+  if (visits.length == 0) {
+    return true;
+  }
+
+  var lastVisit = visits[0];
+
+  return _.every(_.drop(visits), function(visit) {
+    if (lastVisit.endAt > visit.startAt) {
+      return false;
+    }
+
+    lastVisit = visit;
+
+    return true;
+  });
+}, 'Visits are not allowed to overlap.');
+
+PlaceSchema.virtual('duration').get(function() {
   return _.chain(this.visits).map('duration').sum().value();
 });
 
-placeSchema.virtual('frequency').get(function() {
+PlaceSchema.virtual('frequency').get(function() {
   return this.visits.length;
 });
 
+/*PlaceSchema.statics.findByUser = function(user, callback) {
+  return this.find(callback).where('id', user.places)
+};*/
 
-module.exports = mongoose.model('Place', placeSchema);
+module.exports = mongoose.model('Place', PlaceSchema);

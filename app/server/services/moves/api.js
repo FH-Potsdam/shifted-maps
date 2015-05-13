@@ -6,38 +6,48 @@ var util = require('util'),
   moment = require('moment'),
   config = require('../../config');
 
-function Api(accessToken) {
+function API(accessToken) {
   this._accessToken = accessToken;
 }
 
-Api.request = function(getURL, accessToken, options) {
+API.request = function(getURL, accessToken, query) {
   var apiURLObject = url.parse(config.moves.api_url, true),
     getURLObject = url.parse(getURL, true);
 
   apiURLObject.pathname += getURLObject.pathname;
-  _.extend(apiURLObject.query, getURLObject.query, {
+  _.extend(apiURLObject.query, getURLObject.query, query || {}, {
     access_token: accessToken
   });
 
-  options = _.extend(options || {}, {
+  var options = {
     url: url.format(apiURLObject),
     gzip: true
-  });
+  };
 
   return oboe(options);
 };
 
-Api.prototype.request = function(url) {
-  this._request = Api.request(url, this._accessToken);
+API.DATE_FORMAT = 'YYYYMMDD[T]HHmmssZZ';
+
+API.parseDate = function(date) {
+  return moment(date, API.DATE_FORMAT).toDate();
+};
+
+API.formatDate = function(date) {
+  return moment(date).format(API.DATE_FORMAT);
+};
+
+API.prototype.request = function(url, query) {
+  this._request = API.request(url, this._accessToken, query);
 
   return this;
 };
 
-Api.prototype.profile = function() {
+API.prototype.profile = function() {
   return this.request('/user/profile');
 };
 
-Api.prototype.daily = function(getURL, date) {
+API.prototype.daily = function(getURL, date, query) {
   var getURLObject = url.parse(getURL, true);
 
   getURLObject.pathname += '/daily';
@@ -45,25 +55,25 @@ Api.prototype.daily = function(getURL, date) {
   if (date != null)
     getURLObject.pathname += '/' + date;
 
-  return this.request(url.format(getURLObject));
+  return this.request(url.format(getURLObject), query);
 };
 
-Api.prototype.node = function(nodes, callback) {
+API.prototype.node = function(nodes, callback) {
   this._request.node(nodes, callback);
 
   return this;
 };
 
-Api.prototype.done = function(callback) {
+API.prototype.done = function(callback) {
   this._request.done(callback);
 
   return this;
 };
 
-Api.prototype.fail = function(callback) {
+API.prototype.fail = function(callback) {
   this._request.fail(callback);
 
   return this;
 };
 
-module.exports = Api;
+module.exports = API;

@@ -4,7 +4,7 @@ var router = express.Router();
 
 // Main route
 router.get('/', function(req, res) {
-  res.redirect('/map');
+  res.send();
 });
 
 /*router.get('/', function(req, res) {
