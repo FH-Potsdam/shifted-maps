@@ -45,7 +45,7 @@ gulp.task('watch', function() {
     gulp.start(['sass', 'compress']);
     server.notify(event);
   });
-  watch(['app/client/**/*.js', 'app/shared/**/*.js'], function(event) {
+  watch(['app/client/**/*.js', 'app/client/**/*.json', 'app/shared/**/*.js'], function(event) {
     gulp.start(['browserify', 'compress']);
     server.notify(event);
   });
