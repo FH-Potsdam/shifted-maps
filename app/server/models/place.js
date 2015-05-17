@@ -1,21 +1,6 @@
 var mongoose = require('../services/mongoose'),
-  _ = require('lodash'),
   geolib = require('geolib'),
-  moment = require('moment'),
   geocode = require('../services/geocode');
-
-var VisitSchema = new mongoose.Schema({
-  startAt: { type: Date, required: true },
-  endAt: { type: Date, required: true }
-});
-
-VisitSchema.virtual('duration').get(function() {
-  return moment(this.endAt).diff(this.startAt, 's');
-});
-
-VisitSchema.path('startAt').validate(function(value) {
-  return moment(value).isBefore(this.endAt);
-}, 'startAt must be before endAt');
 
 var PlaceSchema = new mongoose.Schema({
   _id: Number,
@@ -32,9 +17,7 @@ var PlaceSchema = new mongoose.Schema({
     }
   },
   name: String,
-  visits: [VisitSchema],
-  type: { type: String, required: true },
-  duration: { type: Number, required: true }
+  type: { type: String, required: true }
 }, { id: false });
 
 PlaceSchema.set('toJSON', {
@@ -42,16 +25,8 @@ PlaceSchema.set('toJSON', {
   versionKey: false,
   depopulate: true,
   transform: function(place, ret) {
-    delete ret.visits;
     delete ret.type;
   }
-});
-
-PlaceSchema.pre('validate', function(next) {
-  this.visits = _.sortBy(this.visits, 'startAt');
-  this.duration = _.sum(this.visits, 'duration');
-
-  next();
 });
 
 PlaceSchema.pre('save', function(next) {
@@ -69,28 +44,6 @@ PlaceSchema.pre('save', function(next) {
   }
 
   next();
-});
-
-PlaceSchema.path('visits').validate(function(visits) {
-  if (visits.length == 0) {
-    return true;
-  }
-
-  var lastVisit = visits[0];
-
-  return _.every(_.drop(visits), function(visit) {
-    if (lastVisit.endAt > visit.startAt) {
-      return false;
-    }
-
-    lastVisit = visit;
-
-    return true;
-  });
-}, 'Visits are not allowed to overlap.');
-
-PlaceSchema.virtual('frequency').get(function() {
-  return this.visits.length;
 });
 
 module.exports = mongoose.model('Place', PlaceSchema);

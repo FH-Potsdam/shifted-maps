@@ -2,7 +2,10 @@ var mongoose = require('../services/mongoose'),
   moment = require('moment'),
   _ = require('lodash'),
   assert = require('assert'),
-  Connection = require('./connection');
+  Place = require('./place'),
+  Connection = require('./connection'),
+  Visit = require('./visit'),
+  Trip = require('./trip');
 
 var UserSchema = new mongoose.Schema({
   _id: Number,
@@ -31,22 +34,18 @@ UserSchema.methods.findConnections = function(done) {
   return this.model('Connection').find({_user: this}, done);
 };
 
-UserSchema.methods.removePlaces = function(done) {
-  return this.model('Place').remove({_user: this}, done);
-};
-
-UserSchema.methods.removeConnections = function(done) {
-  return this.model('Connection').remove({_user: this}, done);
-};
-
 UserSchema.methods.reset = function(done) {
   var user = this;
 
-  return this.removePlaces()
-    .exec()
+  return Place.remove({ _user: user }).exec()
     .then(function() {
-      return user.removeConnections()
-        .exec();
+      return Connection.remove({ _user: user }).exec();
+    })
+    .then(function() {
+      return Visit.remove({ _user: user }).exec();
+    })
+    .then(function() {
+      return Trip.remove({ _user: user }).exec();
     })
     .then(function() {
       user.fetched = false;

@@ -46,8 +46,8 @@ MovesSegmentReader.prototype._initRequest = function(months) {
       reader._initRequest(months + 1);
     })
     .fail(function(error) {
-      reader.emit('error', error);
-    })
+      reader.emit('error', error.thrown || error);
+    });
 };
 
 MovesSegmentReader.prototype._read = function() {

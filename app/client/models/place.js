@@ -19,6 +19,7 @@ var Place = Backbone.Model.extend({
 Place.Collection = Backbone.Collection.extend({
   model: Place,
   url: '/api/user/places',
+  comparator: 'duration',
 
   initialize: function() {
     this.on('update', this.update);

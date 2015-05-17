@@ -1,6 +1,9 @@
 var express = require('express'),
+  moment = require('moment'),
   Place = require('../models/place'),
   Connection = require('../models/connection'),
+  Visit = require('../models/visit'),
+  Trip = require('../models/trip'),
   JSONStream = require('../services/api/json-stream'),
   MovesSegmentReader = require('../services/moves/segment-reader'),
   MovesTransformer = require('../services/moves/transformer'),
@@ -24,13 +27,6 @@ function getMovesStream(user, callback) {
   var movesStream = new MovesSegmentReader(user.accessToken, user.lastUpdateAt),
     transformer = new MovesTransformer(),
     persister = new Persister(user);
-
-  persister.on('data', function(object) {
-    if (object instanceof Place)
-      user.addPlace(object);
-    else if (object instanceof Connection)
-      user.addConnection(object);
-  });
 
   // Reset user places and connections if persister fires error events.
   persister.on('error', function(error) {
@@ -81,30 +77,53 @@ router.use(function(req, res, next) {
   getMovesStream(req.user, next);
 });
 
-router.get('/user/places', function(req, res, next) {
-  var placesStream = req.user.findPlaces()
-    .populate('_user')
-    .sort({ duration: -1, frequency: -1 })
-    .stream();
-
-  // Pipe API stream into JSON stream and JSON stream into response stream
-  // This will start the mongoDB query stream.
-  placesStream
+router.get('/user/places', function(req, res) {
+  Place.find({ _user: req.user }).stream()
     .pipe(new JSONStream())
     .pipe(res);
 });
 
-router.get('/user/connections', function(req, res, next) {
-  var jsonStream = new JSONStream();
+router.get('/user/connections', function(req, res) {
+  Connection.find({ _user: req.user }).stream()
+    .pipe(new JSONStream())
+    .pipe(res);
+});
 
-  var connectionsStream = req.user.findConnections()
-    .populate('_user')
-    .stream();
+router.use(function(req, res, next) {
+  if (req.query.startAt != null)
+    req.startAt = moment(req.query.startAt);
 
-  // Pipe API stream into JSON stream and JSON stream into response stream
-  // This will start the mongoDB query stream.
-  connectionsStream
-    .pipe(jsonStream)
+  if (req.query.endAt != null)
+    req.endAt = moment(req.query.endAt);
+
+  next();
+});
+
+router.get('/user/visits', function(req, res) {
+  var visitsQuery = Visit.find({ _user: req.user });
+
+  if (req.startAt != null)
+    visitsQuery.gte('startAt', req.startAt.startOf('day').toDate());
+
+  if (req.endAt != null)
+    visitsQuery.lte('endAt', req.endAt.endOf('day').toDate());
+
+  visitsQuery.stream()
+    .pipe(new JSONStream())
+    .pipe(res);
+});
+
+router.get('/user/trips', function(req, res) {
+  var tripsQuery = Trip.find({ _user: req.user });
+
+  if (req.startAt != null)
+    tripsQuery.gte('startAt', req.startAt.startOf('day').toDate());
+
+  if (req.endAt != null)
+    tripsQuery.lte('endAt', req.endAt.endOf('day').toDate());
+
+  tripsQuery.stream()
+    .pipe(new JSONStream())
     .pipe(res);
 });
 
