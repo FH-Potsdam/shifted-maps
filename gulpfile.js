@@ -3,7 +3,6 @@ var gulp = require('gulp'),
   sass = require('gulp-sass'),
   uglify = require('gulp-uglify'),
   rename = require("gulp-rename"),
-  watch = require('gulp-watch'),
   chalk = require('chalk'),
   notifier = require('node-notifier'),
   server = require('gulp-express');
