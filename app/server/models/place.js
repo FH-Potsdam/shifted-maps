@@ -1,7 +1,8 @@
 var mongoose = require('../services/mongoose'),
   _ = require('lodash'),
   geolib = require('geolib'),
-  moment = require('moment');
+  moment = require('moment'),
+  geocode = require('../services/geocode');
 
 var VisitSchema = new mongoose.Schema({
   startAt: { type: Date, required: true },
@@ -18,7 +19,7 @@ VisitSchema.path('startAt').validate(function(value) {
 
 var PlaceSchema = new mongoose.Schema({
   _id: Number,
-  _user: { type: Number, ref: 'User', required: true, index: true, select: false },
+  _user: { type: Number, ref: 'User', required: true, index: true },
   location: {
     type: mongoose.Schema.Types.Mixed,
     index: '2d',
@@ -32,20 +33,41 @@ var PlaceSchema = new mongoose.Schema({
   },
   name: String,
   visits: [VisitSchema],
-  type: { type: String, required: true }
-});
+  type: { type: String, required: true },
+  duration: { type: Number, required: true }
+}, { id: false });
 
 PlaceSchema.set('toJSON', {
   getters: true,
   versionKey: false,
-  transform: function(connection, ret) {
+  depopulate: true,
+  transform: function(place, ret) {
     delete ret.visits;
-    delete ret.id;
+    delete ret.type;
   }
 });
 
-PlaceSchema.pre('validate', function(place, next) {
-  place.visits = _.sortBy(place.visits, 'startAt');
+PlaceSchema.pre('validate', function(next) {
+  this.visits = _.sortBy(this.visits, 'startAt');
+  this.duration = _.sum(this.visits, 'duration');
+
+  next();
+});
+
+PlaceSchema.pre('save', function(next) {
+  if (this.name == null) {
+    var place = this;
+
+    return geocode(this.location, function(error, name) {
+      if (error)
+        return next(error);
+
+      place.name = name;
+      place.type = 'geocode';
+      next();
+    });
+  }
+
   next();
 });
 
@@ -67,16 +89,8 @@ PlaceSchema.path('visits').validate(function(visits) {
   });
 }, 'Visits are not allowed to overlap.');
 
-PlaceSchema.virtual('duration').get(function() {
-  return _.chain(this.visits).map('duration').sum().value();
-});
-
 PlaceSchema.virtual('frequency').get(function() {
   return this.visits.length;
 });
-
-/*PlaceSchema.statics.findByUser = function(user, callback) {
-  return this.find(callback).where('id', user.places)
-};*/
 
 module.exports = mongoose.model('Place', PlaceSchema);

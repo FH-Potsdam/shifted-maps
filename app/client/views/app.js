@@ -1,7 +1,8 @@
 var Backbone = require('backbone');
 
 var MapView = require('./map'),
-  VisView = require('./vis');
+  VisView = require('./vis'),
+  State = require('../services/state');
 
 var AppView = Backbone.View.extend({
   initialize: function() {
@@ -9,10 +10,13 @@ var AppView = Backbone.View.extend({
   },
 
   render: function() {
-    var mapView = new MapView({ el: '#map' });
+    this._mapView = new MapView({ el: '#map' });
+    this._state = new State({ map: this._mapView._map });
 
     new VisView({
-      el: mapView.map.getPanes().overlayPane
+      state: this._state,
+      mapView: this._mapView,
+      el: this._mapView._map.getPanes().overlayPane
     });
 
     return this;

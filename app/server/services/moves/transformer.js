@@ -48,7 +48,7 @@ Transformer.prototype._transformPlace = function(object, callback) {
   this._lastPlace.visits[0].endAt = object.endTime;
 
   if (this._lastConnection != null) {
-    this._lastConnection._to = this._lastPlace._id;
+    this._lastConnection._to = this._lastPlace;
     this._pushLastConnection();
   }
 
@@ -62,8 +62,8 @@ Transformer.prototype._transformMove = function(object, callback) {
 
   if (this._lastConnection == null) {
     this._lastConnection = new Connection({
-      _from: this._lastPlace._id,
-      trips: [{ startAt: object.startTime, activities: [] }]
+      _from: this._lastPlace,
+      trips: [{ startAt: object.startTime }]
     });
 
     this._pushLastPlace();
@@ -71,6 +71,7 @@ Transformer.prototype._transformMove = function(object, callback) {
 
   var trip = this._lastConnection.trips[0];
 
+  // Update endAt property on every move.
   trip.endAt = object.endTime;
 
   object.activities.forEach(function(activity) {

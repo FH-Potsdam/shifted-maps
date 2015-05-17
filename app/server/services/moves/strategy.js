@@ -41,9 +41,8 @@ MovesStrategy.prototype.validate = function(accessToken, done) {
     var data = JSON.parse(error.data);
 
     // User gives no authorization.
-    if (data.error === 'invalid_token') {
+    if (data.error === 'invalid_token')
       return done(null, false);
-    }
 
     done(new Error('Invalid moves request ("' + data.error + '").'));
   });

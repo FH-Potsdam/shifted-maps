@@ -1,5 +1,6 @@
 var util = require('util'),
   Writable = require('stream').Writable,
+  _ = require('lodash'),
   Place = require('../models/place'),
   Connection = require('../models/connection');
 
@@ -22,43 +23,62 @@ Persister.prototype._write = function(object, encoding, callback) {
 };
 
 Persister.prototype._persistPlace = function(place, callback) {
-  var user = this._user;
+  var persister = this;
 
-  Place.findById(place._id).exec(function(error, persistedPlace) {
-    if (error)
-      return callback(error);
+  var promise = Place.findById(place._id)
+    .exec()
+    .then(function(persistedPlace) {
+      if (persistedPlace == null) {
+        place._user = persister._user;
+        persistedPlace = place;
+      } else {
+        place.visits.forEach(function(visit) {
+          persistedPlace.visits.push(visit);
+        });
+      }
 
-    if (persistedPlace == null) {
-      persistedPlace = place;
-      persistedPlace._user = user;
-    } else {
-      place.visits.forEach(function(visit) {
-        persistedPlace.visits.push(visit);
-      });
-    }
-
-    persistedPlace.save(callback);
-  });
+      return persistedPlace.save();
+    })
+    .onResolve(callback);
 };
 
 Persister.prototype._persistConnection = function(connection, callback) {
-  var user = this._user;
+  var persister = this;
 
-  Connection.findOne({ _from: connection._from, _to: connection._to }).exec(function(error, persistedConnection) {
-    if (error)
-      return callback(error);
+  var promise = Connection.findOne({ _from: connection._from, _to: connection._to })
+    .exec()
+    .then(function(persistedConnection) {
+      if (persistedConnection != null)
+        return persistedConnection;
 
-    if (persistedConnection == null) {
-      persistedConnection = connection;
-      persistedConnection._user = user;
-    } else {
-      connection.trips.forEach(function(trip) {
-        persistedConnection.trips.push(trip);
-      });
-    }
+      // Check for reversed direction
+      return Connection.findOne({ _from: connection._to, _to: connection._from })
+        .exec()
+        .then(function(persistedConnection) {
+          // Flip direction if connection already exists in the reversed direction
+          if (persistedConnection != null) {
+            connection.trips.forEach(function(trip) {
+              trip.direction = false;
+            });
+          }
 
-    persistedConnection.save(callback);
-  });
+          return persistedConnection;
+        });
+    })
+    .then(function(persistedConnection) {
+      if (persistedConnection == null) {
+        connection._user = persister._user;
+        persistedConnection = connection;
+      } else {
+        connection.trips.forEach(function(trip) {
+          persistedConnection.trips.push(trip);
+        });
+      }
+
+      return persistedConnection.save();
+    })
+    .onResolve(callback);
+
 };
 
 module.exports = Persister;

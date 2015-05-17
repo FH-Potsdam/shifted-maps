@@ -14,6 +14,8 @@ var express = require('express'),
 
 var app = express();
 
+app.set('debug', app.get('env') == 'development');
+
 // Templating
 templating.express(app);
 
@@ -31,24 +33,24 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// @TODO Move to development only
-app.use(connectLivereload());
+if (app.get('debug'))
+  app.use(connectLivereload());
 
 // Static route middleware
-app.use(express.static(__dirname + '/../../public'));
+app.use(express.static(__dirname + '/../../public', {
+  lastModified: app.get('debug'),
+  etag: app.get('debug')
+}));
 
-function checkAuth(req, res, next) {
-  if (!req.user)
-    return res.redirect('/auth?redirect=' + req.originalUrl);
-
-  next();
-}
-
-// Visualization route middleware
-app.use('/map', checkAuth, map);
-app.use('/api', checkAuth, api);
+app.use('/map', map);
+app.use('/api', api);
 app.use('/auth', auth);
 
 app.use(home);
+
+app.use(function(err, req, res, next) {
+  console.error('Express', err, err.stack);
+  res.status(500).send('Something broke!');
+});
 
 module.exports = app;

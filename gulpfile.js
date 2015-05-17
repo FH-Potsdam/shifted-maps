@@ -41,15 +41,15 @@ gulp.task('compress', function() {
 });
 
 gulp.task('watch', function() {
-  watch('app/client/styles/**/*.scss', function(event) {
+  gulp.watch('app/client/styles/**/*.scss', function(event) {
     gulp.start(['sass', 'compress']);
     server.notify(event);
   });
-  watch(['app/client/**/*.js', 'app/client/**/*.json', 'app/shared/**/*.js'], function(event) {
+  gulp.watch(['app/client/**/*.js', 'app/client/**/*.json', 'app/shared/**/*.js'], function(event) {
     gulp.start(['browserify', 'compress']);
     server.notify(event);
   });
-  watch('app/server/**/*.js', function(event) {
+  gulp.watch('app/server/**/*.js', function() {
     gulp.start('serve');
   });
 });

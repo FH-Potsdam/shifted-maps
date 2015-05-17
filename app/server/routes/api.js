@@ -16,38 +16,54 @@ var movesStreams = {};
 /**
  * Gets the moves segment reader for the given user.
  * If no segment reader stream is available, create a new one.
- *
- * @param user
- * @returns Stream
  */
-function getMovesStream(user) {
+function getMovesStream(user, callback) {
   if (movesStreams[user.id] != null)
     return movesStreams[user.id];
 
   var movesStream = new MovesSegmentReader(user.accessToken, user.lastUpdateAt),
-    transformer = new MovesTransformer();
+    transformer = new MovesTransformer(),
+    persister = new Persister(user);
+
+  persister.on('data', function(object) {
+    if (object instanceof Place)
+      user.addPlace(object);
+    else if (object instanceof Connection)
+      user.addConnection(object);
+  });
+
+  // Reset user places and connections if persister fires error events.
+  persister.on('error', function(error) {
+    user.reset()
+      .onResolve(function() {
+        callback(error);
+      });
+  });
 
   // Delete old moves streams and finish user fetch mode.
-  movesStream.on('end', function() {
+  persister.on('finish', function() {
     delete movesStreams[user.id];
-
-    // Save user as fetched to not request moves data multiple times.
-    user.fetched = true;
-    user.lastUpdateAt = Date.now();
-    user.save();
+    user.update(callback);
   });
 
   // Pipe to writable transformer and then to persister.
   movesStream
     .pipe(transformer)
-    .pipe(new Persister(user));
+    .pipe(persister);
 
-  return movesStream[user.id] = transformer;
+  return movesStream[user.id] = persister;
 }
+
+router.use(function(req, res, next) {
+  if (!req.user)
+    return res.sendStatus(403);
+
+  next();
+});
 
 // HTTP Caching for API requests
 router.use(function(req, res, next) {
-  res.setHeader('cache-control', 'public');
+  res.setHeader('cache-control', 'public, max-age=0');
   res.setHeader('last-modified', req.user.lastUpdateAt.toString());
 
   if (req.fresh)
@@ -56,61 +72,39 @@ router.use(function(req, res, next) {
   next();
 });
 
-router.get('/user/places', function(req, res) {
-  var apiStream = CombinedStream.create(),
-    placesStream = req.user.findPlaces().stream();
+router.use(function(req, res, next) {
+  // Do not start moves stream, if we already fetched it.
+  if (req.user.fetched)
+    return next();
 
-  apiStream.append(placesStream);
+  // Pause response till the moves stream has finished.
+  getMovesStream(req.user, next);
+});
 
-  if (!req.user.fetched) {
-    var buffer = new Transform({ objectMode: true });
-
-    // Write moves data (place instances) into buffer to later push it into the API stream
-    buffer._transform = function(object, encoding, done) {
-      if (object instanceof Place)
-        this.push(object);
-
-      done();
-    };
-
-    // User is not fetching, so create moves stream
-    getMovesStream(req.user).pipe(buffer);
-    apiStream.append(buffer);
-  }
+router.get('/user/places', function(req, res, next) {
+  var placesStream = req.user.findPlaces()
+    .populate('_user')
+    .sort({ duration: -1, frequency: -1 })
+    .stream();
 
   // Pipe API stream into JSON stream and JSON stream into response stream
   // This will start the mongoDB query stream.
-  apiStream
+  placesStream
     .pipe(new JSONStream())
     .pipe(res);
 });
 
-router.get('/user/connections', function(req, res) {
-  var apiStream = CombinedStream.create(),
-    connectionsStream = req.user.findConnections().stream();
+router.get('/user/connections', function(req, res, next) {
+  var jsonStream = new JSONStream();
 
-  apiStream.append(connectionsStream);
-
-  if (!req.user.fetched) {
-    var buffer = new Transform({ objectMode: true });
-
-    // Write moves data (place instances) into buffer to later push it into the API stream
-    buffer._transform = function(object, encoding, done) {
-      if (object instanceof Connection)
-        this.push(object);
-
-      done();
-    };
-
-    // User is not fetching, so create moves stream
-    getMovesStream(req.user).pipe(buffer);
-    apiStream.append(buffer);
-  }
+  var connectionsStream = req.user.findConnections()
+    .populate('_user')
+    .stream();
 
   // Pipe API stream into JSON stream and JSON stream into response stream
   // This will start the mongoDB query stream.
-  apiStream
-    .pipe(new JSONStream())
+  connectionsStream
+    .pipe(jsonStream)
     .pipe(res);
 });
 
