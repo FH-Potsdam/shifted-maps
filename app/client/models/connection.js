@@ -1,15 +1,39 @@
 var Backbone = require('backbone'),
+  Trip = require('./trip'),
   map = require('mout/math/map'),
   norm = require('mout/math/norm');
 
-var Connection = Backbone.Model.extend({
+var Connection = Backbone.RelationalModel.extend({
   idAttribute: '_id',
+  relations: [{
+    type: 'HasMany',
+    key: '_trips',
+    relatedModel: Trip,
+    collectionType: Trip.Collection,
+    reverseRelation: {
+      key: '_connection'
+    }
+  }]/*,
 
   initialize: function() {
-    this.listenTo(this.collection, 'update', this.update);
+    this.on('change:_trips', this.tripsChanged);
+    this.listenTo(this.collection, 'sync', this.update);
   },
 
-  update: function() {
+  tripsChanged: function() {
+    console.log('tripsChanged');
+
+    this.set({
+      frequency: this._trips.length,
+      duration: this._trips.sum(function(trip) {
+        return trip.get('duration')
+      }) / this._trips.length
+    })
+  },
+
+  update: function(collection) {
+    console.log('sync', collection.length);
+
     var frequency = this.get('frequency'),
       duration = this.get('duration');
 
@@ -22,22 +46,12 @@ var Connection = Backbone.Model.extend({
         this.collection._minDuration, this.collection._maxDuration,
         this.collection._maxBeeline, this.collection._minBeeline)
     })
-  },
-
-  parse: function(response) {
-    response.source = response._from;
-    response.target = response._to;
-
-    delete response._from;
-    delete response._to;
-
-    return response;
-  }
+  }*/
 });
 
 Connection.Collection = Backbone.Collection.extend({
   model: Connection,
-  url: '/api/user/connections',
+  url: '/api/user/connections'/*,
 
   initialize: function() {
     this.on('update', this.update);
@@ -62,7 +76,7 @@ Connection.Collection = Backbone.Collection.extend({
     }, this);
 
     return this;
-  }
+  }*/
 });
 
 module.exports = Connection;

@@ -41,14 +41,14 @@ gulp.task('compress', function() {
 
 gulp.task('watch', function() {
   gulp.watch('app/client/styles/**/*.scss', function(event) {
-    gulp.start(['sass', 'compress']);
+    gulp.start('sass');
     server.notify(event);
   });
   gulp.watch(['app/client/**/*.js', 'app/client/**/*.json', 'app/shared/**/*.js'], function(event) {
-    gulp.start(['browserify', 'compress']);
+    gulp.start('browserify');
     server.notify(event);
   });
-  gulp.watch('app/server/**/*.js', function() {
+  gulp.watch(['app/server/**/*.js', 'app/server/**/*.nunj'], function() {
     gulp.start('serve');
   });
 });
@@ -64,4 +64,4 @@ function swallowError(error) {
   this.emit('end');
 }
 
-gulp.task('default', ['serve', 'browserify', 'sass', 'compress', 'watch']);
+gulp.task('default', ['serve', 'browserify', 'sass', 'watch']);
