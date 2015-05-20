@@ -60,6 +60,12 @@ var VisView = Backbone.View.extend({
       });*/
 
     return this;
+  },
+
+  nodes: function() {
+    return this._places.map(function(place) {
+      place.getDuration()
+    });
   }
 });
 
