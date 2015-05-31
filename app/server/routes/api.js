@@ -50,6 +50,14 @@ function getMovesStream(user, callback) {
   return movesStream[user.id] = persister;
 }
 
+function limitQuery(query, req) {
+  if (req.startAt != null)
+    query.gte('startAt', req.startAt.startOf('day').toDate());
+
+  if (req.endAt != null)
+    query.lte('endAt', req.endAt.endOf('day').toDate());
+}
+
 router.use(function(req, res, next) {
   if (!req.user)
     return res.sendStatus(403);
@@ -102,11 +110,7 @@ router.use(function(req, res, next) {
 router.get('/user/visits', function(req, res) {
   var visitsQuery = Visit.find({ _user: req.user });
 
-  if (req.startAt != null)
-    visitsQuery.gte('startAt', req.startAt.startOf('day').toDate());
-
-  if (req.endAt != null)
-    visitsQuery.lte('endAt', req.endAt.endOf('day').toDate());
+  limitQuery(visitsQuery, req);
 
   visitsQuery.stream()
     .pipe(new JSONStream())
@@ -116,11 +120,7 @@ router.get('/user/visits', function(req, res) {
 router.get('/user/trips', function(req, res) {
   var tripsQuery = Trip.find({ _user: req.user });
 
-  if (req.startAt != null)
-    tripsQuery.gte('startAt', req.startAt.startOf('day').toDate());
-
-  if (req.endAt != null)
-    tripsQuery.lte('endAt', req.endAt.endOf('day').toDate());
+  limitQuery(tripsQuery, req);
 
   tripsQuery.stream()
     .pipe(new JSONStream())
