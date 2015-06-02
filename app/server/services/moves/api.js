@@ -20,11 +20,11 @@ API.request = function(getURL, accessToken, query) {
   });
 
   var options = {
-    url: url.format(apiURLObject),
+    url: apiURLObject,
     gzip: true
   };
 
-  return oboe(options);
+  return request(options);
 };
 
 API.DATE_FORMAT = 'YYYYMMDD[T]HHmmssZZ';
@@ -37,10 +37,8 @@ API.formatDate = function(date) {
   return moment(date).format(API.DATE_FORMAT);
 };
 
-API.prototype.request = function(url, query) {
-  this._request = API.request(url, this._accessToken, query);
-
-  return this;
+API.prototype.request = function(url, query, callback) {
+  return oboe(API.request(url, this._accessToken, query));
 };
 
 API.prototype.profile = function() {
@@ -56,34 +54,6 @@ API.prototype.daily = function(getURL, date, query) {
     getURLObject.pathname += '/' + date;
 
   return this.request(url.format(getURLObject), query);
-};
-
-API.prototype.node = function(nodes, callback) {
-  this._request.node(nodes, callback);
-
-  return this;
-};
-
-API.prototype.start = function(callback) {
-  this._request.start(callback);
-
-  return this;
-};
-
-API.prototype.done = function(callback) {
-  this._request.done(callback);
-
-  return this;
-};
-
-API.prototype.fail = function(callback) {
-  this._request.fail(callback);
-
-  return this;
-};
-
-API.prototype.header = function(name) {
-  return this._request.header(name);
 };
 
 module.exports = API;
