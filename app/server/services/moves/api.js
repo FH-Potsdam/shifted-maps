@@ -30,7 +30,7 @@ API.request = function(getURL, accessToken, query) {
 API.DATE_FORMAT = 'YYYYMMDD[T]HHmmssZZ';
 
 API.parseDate = function(date) {
-  return moment(date, API.DATE_FORMAT).toDate();
+  return moment(date, API.DATE_FORMAT).valueOf();
 };
 
 API.formatDate = function(date) {
@@ -64,6 +64,12 @@ API.prototype.node = function(nodes, callback) {
   return this;
 };
 
+API.prototype.start = function(callback) {
+  this._request.start(callback);
+
+  return this;
+};
+
 API.prototype.done = function(callback) {
   this._request.done(callback);
 
@@ -74,6 +80,10 @@ API.prototype.fail = function(callback) {
   this._request.fail(callback);
 
   return this;
+};
+
+API.prototype.header = function(name) {
+  return this._request.header(name);
 };
 
 module.exports = API;

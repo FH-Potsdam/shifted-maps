@@ -26,7 +26,7 @@ MovesStrategy.prototype.userProfile = function(accessToken, done) {
       done(null, data.profile);
     })
     .fail(function(error) {
-      done(new OAuth2Strategy.InternalOAuthError('failed to fetch user profile', error));
+      done(new OAuth2Strategy.InternalOAuthError('Failed to fetch user profile', error));
     });
 };
 
