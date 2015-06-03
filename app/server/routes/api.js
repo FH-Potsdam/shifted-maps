@@ -3,6 +3,7 @@ var express = require('express'),
   JSONStream = require('../services/api/json-stream'),
   Normalizer = require('../services/api/normalizer'),
   MovesSegmentReader = require('../services/moves/segment-reader'),
+  MovesAPI = require('../services/moves/api'),
   MovesTransformer = require('../services/moves/transformer');
 
 var router = express.Router();
@@ -27,16 +28,8 @@ router.use(function(req, res, next) {
 
 router.get('/', function(req, res) {
   var user = req.user,
-    segmentReader = new MovesSegmentReader(user.accessToken, user.firstDate);
-
-  // @TODO for moves request
-  // Compare new request time (for minute and hour) with last request time (minute and hour)
-  // If new request time is bigger than a minute or hour, reset accordingly
-  // Check how many requests remain and delay new request accordingly
-
-  segmentReader.on('initRequest', function() {
-    console.log('initRequest', arguments);
-  });
+    api = new MovesAPI(user.accessToken),
+    segmentReader = new MovesSegmentReader(api, user.firstDate);
 
   segmentReader
     .pipe(new MovesTransformer)

@@ -5,53 +5,15 @@ var util = require('util'),
   Promise = require('promise'),
   _ = require('lodash'),
   moment = require('moment'),
+  https = require('https'),
   config = require('../../config');
 
-function API(processor, accessToken) {
-  this._processor = processor;
+function API(accessToken) {
   this._accessToken = accessToken;
 }
 
-API.request = function(getURL, accessToken, query) {
-  var apiURLObject = url.parse(config.moves.api_url, true),
-    getURLObject = url.parse(getURL, true);
-
-  apiURLObject.pathname += getURLObject.pathname;
-  _.extend(apiURLObject.query, getURLObject.query, query || {}, {
-    access_token: accessToken
-  });
-
-  var options = {
-    url: apiURLObject,
-    gzip: true
-  };
-
-  return request(options);
-};
-
-API.DATE_FORMAT = 'YYYYMMDD[T]HHmmssZZ';
-
-API.parseDate = function(date) {
-  return moment(date, API.DATE_FORMAT).valueOf();
-};
-
-API.formatDate = function(date) {
-  return moment(date).format(API.DATE_FORMAT);
-};
-
-API.prototype._request = function(url, query) {
+API.prototype.request = function(url, query) {
   return API.request(url, this._accessToken, query);
-};
-
-API.prototype.request = function(url, query, callback) {
-  var api = this,
-    request = this._request(url, query),
-    task = api._processor.schedule(request);
-
-  if (callback != null)
-    task.nodeify(callback);
-
-  return task;
 };
 
 API.prototype.profile = function() {
@@ -70,57 +32,97 @@ API.prototype.daily = function(getURL, date, query) {
 };
 
 API.Processor = function() {
-  this._lastRequestAt = null;
-  this._hourLimit = null;
+  this._nextHourAt = null;
+  this._nextMinuteAt = null;
   this._hourRemaining = null;
-  this._minuteLimit = null;
   this._minuteRemaining = null;
   this._scheduldedRequests = 0;
 };
 
-API.Processor.prototype.schedule = function(request) {
+API.Processor.prototype.schedule = function(req) {
   var processor = this;
 
-  this._scheduldedRequests++;
+  req.pause();
+  processor._scheduldedRequests++;
 
-  var promise = new Promise(function(resolve) {
-    setTimeout(processor._worker(request, resolve), processor._delay());
-  });
+  var delay = processor._delay();
 
-  promise.nodeify(function() {
-    processor._scheduldedRequests--;
-  });
-
-  return promise;
+  setTimeout(processor._worker(req), delay);
 };
 
-API.Processor.prototype._setRateLimits = function(header) {
-  this._lastRequestAt = moment();
-  this._hourLimit = header['x-ratelimit-hourlimit'];
-  this._hourRemaining = header['x-ratelimit-hourremaining'];
-  this._minuteLimit = header['x-ratelimit-minutelimit'];
-  this._minuteRemaining = header['x-ratelimit-minuteremaining'];
+API.Processor.prototype._setRateLimits = function(headers) {
+  this._nextHourAt = moment().add(1, 'h');
+  this._nextMinuteAt = moment().add(1, 'm');
+
+  this._hourRemaining = headers['x-ratelimit-hourremaining'];
+  this._minuteRemaining = headers['x-ratelimit-minuteremaining'];
+
+  console.log(headers);
 };
 
-API.Processor.prototype._worker = function(request, resolve) {
+API.Processor.prototype._worker = function(req) {
   var processor = this;
 
   return function() {
-    var request = oboe(request);
+    console.log('Worked');
 
-    request.start(function(status, header) {
-      processor._setRateLimits(header);
+    req.on('response', function(response) {
+      console.log('Response event');
+      processor._setRateLimits(response.headers);
     });
 
-    resolve(request);
+    processor._scheduldedRequests--;
+    req.resume();
   };
 };
 
 API.Processor.prototype._delay = function() {
-  if (this._lastRequestAt == null)
+  if (this._nextHourAt == null || this._nextMinuteAt == null)
     return 0;
 
+  var now = moment(),
+    delayInHour = Math.ceil(this._nextHourAt.diff(now) / this._hourRemaining),
+    delayInMinute = Math.ceil(this._nextMinuteAt.diff(now) / this._minuteRemaining),
+    delay = Math.max(delayInHour, delayInMinute);
 
+  if (delay < 0)
+    return 0;
+
+  return delay * this._scheduldedRequests;
 };
+
+API.request = function(getURL, accessToken, query) {
+  var apiURLObject = url.parse(config.moves.api_url, true),
+    getURLObject = url.parse(getURL, true);
+
+  apiURLObject.pathname += getURLObject.pathname;
+  _.extend(apiURLObject.query, getURLObject.query, query || {}, {
+    access_token: accessToken
+  });
+
+  var options = {
+    url: url.format(apiURLObject),
+    gzip: true
+  };
+
+  var req = request(options),
+    oboeStream = oboe(req);
+
+  //API.processor.schedule(req);
+
+  return oboeStream;
+};
+
+API.DATE_FORMAT = 'YYYYMMDD[T]HHmmssZZ';
+
+API.parseDate = function(date) {
+  return moment(date, API.DATE_FORMAT).unix();
+};
+
+API.formatDate = function(date) {
+  return moment(date).format(API.DATE_FORMAT);
+};
+
+API.processor = new API.Processor;
 
 module.exports = API;

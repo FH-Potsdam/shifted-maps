@@ -4,10 +4,10 @@ var Readable = require('stream').Readable,
   moment = require('moment'),
   _ = require('lodash');
 
-function MovesSegmentReader(accessToken, firstDate) {
+function MovesSegmentReader(api, firstDate) {
   Readable.call(this, { objectMode: true });
 
-  this._accessToken = accessToken;
+  this._api = api;
   this._firstDate = firstDate;
   this._inited = false;
 }
@@ -19,7 +19,6 @@ MovesSegmentReader.prototype._init = function() {
     return;
 
   this._inited = true;
-  this._api = new MovesAPI(this._accessToken);
   this._months = moment().diff(this._firstDate, 'month');
   this._query = { updatedSince: MovesAPI.formatDate(this._firstDate) };
 
