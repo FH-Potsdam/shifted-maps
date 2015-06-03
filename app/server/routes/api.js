@@ -29,11 +29,13 @@ router.get('/', function(req, res) {
   var user = req.user,
     segmentReader = new MovesSegmentReader(user.accessToken, user.firstDate);
 
+  // @TODO for moves request
+  // Compare new request time (for minute and hour) with last request time (minute and hour)
+  // If new request time is bigger than a minute or hour, reset accordingly
+  // Check how many requests remain and delay new request accordingly
+
   segmentReader.on('initRequest', function() {
-    segmentReader.pause();
-    setTimeout(function() {
-      segmentReader.resume();
-    }, 500);
+    console.log('initRequest', arguments);
   });
 
   segmentReader

@@ -1,7 +1,6 @@
 var mongoose = require('../services/mongoose'),
   moment = require('moment'),
-  _ = require('lodash'),
-  assert = require('assert');
+  _ = require('lodash');
 
 var UserSchema = new mongoose.Schema({
   _id: Number,
