@@ -1,8 +1,11 @@
 var gulp = require('gulp'),
-  browserify = require('gulp-browserify'),
+  browserify = require('browserify'),
+  buffer = require('vinyl-buffer'),
+  source = require('vinyl-source-stream'),
+  sourcemaps = require('gulp-sourcemaps'),
+  reactify = require('reactify'),
   sass = require('gulp-sass'),
   uglify = require('gulp-uglify'),
-  rename = require("gulp-rename"),
   chalk = require('chalk'),
   notifier = require('node-notifier'),
   server = require('gulp-express');
@@ -12,11 +15,19 @@ gulp.task('serve', function() {
 });
 
 gulp.task('browserify', function() {
-  gulp.src('app/client/index.js')
-    .pipe(browserify({
-      debug: true
-    }))
+  var b = browserify({
+    debug: true,
+    entries: 'app/client/index.js',
+    transform: [reactify]
+  });
+
+  return b.bundle()
+    .pipe(source('index.js', 'app/client'))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({loadMaps: true}))
+    //.pipe(uglify())
     .on('error', swallowError)
+    .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('public/scripts'));
 });
 
@@ -27,16 +38,6 @@ gulp.task('sass', function() {
     }))
     .on('error', swallowError)
     .pipe(gulp.dest('public/styles'));
-});
-
-gulp.task('compress', function() {
-  gulp.src(['public/scripts/*.js', '!public/scripts/*.min.js'])
-    .pipe(uglify())
-    .on('error', swallowError)
-    .pipe(rename(function (path) {
-      path.extname = '.min' + path.extname;
-    }))
-    .pipe(gulp.dest('public/scripts'));
 });
 
 gulp.task('watch', function() {

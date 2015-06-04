@@ -13,7 +13,5 @@
 {% endblock %}
 
 {% block content %}
-    <div id="app">
-        <div class="map" id="map"></div>
-    </div>
+    <div id="app"></div>
 {% endblock %}
