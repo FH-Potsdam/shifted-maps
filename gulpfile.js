@@ -22,11 +22,11 @@ gulp.task('browserify', function() {
   });
 
   return b.bundle()
+    .on('error', swallowError)
     .pipe(source('index.js', 'app/client'))
     .pipe(buffer())
     .pipe(sourcemaps.init({loadMaps: true}))
     //.pipe(uglify())
-    .on('error', swallowError)
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('public/scripts'));
 });

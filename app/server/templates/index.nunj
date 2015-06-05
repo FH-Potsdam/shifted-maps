@@ -8,7 +8,7 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.js"></script>
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.js'></script>
     <script src="/scripts/index.js"></script>
 {% endblock %}
 

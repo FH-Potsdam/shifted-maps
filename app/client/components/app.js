@@ -1,24 +1,28 @@
 var Reflux = require('reflux'),
   React = require('react'),
-  placeStore = require('../stores/places'),
-  initAction = require('../actions/init');
+  InitAction = require('../actions/init'),
+  Map = require('./map'),
+  Visualization = require('./visualization'),
+  config = require('../config');
 
 module.exports = React.createClass({
-  mixins: [Reflux.connect(placeStore, 'places')],
-
   componentDidMount: function() {
-    initAction();
+    InitAction();
   },
 
   render: function() {
-    console.log(this.state);
-
     return (
-      <ul>
-        {this.state.places.sortBy(function(place) { return place.name; }).map(function(place, key) {
-          return <li key={key}>{place.name}</li>;
-        })}
-      </ul>
+      <Map id={this.state.mapId} zoom={this.state.mapZoom} center={this.state.mapCenter} className="map">
+        <Visualization />
+      </Map>
     );
+  },
+
+  getInitialState: function() {
+    return {
+      mapId: config.mapbox.id,
+      mapZoom: 11,
+      mapCenter: [52.520007, 13.404954]
+    };
   }
 });

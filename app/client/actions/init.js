@@ -1,5 +1,9 @@
 var Reflux = require('Reflux'),
-  oboe = require('oboe');
+  oboe = require('oboe'),
+  moment = require('moment'),
+  Place = require('../models/place'),
+  Stay = require('../models/stay'),
+  Trip = require('../models/trip');
 
 var initAction = Reflux.createAction({
   asyncResult: true,
@@ -14,14 +18,18 @@ initAction.listen(function() {
     .node('endAt', function(endAt) {
       return new Date(endAt * 1000);
     })
+    .node('location', function(location) {
+      return L.latLng(location.lat, location.lon);
+    })
     .node('place', function(place) {
-      initAction.addPlace(place);
+      initAction.addPlace(new Place(place));
     })
     .node('stay', function(stay) {
-      initAction.addStay(stay);
+      stay.duration = moment(stay.endAt).diff(stay.startAt, 's');
+      initAction.addStay(new Stay(stay));
     })
     .node('trip', function(trip) {
-      initAction.addTrip(trip);
+      initAction.addTrip(new Trip(trip));
     })
     .done(initAction.completed)
     .fail(initAction.failed);

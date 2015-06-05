@@ -1,6 +1,8 @@
 var Transform = require('stream').Transform,
   util = require('util'),
-  geocode = require('../geocode'), // Inject dependency into class for better testing
+  geocode = require('../geocode'),
+  moment = require('moment'),
+  geolib = require('geolib'),
   Place = require('../../models/place'),
   Stay = require('../../models/stay'),
   Trip = require('../../models/trip'),
@@ -63,6 +65,7 @@ Normalizer.prototype._normalizePlace = function(place, callback) {
       name: name,
       placeType: 'geocode'
     });
+
     normalize(place);
   });
 };
