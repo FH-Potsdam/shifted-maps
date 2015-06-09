@@ -5,5 +5,6 @@ module.exports = Reflux.createActions([
   'moveStart',
   'moveEnd',
   'zoomStart',
-  'zoomEnd'
+  'zoomEnd',
+  'zoomAnim'
 ]);

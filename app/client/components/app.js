@@ -2,7 +2,7 @@ var Reflux = require('reflux'),
   React = require('react'),
   InitAction = require('../actions/init'),
   Map = require('./map'),
-  Visualization = require('./visualization'),
+  Vis = require('./vis'),
   config = require('../config');
 
 module.exports = React.createClass({
@@ -13,7 +13,7 @@ module.exports = React.createClass({
   render: function() {
     return (
       <Map id={this.state.mapId} zoom={this.state.mapZoom} center={this.state.mapCenter} className="map">
-        <Visualization />
+        <Vis className="leaflet-zoom-animated" />
       </Map>
     );
   },
@@ -21,7 +21,7 @@ module.exports = React.createClass({
   getInitialState: function() {
     return {
       mapId: config.mapbox.id,
-      mapZoom: 11,
+      mapZoom: 5,
       mapCenter: [52.520007, 13.404954]
     };
   }

@@ -3,4 +3,18 @@
   top: 0;
   bottom: 0;
   width: 100%;
+  background-color: black;
+}
+
+.place-map {
+  fill: white;
+}
+
+.connection {
+  stroke: white;
+  stroke-width: .5px;
+}
+
+.leaflet-tile-pane {
+  opacity: .25;
 }

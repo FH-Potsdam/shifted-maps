@@ -62,10 +62,15 @@ Transformer.prototype._transformMove = function(object, callback) {
   if (this._lastPlace == null)
     return callback();
 
+  var distance = _.reduce(object.activities, function(reduction, activity) {
+    return reduction + activity.distance;
+  }, 0);
+
   this._lastTrip = new Trip({
     from: this._lastPlace.id,
     startAt: object.startTime,
-    endAt: object.endTime
+    endAt: object.endTime,
+    distance: distance
   });
 
   callback();

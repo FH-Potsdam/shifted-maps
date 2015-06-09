@@ -5,6 +5,5 @@ module.exports = Record({
   to: null,
   startAt: null,
   endAt: null,
-  duration: null,
-  distance: null
+  duration: 0
 });

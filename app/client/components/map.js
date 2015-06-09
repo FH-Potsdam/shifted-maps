@@ -20,7 +20,10 @@ module.exports = React.createClass({
     }
 
     map.setView(this.props.center, this.props.zoom);
-    React.render(<div>{this.props.children}</div>, map.getPanes().overlayPane);
+
+    process.nextTick(function() {
+      React.render(<div className="overlay">{this.props.children}</div>, map.getPanes().overlayPane)
+    }.bind(this));
   },
 
   render: function() {
