@@ -7,8 +7,6 @@ module.exports = React.createClass({
   componentDidMount: function() {
     var place = this.props.place;
 
-    console.log('mount', place.radius);
-
     d3.select(React.findDOMNode(this))
       .append('clipPath')
       .attr('id', 'p' + place.id)
@@ -20,8 +18,6 @@ module.exports = React.createClass({
 
   componentDidUpdate: function() {
     var place = this.props.place;
-
-    console.log('update', place.radius);
 
     d3.select(React.findDOMNode(this))
       .select('circle')
