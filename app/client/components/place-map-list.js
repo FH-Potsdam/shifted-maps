@@ -22,27 +22,25 @@ module.exports = React.createClass({
     var parent = d3.select(React.findDOMNode(this)),
       places = this.state.places.toArray();
 
-    var placeClipPaths = parent.selectAll('.place-circle')
+    var placeImages = parent.selectAll('.place-map')
       .data(places, function(d) { return d.id; });
 
-    placeClipPaths
+    placeImages
       .enter()
-      .append('clipPath')
-      .attr('class', 'place-circle')
-      .append('circle');
+      .append('rect')
+      .attr('class', 'place-map')
+      .attr('clip-path', function(d) { return 'url(#p' + d.id + ')'; });
 
-    placeClipPaths
-      .attr('id', function(d) { return 'p' + d.id; })
-      .select('circle')
-      .attr('cx', function(d) { return d.point.x; })
-      .attr('cy', function(d) { return d.point.y; })
-      .transition()
-      .attr('r', function(d) { return d.radius; });
+    placeImages
+      .attr('x', function(d) { return d.point.x - 100; })
+      .attr('y', function(d) { return d.point.y - 100; })
+      .attr('width', function(d) { return 200; })
+      .attr('height', function(d) { return 200; });
   },
 
   render: function() {
     return (
-      <g className="place-circles"></g>
+      <g className="place-map-list"></g>
     );
   }
 });

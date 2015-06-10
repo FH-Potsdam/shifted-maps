@@ -1,6 +1,8 @@
 var Reflux = require('reflux'),
-  MapActions = require('../actions/map'),
-  Immutable = require('immutable');
+  Immutable = require('immutable'),
+  Bounds = require('../models/bounds'),
+  Point = require('../models/point'),
+  MapActions = require('../actions/map');
 
 var CLIP_PADDING = 0.5;
 
@@ -12,15 +14,15 @@ function calculateBounds(map) {
 }
 
 function immutableBounds(bounds) {
-  return Immutable.Map({
+  return new Bounds({
     min: immutablePoint(bounds.min),
     max: immutablePoint(bounds.max),
-    size: immutablePoint(bounds.getSize())
+    dimensions: immutablePoint(bounds.getSize())
   });
 }
 
 function immutablePoint(point) {
-  return Immutable.Map({ x: point.x, y: point.y });
+  return new Point({ x: point.x, y: point.y });
 }
 
 module.exports = Reflux.createStore({
@@ -40,7 +42,7 @@ module.exports = Reflux.createStore({
 
   onZoomAnim: function(map, event) {
     var scale = map.getZoomScale(event.zoom),
-      boundsMin = this.state.get('bounds').get('min'),
+      boundsMin = this.state.get('bounds').min,
       translate = map._getCenterOffset(event.center)._multiplyBy(-scale)._add(boundsMin.toObject());
 
     this.updateMap(map);
