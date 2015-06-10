@@ -1,8 +1,7 @@
 var Reflux = require('reflux'),
   React = require('react'),
-  d3 = require('d3'),
   placeShapesStore = require('../stores/place-shapes'),
-  PlaceCircle = require('./place-circle');
+  PlaceClip = require('./place-clip');
 
 module.exports = React.createClass({
   mixins: [Reflux.connect(placeShapesStore, 'placeShapes')],
@@ -13,9 +12,9 @@ module.exports = React.createClass({
 
   render: function() {
     return (
-      <g className="place-circle-list">
+      <g className="place-clip-list">
         {this.state.placeShapes.map(function(placeShapes, key) {
-          return <PlaceCircle key={key} placeShape={placeShapes} />;
+          return <PlaceClip key={key} placeShape={placeShapes} />;
         })}
       </g>
     );

@@ -13,7 +13,7 @@ module.exports = React.createClass({
 
   render: function() {
     return (
-      <g>
+      <g className="place-map-list">
         {this.state.placeShapes.map(function(placeShape, key) {
           return <PlaceMap key={key} placeShape={placeShape} />;
         })}

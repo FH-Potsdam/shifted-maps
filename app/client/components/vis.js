@@ -2,7 +2,9 @@ var Reflux = require('reflux'),
   React = require('react'),
   visStore = require('../stores/vis'),
   PlaceCircleList = require('./place-circle-list'),
+  PlaceClipList = require('./place-clip-list'),
   PlaceMapList = require('./place-map-list'),
+  PlaceDecoList = require('./place-deco-list'),
   ConnectionList = require('./connection-list');
 
 module.exports = React.createClass({
@@ -27,9 +29,12 @@ module.exports = React.createClass({
       <svg className={this.props.className} width={bounds.dimensions.x} height={bounds.dimensions.y} viewBox={viewBox} style={style}>
         <defs>
           <PlaceCircleList />
+          <PlaceClipList />
         </defs>
+
         <ConnectionList />
         <PlaceMapList />
+        <PlaceDecoList />
       </svg>
     );
   }

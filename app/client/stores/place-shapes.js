@@ -8,12 +8,12 @@ var Reflux = require('reflux'),
 
 module.exports = Reflux.createStore({
   init: function() {
-    this.connectionShapes = Immutable.Map();
+    this.placeShapes = Immutable.OrderedMap();
 
     this.map = null;
 
     this.radiusScale = d3.scale.pow().exponent(.25).range([10, 100]);
-    this.strokeWidthScale = d3.scale.pow().exponent(.25).range([5, 10]);
+    this.strokeWidthScale = d3.scale.pow().exponent(.25).range([1, 10]);
 
     this.listenTo(placesStore, this.setPlaces);
     this.listenTo(visStore, this.onVisChange);
@@ -38,34 +38,39 @@ module.exports = Reflux.createStore({
       radiusScale = this.radiusScale.domain([minDuration, maxDuration]),
       strokeWidthScale = this.strokeWidthScale.domain([minFrequency, maxFrequency]);
 
-    this.connectionShapes = places.map(function(place) {
-      var point;
+    this.placeShapes = places.toSeq()
+      .map(function(place) {
+        var point;
 
-      if (map != null)
-        point = new Point(map.latLngToLayerPoint(place.location));
+        if (map != null)
+          point = new Point(map.latLngToLayerPoint(place.location));
 
-      return new PlaceShape({
-        id: place.id,
-        place: place,
-        radius: radiusScale(place.duration),
-        strokeWidth: strokeWidthScale(place.stays.size),
-        point: point
-      });
-    });
+        return new PlaceShape({
+          id: place.id,
+          place: place,
+          radius: radiusScale(place.duration),
+          strokeWidth: strokeWidthScale(place.stays.size),
+          point: point
+        });
+      })
+      .sortBy(function(placeShape) {
+        return -placeShape.radius;
+      })
+      .toOrderedMap();
 
-    this.trigger(this.connectionShapes);
+    this.trigger(this.placeShapes);
   },
 
   setMap: function(map) {
     this.map = map;
 
-    this.connectionShapes = this.connectionShapes.map(function(placeShape) {
+    this.placeShapes = this.placeShapes.map(function(placeShape) {
       var point = new Point(map.latLngToLayerPoint(placeShape.place.location));
 
       return placeShape.mergeDeep({ point: point });
     });
 
-    this.trigger(this.connectionShapes);
+    this.trigger(this.placeShapes);
   },
 
   onVisChange: function(vis) {
@@ -73,6 +78,6 @@ module.exports = Reflux.createStore({
   },
 
   getInitialState: function() {
-    return this.connectionShapes;
+    return this.placeShapes;
   }
 });

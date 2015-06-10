@@ -1,29 +1,10 @@
-var Reflux = require('reflux'),
-  React = require('react'),
-  d3 = require('d3'),
-  placesStore = require('../stores/places');
+var React = require('react');
 
-module.exports = React.createClass({
-  componentDidMount: function() {
-    var shape = this.props.placeShape;
-
-    d3.select(React.findDOMNode(this))
-      .append('clipPath')
-      .attr('id', 'p' + shape.id)
-      .append('circle')
-      .attr('cx', shape.point.x)
-      .attr('cy', shape.point.y)
-      .attr('r', shape.radius);
-  },
-
-  componentDidUpdate: function() {
-    var shape = this.props.placeShape;
-
-    d3.select(React.findDOMNode(this))
-      .select('circle')
-      .attr('cx', shape.point.x)
-      .attr('cy', shape.point.y)
-      .attr('r', shape.radius);
+var PlaceCircle = module.exports = React.createClass({
+  statics: {
+    createId: function(placeShape) {
+      return 'place-circle-' + placeShape.id;
+    }
   },
 
   shouldComponentUpdate: function(nextProps) {
@@ -31,8 +12,9 @@ module.exports = React.createClass({
   },
 
   render: function() {
-    return (
-      <g className="place-circle" />
-    );
+    var shape = this.props.placeShape,
+      id = PlaceCircle.createId(shape);
+
+    return <circle className="place-circle" cx={shape.point.x} cy={shape.point.y} r={shape.radius} id={id} />;
   }
 });
