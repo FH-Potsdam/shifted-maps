@@ -4,15 +4,15 @@ var Reflux = require('reflux'),
 
 module.exports = React.createClass({
   shouldComponentUpdate: function(nextProps) {
-    return this.props.connection !== nextProps.connection;
+    return this.props.connectionShape !== nextProps.connectionShape;
   },
 
   render: function() {
-    var connection = this.props.connection;
+    var shape = this.props.connectionShape;
 
-    if (connection.from.point == null || connection.to.point == null)
+    if (shape.from == null || shape.to == null)
       return null;
 
-    return <line x1={connection.from.point.x} y1={connection.from.point.y} x2={connection.to.point.x} y2={connection.to.point.y} className="connection" />;
+    return <line x1={shape.from.x} y1={shape.from.y} x2={shape.to.x} y2={shape.to.y} strokeWidth={shape.strokeWidth} className="connection" />;
   }
 });

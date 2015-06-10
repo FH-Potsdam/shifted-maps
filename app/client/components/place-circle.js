@@ -5,29 +5,29 @@ var Reflux = require('reflux'),
 
 module.exports = React.createClass({
   componentDidMount: function() {
-    var place = this.props.place;
+    var shape = this.props.placeShape;
 
     d3.select(React.findDOMNode(this))
       .append('clipPath')
-      .attr('id', 'p' + place.id)
+      .attr('id', 'p' + shape.id)
       .append('circle')
-      .attr('cx', place.point.x)
-      .attr('cy', place.point.y)
-      .attr('r', place.radius);
+      .attr('cx', shape.point.x)
+      .attr('cy', shape.point.y)
+      .attr('r', shape.radius);
   },
 
   componentDidUpdate: function() {
-    var place = this.props.place;
+    var shape = this.props.placeShape;
 
     d3.select(React.findDOMNode(this))
       .select('circle')
-      .attr('cx', place.point.x)
-      .attr('cy', place.point.y)
-      .attr('r', place.radius);
+      .attr('cx', shape.point.x)
+      .attr('cy', shape.point.y)
+      .attr('r', shape.radius);
   },
 
   shouldComponentUpdate: function(nextProps) {
-    return this.props.place !== nextProps.place;
+    return this.props.placeShape !== nextProps.placeShape;
   },
 
   render: function() {
