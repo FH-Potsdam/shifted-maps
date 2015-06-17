@@ -1,20 +1,20 @@
 var Reflux = require('reflux'),
   React = require('react'),
-  placeShapesStore = require('../stores/place-shapes'),
+  nodesStore = require('../stores/nodes'),
   PlaceClip = require('./place-clip');
 
 module.exports = React.createClass({
-  mixins: [Reflux.connect(placeShapesStore, 'placeShapes')],
+  mixins: [Reflux.connect(nodesStore, 'nodes')],
 
   shouldComponentUpdate: function(nextProps, nextState) {
-    return this.state.placeShapes !== nextState.placeShapes;
+    return this.state.nodes !== nextState.nodes;
   },
 
   render: function() {
     return (
       <g className="place-clip-list">
-        {this.state.placeShapes.map(function(placeShapes, key) {
-          return <PlaceClip key={key} placeShape={placeShapes} />;
+        {this.state.nodes.map(function(node, key) {
+          return <PlaceClip key={key} node={node} />;
         })}
       </g>
     );

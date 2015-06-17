@@ -2,19 +2,19 @@ var React = require('react');
 
 var PlaceCircle = module.exports = React.createClass({
   statics: {
-    createId: function(placeShape) {
-      return 'place-circle-' + placeShape.id;
+    createId: function(node) {
+      return 'place-circle-' + node.id;
     }
   },
 
   shouldComponentUpdate: function(nextProps) {
-    return this.props.placeShape !== nextProps.placeShape;
+    return this.props.node !== nextProps.node;
   },
 
   render: function() {
-    var shape = this.props.placeShape,
-      id = PlaceCircle.createId(shape);
+    var node = this.props.node,
+      id = PlaceCircle.createId(node);
 
-    return <circle className="place-circle" cx={shape.point.x} cy={shape.point.y} r={shape.radius} id={id} />;
+    return <circle className="place-circle" cx={node.point.x} cy={node.point.y} r={node.radius} id={id} />;
   }
 });

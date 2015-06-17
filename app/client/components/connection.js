@@ -1,18 +1,14 @@
 var Reflux = require('reflux'),
-  React = require('react'),
-  d3 = require('d3');
+  React = require('react');
 
 module.exports = React.createClass({
   shouldComponentUpdate: function(nextProps) {
-    return this.props.connectionShape !== nextProps.connectionShape;
+    return this.props.edge !== nextProps.edge;
   },
 
   render: function() {
-    var shape = this.props.connectionShape;
+    var edge = this.props.edge;
 
-    if (shape.from == null || shape.to == null)
-      return null;
-
-    return <line x1={shape.from.x} y1={shape.from.y} x2={shape.to.x} y2={shape.to.y} strokeWidth={shape.strokeWidth} className="connection" />;
+    return <line x1={edge.from.point.x} y1={edge.from.point.y} x2={edge.to.point.x} y2={edge.to.point.y} strokeWidth={edge.strokeWidth} className="connection" />;
   }
 });

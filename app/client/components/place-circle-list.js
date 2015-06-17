@@ -1,21 +1,20 @@
 var Reflux = require('reflux'),
   React = require('react'),
-  d3 = require('d3'),
-  placeShapesStore = require('../stores/place-shapes'),
+  nodesStore = require('../stores/nodes'),
   PlaceCircle = require('./place-circle');
 
 module.exports = React.createClass({
-  mixins: [Reflux.connect(placeShapesStore, 'placeShapes')],
+  mixins: [Reflux.connect(nodesStore, 'nodes')],
 
   shouldComponentUpdate: function(nextProps, nextState) {
-    return this.state.placeShapes !== nextState.placeShapes;
+    return this.state.nodes !== nextState.nodes;
   },
 
   render: function() {
     return (
       <g className="place-circle-list">
-        {this.state.placeShapes.map(function(placeShapes, key) {
-          return <PlaceCircle key={key} placeShape={placeShapes} />;
+        {this.state.nodes.map(function(node, key) {
+          return <PlaceCircle key={key} node={node} />;
         })}
       </g>
     );

@@ -1,20 +1,20 @@
 var Reflux = require('reflux'),
   React = require('react'),
-  connectionShapeStore = require('../stores/connection-shapes'),
+  edgeStore = require('../stores/edges'),
   Connection = require('./connection');
 
 module.exports = React.createClass({
-  mixins: [Reflux.connect(connectionShapeStore, 'connectionShapes')],
+  mixins: [Reflux.connect(edgeStore, 'edges')],
 
   shouldComponentUpdate: function(nextProps, nextState) {
-    return this.state.connectionShapes !== nextState.connectionShapes;
+    return this.state.edges !== nextState.edges;
   },
 
   render: function() {
     return (
       <g className="connection-list">
-        {this.state.connectionShapes.map(function(connectionShape, key) {
-          return <Connection key={key} connectionShape={connectionShape} />;
+        {this.state.edges.map(function(edge, key) {
+          return <Connection key={key} edge={edge} />;
         })}
       </g>
     );

@@ -4,13 +4,13 @@ var Reflux = require('reflux'),
 
 module.exports = React.createClass({
   shouldComponentUpdate: function(nextProps) {
-    return this.props.placeShape !== nextProps.placeShape;
+    return this.props.node !== nextProps.node;
   },
 
   render: function() {
-    var shape = this.props.placeShape,
-      clipPath = 'url(#' + PlaceClip.createId(shape) + ')';
+    var node = this.props.node,
+      clipPath = 'url(#' + PlaceClip.createId(node) + ')';
 
-    return <rect className="place-map" width="200" height="200" x={shape.point.x - 100} y={shape.point.y - 100} clipPath={clipPath} />;
+    return <rect className="place-map" width="200" height="200" x={node.point.x - 100} y={node.point.y - 100} clipPath={clipPath} />;
   }
 });

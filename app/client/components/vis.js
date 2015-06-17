@@ -3,9 +3,8 @@ var Reflux = require('reflux'),
   visStore = require('../stores/vis'),
   PlaceCircleList = require('./place-circle-list'),
   PlaceClipList = require('./place-clip-list'),
-  PlaceMapList = require('./place-map-list'),
-  PlaceDecoList = require('./place-deco-list'),
-  ConnectionList = require('./connection-list');
+  ConnectionList = require('./connection-list'),
+  PlaceList = require('./place-list');
 
 module.exports = React.createClass({
   mixins: [Reflux.connect(visStore, 'vis')],
@@ -33,8 +32,7 @@ module.exports = React.createClass({
         </defs>
 
         <ConnectionList />
-        <PlaceMapList />
-        <PlaceDecoList />
+        <PlaceList />
       </svg>
     );
   }

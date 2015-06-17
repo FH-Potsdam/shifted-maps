@@ -4,19 +4,19 @@ var React = require('react'),
 
 var PlaceClip = module.exports = React.createClass({
   statics: {
-    createId: function(placeShape) {
-      return 'place-clip-' + placeShape.id;
+    createId: function(node) {
+      return 'place-clip-' + node.id;
     }
   },
 
   componentDidMount: function() {
-    var shape = this.props.placeShape;
+    var node = this.props.node;
 
     d3.select(React.findDOMNode(this))
       .append('clipPath')
-      .attr('id', PlaceClip.createId(shape))
+      .attr('id', PlaceClip.createId(node))
       .append('use')
-      .attr('xlink:href', '#' + PlaceCircle.createId(shape));
+      .attr('xlink:href', '#' + PlaceCircle.createId(node));
   },
 
   shouldComponentUpdate: function(nextProps) {

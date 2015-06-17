@@ -4,20 +4,20 @@ var React = require('react'),
 
 module.exports = React.createClass({
   componentDidMount: function() {
-    var shape = this.props.placeShape;
+    var node = this.props.node;
 
     d3.select(React.findDOMNode(this))
       .append('use')
-      .attr('xlink:href', '#' + PlaceCircle.createId(shape));
+      .attr('xlink:href', '#' + PlaceCircle.createId(node));
   },
 
   shouldComponentUpdate: function(nextProps) {
-    return this.props.placeShape !== nextProps.placeShape;
+    return this.props.node !== nextProps.node;
   },
 
   render: function() {
-    var shape = this.props.placeShape;
+    var node = this.props.node;
 
-    return <g className="place-deco" strokeWidth={shape.strokeWidth} />;
+    return <g className="place-deco" strokeWidth={node.strokeWidth} />;
   }
 });
