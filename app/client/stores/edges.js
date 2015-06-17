@@ -6,6 +6,8 @@ var Reflux = require('reflux'),
   visStore = require('./vis')
   Edge = require('../models/edge');
 
+var STROKE_WIDTH_SCALE = d3.scale.linear().range([[.5, 2], [2, 15]]);
+
 module.exports = Reflux.createStore({
   init: function() {
     this.edges = Immutable.Map();
@@ -13,9 +15,6 @@ module.exports = Reflux.createStore({
     this.nodes = null;
     this.connections = null;
     this.lastScale = null;
-
-    this.minStrokeWidthScale = d3.scale.linear().range([.5, 2]);
-    this.maxStrokeWidthScale = d3.scale.linear().range([5, 15]);
 
     this.strokeWidthScale = d3.scale.pow().exponent(.25);
 
@@ -77,10 +76,7 @@ module.exports = Reflux.createStore({
     if (scale === this.lastScale)
       return;
 
-    this.strokeWidthScale.range([
-      this.minStrokeWidthScale(scale),
-      this.maxStrokeWidthScale(scale)]);
-
+    this.strokeWidthScale.range(STROKE_WIDTH_SCALE(scale));
     this.lastScale = scale;
   },
 

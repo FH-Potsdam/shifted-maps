@@ -10,6 +10,9 @@ function calcDist(nodeOne, nodeTwo){
   return Math.sqrt(Math.pow(nodeTwo.point.x - nodeOne.point.x, 2) + Math.pow(nodeTwo.point.y - nodeOne.point.y, 2));
 }
 
+var RADIUS_SCALE = d3.scale.linear().range([[20, 75], [75, 250]]),
+  STROKE_WIDTH_SCALE = d3.scale.linear().range([[1, 3], [3, 10]]);
+
 module.exports = Reflux.createStore({
   init: function() {
     this.nodes = Immutable.OrderedMap();
@@ -17,12 +20,6 @@ module.exports = Reflux.createStore({
     this.places = null;
     this.map = null;
     this.lastScale = null;
-
-    this.minRadiusScale = d3.scale.linear().range([5, 10]);
-    this.maxRadiusScale = d3.scale.linear().range([75, 250]);
-
-    this.minStrokeWidthScale = d3.scale.linear().range([1, 3]);
-    this.maxStrokeWidthScale = d3.scale.linear().range([5, 15]);
 
     this.radiusScale = d3.scale.pow().exponent(.25);
     this.strokeWidthScale = d3.scale.pow().exponent(.5);
@@ -87,13 +84,8 @@ module.exports = Reflux.createStore({
     var scale = vis.get('scale');
 
     if (scale !== this.lastScale) {
-      this.radiusScale.range([
-        this.minRadiusScale(scale),
-        this.maxRadiusScale(scale)]);
-
-      this.strokeWidthScale.range([
-        this.minStrokeWidthScale(scale),
-        this.maxStrokeWidthScale(scale)]);
+      this.radiusScale.range(RADIUS_SCALE(scale));
+      this.strokeWidthScale.range(STROKE_WIDTH_SCALE(scale));
 
       this.lastScale = scale;
     }
