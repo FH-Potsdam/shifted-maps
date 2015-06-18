@@ -12,7 +12,7 @@ module.exports = React.createClass({
   },
 
   shouldComponentUpdate: function(nextProps) {
-    return this.props.node.strokeWidth !== nextProps.node.strokeWidth;
+    return nextProps.primary && this.props.node.strokeWidth !== nextProps.node.strokeWidth;
   },
 
   render: function() {

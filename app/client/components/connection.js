@@ -3,7 +3,8 @@ var Reflux = require('reflux'),
 
 module.exports = React.createClass({
   shouldComponentUpdate: function(nextProps) {
-    return this.props.edge !== nextProps.edge;
+    var edge = this.props.edge;
+    return edge.from.point !== nextProps.edge.to.point || edge.strokWidth !== nextProps.edge.strokeWidth;
   },
 
   render: function() {

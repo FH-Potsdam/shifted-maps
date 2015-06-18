@@ -10,7 +10,7 @@ module.exports = React.createClass({
   mixins: [Reflux.connect(nodesStore, 'nodes'), Reflux.connect(clustersStore, 'clusters')],
 
   shouldComponentUpdate: function(nextProps, nextState) {
-    return this.state.nodes !== nextState.nodes || !Immutable.is(this.state.clusters, nextState.clusters);
+    return this.state.nodes !== nextState.nodes;
   },
 
   render: function() {
@@ -19,12 +19,12 @@ module.exports = React.createClass({
 
     this.state.nodes.forEach(function(node, key) {
       var primary = clusters.has(key),
-        opacity = primary ? 1 : 0;
+        style = { display: primary ? 'block' : 'none' }
 
       places.push(
-        <g key={key} className="place" opacity={opacity}>
+        <g className="place" style={style}>
           <PlaceMap node={node} primary={primary} />
-          <PlaceDeco node={node} />
+          <PlaceDeco node={node} primary={primary} />
         </g>
       );
     });
