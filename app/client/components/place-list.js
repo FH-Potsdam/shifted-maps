@@ -18,11 +18,12 @@ module.exports = React.createClass({
       clusters = this.state.clusters;
 
     this.state.nodes.forEach(function(node, key) {
-      var opacity = clusters.has(key) ? 1 : 0;
+      var primary = clusters.has(key),
+        opacity = primary ? 1 : 0;
 
       places.push(
         <g key={key} className="place" opacity={opacity}>
-          <PlaceMap node={node} />
+          <PlaceMap node={node} primary={primary} />
           <PlaceDeco node={node} />
         </g>
       );

@@ -7,7 +7,7 @@ module.exports = React.createClass({
   shouldComponentUpdate: function(nextProps) {
     var node = this.props.node;
 
-    return node.point !== nextProps.node.point || node.zoom !== nextProps.node.zoom;
+    return this.props.primary && (node.point !== nextProps.node.point || node.zoom !== nextProps.node.zoom);
   },
 
   componentDidMount: function() {
@@ -24,7 +24,7 @@ module.exports = React.createClass({
       location = node.place.location,
       mapImage = 'http://api.tiles.mapbox.com/v4/' + config.mapbox.id +
         '/' + location.lng + ',' + location.lat + ',' + node.zoom + '/'+
-        '500x500@2x.png?access_token=' + config.mapbox.token;
+        '500x500' + (L.Browser.retina ? '@2x' : '')  + '.png?access_token=' + config.mapbox.token;
 
     d3.select(React.findDOMNode(this))
       .select('image')

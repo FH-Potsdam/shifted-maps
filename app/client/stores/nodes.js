@@ -10,7 +10,7 @@ function calcDist(nodeOne, nodeTwo){
 }
 
 var RADIUS_SCALE = d3.scale.linear().range([[20, 75], [75, 250]]),
-  STROKE_WIDTH_SCALE = d3.scale.linear().range([[1, 10], [3, 30]]),
+  STROKE_WIDTH_SCALE = d3.scale.linear().range([[1, 10], [4, 40]]),
   ZOOM_SCALE = d3.scale.linear().range([[14, 16], [16, 18]]);
 
 module.exports = Reflux.createStore({
