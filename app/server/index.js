@@ -1,7 +1,6 @@
 var express = require('express'),
   cookieParser = require('cookie-parser'),
   session = require('express-session'),
-  connectLivereload = require('connect-livereload'),
   helmet = require('helmet'),
   templating = require('./nunjucks-env'),
   auth = require('./routes/auth'),
@@ -13,8 +12,6 @@ var express = require('express'),
   mongoStore = require('./services/mongo-store');
 
 var app = express();
-
-console.log(app.get('env'));
 
 app.set('debug', app.get('env') == 'development');
 
@@ -36,7 +33,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 if (app.get('debug'))
-  app.use(connectLivereload());
+  app.use(require('connect-livereload')());
 
 // Static route middleware
 app.use(express.static(__dirname + '/../../public', {
