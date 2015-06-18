@@ -14,20 +14,15 @@ module.exports = React.createClass({
   },
 
   shouldComponentUpdate: function(nextProps) {
-    var node = this.props.node;
-    return nextProps.primary && (node.point !== nextProps.node.point || node.zoom !== nextProps.node.zoom);
+    return nextProps.primary && (this.props.node.point !== nextProps.node.point || this.props.tile !== nextProps.tile);
   },
 
   componentDidUpdate: function() {
-    var node = this.props.node,
-      location = node.place.location,
-      mapImage = 'http://api.tiles.mapbox.com/v4/' + config.mapbox.id +
-        '/' + location.lng + ',' + location.lat + ',' + node.zoom + '/' +
-        '500x500' + (L.Browser.retina ? '@2x' : '')  + '.png?access_token=' + config.mapbox.token;
+    var node = this.props.node;
 
     d3.select(React.findDOMNode(this))
       .select('image')
-      //.attr('xlink:href', mapImage)
+      .attr('xlink:href', this.props.tile)
       .attr('x', node.point.x - 250)
       .attr('y', node.point.y - 250);
   },

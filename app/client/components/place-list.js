@@ -3,19 +3,21 @@ var Reflux = require('reflux'),
   Immutable = require('immutable'),
   nodesStore = require('../stores/nodes'),
   clustersStore = require('../stores/clusters'),
+  tilesStore = require('../stores/tiles'),
   PlaceMap = require('./place-map'),
   PlaceDeco = require('./place-deco');
 
 module.exports = React.createClass({
-  mixins: [Reflux.connect(nodesStore, 'nodes'), Reflux.connect(clustersStore, 'clusters')],
+  mixins: [Reflux.connect(nodesStore, 'nodes'), Reflux.connect(clustersStore, 'clusters'), Reflux.connect(tilesStore, 'tiles')],
 
   shouldComponentUpdate: function(nextProps, nextState) {
-    return this.state.nodes !== nextState.nodes;
+    return this.state.nodes !== nextState.nodes || this.state.tiles !== nextState.tiles;
   },
 
   render: function() {
     var places = [],
-      clusters = this.state.clusters;
+      clusters = this.state.clusters,
+      tiles = this.state.tiles;
 
     this.state.nodes.forEach(function(node, key) {
       var primary = clusters.has(key),
@@ -23,7 +25,7 @@ module.exports = React.createClass({
 
       places.push(
         <g className="place" style={style}>
-          <PlaceMap node={node} primary={primary} />
+          <PlaceMap node={node} primary={primary} tile={tiles.get(key)} />
           <PlaceDeco node={node} primary={primary} />
         </g>
       );
