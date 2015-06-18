@@ -3,7 +3,8 @@ var Reflux = require('reflux'),
   d3 = require('d3'),
   Bounds = require('../models/bounds'),
   Point = require('../models/point'),
-  MapActions = require('../actions/map');
+  MapActions = require('../actions/map'),
+  VisActions = require('../actions/vis');
 
 var CLIP_PADDING = 0.5;
 
@@ -31,19 +32,26 @@ module.exports = Reflux.createStore({
     this.state = Immutable.Map();
     this.scale = d3.scale.linear().domain([0, 19]); // @TODO Programmatically set zoom level range.
     this.initilized = false;
+    this.positionMapper = null;
 
     this.listenToMany(MapActions);
+  },
+
+  onInit: function(map) {
+    this.positionMapper = function(place) {
+      return new Point(map.latLngToLayerPoint(place.location));
+    };
   },
 
   onViewReset: function(map) {
     var bounds = calculateBounds(map);
 
     this.state = this.state.merge({
-      map: map,
       bounds: immutableBounds(bounds),
-      transform: Immutable.Map({ translate: immutablePoint(bounds.min) }),
-      scale: this.scale(map.getZoom())
+      transform: Immutable.Map({ translate: immutablePoint(bounds.min) })
     });
+
+    VisActions.update(this.scale(map.getZoom()), this.positionMapper);
 
     this.trigger(this.state);
   },
@@ -52,7 +60,6 @@ module.exports = Reflux.createStore({
     var bounds = calculateBounds(map);
 
     this.state = this.state.merge({
-      map: map,
       bounds: immutableBounds(bounds),
       transform: Immutable.Map({ translate: immutablePoint(bounds.min) })
     });
@@ -66,7 +73,6 @@ module.exports = Reflux.createStore({
       translate = map._getCenterOffset(event.center)._multiplyBy(-scale)._add(boundsMin.toObject());
 
     this.state = this.state.merge({
-      map: map,
       transform: Immutable.Map({
         translate: immutablePoint(translate),
         scale: scale

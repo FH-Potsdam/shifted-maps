@@ -3,8 +3,8 @@ var Reflux = require('reflux'),
   d3 = require('d3'),
   nodesStore = require('./nodes'),
   connectionsStore = require('./connections'),
-  visStore = require('./vis')
-  Edge = require('../models/edge');
+  Edge = require('../models/edge'),
+  VisActions = require('../actions/vis');
 
 var STROKE_WIDTH_SCALE = d3.scale.linear().range([[.5, 2], [2, 15]]);
 
@@ -14,13 +14,13 @@ module.exports = Reflux.createStore({
 
     this.nodes = null;
     this.connections = null;
-    this.lastScale = null;
+    this.scale = null;
 
     this.strokeWidthScale = d3.scale.pow().exponent(.25);
 
     this.listenTo(connectionsStore, this.setConnections);
     this.listenTo(nodesStore, this.setNodes);
-    this.listenTo(visStore, this.onVisChange);
+    this.listenTo(VisActions.update, this.onUpdateVis);
   },
 
   setConnections: function(connections) {
@@ -28,7 +28,7 @@ module.exports = Reflux.createStore({
 
     this.connections = connections;
 
-    if (nodes == null)
+    if (nodes == null || this.scale == null)
       return;
 
     var minFrequency = Infinity,
@@ -70,14 +70,14 @@ module.exports = Reflux.createStore({
     this.setConnections(this.connections);
   },
 
-  onVisChange: function(vis) {
-    var scale = vis.get('scale');
+  onUpdateVis: function(scale) {
+    this.scale = scale;
+    this.strokeWidthScale.range(STROKE_WIDTH_SCALE(scale));
 
-    if (scale === this.lastScale)
+    if (this.connections == null)
       return;
 
-    this.strokeWidthScale.range(STROKE_WIDTH_SCALE(scale));
-    this.lastScale = scale;
+    this.setConnections(this.connections);
   },
 
   getInitialState: function() {

@@ -6,6 +6,8 @@ module.exports = React.createClass({
   componentDidMount: function() {
     var map = L.mapbox.map(React.findDOMNode(this.refs.map), this.props.id);
 
+    MapActions.init(map);
+
     function addListener(map, action) {
       map.on(action.toLowerCase(), function(event) {
         MapActions[action](map, event)
