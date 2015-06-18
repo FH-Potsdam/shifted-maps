@@ -9,6 +9,7 @@ function calcDist(nodeOne, nodeTwo){
   return Math.sqrt(Math.pow(nodeTwo.point.x - nodeOne.point.x, 2) + Math.pow(nodeTwo.point.y - nodeOne.point.y, 2));
 }
 
+// Format: [[MIN_ZOOM_MIN_RANGE, MIN_ZOOM_MAX_RANGE], [MAX_ZOOM_MIN_RANGE, MAX_ZOOM_MAX_RANGE]]
 var RADIUS_SCALE = d3.scale.linear().range([[20, 75], [75, 250]]),
   STROKE_WIDTH_SCALE = d3.scale.linear().range([[1, 10], [4, 40]]),
   ZOOM_SCALE = d3.scale.linear().range([[14, 16], [16, 18]]);
