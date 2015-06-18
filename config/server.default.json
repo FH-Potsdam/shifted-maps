@@ -10,6 +10,7 @@
     "geocoding_index": "mapbox.places"
   },
   "mongodb": {
-    "uri": "mongodb://localhost/shifted-maps"
+    "uri": "mongodb://localhost/shifted-maps",
+    "options": {}
   }
 }
