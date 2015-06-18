@@ -116,7 +116,7 @@ API.request = function(getURL, accessToken, query) {
 API.DATE_FORMAT = 'YYYYMMDD[T]HHmmssZZ';
 
 API.parseDate = function(date) {
-  return moment(date, API.DATE_FORMAT).unix();
+  return moment(date, API.DATE_FORMAT).toDate();
 };
 
 API.formatDate = function(date) {

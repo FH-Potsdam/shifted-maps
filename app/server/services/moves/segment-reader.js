@@ -33,8 +33,12 @@ MovesSegmentReader.prototype._initRequest = function(months) {
     month = moment(this._firstDate).add(months, 'month');
 
   this._api.daily('/user/storyline', month.format('YYYY-MM'), this._query)
-    .node('startTime', MovesAPI.parseDate)
-    .node('endTime', MovesAPI.parseDate)
+    .node('startTime', function(startTime) {
+      return moment(MovesAPI.parseDate(startTime)).unix();
+    })
+    .node('endTime', function(endTime) {
+      return moment(MovesAPI.parseDate(endTime)).unix();
+    })
     .node('segments.*', function(segment) {
       reader.push(segment);
     })
