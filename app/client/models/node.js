@@ -5,5 +5,6 @@ module.exports = Immutable.Record({
   radius: 0,
   strokeWidth: 0,
   point: null,
-  place: null
+  place: null,
+  zoom: null
 });

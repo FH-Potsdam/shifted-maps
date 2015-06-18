@@ -10,17 +10,16 @@ module.exports = React.createClass({
   mixins: [Reflux.connect(visStore, 'vis')],
 
   render: function() {
-    var vis = this.state.vis,
-      bounds = vis.get('bounds'),
-      transform = vis.get('transform');
+    var vis = this.state.vis.toJS(),
+      bounds = vis.bounds,
+      transform = vis.transform;
 
     var viewBox = [bounds.min.x, bounds.min.y, bounds.dimensions.x, bounds.dimensions.y].join(' '),
-      transformString = L.DomUtil.getTranslateString(transform.get('translate').toObject()),
-      scale = transform.get('scale'),
+      transformString = L.DomUtil.getTranslateString(transform.translate),
       style = {};
 
-    if (scale != null)
-      transformString += ' scale(' + scale + ')';
+    if (transform.scale != null)
+      transformString += ' scale(' + transform.scale + ')';
 
     style[L.DomUtil.TRANSFORM] = transformString;
 

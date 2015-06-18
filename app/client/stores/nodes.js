@@ -11,7 +11,8 @@ function calcDist(nodeOne, nodeTwo){
 }
 
 var RADIUS_SCALE = d3.scale.linear().range([[20, 75], [75, 250]]),
-  STROKE_WIDTH_SCALE = d3.scale.linear().range([[1, 3], [3, 10]]);
+  STROKE_WIDTH_SCALE = d3.scale.linear().range([[1, 10], [3, 30]]),
+  ZOOM_SCALE = d3.scale.linear().range([[14, 16], [16, 18]]);
 
 module.exports = Reflux.createStore({
   init: function() {
@@ -23,6 +24,7 @@ module.exports = Reflux.createStore({
 
     this.radiusScale = d3.scale.pow().exponent(.25);
     this.strokeWidthScale = d3.scale.pow().exponent(.5);
+    this.zoomScale = d3.scale.pow().exponent(.25);
 
     this.listenTo(placesStore, this.setPlaces);
     this.listenTo(visStore, this.onVisChange);
@@ -51,6 +53,7 @@ module.exports = Reflux.createStore({
     });
 
     var radiusScale = this.radiusScale.domain([minDuration, maxDuration]),
+      zoomScale = this.zoomScale.domain([minDuration, maxDuration]),
       strokeWidthScale = this.strokeWidthScale.domain([minFrequency, maxFrequency]);
 
     this.nodes = places
@@ -60,7 +63,8 @@ module.exports = Reflux.createStore({
           place: place,
           radius: radiusScale(place.duration),
           strokeWidth: strokeWidthScale(place.stays.size),
-          point: new Point(map.latLngToLayerPoint(place.location))
+          point: new Point(map.latLngToLayerPoint(place.location)),
+          zoom: Math.round(zoomScale(place.duration))
         });
       })
       .toOrderedMap()
@@ -86,6 +90,7 @@ module.exports = Reflux.createStore({
     if (scale !== this.lastScale) {
       this.radiusScale.range(RADIUS_SCALE(scale));
       this.strokeWidthScale.range(STROKE_WIDTH_SCALE(scale));
+      this.zoomScale.range(ZOOM_SCALE(scale));
 
       this.lastScale = scale;
     }

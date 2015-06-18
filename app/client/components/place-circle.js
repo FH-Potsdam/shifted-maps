@@ -8,7 +8,9 @@ var PlaceCircle = module.exports = React.createClass({
   },
 
   shouldComponentUpdate: function(nextProps) {
-    return this.props.node !== nextProps.node;
+    var node = this.props.node;
+
+    return node.point !== nextProps.node.point || node.radius !== nextProps.node.radius;
   },
 
   render: function() {

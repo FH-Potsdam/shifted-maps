@@ -12,12 +12,10 @@ module.exports = React.createClass({
   },
 
   shouldComponentUpdate: function(nextProps) {
-    return this.props.node !== nextProps.node;
+    return this.props.node.strokeWidth !== nextProps.node.strokeWidth;
   },
 
   render: function() {
-    var node = this.props.node;
-
-    return <g className="place-deco" strokeWidth={node.strokeWidth} />;
+    return <g className="place-deco" strokeWidth={this.props.node.strokeWidth} />;
   }
 });
