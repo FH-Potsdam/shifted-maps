@@ -21,8 +21,8 @@ module.exports = React.createClass({
   getInitialState: function() {
     return {
       mapId: config.mapbox.id,
-      mapZoom: 19,
-      mapCenter: [52.475920, 13.430980]
+      mapZoom: 10,
+      mapCenter: [52.520007, 13.404954]
     };
   }
 });
