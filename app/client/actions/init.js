@@ -1,4 +1,4 @@
-var Reflux = require('Reflux'),
+var Reflux = require('reflux'),
   oboe = require('oboe'),
   moment = require('moment'),
   Place = require('../models/place'),
