@@ -1,6 +1,5 @@
 var config = require('../../config/server.json');
 
-config.moves.callback_url = 'http://localhost:3000/auth';
 config.moves.api_url = 'https://api.moves-app.com/api/1.1';
 config.moves.oauth_url = 'https://api.moves-app.com/oauth/v1';
 config.moves.authorization_url = config.moves.oauth_url + '/authorize';

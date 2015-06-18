@@ -4,7 +4,8 @@
   },
   "moves": {
     "client_id": null,
-    "client_secret": null
+    "client_secret": null,
+    "callback_url": null
   },
   "mapbox": {
     "geocoding_index": "mapbox.places"
