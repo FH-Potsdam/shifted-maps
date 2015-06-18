@@ -3,7 +3,9 @@ var CacheMongo = require('cacheman-mongo'),
   _ = require('lodash'),
   mongoose = require('./mongoose');
 
-var engine = new CacheMongo({ connection: mongoose.connection });
+var engine = new CacheMongo(mongoose.connection);
+
+console.log(engine.client);
 
 function cache(name, options) {
   options = _.extend({
