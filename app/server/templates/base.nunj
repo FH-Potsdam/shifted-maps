@@ -6,7 +6,9 @@
     <meta name="description" content="Shifted Maps">
     <meta name="author" content="Lennart Hildebrandt, Heike Otten (University of Applied Sciences Potsdam)">
 
-    {% block styles %}{% endblock %}
+    {% block styles %}
+        <link href="/styles/desktop.css" rel="stylesheet">
+    {% endblock %}
 </head>
 <body>
     {% block content %}

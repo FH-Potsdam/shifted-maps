@@ -10,7 +10,7 @@ router.use(function (req, res, next) {
 });
 
 router.get('*', function(req, res) {
-  res.render('index.nunj');
+  res.render('map.nunj');
 });
 
 module.exports = router;

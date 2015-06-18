@@ -4,7 +4,7 @@ var router = express.Router();
 
 // Main route
 router.get('/', function(req, res) {
-  res.send();
+  res.render('home.nunj');
 });
 
 /*router.get('/', function(req, res) {

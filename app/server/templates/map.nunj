@@ -1,9 +1,8 @@
 {% extends './base.nunj' %}
 
 {% block styles %}
-    {{ super() }}
     <link href="https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.css" rel="stylesheet">
-    <link href="/styles/desktop.css" rel="stylesheet">
+    {{ super() }}
 {% endblock %}
 
 {% block scripts %}
