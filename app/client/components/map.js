@@ -4,7 +4,9 @@ var Reflux = require('reflux'),
 
 module.exports = React.createClass({
   componentDidMount: function() {
-    var map = L.mapbox.map(React.findDOMNode(this.refs.map), this.props.id);
+    var map = L.mapbox.map(React.findDOMNode(this.refs.map), this.props.id, {
+      maxZoom: 19
+    });
 
     MapActions.init(map);
 

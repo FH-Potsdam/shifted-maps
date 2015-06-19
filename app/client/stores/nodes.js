@@ -3,16 +3,12 @@ var Reflux = require('reflux'),
   d3 = require('d3'),
   placesStore = require('./places'),
   Node = require('../models/node'),
-  VisActions = require('../actions/vis');
+  VisActions = require('../actions/vis'),
+  config = require('../config');
 
 function calcDist(nodeOne, nodeTwo){
   return Math.sqrt(Math.pow(nodeTwo.point.x - nodeOne.point.x, 2) + Math.pow(nodeTwo.point.y - nodeOne.point.y, 2));
 }
-
-// Format: [[MIN_ZOOM_MIN_RANGE, MIN_ZOOM_MAX_RANGE], [MAX_ZOOM_MIN_RANGE, MAX_ZOOM_MAX_RANGE]]
-var RADIUS_SCALE = d3.scale.linear().range([[20, 75], [75, 250]]),
-  STROKE_WIDTH_SCALE = d3.scale.linear().range([[1, 10], [4, 40]]),
-  ZOOM_SCALE = d3.scale.linear().range([[14, 16], [16, 18]]);
 
 module.exports = Reflux.createStore({
   init: function() {
@@ -77,9 +73,9 @@ module.exports = Reflux.createStore({
   onUpdateVis: function(scale, positionMapper) {
     this.positionMapper = positionMapper;
 
-    this.radiusScale.range(RADIUS_SCALE(scale));
-    this.strokeWidthScale.range(STROKE_WIDTH_SCALE(scale));
-    this.zoomScale.range(ZOOM_SCALE(scale));
+    this.radiusScale.range(config.radius_scale(scale));
+    this.strokeWidthScale.range(config.stroke_width_scale(scale));
+    this.zoomScale.range(config.zoom_scale(scale));
 
     if (this.places == null)
       return;

@@ -6,9 +6,7 @@ var Reflux = require('reflux'),
 module.exports = React.createClass({
   componentDidMount: function() {
     d3.select(React.findDOMNode(this))
-      .append('image')
-      .attr('width', 500)
-      .attr('height', 500);
+      .append('image');
 
     this.componentDidUpdate();
   },
@@ -17,22 +15,39 @@ module.exports = React.createClass({
     return nextProps.primary && (this.props.node.point !== nextProps.node.point || this.props.tile !== nextProps.tile);
   },
 
-  componentDidUpdate: function() {
-    var node = this.props.node;
+  componentDidUpdate: function(lastProps) {
+    var node = this.props.node,
+      tile = this.props.tile;
 
-    d3.select(React.findDOMNode(this))
+    var image = d3.select(React.findDOMNode(this))
       .select('image')
-      .attr('xlink:href', this.props.tile)
-      .attr('x', node.point.x - 250)
-      .attr('y', node.point.y - 250);
+      .attr('display', tile != null ? 'block' : 'none');
+
+    if (tile == null)
+      return;
+
+    if (lastProps != null && lastProps.tile != tile)
+      image.style('opacity', 0);
+
+    image.attr('xlink:href', tile.src)
+      .attr('x', node.point.x - tile.radius)
+      .attr('y', node.point.y - tile.radius)
+      .attr('width', tile.size)
+      .attr('height', tile.size)
+      .transition()
+      .duration(400)
+      .style('opacity', 1);
   },
 
   render: function() {
     var node = this.props.node,
-      clipPath = 'url(#' + PlaceClip.createId(node) + ')';
+      clipPath = 'url(#' + PlaceClip.createId(node) + ')',
+      size = node.radius * 2;
 
     return (
-      <g className="place-map" clipPath={clipPath} />
+      <g className="place-map" clipPath={clipPath}>
+        <rect className="place-map-background" x={node.point.x - node.radius} y={node.point.y - node.radius} width={size} height={size} />
+      </g>
     );
   }
 });

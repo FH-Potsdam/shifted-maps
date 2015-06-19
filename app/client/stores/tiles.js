@@ -5,16 +5,25 @@ var Reflux = require('reflux'),
   clustersStore = require('./clusters'),
   config = require('../config');
 
-var createMapUrl = (function() {
-  var prefix = 'http://api.tiles.mapbox.com/v4/' + config.mapbox.id + '/',
-    suffix = '/500x500' + (L.Browser.retina ? '@2x' : '')  + '.png?access_token=' + config.mapbox.token;
+var MAP_URL_PREFIX = 'http://api.tiles.mapbox.com/v4/' + config.mapbox.id + '/',
+  MAP_URL_SUFFIX = (L.Browser.retina ? '@2x' : '')  + '.png?access_token=' + config.mapbox.token;
 
-  return function(node) {
-    var location = node.place.location;
+function createMapUrl(location, zoom, size) {
+  return MAP_URL_PREFIX + location.lng + ',' + location.lat + ',' + zoom + '/' + size + 'x' + size + MAP_URL_SUFFIX;
+}
 
-    return prefix + location.lng + ',' + location.lat + ',' + node.zoom + suffix;
+function requestTile(url, done) {
+  var tile = new Image();
+
+  tile.src = url;
+
+  tile.onload = function() {
+    this.size = L.Browser.retina ? this.width / 2 : this.width;
+    this.radius = this.size / 2;
+
+    done(this);
   };
-})();
+}
 
 module.exports = Reflux.createStore({
 
@@ -49,6 +58,7 @@ module.exports = Reflux.createStore({
 
   setNodes: function(nodes) {
     this.nodes = nodes;
+    this.radiusScale = nodesStore.radiusScale.copy();
 
     if (this.clusters != null)
       this.setClusters(this.clusters);
@@ -63,37 +73,45 @@ module.exports = Reflux.createStore({
     if (nodes == null || map == null)
       return;
 
-    var tiles = this.tiles,
-      bounds = map.getBounds().pad(0.5);
+    var bounds = map.getBounds().pad(0.5),
+      tilesStore = this;
 
-    this.clusters.forEach(function(cluster, key) {
-      var node = nodes.get(key);
+    this.tiles = this.tiles.withMutations(function(tiles) {
+      clusters.forEach(function(cluster, key) {
+        var node = nodes.get(key);
 
-      if (!bounds.contains(node.place.location))
-        return;
+        if (bounds.contains(node.place.location)) {
+          var nextUrl = tilesStore.createMapUrl(node),
+            tile = tiles.get(node.id);
 
-      var url = tiles.get(node.id),
-        nextUrl = createMapUrl(node);
+          if (tile != null && nextUrl === tile.src)
+            return;
 
-      if (nextUrl !== url)
-        tiles = this.requestMap(node.id, nextUrl);
-    }, this);
+          tilesStore.requestTile(node, nextUrl);
+        }
 
-    this.tiles = tiles;
+        tiles.set(node.id, null);
+      });
+    });
 
-    this.trigger(tiles);
+    this.trigger(this.tiles);
   },
 
-  requestMap: function(id, url) {
-    var image = new Image();
+  createMapUrl: function(node) {
+    var scale = node.zoom / this.map.getMaxZoom();
 
-    image.src = url;
-    image.onload = function() {
-      this.tiles = this.tiles.set(id, url);
+    this.radiusScale.range(config.radius_scale(scale));
+
+    var size = Math.ceil(this.radiusScale(node.place.duration) * 2);
+
+    return createMapUrl(node.place.location, node.zoom, size);
+  },
+
+  requestTile: function(node, url) {
+    requestTile(url, function(tile) {
+      this.tiles = this.tiles.set(node.id, tile);
       this.trigger(this.tiles);
-    }.bind(this);
-
-    return this.tiles.set(id, null);
+    }.bind(this));
   },
 
   getInitialState: function() {

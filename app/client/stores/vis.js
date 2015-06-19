@@ -30,7 +30,7 @@ function immutablePoint(point) {
 module.exports = Reflux.createStore({
   init: function() {
     this.state = Immutable.Map();
-    this.scale = d3.scale.linear().domain([0, 19]); // @TODO Programmatically set zoom level range.
+    this.scale = d3.scale.linear();
     this.initilized = false;
     this.positionMapper = null;
 
@@ -41,6 +41,8 @@ module.exports = Reflux.createStore({
     this.positionMapper = function(place) {
       return new Point(map.latLngToLayerPoint(place.location));
     };
+
+    this.scale.domain([map.getMinZoom(), map.getMaxZoom()]);
   },
 
   onViewReset: function(map) {
