@@ -26,27 +26,29 @@ module.exports = React.createClass({
     if (tile == null)
       return;
 
-    if (lastProps != null && lastProps.tile != tile)
-      image.style('opacity', 0);
-
     image.attr('xlink:href', tile.src)
       .attr('x', node.point.x - tile.radius)
       .attr('y', node.point.y - tile.radius)
       .attr('width', tile.size)
-      .attr('height', tile.size)
-      .transition()
-      .duration(400)
-      .style('opacity', 1);
+      .attr('height', tile.size);
+
+    if (lastProps != null && lastProps.tile != tile) {
+      image.style('opacity', 0)
+        .transition()
+        .duration(400)
+        .style('opacity', 1);
+    }
   },
 
   render: function() {
     var node = this.props.node,
       clipPath = 'url(#' + PlaceClip.createId(node) + ')',
-      size = node.radius * 2;
+      radius = node.radius,
+      size = radius * 2;
 
     return (
       <g className="place-map" clipPath={clipPath}>
-        <rect className="place-map-background" x={node.point.x - node.radius} y={node.point.y - node.radius} width={size} height={size} />
+        <rect className="place-map-background" x={node.point.x - radius} y={node.point.y - radius} width={size} height={size} />
       </g>
     );
   }
