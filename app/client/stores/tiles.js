@@ -25,6 +25,37 @@ function requestTile(url, done) {
   };
 }
 
+// @TODO Replace with leaflet function, if mapbox js library was updated.
+function toBounds(location, sizeInMeters) {
+  var latAccuracy = 180 * sizeInMeters / 40075017,
+    lngAccuracy = latAccuracy / Math.cos((Math.PI / 180) * location.lat);
+
+  return L.latLngBounds(
+    [location.lat - latAccuracy, location.lng - lngAccuracy],
+    [location.lat + latAccuracy, location.lng + lngAccuracy]);
+}
+
+// Taken from Leaflet libraries Map object but added own size parameter.
+function getBoundsZoom(map, bounds, size) {
+  bounds = L.latLngBounds(bounds);
+  size = L.point([size, size]);
+
+  var zoom = map.getMinZoom(),
+    maxZoom = map.getMaxZoom(),
+    nw = bounds.getNorthWest(),
+    se = bounds.getSouthEast(),
+    zoomNotFound = true,
+    boundsSize;
+
+  do {
+    zoom++;
+    boundsSize = map.project(se, zoom).subtract(map.project(nw, zoom)).floor();
+    zoomNotFound = size.contains(boundsSize);
+  } while (zoomNotFound && zoom <= maxZoom);
+
+  return zoom - 1;
+}
+
 module.exports = Reflux.createStore({
 
   init: function() {
@@ -81,7 +112,7 @@ module.exports = Reflux.createStore({
         var node = nodes.get(key);
 
         if (bounds.contains(node.place.location)) {
-          var nextUrl = tilesStore.createMapUrl(node),
+          var nextUrl = tilesStore.createMapUrl(node, cluster),
             tile = tiles.get(node.id);
 
           if (tile != null && nextUrl === tile.src)
@@ -97,14 +128,22 @@ module.exports = Reflux.createStore({
     this.trigger(this.tiles);
   },
 
-  createMapUrl: function(node) {
-    var scale = node.zoom / this.map.getMaxZoom();
+  createMapUrl: function(node, cluster) {
+    var nodes = this.nodes,
+      bounds = toBounds(node.place.location, 100);
+
+    cluster.rest().forEach(function(id) {
+      bounds.extend(nodes.get(id).place.location);
+    });
+
+    var zoom = getBoundsZoom(this.map, bounds, node.radius * 2),
+      scale = zoom / this.map.getMaxZoom();
 
     this.radiusScale.range(config.radius_scale(scale));
 
     var size = Math.ceil(this.radiusScale(node.place.duration) * 2);
 
-    return createMapUrl(node.place.location, node.zoom, size);
+    return createMapUrl(bounds.getCenter(), zoom, size);
   },
 
   requestTile: function(node, url) {
