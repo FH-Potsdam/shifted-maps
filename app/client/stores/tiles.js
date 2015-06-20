@@ -130,7 +130,7 @@ module.exports = Reflux.createStore({
 
   createMapUrl: function(node, cluster) {
     var nodes = this.nodes,
-      bounds = toBounds(node.place.location, 100);
+      bounds = toBounds(node.place.location, 200);
 
     cluster.rest().forEach(function(id) {
       bounds.extend(nodes.get(id).place.location);
