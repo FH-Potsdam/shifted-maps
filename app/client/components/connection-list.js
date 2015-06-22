@@ -17,8 +17,6 @@ module.exports = React.createClass({
       connections.push(<Connection key={key} edge={edge} />);
     });
 
-    return (
-      <g className="connection-list">{connections}</g>
-    );
+    return <g className="connection-list">{connections}</g>;
   }
 });

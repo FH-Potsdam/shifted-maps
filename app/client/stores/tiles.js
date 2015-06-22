@@ -1,5 +1,8 @@
 var Reflux = require('reflux'),
   Immutable = require('immutable'),
+  constant = require('mout/function/constant'),
+  events = require('events'),
+  inherits = require('inherits'),
   MapActions = require('../actions/map'),
   nodesStore = require('./nodes'),
   clustersStore = require('./clusters'),
@@ -12,18 +15,34 @@ function createMapUrl(location, zoom, size) {
   return MAP_URL_PREFIX + location.lng + ',' + location.lat + ',' + zoom + '/' + size + 'x' + size + MAP_URL_SUFFIX;
 }
 
-function requestTile(url, done) {
-  var tile = new Image();
+function Request(url) {
+  var tile = this.tile = new Image();
 
   tile.src = url;
 
-  tile.onload = function() {
-    this.size = L.Browser.retina ? this.width / 2 : this.width;
-    this.radius = this.size / 2;
-
-    done(this);
-  };
+  tile.onerror = this.onError.bind(this);
+  tile.onload = this.onLoad.bind(this);
 }
+
+inherits(Request, events.EventEmitter);
+
+Request.prototype.onError = function(event) {
+  this.emit('error', this.tile, event);
+};
+
+Request.prototype.onLoad = function(event) {
+  var tile = this.tile;
+
+  tile.size = L.Browser.retina ? tile.width / 2 : tile.width;
+  tile.radius = tile.size / 2;
+
+  this.emit('load', tile, event);
+};
+
+Request.prototype.abort = function() {
+  if (!this.tile.complete)
+    tile.src = L.Util.emptyImageUrl;
+};
 
 // @TODO Replace with leaflet function, if mapbox js library was updated.
 function toBounds(location, sizeInMeters) {
@@ -76,56 +95,26 @@ module.exports = Reflux.createStore({
   },
 
   onMoveEnd: function() {
-    if (this.clusters != null)
-      this.setClusters(this.clusters);
+    this.updateTiles();
   },
 
   setMap: function(map) {
     this.map = map;
 
-    if (this.clusters != null)
-      this.setClusters(this.clusters);
+    this.updateTiles();
   },
 
   setNodes: function(nodes) {
     this.nodes = nodes;
     this.radiusScale = nodesStore.radiusScale.copy();
 
-    if (this.clusters != null)
-      this.setClusters(this.clusters);
+    this.updateTiles();
   },
 
   setClusters: function(clusters) {
-    var nodes = this.nodes,
-      map = this.map;
-
     this.clusters = clusters;
 
-    if (nodes == null || map == null)
-      return;
-
-    var bounds = map.getBounds().pad(0.5),
-      tilesStore = this;
-
-    this.tiles = this.tiles.withMutations(function(tiles) {
-      clusters.forEach(function(cluster, key) {
-        var node = nodes.get(key);
-
-        if (bounds.contains(node.place.location)) {
-          var nextUrl = tilesStore.createMapUrl(node, cluster),
-            tile = tiles.get(node.id);
-
-          if (tile != null && nextUrl === tile.src)
-            return;
-
-          tilesStore.requestTile(node, nextUrl);
-        }
-
-        tiles.set(node.id, null);
-      });
-    });
-
-    this.trigger(this.tiles);
+    this.updateTiles.bind(this)
   },
 
   createMapUrl: function(node, cluster) {
@@ -146,11 +135,57 @@ module.exports = Reflux.createStore({
     return createMapUrl(bounds.getCenter(), zoom, size);
   },
 
-  requestTile: function(node, url) {
-    requestTile(url, function(tile) {
+  createRequest: function(node, url) {
+    var request = new Request(url);
+
+    request.once('load', function(tile) {
       this.tiles = this.tiles.set(node.id, tile);
       this.trigger(this.tiles);
     }.bind(this));
+
+    return request;
+  },
+
+  requestTile: function(node, cluster) {
+    var nextUrl = this.createMapUrl(node, cluster),
+      tile = this.tiles.get(node.id);
+
+    if (tile != null && nextUrl === tile.src)
+      return false;
+
+    var lastRequest = this.requests[node.id];
+
+    if (lastRequest != null)
+      lastRequest.removeAllListeners();
+
+    this.requests[node.id] = this.createRequest(node, nextUrl);
+
+    return true;
+  },
+
+  updateTiles: function() {
+    var nodes = this.nodes,
+      map = this.map,
+      clusters = this.clusters;
+
+    if (clusters == null || nodes == null || map == null)
+      return;
+
+    var bounds = map.getBounds().pad(0.5),
+      tilesStore = this;
+
+    this.tiles = this.tiles.withMutations(function(tiles) {
+      clusters.forEach(function(cluster, key) {
+        var node = nodes.get(key);
+
+        if (bounds.contains(node.place.location) && !tilesStore.requestTile(node, cluster))
+          return;
+
+        tiles.set(node.id, null);
+      });
+    });
+
+    this.trigger(this.tiles);
   },
 
   getInitialState: function() {

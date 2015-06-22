@@ -24,7 +24,7 @@ module.exports = React.createClass({
         style = { display: primary ? 'block' : 'none' }
 
       places.push(
-        <g className="place" style={style}>
+        <g className="place" style={style} key={key}>
           <PlaceMap node={node} primary={primary} tile={tiles.get(key)} />
           <PlaceDeco node={node} primary={primary} />
         </g>

@@ -11,12 +11,12 @@ module.exports = React.createClass({
   },
 
   render: function() {
-    return (
-      <g className="place-circle-list">
-        {this.state.nodes.map(function(node, key) {
-          return <PlaceCircle key={key} node={node} />;
-        })}
-      </g>
-    );
+    var placeCircles = [];
+
+    this.state.nodes.forEach(function(node, key) {
+      placeCircles.push(<PlaceCircle key={key} node={node} />);
+    });
+
+    return <g className="place-circle-list">{placeCircles}</g>;
   }
 });

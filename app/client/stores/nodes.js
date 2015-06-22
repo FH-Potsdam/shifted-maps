@@ -17,21 +17,15 @@ module.exports = Reflux.createStore({
     this.places = null;
     this.positionMapper = null;
 
-    this.radiusScale = d3.scale.pow().exponent(.25);
+    this.radiusScale = d3.scale.pow().exponent(.5);
     this.strokeWidthScale = d3.scale.pow().exponent(.5);
-    this.zoomScale = d3.scale.pow().exponent(.25);
 
     this.listenTo(placesStore, this.setPlaces);
     this.listenTo(VisActions.update, this.onUpdateVis);
   },
 
   setPlaces: function(places) {
-    var positionMapper = this.positionMapper;
-
     this.places = places;
-
-    if (positionMapper == null)
-      return;
 
     var minDuration = Infinity,
       maxDuration = -Infinity,
@@ -39,17 +33,38 @@ module.exports = Reflux.createStore({
       maxFrequency = -Infinity;
 
     places.forEach(function(place) {
-      var frequency = place.stays.size;
+      var duration = place.duration,
+        frequency = place.stays.size;
 
-      minDuration = Math.min(minDuration, place.duration);
-      maxDuration = Math.max(maxDuration, place.duration);
+      minDuration = Math.min(minDuration, duration);
+      maxDuration = Math.max(maxDuration, duration);
       minFrequency = Math.min(minFrequency, frequency);
       maxFrequency = Math.max(maxFrequency, frequency);
     });
 
-    var radiusScale = this.radiusScale.domain([minDuration, maxDuration]),
-      zoomScale = this.zoomScale.domain([minDuration, maxDuration]),
-      strokeWidthScale = this.strokeWidthScale.domain([minFrequency, maxFrequency]);
+    this.radiusScale.domain([minDuration, maxDuration]);
+    this.strokeWidthScale.domain([minFrequency, maxFrequency]);
+
+    this.updateNodes();
+  },
+
+  onUpdateVis: function(scale, positionMapper) {
+    this.positionMapper = positionMapper;
+
+    this.radiusScale.range(config.radius_scale(scale));
+    this.strokeWidthScale.range(config.stroke_width_scale(scale));
+
+    this.updateNodes();
+  },
+
+  updateNodes: function() {
+    var places = this.places,
+      positionMapper = this.positionMapper,
+      radiusScale = this.radiusScale,
+      strokeWidthScale = this.strokeWidthScale;
+
+    if (places == null || positionMapper == null)
+      return;
 
     this.nodes = places
       .map(function(place) {
@@ -58,8 +73,7 @@ module.exports = Reflux.createStore({
           place: place,
           radius: radiusScale(place.duration),
           strokeWidth: strokeWidthScale(place.stays.size),
-          point: positionMapper(place),
-          zoom: Math.round(zoomScale(place.duration))
+          point: positionMapper(place)
         });
       })
       .toOrderedMap()
@@ -68,19 +82,6 @@ module.exports = Reflux.createStore({
       });
 
     this.trigger(this.nodes);
-  },
-
-  onUpdateVis: function(scale, positionMapper) {
-    this.positionMapper = positionMapper;
-
-    this.radiusScale.range(config.radius_scale(scale));
-    this.strokeWidthScale.range(config.stroke_width_scale(scale));
-    this.zoomScale.range(config.zoom_scale(scale));
-
-    if (this.places == null)
-      return;
-
-    this.setPlaces(this.places);
   },
 
   getInitialState: function() {

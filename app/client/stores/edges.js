@@ -24,12 +24,7 @@ module.exports = Reflux.createStore({
   },
 
   setConnections: function(connections) {
-    var nodes = this.nodes;
-
     this.connections = connections;
-
-    if (nodes == null || this.scale == null)
-      return;
 
     var minFrequency = Infinity,
       maxFrequency = -Infinity;
@@ -41,43 +36,50 @@ module.exports = Reflux.createStore({
       maxFrequency = Math.max(maxFrequency, frequency);
     });
 
-    var placeStrokeWidthScale = this.strokeWidthScale.domain([minFrequency, maxFrequency]);
+    this.strokeWidthScale.domain([minFrequency, maxFrequency]);
 
-    this.edges = connections.reduce(function(edges, connection, id) {
-      var to = nodes.get(connection.to),
-        from = nodes.get(connection.from);
-
-      if (to == null || from == null)
-        return edges;
-
-      return edges.set(id, new Edge({
-        to: to,
-        from: from,
-        strokeWidth: placeStrokeWidthScale(connection.trips.size),
-        connection: connection
-      }));
-    }, Immutable.Map());
-
-    this.trigger(this.edges);
+    this.updateEdges();
   },
 
   setNodes: function(nodes) {
     this.nodes = nodes;
 
-    if (this.connections == null)
-      return;
-
-    this.setConnections(this.connections);
+    this.updateEdges();
   },
 
   onUpdateVis: function(scale) {
     this.scale = scale;
     this.strokeWidthScale.range(STROKE_WIDTH_SCALE(scale));
 
-    if (this.connections == null)
+    this.updateEdges();
+  },
+
+  updateEdges: function() {
+    var connections = this.connections,
+      nodes = this.nodes,
+      strokeWidthScale = this.strokeWidthScale;
+
+    if (connections == null || nodes == null || this.scale == null)
       return;
 
-    this.setConnections(this.connections);
+    this.edges = Immutable.Map().withMutations(function(edges) {
+      connections.forEach(function(connection, key) {
+        var to = nodes.get(connection.to),
+          from = nodes.get(connection.from);
+
+        if (to == null || from == null)
+          return;
+
+        edges.set(key, new Edge({
+          to: to,
+          from: from,
+          strokeWidth: strokeWidthScale(connection.trips.size),
+          connection: connection
+        }));
+      });
+    });
+
+    this.trigger(this.edges);
   },
 
   getInitialState: function() {

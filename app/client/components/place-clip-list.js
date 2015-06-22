@@ -11,12 +11,12 @@ module.exports = React.createClass({
   },
 
   render: function() {
-    return (
-      <g className="place-clip-list">
-        {this.state.nodes.map(function(node, key) {
-          return <PlaceClip key={key} node={node} />;
-        })}
-      </g>
-    );
+    var placeClips = [];
+
+    this.state.nodes.forEach(function(node, key) {
+      placeClips.push(<PlaceClip key={key} node={node} />);
+    });
+
+    return <g className="place-clip-list">{placeClips}</g>;
   }
 });
