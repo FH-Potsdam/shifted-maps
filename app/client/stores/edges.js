@@ -4,9 +4,10 @@ var Reflux = require('reflux'),
   nodesStore = require('./nodes'),
   connectionsStore = require('./connections'),
   Edge = require('../models/edge'),
-  VisActions = require('../actions/vis');
+  VisActions = require('../actions/vis'),
+  config = require('../config');
 
-var STROKE_WIDTH_SCALE = d3.scale.linear().range([[.5, 2], [2, 15]]);
+var STROKE_WIDTH_SCALE = config.edge_stroke_width_scale.copy();
 
 module.exports = Reflux.createStore({
   init: function() {
@@ -24,8 +25,6 @@ module.exports = Reflux.createStore({
   },
 
   setConnections: function(connections) {
-    this.connections = connections;
-
     var minFrequency = Infinity,
       maxFrequency = -Infinity;
 
@@ -37,6 +36,7 @@ module.exports = Reflux.createStore({
     });
 
     this.strokeWidthScale.domain([minFrequency, maxFrequency]);
+    this.connections = connections;
 
     this.updateEdges();
   },

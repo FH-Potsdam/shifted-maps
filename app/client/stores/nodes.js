@@ -6,6 +6,9 @@ var Reflux = require('reflux'),
   VisActions = require('../actions/vis'),
   config = require('../config');
 
+var RADIUS_SCALE = config.place_radius_scale.copy(),
+  STROKE_WIDTH_SCALE = config.place_stroke_width_scale.copy();
+
 function calcDist(nodeOne, nodeTwo){
   return Math.sqrt(Math.pow(nodeTwo.point.x - nodeOne.point.x, 2) + Math.pow(nodeTwo.point.y - nodeOne.point.y, 2));
 }
@@ -25,8 +28,6 @@ module.exports = Reflux.createStore({
   },
 
   setPlaces: function(places) {
-    this.places = places;
-
     var minDuration = Infinity,
       maxDuration = -Infinity,
       minFrequency = Infinity,
@@ -44,15 +45,15 @@ module.exports = Reflux.createStore({
 
     this.radiusScale.domain([minDuration, maxDuration]);
     this.strokeWidthScale.domain([minFrequency, maxFrequency]);
+    this.places = places;
 
     this.updateNodes();
   },
 
   onUpdateVis: function(scale, positionMapper) {
+    this.radiusScale.range(RADIUS_SCALE(scale));
+    this.strokeWidthScale.range(STROKE_WIDTH_SCALE(scale));
     this.positionMapper = positionMapper;
-
-    this.radiusScale.range(config.radius_scale(scale));
-    this.strokeWidthScale.range(config.stroke_width_scale(scale));
 
     this.updateNodes();
   },

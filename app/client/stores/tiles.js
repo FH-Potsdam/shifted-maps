@@ -8,6 +8,8 @@ var Reflux = require('reflux'),
   clustersStore = require('./clusters'),
   config = require('../config');
 
+var RADIUS_SCALE = config.place_radius_scale.copy();
+
 var MAP_URL_PREFIX = 'http://api.tiles.mapbox.com/v4/' + config.mapbox.id + '/',
   MAP_URL_SUFFIX = (L.Browser.retina ? '@2x' : '')  + '.png?access_token=' + config.mapbox.token;
 
@@ -119,7 +121,7 @@ module.exports = Reflux.createStore({
 
   createMapUrl: function(node, cluster) {
     var nodes = this.nodes,
-      bounds = toBounds(node.place.location, 200);
+      bounds = toBounds(node.place.location, config.place_to_bounds_meters);
 
     cluster.rest().forEach(function(id) {
       bounds.extend(nodes.get(id).place.location);
@@ -128,7 +130,7 @@ module.exports = Reflux.createStore({
     var zoom = getBoundsZoom(this.map, bounds, node.radius * 2),
       scale = zoom / this.map.getMaxZoom();
 
-    this.radiusScale.range(config.radius_scale(scale));
+    this.radiusScale.range(RADIUS_SCALE(scale));
 
     var size = Math.ceil(this.radiusScale(node.place.duration) * 2);
 

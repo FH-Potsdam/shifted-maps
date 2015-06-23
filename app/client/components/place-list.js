@@ -8,10 +8,14 @@ var Reflux = require('reflux'),
   PlaceDeco = require('./place-deco');
 
 module.exports = React.createClass({
-  mixins: [Reflux.connect(nodesStore, 'nodes'), Reflux.connect(clustersStore, 'clusters'), Reflux.connect(tilesStore, 'tiles')],
+  mixins: [
+    Reflux.connect(nodesStore, 'nodes'),
+    Reflux.connect(clustersStore, 'clusters'),
+    Reflux.connect(tilesStore, 'tiles')
+  ],
 
   shouldComponentUpdate: function(nextProps, nextState) {
-    return this.state.nodes !== nextState.nodes || this.state.tiles !== nextState.tiles;
+    return this.state.nodes !== nextState.nodes || !Immutable.is(this.state.tiles, nextState.tiles);
   },
 
   render: function() {
@@ -21,7 +25,7 @@ module.exports = React.createClass({
 
     this.state.nodes.forEach(function(node, key) {
       var primary = clusters.has(key),
-        style = { display: primary ? 'block' : 'none' }
+        style = { display: primary ? 'block' : 'none' };
 
       places.push(
         <g className="place" style={style} key={key}>

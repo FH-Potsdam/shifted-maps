@@ -26,7 +26,7 @@ var connectionStore = module.exports = Reflux.createStore({
       connection = new Connection(trip);
 
     connection = connection.merge({
-      trips: connection.get('trips').push(trip),
+      trips: connection.trips.push(trip),
       duration: connection.duration + trip.duration
     });
 

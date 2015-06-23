@@ -10,16 +10,24 @@ module.exports = Reflux.createStore({
 
   init: function() {
     this.clusters = Immutable.Map();
+    this.nodes = null;
 
     this.listenTo(nodesStore, this.setNodes);
   },
 
   setNodes: function(nodes) {
-    var nodeList = nodes.toList().toJS();
+    this.nodes = nodes;
+
+    this.updateClusters();
+  },
+
+  updateClusters: function() {
+    // Remove keys and transform map to a normal array of objects
+    var nodes = this.nodes.toList().toJS();
 
     var clusters = Immutable.Map().withMutations(function(clusters) {
-      for (var i = 0; i < nodeList.length; i++) {
-        var nodeOne = nodeList[i];
+      for (var i = 0; i < nodes.length; i++) {
+        var nodeOne = nodes[i];
 
         if (nodeOne.clustered)
           continue;
@@ -27,8 +35,8 @@ module.exports = Reflux.createStore({
         nodeOne.clustered = true;
 
         var cluster = Immutable.OrderedSet([nodeOne.id]).withMutations(function(cluster) {
-          for (var i = 0; i < nodeList.length; i++) {
-            var nodeTwo = nodeList[i];
+          for (var i = 0; i < nodes.length; i++) {
+            var nodeTwo = nodes[i];
 
             if (nodeTwo.clustered)
               continue;
@@ -38,14 +46,10 @@ module.exports = Reflux.createStore({
               cluster.add(nodeTwo.id);
             }
           }
-
-          return cluster;
         });
 
         clusters.set(nodeOne.id, cluster);
       }
-
-      return clusters;
     });
 
     this.clusters = clusters;
