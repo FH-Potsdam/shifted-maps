@@ -55,7 +55,7 @@ module.exports = Reflux.createStore({
 
     VisActions.update(this.scale(map.getZoom()), this.positionMapper);
 
-    this.triggerAsync(this.state);
+    this.trigger(this.state);
   },
 
   onMoveEnd: function(map) {
@@ -66,7 +66,7 @@ module.exports = Reflux.createStore({
       transform: Immutable.Map({ translate: immutablePoint(bounds.min) })
     });
 
-    this.triggerAsync(this.state);
+    this.trigger(this.state);
   },
 
   onZoomAnim: function(map, event) {
@@ -81,7 +81,7 @@ module.exports = Reflux.createStore({
       })
     });
 
-    this.triggerAsync(this.state);
+    this.trigger(this.state);
   },
 
   getInitialState: function() {
