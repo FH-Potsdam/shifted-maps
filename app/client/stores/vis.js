@@ -58,7 +58,7 @@ module.exports = Reflux.createStore({
     this.trigger(this.state);
   },
 
-  onMoveEnd: function(map) {
+  onDragEnd: function(map) {
     var bounds = calculateBounds(map);
 
     this.state = this.state.mergeDeep({
