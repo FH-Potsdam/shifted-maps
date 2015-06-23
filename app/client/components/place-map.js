@@ -33,10 +33,11 @@ module.exports = React.createClass({
       .attr('height', tile.size);
 
     if (lastProps != null && lastProps.tile != tile) {
-      image.style('opacity', 0)
-        .transition()
-        .duration(400)
-        .style('opacity', 1);
+      image.style('opacity', 0);
+
+      process.nextTick(function() {
+        image.style('opacity', 1);
+      });
     }
   },
 
