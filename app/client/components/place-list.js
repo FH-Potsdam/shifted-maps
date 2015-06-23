@@ -25,10 +25,13 @@ module.exports = React.createClass({
 
     this.state.nodes.forEach(function(node, key) {
       var primary = clusters.has(key),
-        style = { display: primary ? 'block' : 'none' };
+        className = 'place';
+
+      if (primary)
+        className += 'primary';
 
       places.push(
-        <g className="place" style={style} key={key}>
+        <g className={className} key={key}>
           <PlaceMap node={node} primary={primary} tile={tiles.get(key)} />
           <PlaceDeco node={node} primary={primary} />
         </g>
