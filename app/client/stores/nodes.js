@@ -28,6 +28,25 @@ module.exports = Reflux.createStore({
   },
 
   setPlaces: function(places) {
+    this.places = places;
+
+    this.updateScaleDomains();
+  },
+
+  onUpdateVis: function(scale, positionMapper) {
+    this.radiusScale.range(RADIUS_SCALE(scale));
+    this.strokeWidthScale.range(STROKE_WIDTH_SCALE(scale));
+    this.positionMapper = positionMapper;
+
+    this.updateNodes();
+  },
+
+  updateScaleDomains: function() {
+    var places = this.places;
+
+    if (places == null)
+      return;
+
     var minDuration = Infinity,
       maxDuration = -Infinity,
       minFrequency = Infinity,
@@ -45,15 +64,6 @@ module.exports = Reflux.createStore({
 
     this.radiusScale.domain([minDuration, maxDuration]);
     this.strokeWidthScale.domain([minFrequency, maxFrequency]);
-    this.places = places;
-
-    this.updateNodes();
-  },
-
-  onUpdateVis: function(scale, positionMapper) {
-    this.radiusScale.range(RADIUS_SCALE(scale));
-    this.strokeWidthScale.range(STROKE_WIDTH_SCALE(scale));
-    this.positionMapper = positionMapper;
 
     this.updateNodes();
   },
