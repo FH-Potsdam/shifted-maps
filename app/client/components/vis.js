@@ -1,5 +1,6 @@
 var Reflux = require('reflux'),
   React = require('react'),
+  Immutable = require('immutable'),
   visStore = require('../stores/vis'),
   PlaceCircleList = require('./place-circle-list'),
   PlaceClipList = require('./place-clip-list'),
@@ -8,6 +9,10 @@ var Reflux = require('reflux'),
 
 module.exports = React.createClass({
   mixins: [Reflux.connect(visStore, 'vis')],
+
+  shouldComponentUpdate: function(nextProps, nextState) {
+    return this.state.vis !== nextState.vis;
+  },
 
   render: function() {
     var vis = this.state.vis.toJS(),

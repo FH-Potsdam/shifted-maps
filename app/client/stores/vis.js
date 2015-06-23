@@ -48,9 +48,9 @@ module.exports = Reflux.createStore({
   onViewReset: function(map) {
     var bounds = calculateBounds(map);
 
-    this.state = this.state.merge({
+    this.state = this.state.mergeDeep({
       bounds: immutableBounds(bounds),
-      transform: Immutable.Map({ translate: immutablePoint(bounds.min) })
+      transform: { translate: immutablePoint(bounds.min), scale: null }
     });
 
     VisActions.update(this.scale(map.getZoom()), this.positionMapper);
@@ -61,9 +61,9 @@ module.exports = Reflux.createStore({
   onMoveEnd: function(map) {
     var bounds = calculateBounds(map);
 
-    this.state = this.state.merge({
+    this.state = this.state.mergeDeep({
       bounds: immutableBounds(bounds),
-      transform: Immutable.Map({ translate: immutablePoint(bounds.min) })
+      transform: { translate: immutablePoint(bounds.min), scale: null }
     });
 
     this.trigger(this.state);
@@ -74,11 +74,11 @@ module.exports = Reflux.createStore({
       boundsMin = this.state.get('bounds').min,
       translate = map._getCenterOffset(event.center)._multiplyBy(-scale)._add(boundsMin.toObject());
 
-    this.state = this.state.merge({
-      transform: Immutable.Map({
+    this.state = this.state.mergeDeep({
+      transform: {
         translate: immutablePoint(translate),
         scale: scale
-      })
+      }
     });
 
     this.trigger(this.state);
