@@ -8,8 +8,6 @@ var Reflux = require('reflux'),
   clustersStore = require('./clusters'),
   config = require('../config');
 
-var RADIUS_SCALE = config.place_radius_scale.copy();
-
 var MAP_URL_PREFIX = 'http://api.tiles.mapbox.com/v4/' + config.mapbox.id + '/',
   MAP_URL_SUFFIX = (L.Browser.retina ? '@2x' : '')  + '.png?access_token=' + config.mapbox.token;
 
