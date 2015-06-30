@@ -84,12 +84,13 @@ module.exports = Reflux.createStore({
     this.requests = {};
 
     this.map = null;
-    this.nodes = null;
-    this.clusters = null;
 
     this.listenToMany(MapActions);
     this.listenTo(nodesStore, this.setNodes);
     this.listenTo(clustersStore, this.setClusters);
+
+    this.nodes = nodesStore.getInitialState();
+    this.clusters = clustersStore.getInitialState();
   },
 
   onInit: function(map) {
@@ -170,7 +171,7 @@ module.exports = Reflux.createStore({
       map = this.map,
       clusters = this.clusters;
 
-    if (clusters == null || nodes == null || map == null)
+    if (map == null)
       return;
 
     var bounds = map.getBounds().pad(0.5),

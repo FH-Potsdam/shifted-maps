@@ -10,9 +10,10 @@ module.exports = Reflux.createStore({
 
   init: function() {
     this.clusters = Immutable.Map();
-    this.nodes = null;
 
     this.listenTo(nodesStore, this.setNodes);
+
+    this.nodes = nodesStore.getInitialState();
   },
 
   setNodes: function(nodes) {
