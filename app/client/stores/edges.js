@@ -5,10 +5,7 @@ var Reflux = require('reflux'),
   scalesStore = require('./scales'),
   connectionsStore = require('./connections'),
   Edge = require('../models/edge'),
-  VisActions = require('../actions/vis'),
-  config = require('../config');
-
-var STROKE_WIDTH_SCALE = config.edge_stroke_width_scale.copy();
+  VisActions = require('../actions/vis');
 
 module.exports = Reflux.createStore({
   init: function() {

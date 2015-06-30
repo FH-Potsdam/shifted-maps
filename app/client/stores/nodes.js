@@ -4,11 +4,7 @@ var Reflux = require('reflux'),
   placesStore = require('./places'),
   scalesStore = require('./scales'),
   Node = require('../models/node'),
-  VisActions = require('../actions/vis'),
-  config = require('../config');
-
-var RADIUS_SCALE = config.place_radius_scale.copy(),
-  STROKE_WIDTH_SCALE = config.place_stroke_width_scale.copy();
+  VisActions = require('../actions/vis');
 
 function calcDist(nodeOne, nodeTwo){
   return Math.sqrt(Math.pow(nodeTwo.point.x - nodeOne.point.x, 2) + Math.pow(nodeTwo.point.y - nodeOne.point.y, 2));
