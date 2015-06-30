@@ -2,6 +2,7 @@ var Reflux = require('reflux'),
   Immutable = require('immutable'),
   d3 = require('d3'),
   nodesStore = require('./nodes'),
+  scalesStore = require('./scales'),
   connectionsStore = require('./connections'),
   Edge = require('../models/edge'),
   VisActions = require('../actions/vis'),
@@ -16,12 +17,16 @@ module.exports = Reflux.createStore({
     this.nodes = null;
     this.connections = null;
     this.scaled = false;
+    this.scale = null;
 
     this.strokeWidthScale = d3.scale.pow().exponent(.25);
 
     this.listenTo(connectionsStore, this.setConnections);
     this.listenTo(nodesStore, this.setNodes);
+    this.listenTo(scalesStore, this.setScales);
     this.listenTo(VisActions.update, this.onUpdateVis);
+
+    this.scales = scalesStore.getInitialState();
   },
 
   setConnections: function(connections) {
@@ -36,11 +41,27 @@ module.exports = Reflux.createStore({
     this.updateScaleDomain();
   },
 
-  onUpdateVis: function(scale) {
-    this.scaled = true;
-    this.strokeWidthScale.range(STROKE_WIDTH_SCALE(scale));
+  setScales: function(scales) {
+    this.scales = scales;
+
+    this.updateScales();
+  },
+
+  updateScales: function() {
+    if (this.scale == null)
+      return;
+
+    var strokeWidthScale = this.scales.get('edge-stroke-width');
+
+    this.strokeWidthScale.range(strokeWidthScale(this.scale));
 
     this.updateEdges();
+  },
+
+  onUpdateVis: function(scale) {
+    this.scale = scale;
+
+    this.updateScales();
   },
 
   updateScaleDomain: function() {
@@ -70,7 +91,7 @@ module.exports = Reflux.createStore({
       nodes = this.nodes,
       strokeWidthScale = this.strokeWidthScale;
 
-    if (connections == null || nodes == null || !this.scaled)
+    if (connections == null || nodes == null || this.scale == null)
       return;
 
     this.edges = Immutable.Map().withMutations(function(edges) {

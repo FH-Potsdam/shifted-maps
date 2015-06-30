@@ -2,6 +2,7 @@ var Reflux = require('reflux'),
   Immutable = require('immutable'),
   d3 = require('d3'),
   placesStore = require('./places'),
+  scalesStore = require('./scales'),
   Node = require('../models/node'),
   VisActions = require('../actions/vis'),
   config = require('../config');
@@ -18,13 +19,17 @@ module.exports = Reflux.createStore({
     this.nodes = Immutable.OrderedMap();
 
     this.places = null;
+    this.scale = null;
     this.positionMapper = null;
 
     this.radiusScale = d3.scale.pow().exponent(.5);
     this.strokeWidthScale = d3.scale.pow().exponent(.5);
 
     this.listenTo(placesStore, this.setPlaces);
+    this.listenTo(scalesStore, this.setScales);
     this.listenTo(VisActions.update, this.onUpdateVis);
+
+    this.scales = scalesStore.getInitialState();
   },
 
   setPlaces: function(places) {
@@ -33,10 +38,28 @@ module.exports = Reflux.createStore({
     this.updateScaleDomains();
   },
 
+  setScales: function(scales) {
+    this.scales = scales;
+
+    this.updateScales();
+  },
+
   onUpdateVis: function(scale, positionMapper) {
-    this.radiusScale.range(RADIUS_SCALE(scale));
-    this.strokeWidthScale.range(STROKE_WIDTH_SCALE(scale));
+    this.scale = scale;
     this.positionMapper = positionMapper;
+
+    this.updateScales();
+  },
+
+  updateScales: function() {
+    if (this.scale == null)
+      return;
+
+    var radiusScale = this.scales.get('place-radius'),
+      strokeWidthScale = this.scales.get('place-stroke-width');
+
+    this.radiusScale.range(radiusScale(this.scale));
+    this.strokeWidthScale.range(strokeWidthScale(this.scale));
 
     this.updateNodes();
   },
@@ -74,7 +97,7 @@ module.exports = Reflux.createStore({
       radiusScale = this.radiusScale,
       strokeWidthScale = this.strokeWidthScale;
 
-    if (places == null || positionMapper == null)
+    if (places == null || positionMapper == null || this.scale == null)
       return;
 
     this.nodes = places

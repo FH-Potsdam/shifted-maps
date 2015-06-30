@@ -34,3 +34,63 @@
 .leaflet-tile-pane {
   opacity: .25;
 }
+
+[data-scale="place-radius"] {
+  &[data-domain-max][data-range-max] {
+    width: 150px;
+  }
+
+  &[data-domain-max][data-range-min] {
+    width: 75px;
+  }
+
+  &[data-domain-min][data-range-max] {
+    width: 50px;
+  }
+
+  &[data-domain-min][data-range-min] {
+    width: 20px;
+  }
+
+  @media (min-width: 500px) {
+    &[data-domain-max][data-range-max] {
+      width: 250px;
+    }
+  }
+}
+
+[data-scale="place-stroke-width"] {
+  &[data-domain-max][data-range-max] {
+    width: 30px;
+  }
+
+  &[data-domain-max][data-range-min] {
+    width: 4px;
+  }
+
+  &[data-domain-min][data-range-max] {
+    width: 10px;
+  }
+
+  &[data-domain-min][data-range-min] {
+    width: 1px;
+  }
+}
+
+[data-scale="edge-stroke-width"] {
+  &[data-domain-max][data-range-max] {
+    width: 15px;
+  }
+
+  &[data-domain-max][data-range-min] {
+    width: 2px;
+  }
+
+  &[data-domain-min][data-range-max] {
+    width: 2px;
+  }
+
+  &[data-domain-min][data-range-min] {
+    width: .5px;
+  }
+}
