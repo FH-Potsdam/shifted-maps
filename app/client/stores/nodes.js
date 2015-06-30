@@ -18,7 +18,6 @@ module.exports = Reflux.createStore({
   init: function() {
     this.nodes = Immutable.OrderedMap();
 
-    this.places = null;
     this.scale = null;
     this.positionMapper = null;
 
@@ -30,6 +29,7 @@ module.exports = Reflux.createStore({
     this.listenTo(VisActions.update, this.onUpdateVis);
 
     this.scales = scalesStore.getInitialState();
+    this.places = placesStore.getInitialState();
   },
 
   setPlaces: function(places) {
@@ -65,17 +65,12 @@ module.exports = Reflux.createStore({
   },
 
   updateScaleDomains: function() {
-    var places = this.places;
-
-    if (places == null)
-      return;
-
     var minDuration = Infinity,
       maxDuration = -Infinity,
       minFrequency = Infinity,
       maxFrequency = -Infinity;
 
-    places.forEach(function(place) {
+    this.places.forEach(function(place) {
       var duration = place.duration,
         frequency = place.stays.size;
 
@@ -92,15 +87,14 @@ module.exports = Reflux.createStore({
   },
 
   updateNodes: function() {
-    var places = this.places,
-      positionMapper = this.positionMapper,
+    var positionMapper = this.positionMapper,
       radiusScale = this.radiusScale,
       strokeWidthScale = this.strokeWidthScale;
 
-    if (places == null || positionMapper == null || this.scale == null)
+    if (positionMapper == null || this.scale == null)
       return;
 
-    this.nodes = places
+    this.nodes = this.places
       .map(function(place) {
         return new Node({
           id: place.id,

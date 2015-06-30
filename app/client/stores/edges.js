@@ -14,8 +14,6 @@ module.exports = Reflux.createStore({
   init: function() {
     this.edges = Immutable.Map();
 
-    this.nodes = null;
-    this.connections = null;
     this.scaled = false;
     this.scale = null;
 
@@ -26,6 +24,8 @@ module.exports = Reflux.createStore({
     this.listenTo(scalesStore, this.setScales);
     this.listenTo(VisActions.update, this.onUpdateVis);
 
+    this.connections = connectionsStore.getInitialState();
+    this.nodes = nodesStore.getInitialState();
     this.scales = scalesStore.getInitialState();
   },
 
@@ -65,16 +65,10 @@ module.exports = Reflux.createStore({
   },
 
   updateScaleDomain: function() {
-    var connections = this.connections,
-      nodes = this.nodes;
-
-    if (connections == null || nodes == null)
-      return;
-
     var minFrequency = Infinity,
       maxFrequency = -Infinity;
 
-    connections.forEach(function(connection) {
+    this.connections.forEach(function(connection) {
       var frequency = connection.trips.size;
 
       minFrequency = Math.min(minFrequency, frequency);
@@ -91,7 +85,7 @@ module.exports = Reflux.createStore({
       nodes = this.nodes,
       strokeWidthScale = this.strokeWidthScale;
 
-    if (connections == null || nodes == null || this.scale == null)
+    if (this.scale == null)
       return;
 
     this.edges = Immutable.Map().withMutations(function(edges) {
