@@ -34,7 +34,7 @@ module.exports = Reflux.createStore({
     this.setMap(map);
   },
 
-  onMoveEnd: function() {
+  onDragEnd: function() {
     this.updateTiles();
   },
 
@@ -125,10 +125,10 @@ module.exports = Reflux.createStore({
       clusters.forEach(function(cluster, key) {
         var node = nodes.get(key);
 
-        if (node == null || bounds.contains(node.place.location) && !tilesStore.requestTile(node, cluster))
+        if (node != null && bounds.contains(node.place.location) && !tilesStore.requestTile(node, cluster))
           return;
 
-        tiles.set(node.id, null);
+        tiles.set(key, null);
       });
     });
 
