@@ -5,7 +5,8 @@ var Reflux = require('reflux'),
   clustersStore = require('../stores/clusters'),
   tilesStore = require('../stores/tiles'),
   PlaceMap = require('./place-map'),
-  PlaceDeco = require('./place-deco');
+  PlaceDeco = require('./place-deco'),
+  PlaceLabel = require('./place-label');
 
 module.exports = React.createClass({
   mixins: [
@@ -34,6 +35,7 @@ module.exports = React.createClass({
         <g className={className} key={key}>
           <PlaceMap node={node} primary={primary} tile={tiles.get(key)} />
           <PlaceDeco node={node} primary={primary} />
+          <PlaceLabel node={node} primary={primary} />
         </g>
       );
     });

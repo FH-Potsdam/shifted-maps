@@ -1,7 +1,6 @@
 var Reflux = require('reflux'),
   React = require('react'),
-  PlaceClip = require('./place-clip'),
-  config = require('../config');
+  PlaceClip = require('./place-clip');
 
 module.exports = React.createClass({
   componentDidMount: function() {

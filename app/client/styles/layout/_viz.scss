@@ -6,6 +6,10 @@
   background-color: black;
 }
 
+.leaflet-tile-pane {
+  opacity: .25;
+}
+
 .place {
   display: none;
 
@@ -23,16 +27,18 @@
   transition: opacity 400ms;
 }
 
+.place-label {
+  fill: white;
+  font-size: $base-grid;
+  transform: translate(0, 20px);
+}
+
 .place-map-background {
   fill: white;
 }
 
 .connection {
   stroke: white;
-}
-
-.leaflet-tile-pane {
-  opacity: .25;
 }
 
 [data-scale="place-radius"] {
