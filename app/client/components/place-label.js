@@ -3,7 +3,10 @@ var Reflux = require('reflux'),
 
 module.exports = React.createClass({
   shouldComponentUpdate: function(nextProps) {
-    return nextProps.primary && this.props.node !== nextProps.node;
+    var node = this.props.node,
+      nextNode = nextProps.node;
+
+    return nextProps.primary && (node.point !== nextNode.point || node.radius !== nextNode.radius || node.strokeWidth !== nextNode.strokeWidth);
   },
 
   render: function() {
