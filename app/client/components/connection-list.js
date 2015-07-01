@@ -1,10 +1,11 @@
 var Reflux = require('reflux'),
   React = require('react'),
   edgesStore = require('../stores/edges'),
+  edgeClustersStore = require('../stores/edge-clusters'),
   Connection = require('./connection');
 
 module.exports = React.createClass({
-  mixins: [Reflux.connect(edgesStore, 'edges')],
+  mixins: [Reflux.connect(edgeClustersStore, 'edges')],
 
   shouldComponentUpdate: function(nextProps, nextState) {
     return this.state.edges !== nextState.edges;
