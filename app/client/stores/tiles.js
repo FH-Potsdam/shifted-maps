@@ -34,7 +34,7 @@ module.exports = Reflux.createStore({
     this.setMap(map);
   },
 
-  onDragEnd: function() {
+  onMoveEnd: function() {
     this.updateTiles();
   },
 

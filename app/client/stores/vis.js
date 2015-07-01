@@ -33,6 +33,7 @@ module.exports = Reflux.createStore({
     this.scale = d3.scale.linear();
     this.initilized = false;
     this.positionMapper = null;
+    this.dragging = false;
 
     this.listenToMany(MapActions);
   },
@@ -58,7 +59,19 @@ module.exports = Reflux.createStore({
     this.trigger(this.state);
   },
 
-  onDragEnd: function(map) {
+  onDragStart: function() {
+    this.dragging = true;
+  },
+
+  onMoveEnd: function(map) {
+    if (!this.dragging)
+      return;
+
+    this.dragging = false;
+    this.onResize(map);
+  },
+
+  onResize: function(map) {
     var bounds = calculateBounds(map);
 
     this.state = this.state.mergeDeep({
