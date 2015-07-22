@@ -4,7 +4,8 @@ var Reflux = require('reflux'),
   placesStore = require('./places'),
   scalesStore = require('./scales'),
   Node = require('../models/node'),
-  VisActions = require('../actions/vis');
+  VisActions = require('../actions/vis'),
+  UiActions = require('../actions/ui');
 
 function calcDist(nodeOne, nodeTwo){
   return Math.sqrt(Math.pow(nodeTwo.point.x - nodeOne.point.x, 2) + Math.pow(nodeTwo.point.y - nodeOne.point.y, 2));
@@ -16,6 +17,7 @@ module.exports = Reflux.createStore({
 
     this.scale = null;
     this.positionMapper = null;
+    this.range = null;
 
     this.radiusScale = d3.scale.pow().exponent(.5);
     this.strokeWidthScale = d3.scale.pow().exponent(.5);
@@ -23,6 +25,7 @@ module.exports = Reflux.createStore({
     this.listenTo(placesStore, this.setPlaces);
     this.listenTo(scalesStore, this.setScales);
     this.listenTo(VisActions.update, this.onUpdateVis);
+    this.listenTo(UiActions.updateTimeFilter, this.updateRange);
 
     this.scales = scalesStore.getInitialState();
     this.places = placesStore.getInitialState();
@@ -82,6 +85,12 @@ module.exports = Reflux.createStore({
     this.updateNodes();
   },
 
+  updateRange: function(range) {
+    this.range = range;
+
+    this.updateNodes();
+  },
+
   updateNodes: function() {
     var positionMapper = this.positionMapper,
       radiusScale = this.radiusScale,
@@ -90,8 +99,25 @@ module.exports = Reflux.createStore({
     if (positionMapper == null || this.scale == null)
       return;
 
-    this.nodes = this.places
-      .map(function(place) {
+    var nodes = this.places.toSeq();
+
+    /*if (this.range != null) {
+      var range = this.range;
+
+      nodes = nodes.filter(function(place) {
+        var stays = place.stays;
+
+        if (stays.size == 0)
+          return false;
+
+        var startAt = stays.first().startAt,
+          endAt = stays.last().endAt;
+
+        return range[0] >= startAt && range[1] <= endAt;
+      });
+    }*/
+
+    this.nodes = nodes.map(function(place) {
         return new Node({
           id: place.id,
           place: place,

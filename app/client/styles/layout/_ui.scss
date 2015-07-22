@@ -1,0 +1,30 @@
+.time-slider {
+  width: 100%;
+
+  &-handle {
+    height: $base-spacing-unit;
+    width: $base-spacing-unit / 2;
+    background-color: white;
+    position: relative;
+
+    &-time {
+      position: absolute;
+      bottom: $base-spacing-unit * 1.5;
+      font-size: $base-font-size;
+      color: white;
+      left: 0;
+      white-space: nowrap;
+    }
+
+    &-1 &-time {
+      right: 0;
+      left: auto;
+      text-align: right;
+    }
+  }
+
+  &-bar {
+    height: $base-spacing-unit;
+    background-color: rgba(white, .2);
+  }
+}

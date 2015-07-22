@@ -3,6 +3,7 @@ var Reflux = require('reflux'),
   InitAction = require('../actions/init'),
   Map = require('./map'),
   Vis = require('./vis'),
+  Ui = require('./ui'),
   config = require('../config');
 
 module.exports = React.createClass({
@@ -12,9 +13,12 @@ module.exports = React.createClass({
 
   render: function() {
     return (
-      <Map id={this.state.mapId} zoom={this.state.mapZoom} center={this.state.mapCenter} className="map">
-        <Vis className="leaflet-zoom-animated" />
-      </Map>
+      <div className="app">
+        <Map id={this.state.mapId} zoom={this.state.mapZoom} center={this.state.mapCenter} className="app-map">
+          <Vis className="leaflet-zoom-animated" />
+        </Map>
+        <Ui />
+      </div>
     );
   },
 

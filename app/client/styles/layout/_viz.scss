@@ -1,13 +1,13 @@
-.map {
+.app-map {
   position: absolute;
   top: 0;
   bottom: 0;
   width: 100%;
   background-color: black;
-}
 
-.leaflet-tile-pane {
-  opacity: .25;
+  .leaflet-tile-pane {
+    opacity: .25;
+  }
 }
 
 .place {
@@ -29,7 +29,7 @@
 
 .place-label {
   fill: white;
-  font-size: $base-spacing-unit;
+  font-size: $base-font-size;
   transform: translate(0, 20px);
 }
 
