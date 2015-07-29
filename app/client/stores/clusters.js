@@ -42,7 +42,7 @@ module.exports = Reflux.createStore({
             if (nodeTwo.clustered)
               continue;
 
-            if (calcDist(nodeOne, nodeTwo) < nodeOne.radius) {
+            if (calcDist(nodeOne, nodeTwo) < (nodeOne.radius - nodeTwo.radius)) {
               nodeTwo.clustered = true;
               cluster.add(nodeTwo.id);
             }

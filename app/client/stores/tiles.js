@@ -63,14 +63,14 @@ module.exports = Reflux.createStore({
     this.updateTiles();
   },
 
-  createMapUrl: function(node, cluster) {
+  createMapUrl: function(node/*, cluster*/) {
     var nodes = this.nodes,
       bounds = toBounds(node.place.location, config.place_to_bounds_meters);
 
-    cluster.rest().forEach(function(id) {
+    /*cluster.rest().forEach(function(id) {
       if (nodes.has(id))
         bounds.extend(nodes.get(id).place.location);
-    });
+    });*/
 
     var zoom = getBoundsZoom(this.map, bounds, node.radius * 2),
       scale = zoom / this.map.getMaxZoom();
@@ -93,8 +93,8 @@ module.exports = Reflux.createStore({
     return request;
   },
 
-  requestTile: function(node, cluster) {
-    var nextUrl = this.createMapUrl(node, cluster),
+  requestTile: function(node/*, cluster*/) {
+    var nextUrl = this.createMapUrl(node/*, cluster*/),
       tile = this.tiles.get(node.id);
 
     if (tile != null && nextUrl === tile.src)
@@ -125,7 +125,7 @@ module.exports = Reflux.createStore({
       clusters.forEach(function(cluster, key) {
         var node = nodes.get(key);
 
-        if (node != null && bounds.contains(node.place.location) && !tilesStore.requestTile(node, cluster))
+        if (node != null && bounds.contains(node.place.location) && !tilesStore.requestTile(node/*, cluster*/))
           return;
 
         tiles.set(key, null);
