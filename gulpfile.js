@@ -16,7 +16,6 @@ gulp.task('serve', function() {
 
 gulp.task('browserify', function() {
   var b = browserify({
-    debug: true,
     entries: 'app/client/index.js',
     transform: [babelify]
   });
