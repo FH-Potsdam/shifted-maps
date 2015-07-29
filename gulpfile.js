@@ -3,7 +3,7 @@ var gulp = require('gulp'),
   buffer = require('vinyl-buffer'),
   source = require('vinyl-source-stream'),
   sourcemaps = require('gulp-sourcemaps'),
-  reactify = require('reactify'),
+  babelify = require('babelify'),
   sass = require('gulp-sass'),
   uglify = require('gulp-uglify'),
   chalk = require('chalk'),
@@ -18,7 +18,7 @@ gulp.task('browserify', function() {
   var b = browserify({
     debug: true,
     entries: 'app/client/index.js',
-    transform: [reactify]
+    transform: [babelify]
   });
 
   return b.bundle()
@@ -28,30 +28,24 @@ gulp.task('browserify', function() {
     .pipe(sourcemaps.init({loadMaps: true}))
     //.pipe(uglify())
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('public/scripts'));
+    .pipe(gulp.dest('public/scripts'))
+    .pipe(server.notify());
 });
 
 gulp.task('sass', function() {
-  gulp.src(['app/client/styles/**/*.scss', '!app/client/styles/**/_*.scss'])
+  return gulp.src(['app/client/styles/**/*.scss', '!app/client/styles/**/_*.scss'])
     .pipe(sass({
       outputStyle: 'compressed'
     }))
     .on('error', swallowError)
-    .pipe(gulp.dest('public/styles'));
+    .pipe(gulp.dest('public/styles'))
+    .pipe(server.notify());
 });
 
 gulp.task('watch', function() {
-  gulp.watch('app/client/styles/**/*.scss', function(event) {
-    gulp.start('sass');
-    server.notify(event);
-  });
-  gulp.watch(['app/client/**/*.js', 'app/client/**/*.json', 'app/shared/**/*.js'], function(event) {
-    gulp.start('browserify');
-    server.notify(event);
-  });
-  gulp.watch(['app/server/**/*.js', 'app/server/**/*.nunj'], function() {
-    gulp.start('serve');
-  });
+  gulp.watch(['app/client/styles/**/*.scss'], ['sass']);
+  gulp.watch(['app/client/**/*.js', 'app/client/**/*.json', 'app/shared/**/*.js'], ['browserify']);
+  gulp.watch(['app/server/**/*.js', 'app/server/**/*.nunj'], ['serve']);
 });
 
 function swallowError(error) {
@@ -65,4 +59,4 @@ function swallowError(error) {
   this.emit('end');
 }
 
-gulp.task('default', ['serve', 'browserify', 'sass', 'watch']);
+gulp.task('default', ['serve', 'watch']);

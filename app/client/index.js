@@ -1,8 +1,8 @@
 var React = require('react'),
   ShiftedMaps = require('./components/app'),
-  config = require('./config');
+  { mapbox } = require('./config');
 
-L.mapbox.accessToken = config.mapbox.token;
+L.mapbox.accessToken = mapbox.token;
 
 React.render(
   <ShiftedMaps />,
