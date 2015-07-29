@@ -3,8 +3,6 @@ var Reflux = require('reflux'),
   d3 = require('d3'),
   debounce = require('mout/function/debounce');
 
-d3.scale.linear().range([[20, 75], [100, 250]]);
-
 var scalesStore = module.exports = Reflux.createStore({
   init: function() {
     this.scales = Immutable.Map();

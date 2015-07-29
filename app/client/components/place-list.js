@@ -29,7 +29,7 @@ module.exports = React.createClass({
         className = 'place';
 
       if (primary)
-        className += 'primary';
+        className += ' primary';
 
       places.push(
         <g className={className} key={key}>

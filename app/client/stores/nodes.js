@@ -128,7 +128,7 @@ module.exports = Reflux.createStore({
       })
       .toOrderedMap()
       .sortBy(function(node) {
-        return -node.radius;
+        return node.radius;
       });
 
     this.trigger(this.nodes);

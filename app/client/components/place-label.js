@@ -12,8 +12,17 @@ module.exports = React.createClass({
   render: function() {
     var node = this.props.node;
 
+    if (node.place.placeType == 'geocode')
+      return null;
+
+    var x = node.point.x,
+      y = node.point.y + node.radius + node.strokeWidth / 2;
+
     return (
-      <text className="place-label" x={node.point.x} y={node.point.y + node.radius + node.strokeWidth / 2} textAnchor="middle">{node.place.name}</text>
+      <g className="place-label">
+        <text className="place-label-stroke" x={x} y={y} textAnchor="middle">{node.place.name}</text>
+        <text x={x} y={y} textAnchor="middle">{node.place.name}</text>
+      </g>
     );
   }
 });

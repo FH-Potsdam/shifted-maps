@@ -77,9 +77,9 @@ module.exports = Reflux.createStore({
 
     this.radiusScale.range(this.scales.get('place-radius')(scale));
 
-    var size = Math.ceil(this.radiusScale(node.place.duration) * 2);
+    var size = Math.max(config.place_min_tile_size, Math.ceil(this.radiusScale(node.place.duration) * 2));
 
-    return createMapUrl(bounds.getCenter(), zoom, size);
+    return createMapUrl(node.place.location, zoom, size);
   },
 
   createRequest: function(node, url) {

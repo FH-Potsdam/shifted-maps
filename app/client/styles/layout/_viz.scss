@@ -31,6 +31,11 @@
   fill: white;
   font-size: $base-font-size;
   transform: translate(0, 20px);
+
+  &-stroke {
+    stroke: rgba(black, .25);
+    stroke-width: 4px;
+  }
 }
 
 .place-map-background {
@@ -43,69 +48,23 @@
 
 [data-scale="place-radius"] {
   &[data-domain-max][data-range-max] {
-    width: 150px;
+    width: 200px;
   }
 
   &[data-domain-max][data-range-min] {
-    width: 50px;
+    width: 30px;
   }
 
   &[data-domain-min][data-range-max] {
-    width: 20px;
+    width: 30px;
   }
 
   &[data-domain-min][data-range-min] {
     width: 10px;
   }
-
-  @media (min-width: 670px) {
-    &[data-domain-max][data-range-max] {
-      width: 250px;
-    }
-
-    &[data-domain-max][data-range-min] {
-      width: 75px;
-    }
-
-    &[data-domain-min][data-range-max] {
-      width: 50px;
-    }
-
-    &[data-domain-min][data-range-min] {
-      width: 20px;
-    }
-  }
 }
 
 [data-scale="place-stroke-width"] {
-  &[data-domain-max][data-range-max] {
-    width: 20px;
-  }
-
-  &[data-domain-max][data-range-min] {
-    width: 4px;
-  }
-
-  &[data-domain-min][data-range-max] {
-    width: 5px;
-  }
-
-  &[data-domain-min][data-range-min] {
-    width: 1px;
-  }
-
-  @media (min-width: 670px) {
-    &[data-domain-max][data-range-max] {
-      width: 30px;
-    }
-
-    &[data-domain-min][data-range-max] {
-      width: 10px;
-    }
-  }
-}
-
-[data-scale="edge-stroke-width"] {
   &[data-domain-max][data-range-max] {
     width: 10px;
   }
@@ -115,20 +74,28 @@
   }
 
   &[data-domain-min][data-range-max] {
-    width: 1px;
+    width: 5px;
   }
 
   &[data-domain-min][data-range-min] {
-    width: .5px;
+    width: 1px;
+  }
+}
+
+[data-scale="edge-stroke-width"] {
+  &[data-domain-max][data-range-max] {
+    width: 10px;
   }
 
-  @media (min-width: 670px) {
-    &[data-domain-max][data-range-max] {
-      width: 15px;
-    }
+  &[data-domain-max][data-range-min] {
+    width: 1px;
+  }
 
-    &[data-domain-min][data-range-max] {
-      width: 2px;
-    }
+  &[data-domain-min][data-range-max] {
+    width: 5px;
+  }
+
+  &[data-domain-min][data-range-min] {
+    width: 1px;
   }
 }

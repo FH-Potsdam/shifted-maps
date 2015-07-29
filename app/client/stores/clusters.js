@@ -27,7 +27,7 @@ module.exports = Reflux.createStore({
     var nodes = this.nodes.toList().toJS();
 
     var clusters = Immutable.Map().withMutations(function(clusters) {
-      for (var i = 0; i < nodes.length; i++) {
+      for (var i = nodes.length - 1; i >= 0; i--) {
         var nodeOne = nodes[i];
 
         if (nodeOne.clustered)
