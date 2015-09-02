@@ -3,7 +3,7 @@ var Reflux = require('reflux'),
   InitAction = require('../actions/init'),
   Map = require('./map'),
   Vis = require('./vis'),
-  Ui = require('./ui'),
+  //Ui = require('./ui'),
   config = require('../config');
 
 module.exports = React.createClass({
@@ -17,7 +17,7 @@ module.exports = React.createClass({
         <Map id={this.state.mapId} zoom={this.state.mapZoom} center={this.state.mapCenter} className="app-map">
           <Vis className="leaflet-zoom-animated" />
         </Map>
-        <Ui />
+        {/*<Ui />*/}
       </div>
     );
   },

@@ -39,7 +39,6 @@
     "html5shiv": "^3.7.2",
     "inherits": "^2.0.1",
     "node-notifier": "^4.1.2",
-    "react-slider": "^0.5.1",
     "react": "^0.14.0-beta3",
     "reactify": "^1.1.1",
     "reflux": "^0.2.7",
