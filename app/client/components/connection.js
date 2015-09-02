@@ -3,14 +3,20 @@ var Reflux = require('reflux'),
 
 module.exports = React.createClass({
   shouldComponentUpdate: function(nextProps) {
-    var { edge } = this.props;
+    var { edge, primary } = this.props;
 
-    return edge.from.point !== nextProps.edge.to.point || edge.strokWidth !== nextProps.edge.strokeWidth;
+    return primary !== nextProps.primary ||
+      edge.from.point !== nextProps.edge.to.point ||
+      edge.strokWidth !== nextProps.edge.strokeWidth;
   },
 
   render: function() {
-    var { edge } = this.props;
+    var { edge, primary } = this.props,
+      style = { display: 'none' };
 
-    return <line x1={edge.from.point.x} y1={edge.from.point.y} x2={edge.to.point.x} y2={edge.to.point.y} strokeWidth={edge.strokeWidth} className="connection" />;
+    if (primary)
+      style.display = 'block';
+
+    return <line style={style} x1={edge.from.point.x} y1={edge.from.point.y} x2={edge.to.point.x} y2={edge.to.point.y} strokeWidth={edge.strokeWidth} className="connection" />;
   }
 });
