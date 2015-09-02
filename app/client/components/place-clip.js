@@ -1,5 +1,4 @@
 var React = require('react'),
-  d3 = require('d3'),
   PlaceCircle = require('./place-circle');
 
 var PlaceClip = module.exports = React.createClass({
@@ -9,21 +8,19 @@ var PlaceClip = module.exports = React.createClass({
     }
   },
 
-  componentDidMount: function() {
-    var node = this.props.node;
-
-    d3.select(React.findDOMNode(this))
-      .append('clipPath')
-      .attr('id', PlaceClip.createId(node))
-      .append('use')
-      .attr('xlink:href', '#' + PlaceCircle.createId(node));
-  },
-
-  shouldComponentUpdate: function(nextProps) {
+  shouldComponentUpdate: function() {
     return false;
   },
 
   render: function() {
-    return <g />;
+    var node = this.props.node;
+
+    return (
+      <g>
+        <clipPath id={PlaceClip.createId(node)}>
+          <use xlinkHref={'#' + PlaceCircle.createId(node)} />
+        </clipPath>
+      </g>
+    );
   }
 });
