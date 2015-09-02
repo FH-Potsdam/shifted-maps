@@ -43,7 +43,7 @@ gulp.task('sass', function() {
 
 gulp.task('watch', function() {
   gulp.watch(['app/client/styles/**/*.scss'], ['sass']);
-  gulp.watch(['app/client/**/*.js', 'app/client/**/*.json', 'app/shared/**/*.js'], ['browserify']);
+  gulp.watch(['app/client/**/*.js', 'config/client.json', 'app/shared/**/*.js'], ['browserify']);
   gulp.watch(['app/server/**/*.js', 'app/server/**/*.nunj'], ['serve']);
 });
 

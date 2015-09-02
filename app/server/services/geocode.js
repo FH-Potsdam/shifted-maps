@@ -36,7 +36,7 @@ function geocode(location, callback) {
         });
       })
       .fail(function(error) {
-        callback(error);
+        callback(new Error(error.jsonBody.message));
       });
   }
 
