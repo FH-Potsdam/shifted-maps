@@ -1,4 +1,4 @@
-var Reflux = require('reflux'),
+/*var Reflux = require('reflux'),
   React = require('react'),
   Immutable = require('immutable'),
   visStore = require('../stores/vis'),
@@ -40,4 +40,4 @@ module.exports = React.createClass({
       </svg>
     );
   }
-});
+});*/

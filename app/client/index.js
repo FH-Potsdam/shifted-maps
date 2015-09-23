@@ -1,10 +1,15 @@
-var React = require('react'),
-  ShiftedMaps = require('./components/app'),
-  { mapbox } = require('./config');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import ShiftedMaps from './components/app';
+import { mapbox } from './config';
+import store from './redux/store';
 
 L.mapbox.accessToken = mapbox.token;
 
-React.render(
-  <ShiftedMaps />,
+ReactDOM.render(
+  <Provider store={store}>
+    <ShiftedMaps />
+  </Provider>,
   document.getElementById('app')
 );

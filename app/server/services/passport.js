@@ -1,5 +1,4 @@
 var passport = require('passport'),
-  moment = require('moment'),
   config = require('../config'),
   User = require('../models/user'),
   MovesStrategy = require('./moves/strategy'),
@@ -42,7 +41,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
-  User.findById(id).select('+accessToken +tokenExpiresAt').exec(function(error, user) {
+  User.findById(id).select('+accessToken +refreshToken +tokenExpiresAt').exec(function(error, user) {
     if (error || user == null)
       return done(error, user);
 

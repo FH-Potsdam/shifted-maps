@@ -1,36 +1,62 @@
-var Reflux = require('reflux'),
-  React = require('react'),
-  MapActions = require('../actions/map');
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import _ from 'lodash';
 
-module.exports = React.createClass({
-  componentDidMount: function() {
-    var map = L.mapbox.map(React.findDOMNode(this.refs.map), this.props.id, {
+class Map extends Component {
+  componentDidMount() {
+    this.map = L.mapbox.map(this.refs.map, this.props.id, {
       maxZoom: 19
     });
 
-    MapActions.init(map);
+    this.map.setView(this.props.center, this.props.zoom);
 
-    function addListener(map, action) {
-      map.on(action.toLowerCase(), function(event) {
-        MapActions[action](map, event)
-      });
-    }
+    this.addEventListeners(this.props);
 
-    for (var action in MapActions) {
-      if (!MapActions.hasOwnProperty(action))
-        continue;
-
-      addListener(map, action);
-    }
-
-    map.setView(this.props.center, this.props.zoom);
-
+    // Need to render overlay including children in next tick to let map set the view first and create the corresponding
+    // overlay pane element we use here.
     process.nextTick(function() {
-      React.render(<div className="overlay">{this.props.children}</div>, map.getPanes().overlayPane)
+      ReactDOM.render(<div className="overlay">{this.props.children}</div>, this.map.getPanes().overlayPane)
     }.bind(this));
-  },
+  }
 
-  render: function() {
+  componentDidUpdate(prevProps) {
+    this.removeEventListeners(prevProps);
+    this.addEventListeners(this.props);
+  }
+
+  componentWillUnmount() {
+    this.removeEventListeners(this.props);
+  }
+
+  addEventListener(name, listener) {
+    if (!_.isFunction(listener))
+      return;
+
+    name = name.toLowerCase().slice(2); // Strip "on"
+
+    this.map.on(name, listener);
+  }
+
+  addEventListeners(listeners) {
+    _.each(listeners, (listener, name) => this.addEventListener(name, listener));
+  }
+
+  removeEventListener(name, listener) {
+    if (!_.isFunction(listener))
+      return;
+
+    name = name.toLowerCase().slice(2); // Strip "on"
+
+    this.map.off(name, listener);
+  }
+
+  removeEventListeners(listeners) {
+    _.each(listeners, (listener, name) => this.removeEventListener(name, listener));
+  }
+
+  render() {
     return <div ref="map" className={this.props.className}></div>;
   }
-});
+}
+
+export default Map;

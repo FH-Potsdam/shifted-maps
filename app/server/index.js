@@ -32,9 +32,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-if (app.get('debug'))
-  app.use(require('connect-livereload')());
-
 // Static route middleware
 app.use(express.static(__dirname + '/../../public', {
   lastModified: app.get('debug'),

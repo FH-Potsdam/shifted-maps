@@ -8,10 +8,12 @@ var gulp = require('gulp'),
   uglify = require('gulp-uglify'),
   chalk = require('chalk'),
   notifier = require('node-notifier'),
-  server = require('gulp-express');
+  gls = require('gulp-live-server');
+
+var server = gls.new('app.js');
 
 gulp.task('serve', function() {
-  server.run();
+  server.start();
 });
 
 gulp.task('browserify', function() {
@@ -53,9 +55,14 @@ function swallowError(error) {
     message: error.message
   });
 
-  console.log('Error in plugin \'' + chalk.cyan(error.plugin) + '\': ' + chalk.magenta(error.message));
+  var message = chalk.magenta(error.message);
+
+  if (error.plugin)
+    message = 'Error in plugin \'' + chalk.cyan(error.plugin) + '\': ' + message;
+
+  console.log(message);
 
   this.emit('end');
 }
 
-gulp.task('default', ['serve', 'watch']);
+gulp.task('default', ['serve', 'sass', 'browserify', 'watch']);

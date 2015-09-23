@@ -4,5 +4,6 @@ module.exports = Immutable.Record({
   from: null,
   to: null,
   strokeWidth: 0,
-  connection: null
+  connection: null,
+  trips: 0
 });
