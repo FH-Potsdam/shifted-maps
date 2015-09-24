@@ -1,19 +1,13 @@
-var React = require('react'),
-  PlaceCircle = require('./place-circle');
+import React, { Component } from 'react';
+import PlaceCircle from './place-circle';
 
-var PlaceClip = module.exports = React.createClass({
-  statics: {
-    createId: function(node) {
-      return 'place-clip-' + node.id;
-    }
-  },
-
-  shouldComponentUpdate: function() {
+class PlaceClip extends Component {
+  shouldComponentUpdate() {
     return false;
-  },
+  }
 
-  render: function() {
-    var node = this.props.node;
+  render() {
+    let node = this.props.node;
 
     return (
       <g>
@@ -23,4 +17,10 @@ var PlaceClip = module.exports = React.createClass({
       </g>
     );
   }
-});
+}
+
+PlaceClip.createId = function(node) {
+  return 'place-clip-' + node.place;
+};
+
+export default PlaceClip;

@@ -1,4 +1,4 @@
-import { Map } from 'immutable';
+import { Map, List } from 'immutable';
 import d3 from 'd3';
 import { createSelector } from 'reselect';
 import Edge from '../models/edge';
@@ -8,10 +8,16 @@ import { edgeStrokeWidthRangeScaleSelector } from './scales';
 import { visScaleSelector, visBoundsSelector } from './vis';
 
 function edgeStrokeWidthRange(edgeStrokeWidthRangeScale, visScale) {
+  if (edgeStrokeWidthRangeScale == null || visScale == null)
+    return;
+
   return edgeStrokeWidthRangeScale(visScale);
 }
 
 function edgeStrokeWidthDomain(connections) {
+  if (connections == null)
+    return;
+
   let minFrequency = Infinity,
     maxFrequency = -Infinity;
 
@@ -26,28 +32,44 @@ function edgeStrokeWidthDomain(connections) {
 }
 
 function edgeStrokeWidthScale(edgeStrokeWidthRange, edgeStrokeWidthDomain) {
+  if (edgeStrokeWidthRange == null || edgeStrokeWidthDomain == null)
+    return;
+
   return d3.scale.pow().exponent(.25)
     .range(edgeStrokeWidthRange)
     .domain(edgeStrokeWidthDomain);
 }
 
 function edges(connections, nodes, edgeStrokeWidthScale, visBounds) {
-  return Map().withMutations(function (edges) {
+  let edges = Map();
+
+  if (connections == null || nodes == null || edgeStrokeWidthScale == null || visBounds == null)
+    return edges;
+
+  let min = visBounds.get('min').toObject(),
+    max = visBounds.get('max').toObject();
+
+  let bounds = L.bounds([min.x, min.y], [max.x, max.y]);
+
+  return edges.withMutations(function(edges) {
     connections.forEach(function (connection, id) {
       let from = nodes.get(connection.from),
         to = nodes.get(connection.to);
 
-      let fromPoint = L.point(from.x, from.y),
-        toPoint = L.point(to.x, to.y);
+      if (from == null || to == null)
+        return;
+
+      let fromPoint = L.point(from.point.x, from.point.y),
+        toPoint = L.point(to.point.x, to.point.y);
 
       let edgeBounds = L.bounds(fromPoint, toPoint);
 
       edges.set(id, new Edge({
-        to: connection.to,
-        from: connection.from,
+        to: toPoint,
+        from: fromPoint,
         connection: id,
         strokeWidth: edgeStrokeWidthScale(connection.trips.size),
-        visible: visBounds.intersect(edgeBounds)
+        visible: bounds.intersects(edgeBounds)
       }));
     });
   });

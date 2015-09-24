@@ -11,19 +11,28 @@ function calcDist(nodeOne, nodeTwo) {
 }
 
 function nodeStrokeWidthRange(nodeStrokeWidthRangeScale, visScale) {
+  if (nodeStrokeWidthRangeScale == null || visScale == null)
+    return;
+
   return nodeStrokeWidthRangeScale(visScale);
 }
 
 function nodeRadiusRange(nodeRadiusRangeScale, visScale) {
+  if (nodeRadiusRangeScale == null || visScale == null)
+    return;
+
   return nodeRadiusRangeScale(visScale);
 }
 
 function nodeStrokeWidthDomain(places) {
+  if (places == null)
+    return;
+
   let minFrequency = Infinity,
     maxFrequency = -Infinity;
 
   places.forEach(function(place) {
-    let frequency = place.trips.size;
+    let frequency = place.stays.size;
 
     minFrequency = Math.min(minFrequency, frequency);
     maxFrequency = Math.max(maxFrequency, frequency);
@@ -33,6 +42,9 @@ function nodeStrokeWidthDomain(places) {
 }
 
 function nodeRadiusDomain(places) {
+  if (places == null)
+    return;
+
   let minDuration = Infinity,
     maxDuration = -Infinity;
 
@@ -47,28 +59,37 @@ function nodeRadiusDomain(places) {
 }
 
 function nodeStrokeWidthScale(nodeStrokeWidthRange, nodeStrokeWidthDomain) {
+  if (nodeStrokeWidthRange == null || nodeStrokeWidthDomain == null)
+    return;
+
   return d3.scale.pow().exponent(.5)
     .range(nodeStrokeWidthRange)
     .domain(nodeStrokeWidthDomain);
 }
 
 function nodeRadiusScale(nodeRadiusRange, nodeRadiusDomain) {
+  if (nodeRadiusRange == null || nodeRadiusDomain == null)
+    return;
+
   return d3.scale.pow().exponent(.5)
     .range(nodeRadiusRange)
     .domain(nodeRadiusDomain);
 }
 
 function nodes(places, nodeStrokeWidthScale, nodeRadiusScale, visView, visBounds) {
-  let nodes = List()
+  let nodes = Map();
+
+  if (places == null || nodeStrokeWidthScale == null || nodeRadiusScale == null || visView == null || visBounds == null)
+    return nodes;
+
+  nodes = nodes
     .withMutations(function (nodes) {
       places.forEach(function (place, id) {
-        let point = visView(place);
-
-        nodes.push(new Node({
+        nodes.set(id, new Node({
           place: id,
           radius: nodeRadiusScale(place.duration),
           strokeWidth: nodeStrokeWidthScale(place.stays.size),
-          point
+          point: visView(place)
         }));
       });
     })
@@ -78,18 +99,18 @@ function nodes(places, nodeStrokeWidthScale, nodeRadiusScale, visView, visBounds
 
   // Check for top most nodes, all others will be hidden.
   let topMost = Set().withMutations(function(topMost) {
-    let nodes = nodes.toJS();
+    let _nodes = nodes.toList().toJS();
 
-    for (var i = nodes.length - 1; i >= 0; i--) {
-      var nodeOne = nodes[i];
+    for (var i = _nodes.length - 1; i >= 0; i--) {
+      var nodeOne = _nodes[i];
 
       if (nodeOne.calculated)
         continue;
 
       nodeOne.calculated = true;
 
-      for (var i = 0; i < nodes.length; i++) {
-        var nodeTwo = nodes[i];
+      for (var i = 0; i < _nodes.length; i++) {
+        var nodeTwo = _nodes[i];
 
         if (nodeTwo.calculated)
           continue;
@@ -103,9 +124,14 @@ function nodes(places, nodeStrokeWidthScale, nodeRadiusScale, visView, visBounds
     }
   });
 
+  let min = visBounds.get('min').toObject(),
+    max = visBounds.get('max').toObject();
+
+  let bounds = L.bounds([min.x, min.y], [max.x, max.y]);
+
   return nodes
     .map(function(node) {
-      return node.set('visible', visBounds.contains(node.point) && topMost.includes(node.place));
+      return node.set('visible', bounds.contains(node.point) && topMost.includes(node.place));
     });
 }
 

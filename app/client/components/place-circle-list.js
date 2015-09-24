@@ -1,22 +1,20 @@
-var Reflux = require('reflux'),
-  React = require('react'),
-  nodesStore = require('../stores/nodes'),
-  PlaceCircle = require('./place-circle');
+import React, { Component } from 'react';
+import PlaceCircle from './place-circle';
 
-module.exports = React.createClass({
-  mixins: [Reflux.connect(nodesStore, 'nodes')],
+class PlaceCircleList extends Component {
+  shouldComponentUpdate(nextProps) {
+    return this.props.nodes !== nextProps.nodes;
+  }
 
-  shouldComponentUpdate: function(nextProps, nextState) {
-    return this.state.nodes !== nextState.nodes;
-  },
+  render() {
+    let placeCircles = [];
 
-  render: function() {
-    var placeCircles = [];
-
-    this.state.nodes.forEach(function(node, key) {
-      placeCircles.push(<PlaceCircle key={key} node={node} />);
+    this.props.nodes.forEach(function (node) {
+      placeCircles.push(<PlaceCircle key={node.place} node={node}/>);
     });
 
     return <g className="place-circle-list">{placeCircles}</g>;
   }
-});
+}
+
+export default PlaceCircleList;

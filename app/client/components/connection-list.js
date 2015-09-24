@@ -1,28 +1,20 @@
-var Reflux = require('reflux'),
-  React = require('react'),
-  edgesStore = require('../stores/edges'),
-  clustersStore = require('../stores/clusters'),
-  Connection = require('./connection');
+import React, { Component } from 'react';
+import Connection from './connection';
 
-module.exports = React.createClass({
-  mixins: [
-    Reflux.connect(edgesStore, 'edges'),
-    Reflux.connect(clustersStore, 'clusters')
-  ],
+class ConnectionList extends Component {
+  shouldComponentUpdate(nextProps) {
+    return this.props.edges !== nextProps.edges;
+  }
 
-  shouldComponentUpdate: function(nextProps, nextState) {
-    return this.state.edges !== nextState.edges;
-  },
+  render() {
+    let connections = [];
 
-  render: function() {
-    var clusters = this.state.clusters;
-
-    var connections = this.state.edges.map(function(edge, key) {
-      var primary = clusters.has(edge.from.id) || clusters.has(edge.to.id);
-
-      return <Connection key={key} edge={edge} primary={primary} />;
+    this.props.edges.map(function(edge) {
+      connections.push(<Connection key={edge.connection} edge={edge} />);
     });
 
     return <g className="connection-list">{connections}</g>;
   }
-});
+}
+
+export default ConnectionList;

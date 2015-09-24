@@ -1,21 +1,25 @@
 import { Map } from 'immutable';
-import { RESIZE_VIS } from '../actions';
+import { extend, each } from 'lodash';
+import { scale } from 'd3';
+import { UPDATE_SCALES } from '../actions';
 
 export default function scales(state = Map(), action) {
   switch (action.type) {
-    case RESIZE_VIS:
+    case UPDATE_SCALES:
       let scaleElements = action.elements;
-
-      //let scaleElements = document.querySelectorAll('[data-scale]');
 
       return state.withMutations(function(scales) {
         for (var i = 0; i < scaleElements.length; i++) {
           var element = scaleElements.item(i),
             key = element.getAttribute('data-scale'),
             width = parseFloat(window.getComputedStyle(element).width),
-            scale = d3.scale.linear();
+            scale = scales.get(key);
 
-          var range = [[0, 0], [0, 0]];
+          scale = scale == null ?
+            d3.scale.linear().range([[0, 0], [0, 0]]) :
+            scale.copy();
+
+          var range = scale.range();
 
           if (element.hasAttribute('data-domain-min')) {
             if (element.hasAttribute('data-range-min'))

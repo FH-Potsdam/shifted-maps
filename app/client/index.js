@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import ShiftedMaps from './components/app';
 import { mapbox } from './config';
-import store from './redux/store';
+import store from './store';
 
 L.mapbox.accessToken = mapbox.token;
 

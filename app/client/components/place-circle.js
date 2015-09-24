@@ -1,22 +1,23 @@
-var React = require('react');
+import React, { Component } from 'react';
 
-var PlaceCircle = module.exports = React.createClass({
-  statics: {
-    createId: function(node) {
-      return 'place-circle-' + node.id;
-    }
-  },
+class PlaceCircle extends Component {
+  shouldComponentUpdate(nextProps) {
+    let node = this.props.node,
+      nextNode = nextProps.node;
 
-  shouldComponentUpdate: function(nextProps) {
-    var node = this.props.node;
+    return node.point !== nextNode.point || node.radius !== nextNode.radius;
+  }
 
-    return node.point !== nextProps.node.point || node.radius !== nextProps.node.radius;
-  },
-
-  render: function() {
-    var node = this.props.node,
+  render() {
+    let node = this.props.node,
       id = PlaceCircle.createId(node);
 
     return <circle className="place-circle" cx={node.point.x} cy={node.point.y} r={node.radius} id={id} />;
   }
-});
+}
+
+PlaceCircle.createId = function(node) {
+  return 'place-circle-' + node.place;
+};
+
+export default PlaceCircle;

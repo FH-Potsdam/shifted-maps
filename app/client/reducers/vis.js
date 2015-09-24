@@ -10,25 +10,44 @@ function calculateBounds(map) {
   return L.bounds(min, min.add(size.multiplyBy(1 + CLIP_PADDING * 2)));
 }
 
+function boundsToObject(bounds) {
+  return {
+    min: pointToObject(bounds.min),
+    max: pointToObject(bounds.max),
+    dimensions: pointToObject(bounds.getSize())
+  };
+}
+
+function pointToObject(point) {
+  return { x: point.x, y: point.y };
+}
+
 function initVis(state, map) {
-  let scale = d3.scale.linear()
+  let bounds = calculateBounds(map),
+    scale = d3.scale.linear()
       .domain([map.getMinZoom(), map.getMaxZoom()]);
 
   function view(place) {
     return map.latLngToLayerPoint(place.location);
   }
 
-  return state.merge({ scale, view });
+  return state.mergeDeep({
+    translate: bounds.min,
+    scale: scale(map.getZoom()),
+    view,
+    bounds: boundsToObject(bounds),
+    transform: { translate: pointToObject(bounds.min), scale: null }
+  });
 }
 
 function zoomVis(state, map, event) {
   let scale = map.getZoomScale(event.zoom),
-    boundsMin = state.get('bounds').min,
-    translate = map._getCenterOffset(event.center)._multiplyBy(-scale)._add(boundsMin.toObject());
+    boundsMin = state.getIn(['bounds', 'min']).toObject,
+    translate = map._getCenterOffset(event.center)._multiplyBy(-scale)._add(boundsMin);
 
   return state.mergeDeep({
     transform: {
-      translate: translate,
+      translate: pointToObject(translate),
       scale: scale
     }
   });
@@ -38,8 +57,8 @@ function moveVis(state, map) {
   let bounds = calculateBounds(map);
 
   return state.mergeDeep({
-    bounds: bounds,
-    transform: { translate: bounds.min, scale: null }
+    bounds: boundsToObject(bounds),
+    transform: { translate: pointToObject(bounds.min), scale: null }
   });
 }
 
@@ -49,7 +68,7 @@ export default function vis(state = Map(), action) {
       return initVis(state, action.map);
 
     case ZOOM_VIS:
-      return zoomVis(state, ...action);
+      return zoomVis(state, action.map, action.event);
 
     case MOVE_VIS:
     case RESIZE_VIS:

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import { Provider, connect } from 'react-redux';
 import config from '../config';
-import selector from '../redux/selector';
-import { fetchStoryline, moveVis, resizeVis, zoomVis } from '../redux/actions';
+import store from '../store';
+import { fetchStoryline, initVis, moveVis, resizeVis, zoomVis, updateScales } from '../actions';
 import Map from './map';
 import Vis from './vis';
+import Scales from './scales';
 
   //InitAction = require('../actions/init'),
   //Vis = require('./vis'),
@@ -21,10 +22,6 @@ class App extends Component {
       mapZoom: 10,
       mapCenter: [52.520007, 13.404954]
     };
-  }
-
-  shouldComponentUpdate() {
-    return false;
   }
 
   componentDidMount() {
@@ -52,16 +49,20 @@ class App extends Component {
              zoom={this.state.mapZoom}
              center={this.state.mapCenter}
              className="app-map"
+             onViewReset={event => dispatch(initVis(event.target))}
              onDragStart={this.onDragStart.bind(this)}
              onDragEnd={this.onMoveEnd.bind(this)}
              onResize={event => dispatch(resizeVis(event.target))}
              onZoomAnim={event => dispatch(zoomVis(event.target, event))}>
-          <Vis className="leaflet-zoom-animated" />
+          <Provider store={store}>
+            <Vis className="leaflet-zoom-animated" />
+          </Provider>
         </Map>
+        <Scales onUpdate={elements => dispatch(updateScales(elements))} />
         {/*<Ui />*/}
       </div>
     );
   }
 }
 
-export default connect(selector)(App);
+export default connect()(App);

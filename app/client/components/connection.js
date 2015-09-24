@@ -1,22 +1,27 @@
-var Reflux = require('reflux'),
-  React = require('react');
+import React, { Component } from 'react';
 
-module.exports = React.createClass({
-  shouldComponentUpdate: function(nextProps) {
-    var { edge, primary } = this.props;
+class Connection extends Component {
+  shouldComponentUpdate(nextProps) {
+    return this.props.edge !== nextProps.edge;
+  }
 
-    return primary !== nextProps.primary ||
-      edge.from.point !== nextProps.edge.to.point ||
-      edge.strokWidth !== nextProps.edge.strokeWidth;
-  },
-
-  render: function() {
-    var { edge, primary } = this.props,
+  render() {
+    let { edge } = this.props,
       style = { display: 'none' };
 
-    if (primary)
+    if (edge.visible)
       style.display = 'block';
 
-    return <line style={style} x1={edge.from.point.x} y1={edge.from.point.y} x2={edge.to.point.x} y2={edge.to.point.y} strokeWidth={edge.strokeWidth} className="connection" />;
+    return (
+      <line style={style}
+            x1={edge.from.x}
+            y1={edge.from.y}
+            x2={edge.to.x}
+            y2={edge.to.y}
+            strokeWidth={edge.strokeWidth}
+            className="connection" />
+    );
   }
-});
+}
+
+export default Connection;

@@ -1,10 +1,10 @@
-var Immutable = require('immutable');
+import { Record, List } from 'immutable';
 
-module.exports = Immutable.Record({
+export default Record({
   id: null,
   location: null,
   name: null,
   placeType: null,
   duration: 0,
-  stays: new Immutable.List()
+  stays: new List()
 });

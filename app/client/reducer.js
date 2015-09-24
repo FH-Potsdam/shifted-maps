@@ -4,4 +4,4 @@ import places from './reducers/places';
 import scales from './reducers/scales';
 import vis from './reducers/vis';
 
-export default combineReducers({ connections, places, scales, vis });
+export default combineReducers({ scales, vis, connections, places });

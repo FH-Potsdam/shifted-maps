@@ -8,9 +8,9 @@ class Map extends Component {
       maxZoom: 19
     });
 
-    this.map.setView(this.props.center, this.props.zoom);
-
     this.addEventListeners(this.props);
+
+    this.map.setView(this.props.center, this.props.zoom);
 
     // Need to render overlay including children in next tick to let map set the view first and create the corresponding
     // overlay pane element we use here.

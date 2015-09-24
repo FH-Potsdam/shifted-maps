@@ -1,22 +1,20 @@
-var Reflux = require('reflux'),
-  React = require('react'),
-  nodesStore = require('../stores/nodes'),
-  PlaceClip = require('./place-clip');
+import React, { Component } from 'react';
+import PlaceClip from './place-clip';
 
-module.exports = React.createClass({
-  mixins: [Reflux.connect(nodesStore, 'nodes')],
+class PlaceClipList extends Component {
+  shouldComponentUpdate(nextProps) {
+    return this.props.nodes !== nextProps.nodes;
+  }
 
-  shouldComponentUpdate: function(nextProps, nextState) {
-    return this.state.nodes !== nextState.nodes;
-  },
+  render() {
+    let placeClips = [];
 
-  render: function() {
-    var placeClips = [];
-
-    this.state.nodes.forEach(function(node, key) {
-      placeClips.push(<PlaceClip key={key} node={node} />);
+    this.props.nodes.forEach(function(node) {
+      placeClips.push(<PlaceClip key={node.place} node={node} />);
     });
 
     return <g className="place-clip-list">{placeClips}</g>;
   }
-});
+}
+
+export default PlaceClipList;

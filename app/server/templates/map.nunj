@@ -13,19 +13,4 @@
 
 {% block content %}
     <div id="app"></div>
-
-    <div class="scale-list">
-        <div data-scale="place-radius" data-domain-max data-range-max></div>
-        <div data-scale="place-radius" data-domain-max data-range-min></div>
-        <div data-scale="place-radius" data-domain-min data-range-max></div>
-        <div data-scale="place-radius" data-domain-min data-range-min></div>
-        <div data-scale="place-stroke-width" data-domain-max data-range-max></div>
-        <div data-scale="place-stroke-width" data-domain-max data-range-min></div>
-        <div data-scale="place-stroke-width" data-domain-min data-range-max></div>
-        <div data-scale="place-stroke-width" data-domain-min data-range-min></div>
-        <div data-scale="edge-stroke-width" data-domain-max data-range-max></div>
-        <div data-scale="edge-stroke-width" data-domain-max data-range-min></div>
-        <div data-scale="edge-stroke-width" data-domain-min data-range-max></div>
-        <div data-scale="edge-stroke-width" data-domain-min data-range-min></div>
-    </div>
 {% endblock %}

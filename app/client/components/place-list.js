@@ -1,45 +1,33 @@
-var Reflux = require('reflux'),
-  React = require('react'),
-  Immutable = require('immutable'),
-  nodesStore = require('../stores/nodes'),
-  clustersStore = require('../stores/clusters'),
-  tilesStore = require('../stores/tiles'),
-  PlaceMap = require('./place-map'),
-  PlaceDeco = require('./place-deco')/*,
-  PlaceLabel = require('./place-label')*/;
+import React, { Component } from 'react';
+// import PlaceMap from './place-map';
+import PlaceDeco from './place-deco';
+//import PlaceLabel from './place-label';
 
-module.exports = React.createClass({
-  mixins: [
-    Reflux.connect(nodesStore, 'nodes'),
-    Reflux.connect(clustersStore, 'clusters'),
-    Reflux.connect(tilesStore, 'tiles')
-  ],
+class PlaceList extends Component {
+  shouldComponentUpdate(nextProps) {
+    return this.props.nodes !== nextProps.nodes;
+  }
 
-  shouldComponentUpdate: function(nextProps, nextState) {
-    return this.state.nodes !== nextState.nodes || !Immutable.is(this.state.tiles, nextState.tiles);
-  },
+  render() {
+    let places = [];
 
-  render: function() {
-    var places = [],
-      clusters = this.state.clusters,
-      tiles = this.state.tiles;
+    this.props.nodes.forEach(function(node) {
+      let style = { display: 'none' };
 
-    this.state.nodes.forEach(function(node, key) {
-      var primary = clusters.has(key),
-        className = 'place';
-
-      if (primary)
-        className += ' primary';
+      if (node.visible)
+        style.display = 'block';
 
       places.push(
-        <g className={className} key={key}>
-          <PlaceMap node={node} primary={primary} tile={tiles.get(key)} />
-          <PlaceDeco node={node} primary={primary} />
-          {/*<PlaceLabel node={node} primary={primary} />*/}
+        <g style={style} key={node.place}>
+          {/*<PlaceMap node={node} tile={tiles.get(key)} />*/}
+          <PlaceDeco node={node} />
+          {/*<PlaceLabel node={node} />*/}
         </g>
       );
     });
 
     return <g className="place-list">{places}</g>;
   }
-});
+}
+
+export default PlaceList;

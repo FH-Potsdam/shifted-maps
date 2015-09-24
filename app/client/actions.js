@@ -19,6 +19,7 @@ export const MOVE_VIS = 'MOVE_VIS';
 export const RESIZE_VIS = 'RESIZE_VIS';
 export const ZOOM_VIS = 'ZOOM_VIS';
 export const CHANGE_VIEW = 'CHANGE_VIEW';
+export const UPDATE_SCALES = 'UPDATE_SCALES';
 export const CHANGE_TIME_SPAN = 'CHANGE_TIME_SPAN';
 export const TOGGLE_NODE = 'TOGGLE_NODE';
 
@@ -47,9 +48,7 @@ export function moveVis(map) {
 }
 
 export function resizeVis(map) {
-  let elements = document.querySelectorAll('[data-scale]');
-
-  return { type: RESIZE_VIS, map, elements };
+  return { type: RESIZE_VIS, map };
 }
 
 export function zoomVis(map, event) {
@@ -68,12 +67,16 @@ export function toggleNode(node) {
   return { type: TOGGLE_NODE, node };
 }
 
+export function updateScales(elements) {
+  return { type: UPDATE_SCALES, elements };
+}
+
 export function requestStoryline() {
   return { type: REQUEST_STORYLINE };
 }
 
-export function receiveStoryline() {
-  return { type: RECEIVE_STORYLINE };
+export function receiveStoryline(places, trips, stays) {
+  return { type: RECEIVE_STORYLINE, places, trips, stays};
 }
 
 export function failStorylineRequest(error) {
@@ -83,6 +86,10 @@ export function failStorylineRequest(error) {
 export function fetchStoryline() {
   return function(dispatch) {
     dispatch(requestStoryline());
+
+    let places = [],
+      trips = [],
+      stays = [];
 
     oboe('/api')
       .node('startAt', function(startAt) {
@@ -100,23 +107,23 @@ export function fetchStoryline() {
        return object;
        })*/
       .node('place', function(place) {
-        dispatch(addPlace(new Place(place)));
+        places.push(new Place(place));
 
         return oboe.drop;
       })
       .node('stay', function(stay) {
         stay.duration = moment(stay.endAt).diff(stay.startAt, 's');
-        dispatch(addStay(new Stay(stay)));
+        stays.push(new Stay(stay));
 
         return oboe.drop;
       })
       .node('trip', function(trip) {
         trip.duration = moment(trip.endAt).diff(trip.startAt, 's');
-        dispatch(addTrip(new Trip(trip)));
+        trips.push(new Trip(trip));
 
         return oboe.drop;
       })
-      .done(() => dispatch(receiveStoryline()))
+      .done(() => dispatch(receiveStoryline(places, trips, stays)))
       .fail(error => dispatch(failStorylineRequest(error)));
   }
 }

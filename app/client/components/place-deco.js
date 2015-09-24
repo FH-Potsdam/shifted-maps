@@ -1,12 +1,15 @@
-var React = require('react'),
-  PlaceCircle = require('./place-circle');
+import React, { Component } from 'react';
+import PlaceCircle from './place-circle';
 
-module.exports = React.createClass({
-  shouldComponentUpdate: function(nextProps) {
-    return nextProps.primary && this.props.node.strokeWidth !== nextProps.node.strokeWidth;
-  },
+class PlaceDeco extends Component {
+  shouldComponentUpdate(nextProps) {
+    let node = this.props.node,
+      nextNode = nextProps.node;
 
-  render: function() {
+    return nextNode.visible && node.strokeWidth !== nextNode.strokeWidth;
+  }
+
+  render() {
     var node = this.props.node;
 
     return (
@@ -15,4 +18,6 @@ module.exports = React.createClass({
       </g>
     );
   }
-});
+}
+
+export default PlaceDeco;

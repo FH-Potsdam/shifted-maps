@@ -1,6 +1,6 @@
-var Record = require('immutable').Record;
+import { Record } from 'immutable';
 
-module.exports = Record({
+export default Record({
   at: null,
   startAt: null,
   endAt: null,
