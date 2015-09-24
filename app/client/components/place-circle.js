@@ -17,7 +17,7 @@ class PlaceCircle extends Component {
 }
 
 PlaceCircle.createId = function(node) {
-  return 'place-circle-' + node.place;
+  return 'place-circle-' + node.id;
 };
 
 export default PlaceCircle;

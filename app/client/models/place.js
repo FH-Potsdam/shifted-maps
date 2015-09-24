@@ -6,5 +6,10 @@ export default Record({
   name: null,
   placeType: null,
   duration: 0,
-  stays: new List()
+  frequency: 0,
+  stays: new List(),
+  radius: 0,
+  strokeWidth: 0,
+  point: null,
+  visible: false
 });

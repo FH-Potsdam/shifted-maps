@@ -1,10 +1,10 @@
 import { createStructuredSelector } from 'reselect';
-import nodesSelector from './selectors/nodes';
-import edgesSelector from './selectors/edges';
+import { boundedPlacesSelector } from './selectors/places';
+import { boundedConnectionsSelector } from './selectors/connections';
 import visSelector from './selectors/vis';
 
 export default createStructuredSelector({
   vis: visSelector,
-  nodes: nodesSelector,
-  edges: edgesSelector
+  nodes: boundedPlacesSelector,
+  edges: boundedConnectionsSelector
 });

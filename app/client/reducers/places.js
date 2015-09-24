@@ -23,14 +23,15 @@ export default function places(state = Map(), action) {
 
           place = place.merge({
             stays: place.stays.push(stay),
-            duration: place.duration + stay.duration
+            duration: place.duration + stay.duration,
+            frequency: place.frequency + 1
           });
 
           state.set(place.id, place);
         });
       });
 
-    case ADD_PLACE:
+    /*case ADD_PLACE:
       place = action.place;
 
       return state.set(place.id, place);
@@ -50,7 +51,7 @@ export default function places(state = Map(), action) {
         duration: place.duration + stay.duration
       });
 
-      return state.set(place.id, place);
+      return state.set(place.id, place);*/
 
     default:
       return state

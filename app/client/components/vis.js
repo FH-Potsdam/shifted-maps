@@ -16,22 +16,22 @@ class Vis extends Component {
   render() {
     let { vis, nodes, edges } = this.props;
 
-    vis = vis.toJS();
+    let {bounds, transform } = vis,
+      boundSize = bounds.getSize();
 
-    let bounds = vis.bounds,
-      transform = vis.transform;
+    let { translate, scale } = transform.toJS();
 
-    let viewBox = [bounds.min.x, bounds.min.y, bounds.dimensions.x, bounds.dimensions.y].join(' '),
-      transformString = L.DomUtil.getTranslateString(transform.translate),
+    let viewBox = [bounds.min.x, bounds.min.y, boundSize.x, boundSize.y].join(' '),
+      transformString = L.DomUtil.getTranslateString(translate),
       style = {};
 
-    if (transform.scale != null)
-      transformString += ' scale(' + transform.scale + ')';
+    if (scale != null)
+      transformString += ' scale(' + scale + ')';
 
     style[L.DomUtil.TRANSFORM] = transformString;
 
     return (
-      <svg className={this.props.className} width={bounds.dimensions.x} height={bounds.dimensions.y} viewBox={viewBox} style={style}>
+      <svg className={this.props.className} width={boundSize.x} height={boundSize.y} viewBox={viewBox} style={style}>
         <defs>
           <PlaceCircleList nodes={nodes} />
           <PlaceClipList nodes={nodes} />

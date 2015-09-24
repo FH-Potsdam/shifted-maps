@@ -9,8 +9,8 @@ class PlaceClipList extends Component {
   render() {
     let placeClips = [];
 
-    this.props.nodes.forEach(function(node) {
-      placeClips.push(<PlaceClip key={node.place} node={node} />);
+    this.props.nodes.forEach(function(node, id) {
+      placeClips.push(<PlaceClip key={id} node={node} />);
     });
 
     return <g className="place-clip-list">{placeClips}</g>;

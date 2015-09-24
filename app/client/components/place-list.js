@@ -11,14 +11,14 @@ class PlaceList extends Component {
   render() {
     let places = [];
 
-    this.props.nodes.forEach(function(node) {
+    this.props.nodes.forEach(function(node, id) {
       let style = { display: 'none' };
 
       if (node.visible)
         style.display = 'block';
 
       places.push(
-        <g style={style} key={node.place}>
+        <g style={style} key={id}>
           {/*<PlaceMap node={node} tile={tiles.get(key)} />*/}
           <PlaceDeco node={node} />
           {/*<PlaceLabel node={node} />*/}

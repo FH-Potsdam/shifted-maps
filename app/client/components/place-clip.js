@@ -20,7 +20,7 @@ class PlaceClip extends Component {
 }
 
 PlaceClip.createId = function(node) {
-  return 'place-clip-' + node.place;
+  return 'place-clip-' + node.id;
 };
 
 export default PlaceClip;

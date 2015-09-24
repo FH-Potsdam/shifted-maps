@@ -11,15 +11,11 @@ function calculateBounds(map) {
 }
 
 function boundsToObject(bounds) {
-  return {
-    min: pointToObject(bounds.min),
-    max: pointToObject(bounds.max),
-    dimensions: pointToObject(bounds.getSize())
-  };
+  return bounds;
 }
 
 function pointToObject(point) {
-  return { x: point.x, y: point.y };
+  return point;
 }
 
 function initVis(state, map) {
@@ -31,12 +27,14 @@ function initVis(state, map) {
     return map.latLngToLayerPoint(place.location);
   }
 
-  return state.mergeDeep({
-    translate: bounds.min,
-    scale: scale(map.getZoom()),
-    view,
-    bounds: boundsToObject(bounds),
-    transform: { translate: pointToObject(bounds.min), scale: null }
+  return state.withMutations(function(state) {
+    state.mergeDeep({
+      translate: pointToObject(bounds.min),
+      scale: scale(map.getZoom()),
+      view,
+      bounds: boundsToObject(bounds),
+      transform: { translate: pointToObject(bounds.min), scale: null }
+    });
   });
 }
 

@@ -9,8 +9,8 @@ class ConnectionList extends Component {
   render() {
     let connections = [];
 
-    this.props.edges.map(function(edge) {
-      connections.push(<Connection key={edge.connection} edge={edge} />);
+    this.props.edges.map(function(edge, id) {
+      connections.push(<Connection key={id} edge={edge} />);
     });
 
     return <g className="connection-list">{connections}</g>;

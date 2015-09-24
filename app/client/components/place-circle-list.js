@@ -9,8 +9,8 @@ class PlaceCircleList extends Component {
   render() {
     let placeCircles = [];
 
-    this.props.nodes.forEach(function (node) {
-      placeCircles.push(<PlaceCircle key={node.place} node={node}/>);
+    this.props.nodes.forEach(function (node, id) {
+      placeCircles.push(<PlaceCircle key={id} node={node}/>);
     });
 
     return <g className="place-circle-list">{placeCircles}</g>;

@@ -23,15 +23,17 @@ export default function connections(state = Map(), action) {
             connection = new Connection({ from: trip.from, to: trip.to });
 
           connection = connection.merge({
+            id: tripId,
             trips: connection.trips.push(trip),
-            duration: connection.duration + trip.duration
+            duration: connection.duration + trip.duration,
+            frequency: connection.frequency + 1
           });
 
           state.set(tripId, connection);
         });
       });
 
-    case ADD_TRIP:
+    /*case ADD_TRIP:
       let trip = action.trip;
 
       let tripId = trip.from < trip.to ?
@@ -48,7 +50,7 @@ export default function connections(state = Map(), action) {
         duration: connection.duration + trip.duration
       });
 
-      return state.set(tripId, connection);
+      return state.set(tripId, connection);*/
 
     default:
       return state;
