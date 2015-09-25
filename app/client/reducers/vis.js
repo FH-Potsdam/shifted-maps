@@ -10,14 +10,6 @@ function calculateBounds(map) {
   return L.bounds(min, min.add(size.multiplyBy(1 + CLIP_PADDING * 2)));
 }
 
-function boundsToObject(bounds) {
-  return bounds;
-}
-
-function pointToObject(point) {
-  return point;
-}
-
 function initVis(state, map) {
   let bounds = calculateBounds(map),
     scale = d3.scale.linear()
@@ -28,35 +20,32 @@ function initVis(state, map) {
   }
 
   return state.withMutations(function(state) {
-    state.mergeDeep({
-      translate: pointToObject(bounds.min),
+    state.merge({
+      translate: bounds.min,
       scale: scale(map.getZoom()),
       view,
-      bounds: boundsToObject(bounds),
-      transform: { translate: pointToObject(bounds.min), scale: null }
+      bounds,
+      transform: { translate: bounds.min, scale: null }
     });
   });
 }
 
 function zoomVis(state, map, event) {
   let scale = map.getZoomScale(event.zoom),
-    boundsMin = state.getIn(['bounds', 'min']).toObject,
+    boundsMin = state.getIn(['bounds', 'min']).toObject(),
     translate = map._getCenterOffset(event.center)._multiplyBy(-scale)._add(boundsMin);
 
-  return state.mergeDeep({
-    transform: {
-      translate: pointToObject(translate),
-      scale: scale
-    }
+  return state.merge({
+    transform: { translate, scale }
   });
 }
 
 function moveVis(state, map) {
   let bounds = calculateBounds(map);
 
-  return state.mergeDeep({
-    bounds: boundsToObject(bounds),
-    transform: { translate: pointToObject(bounds.min), scale: null }
+  return state.merge({
+    bounds,
+    transform: { translate: bounds.min, scale: null }
   });
 }
 
