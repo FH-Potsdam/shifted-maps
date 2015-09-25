@@ -8,7 +8,7 @@ class Scales extends Component {
     super(props);
 
     this.state = {
-      scales: ['place-radius', 'place-stroke-width', 'edge-stroke-width']
+      scales: ['place-radius', 'place-stroke-width', 'connection-stroke-width']
     };
   }
 

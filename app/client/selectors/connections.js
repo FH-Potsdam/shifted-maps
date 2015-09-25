@@ -2,11 +2,9 @@ import d3 from 'd3';
 import { createSelector } from 'reselect';
 import { positionedPlacesSelector } from './places';
 import { connectionStrokeWidthRangeScaleSelector } from './scales';
-import { visScaleSelector, visBoundsSelector } from './vis';
+import { visBoundsSelector, visScaleSelector } from './vis';
 
-function scaleConnections(connections, strokeWidthRangeScale, visScale) {
-  console.log('scaleConnections');
-
+function computeConnectionStrokeWidthScale(connections, strokeWidthRangeScale, visScale) {
   let strokeWidthRange = strokeWidthRangeScale(visScale);
 
   let minFrequency = Infinity,
@@ -25,14 +23,16 @@ function scaleConnections(connections, strokeWidthRangeScale, visScale) {
     .range(strokeWidthRange)
     .domain(strokeWidthDomain);
 
+  return strokeWidthScale;
+}
+
+function scaleConnections(connections, strokeWidthScale) {
   return connections.map(function(connection) {
     return connection.set('strokeWidth', strokeWidthScale(connection.frequency));
   });
 }
 
 function positionConnections(connections, places) {
-  console.log('positionConnections');
-
   return connections.map(function(connection) {
     let from = places.get(connection.from),
       to = places.get(connection.to);
@@ -45,8 +45,6 @@ function positionConnections(connections, places) {
 }
 
 function boundConnections(connections, visBounds) {
-  console.log('boundConnections');
-
   return connections.map(function(connection) {
     let { fromPoint, toPoint } = connection;
 
@@ -59,13 +57,21 @@ function boundConnections(connections, visBounds) {
   });
 }
 
-const connectionSelector = state => state.connections;
+const connectionsSelector = state => state.connections;
+
+export const connectionStrokeWidthScaleSelector = createSelector(
+  [
+    connectionsSelector,
+    connectionStrokeWidthRangeScaleSelector,
+    visScaleSelector
+  ],
+  computeConnectionStrokeWidthScale
+);
 
 export const scaledConnectionsSelector = createSelector(
   [
-    connectionSelector,
-    connectionStrokeWidthRangeScaleSelector,
-    visScaleSelector
+    connectionsSelector,
+    connectionStrokeWidthScaleSelector
   ],
   scaleConnections
 );
@@ -86,4 +92,4 @@ export const boundedConnectionsSelector = createSelector(
   boundConnections
 );
 
-export default connectionSelector;
+export default connectionsSelector;

@@ -1,7 +1,9 @@
-export default state => state.scales;
+const scaleSelector = state => state.scales;
 
-export const connectionStrokeWidthRangeScaleSelector = state => state.scales.get('edge-stroke-width');
+export const placeStrokeWidthRangeScaleSelector = state => state.scales.get('placeStrokeWidthRangeScale');
 
-export const placeStrokeWidthRangeScaleSelector = state => state.scales.get('place-stroke-width');
+export const placeRadiusRangeScaleSelector = state => state.scales.get('placeRadiusRangeScale');
 
-export const placeRadiusRangeScaleSelector = state => state.scales.get('place-radius');
+export const connectionStrokeWidthRangeScaleSelector = state => state.scales.get('connectionStrokeWidthRangeScale');
+
+export default scaleSelector;

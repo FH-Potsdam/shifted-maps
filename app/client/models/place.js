@@ -11,5 +11,6 @@ export default Record({
   radius: 0,
   strokeWidth: 0,
   point: null,
-  visible: false
+  visible: false,
+  tile: null
 });

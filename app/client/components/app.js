@@ -2,14 +2,10 @@ import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux';
 import config from '../config';
 import store from '../store';
-import { fetchStoryline, initVis, moveVis, resizeVis, zoomVis, updateScales } from '../actions';
+import { fetchStoryline, initMap, moveMap, resizeMap, zoomMap, updateScales } from '../actions';
 import Map from './map';
 import Vis from './vis';
 import Scales from './scales';
-
-  //InitAction = require('../actions/init'),
-  //Vis = require('./vis'),
-  //Ui = require('./ui'),
 
 class App extends Component {
   constructor(props) {
@@ -28,37 +24,51 @@ class App extends Component {
     this.props.dispatch(fetchStoryline());
   }
 
-  onDragStart() {
+  onMapViewReset(event) {
+    this.props.dispatch(initMap(event.target, event));
+  }
+
+  onMapDragStart() {
     this._dragging = true;
   }
 
-  onMoveEnd(event) {
+  onMapMoveEnd(event) {
     if (!this._dragging)
       return;
 
     this._dragging = false;
-    this.props.dispatch(moveVis(event.target));
+    this.props.dispatch(moveMap(event.target, event));
+  }
+
+  onMapResize(event) {
+    this.props.dispatch(resizeMap(event.target, event));
+  }
+
+  onMapZoomAnim(event) {
+    this.props.dispatch(zoomMap(event.target, event));
+  }
+
+  onScaleUpdate(elements) {
+    this.props.dispatch(updateScales(elements));
   }
 
   render() {
-    let { dispatch } = this.props;
-
     return (
       <div className="app">
         <Map id={this.state.mapId}
              zoom={this.state.mapZoom}
              center={this.state.mapCenter}
              className="app-map"
-             onViewReset={event => dispatch(initVis(event.target))}
-             onDragStart={this.onDragStart.bind(this)}
-             onDragEnd={this.onMoveEnd.bind(this)}
-             onResize={event => dispatch(resizeVis(event.target))}
-             onZoomAnim={event => dispatch(zoomVis(event.target, event))}>
+             onViewReset={this.onMapViewReset.bind(this)}
+             onDragStart={this.onMapDragStart.bind(this)}
+             onDragEnd={this.onMapMoveEnd.bind(this)}
+             onResize={this.onMapResize.bind(this)}
+             onZoomAnim={this.onMapZoomAnim.bind(this)}>
           <Provider store={store}>
             <Vis className="leaflet-zoom-animated" />
           </Provider>
         </Map>
-        <Scales onUpdate={elements => dispatch(updateScales(elements))} />
+        <Scales onUpdate={this.onScaleUpdate.bind(this)} />
         {/*<Ui />*/}
       </div>
     );

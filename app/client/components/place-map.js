@@ -1,29 +1,40 @@
-var Reflux = require('reflux'),
-  React = require('react'),
-  PlaceClip = require('./place-clip');
+import React, { Component } from 'react';
+import PlaceClip from './place-clip';
 
-module.exports = React.createClass({
-  shouldComponentUpdate: function(nextProps) {
-    return nextProps.primary && (this.props.node.point !== nextProps.node.point || this.props.tile !== nextProps.tile);
-  },
+class PlaceMap extends Component {
+  componentDidMount() {
+    this.requestTile();
+  }
 
-  render: function() {
-    var node = this.props.node,
-      tile = this.props.tile,
+  componentDidUpdate() {
+    this.requestTile();
+  }
+
+  requestTile() {
+    let { node, onRequestTile } = this.props;
+
+    if (node.visible && node.tile == null)
+      onRequestTile(node);
+  }
+
+  render() {
+    let { node } = this.props,
+      { radius, tile, point } = node,
       clipPath = 'url(#' + PlaceClip.createId(node) + ')',
-      radius = node.radius,
       size = radius * 2,
       image = null;
 
     if (tile != null) {
-      image = <image x={node.point.x - tile.radius} y={node.point.y - tile.radius} width={tile.size} height={tile.size} xlinkHref={tile.src} />;
+      image = <image x={point.x - tile.radius} y={point.y - tile.radius} width={tile.size} height={tile.size} xlinkHref={tile.src} />;
     }
 
     return (
       <g className="place-map" clipPath={clipPath}>
-        <rect className="place-map-background" x={node.point.x - radius} y={node.point.y - radius} width={size} height={size} />
+        <rect className="place-map-background" x={point.x - radius} y={point.y - radius} width={size} height={size} />
         {image}
       </g>
     );
   }
-});
+}
+
+export default PlaceMap;

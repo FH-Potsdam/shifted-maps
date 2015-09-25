@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-// import PlaceMap from './place-map';
-import PlaceDeco from './place-deco';
-//import PlaceLabel from './place-label';
+import Place from './place';
 
 class PlaceList extends Component {
   shouldComponentUpdate(nextProps) {
@@ -9,21 +7,11 @@ class PlaceList extends Component {
   }
 
   render() {
-    let places = [];
+    let places = [],
+      { nodes, onRequestTile } = this.props;
 
-    this.props.nodes.forEach(function(node, id) {
-      let style = { display: 'none' };
-
-      if (node.visible)
-        style.display = 'block';
-
-      places.push(
-        <g style={style} key={id}>
-          {/*<PlaceMap node={node} tile={tiles.get(key)} />*/}
-          <PlaceDeco node={node} />
-          {/*<PlaceLabel node={node} />*/}
-        </g>
-      );
+    nodes.forEach(function(node, id) {
+      places.push(<Place node={node} key={id} onRequestTile={onRequestTile} />);
     });
 
     return <g className="place-list">{places}</g>;

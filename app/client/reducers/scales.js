@@ -1,7 +1,12 @@
 import { Map } from 'immutable';
 import { extend, each } from 'lodash';
-import { scale } from 'd3';
-import { UPDATE_SCALES } from '../actions';
+import d3 from 'd3';
+import camelCase from 'mout/string/camelCase';
+import { UPDATE_SCALES, RECEIVE_STORYLINE } from '../actions';
+
+function computeRangeScaleKey(key) {
+  return camelCase(key) + 'RangeScale';
+}
 
 export default function scales(state = Map(), action) {
   switch (action.type) {
@@ -9,17 +14,20 @@ export default function scales(state = Map(), action) {
       let scaleElements = action.elements;
 
       return state.withMutations(function(scales) {
-        for (var i = 0; i < scaleElements.length; i++) {
-          var element = scaleElements.item(i),
+        for (let i = 0; i < scaleElements.length; i++) {
+          let element = scaleElements.item(i),
             key = element.getAttribute('data-scale'),
-            width = parseFloat(window.getComputedStyle(element).width),
-            scale = scales.get(key);
+            width = parseFloat(window.getComputedStyle(element).width);
+
+          key = computeRangeScaleKey(key);
+
+          let scale = scales.get(key);
 
           scale = scale == null ?
             d3.scale.linear().range([[0, 0], [0, 0]]) :
             scale.copy();
 
-          var range = scale.range();
+          let range = scale.range();
 
           if (element.hasAttribute('data-domain-min')) {
             if (element.hasAttribute('data-range-min'))

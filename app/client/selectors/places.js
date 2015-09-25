@@ -1,11 +1,10 @@
 import d3 from 'd3';
 import { createSelector } from 'reselect';
 import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector } from './scales';
-import { visBoundsSelector, visScaleSelector, visViewSelector } from './vis';
+import { visBoundsSelector, visViewSelector, visScaleSelector } from './vis';
+import tilesSelector from './tiles';
 
-function scalePlaces(places, strokeWidthRangeScale, radiusRangeScale, visScale) {
-  console.log('scalePlaces');
-
+function computePlaceScales(places, strokeWidthRangeScale, radiusRangeScale, visScale) {
   let strokeWidthRange = strokeWidthRangeScale(visScale),
     radiusRange = radiusRangeScale(visScale);
 
@@ -34,6 +33,10 @@ function scalePlaces(places, strokeWidthRangeScale, radiusRangeScale, visScale) 
     .range(radiusRange)
     .domain(radiusDomain);
 
+  return { strokeWidthScale, radiusScale };
+}
+
+function scalePlaces(places, strokeWidthScale, radiusScale) {
   return places
     .map(function(place) {
       let { frequency, duration } = place;
@@ -49,8 +52,6 @@ function scalePlaces(places, strokeWidthRangeScale, radiusRangeScale, visScale) 
 }
 
 function positionPlaces(places, visView) {
-  console.log('positionPlaces');
-
   return places.map(function(place) {
     return place.set('point', visView(place));
   });
@@ -61,8 +62,6 @@ function calcDist(nodeOne, nodeTwo) {
 }
 
 function clusterPlaces(places) {
-  console.log('clusterPlaces');
-
   // Check for top most nodes, all others will be hidden.
   return places.withMutations(function(places) {
     let placesArray = places.toList().toJS();
@@ -94,8 +93,6 @@ function clusterPlaces(places) {
 }
 
 function boundPlaces(places, visBounds) {
-  console.log('boundsPlaces');
-
   return places.map(function(place) {
     if (!place.visible)
       return place;
@@ -104,14 +101,51 @@ function boundPlaces(places, visBounds) {
   });
 }
 
+function tilePlaces(places, tiles) {
+  if (tiles.size === 0)
+    return places;
+
+  return places.map(function(place, id) {
+    if (!place.visible)
+      return place;
+
+    let tile = tiles.get(id);
+
+    return place.set('tile', tile);
+  });
+}
+
 const placesSelector = state => state.places;
 
-export const scaledPlacesSelector = createSelector(
+export const placeScalesSelector = createSelector(
   [
     placesSelector,
     placeStrokeWidthRangeScaleSelector,
     placeRadiusRangeScaleSelector,
     visScaleSelector
+  ],
+  computePlaceScales
+);
+
+export const placeStrokeWidthScaleSelector = createSelector(
+  [
+    placeScalesSelector
+  ],
+  (state) => state.strokeWidthScale
+);
+
+export const placeRadiusScaleSelector = createSelector(
+  [
+    placeScalesSelector
+  ],
+  (state) => state.radiusScale
+);
+
+export const scaledPlacesSelector = createSelector(
+  [
+    placesSelector,
+    placeStrokeWidthScaleSelector,
+    placeRadiusScaleSelector
   ],
   scalePlaces
 );
@@ -137,6 +171,14 @@ export const boundedPlacesSelector = createSelector(
     visBoundsSelector
   ],
   boundPlaces
+);
+
+export const tiledPlacesSelector = createSelector(
+  [
+    boundedPlacesSelector,
+    tilesSelector
+  ],
+  tilePlaces
 );
 
 export default placesSelector;

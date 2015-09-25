@@ -1,5 +1,5 @@
 import { Map } from 'immutable';
-import { INIT_VIS, ZOOM_VIS, MOVE_VIS, RESIZE_VIS } from '../actions';
+import { INIT_MAP, ZOOM_MAP, MOVE_MAP, RESIZE_MAP } from '../actions';
 
 const CLIP_PADDING = 0.5;
 
@@ -10,7 +10,7 @@ function calculateBounds(map) {
   return L.bounds(min, min.add(size.multiplyBy(1 + CLIP_PADDING * 2)));
 }
 
-function initVis(state, map) {
+function initVis(map) {
   let bounds = calculateBounds(map),
     scale = d3.scale.linear()
       .domain([map.getMinZoom(), map.getMaxZoom()]);
@@ -19,47 +19,48 @@ function initVis(state, map) {
     return map.latLngToLayerPoint(place.location);
   }
 
-  return state.withMutations(function(state) {
-    state.merge({
-      translate: bounds.min,
-      scale: scale(map.getZoom()),
-      view,
-      bounds,
-      transform: { translate: bounds.min, scale: null }
-    });
-  });
+  let mapZoom = map.getZoom();
+
+  return {
+    translate: bounds.min,
+    scale: scale(mapZoom),
+    transform: { translate: bounds.min, scale: null },
+    view, bounds, map, mapZoom
+  };
 }
 
-function zoomVis(state, map, event) {
+function zoomVis(map, bounds, event) {
   let scale = map.getZoomScale(event.zoom),
-    boundsMin = state.getIn(['bounds', 'min']).toObject(),
+    boundsMin = bounds.get('min').toObject(),
     translate = map._getCenterOffset(event.center)._multiplyBy(-scale)._add(boundsMin);
 
-  return state.merge({
-    transform: { translate, scale }
-  });
+  return {
+    transform: { translate, scale, map },
+    mapZoom: event.zoom
+  };
 }
 
-function moveVis(state, map) {
-  let bounds = calculateBounds(map);
+function moveVis(map) {
+  let bounds = calculateBounds(map),
+    mapZoom = map.getZoom();
 
-  return state.merge({
-    bounds,
-    transform: { translate: bounds.min, scale: null }
-  });
+  return {
+    transform: { translate: bounds.min, scale: null },
+    bounds, map, mapZoom
+  };
 }
 
 export default function vis(state = Map(), action) {
   switch (action.type) {
-    case INIT_VIS:
-      return initVis(state, action.map);
+    case INIT_MAP:
+      return state.merge(initVis(action.map));
 
-    case ZOOM_VIS:
-      return zoomVis(state, action.map, action.event);
+    case ZOOM_MAP:
+      return state.merge(zoomVis(action.map, state.get('bounds'), action.event));
 
-    case MOVE_VIS:
-    case RESIZE_VIS:
-      return moveVis(state, action.map);
+    case MOVE_MAP:
+    case RESIZE_MAP:
+      return state.merge(moveVis(action.map));
 
     default:
       return state

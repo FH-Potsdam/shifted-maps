@@ -6,7 +6,7 @@ class PlaceDeco extends Component {
     let node = this.props.node,
       nextNode = nextProps.node;
 
-    return nextNode.visible && node.strokeWidth !== nextNode.strokeWidth;
+    return node.strokeWidth !== nextNode.strokeWidth;
   }
 
   render() {

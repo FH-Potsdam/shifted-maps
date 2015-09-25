@@ -17,10 +17,13 @@ export const visViewSelector = state => state.vis.get('view');
 
 export const visTransformSelector = state => state.vis.get('transform');
 
+export const visMapSelector = state => state.vis.get('map');
+
+export const visMapZoomSelector = state => state.vis.get('mapZoom');
+
 export default createStructuredSelector({
-    vis: visScaleSelector,
-    bounds: visBoundsSelector,
-    view: visViewSelector,
-    transform: visTransformSelector
-  }
-)
+  vis: visScaleSelector,
+  bounds: visBoundsSelector,
+  view: visViewSelector,
+  transform: visTransformSelector
+})
