@@ -1,4 +1,4 @@
-import placesSelector from '../selectors/places';
+import { scaledPlacesSelector } from '../selectors/places';
 import { fitMapToBounds } from './map';
 
 export const TOGGLE_Place = 'TOGGLE_PLACE';
@@ -11,11 +11,12 @@ export function togglePlace(place) {
 export function fitPlaces() {
   return function(dispatch, getState) {
     let state = getState(),
-      places = placesSelector(state);
+      places = scaledPlacesSelector(state);
 
-    let bounds = new L.LatLngBounds();
+    let bounds = new L.LatLngBounds(),
+      importantPlaces = places.slice(0, 10);
 
-    places.forEach(function(place) {
+    importantPlaces.forEach(function(place) {
       bounds.extend(place.location);
     });
 

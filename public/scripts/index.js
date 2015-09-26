@@ -29,11 +29,7 @@ Object.defineProperty(exports, '__esModule', {
 exports.togglePlace = togglePlace;
 exports.fitPlaces = fitPlaces;
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
 var _selectorsPlaces = require('../selectors/places');
-
-var _selectorsPlaces2 = _interopRequireDefault(_selectorsPlaces);
 
 var _map = require('./map');
 
@@ -50,11 +46,12 @@ function togglePlace(place) {
 function fitPlaces() {
   return function (dispatch, getState) {
     var state = getState(),
-        places = (0, _selectorsPlaces2['default'])(state);
+        places = (0, _selectorsPlaces.scaledPlacesSelector)(state);
 
-    var bounds = new L.LatLngBounds();
+    var bounds = new L.LatLngBounds(),
+        importantPlaces = places.slice(0, 10);
 
-    places.forEach(function (place) {
+    importantPlaces.forEach(function (place) {
       bounds.extend(place.location);
     });
 
