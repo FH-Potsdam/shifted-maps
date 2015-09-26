@@ -1,5 +1,5 @@
 import { Map } from 'immutable';
-import { INIT_MAP, ZOOM_MAP, MOVE_MAP, RESIZE_MAP } from '../actions';
+import { INIT_MAP, ZOOM_MAP, MOVE_MAP, RESIZE_MAP } from '../actions/map';
 
 const CLIP_PADDING = 0.5;
 

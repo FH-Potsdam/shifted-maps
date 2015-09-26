@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux';
 import config from '../config';
 import store from '../store';
-import { requestStoryline, initMap, moveMap, resizeMap, zoomMap, updateScales, requestTiles } from '../actions';
+import { requestStoryline } from '../actions/storyline';
+import { initMap, moveMap, resizeMap, zoomMap } from '../actions/map';
+import { updateScales } from '../actions/scales';
+import { requestTiles } from '../actions/tiles';
 import Map from './map';
 import Vis from './vis';
 import Scales from './scales';
@@ -32,7 +35,6 @@ class App extends Component {
   onMapDragStart() {
     this._dragging = true;
   }
-
   onMapMoveEnd(event) {
     if (!this._dragging)
       return;
@@ -71,7 +73,7 @@ class App extends Component {
              className="app-map"
              onViewReset={this.onMapInit.bind(this)}
              onDragStart={this.onMapDragStart.bind(this)}
-             onDragEnd={this.onMapMoveEnd.bind(this)}
+             onMoveEnd={this.onMapMoveEnd.bind(this)}
              onResize={this.onMapResize.bind(this)}
              onZoomAnim={this.onMapZoomAnim.bind(this)}
              onZoomEnd={this.onMapZoomEnd.bind(this)}>

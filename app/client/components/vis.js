@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import selector from '../selector';
-import { requestTile } from '../actions';
+import { requestTile } from '../actions/tiles';
 import PlaceCircleList from './place-circle-list';
 import PlaceClipList from './place-clip-list';
 import ConnectionList from './connection-list';

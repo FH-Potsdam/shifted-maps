@@ -2,7 +2,7 @@ import { Map } from 'immutable';
 import { extend, each } from 'lodash';
 import d3 from 'd3';
 import camelCase from 'mout/string/camelCase';
-import { UPDATE_SCALES, RECEIVE_STORYLINE } from '../actions';
+import { UPDATE_SCALES } from '../actions/scales';
 
 function computeRangeScaleKey(key) {
   return camelCase(key) + 'RangeScale';

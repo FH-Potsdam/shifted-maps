@@ -1,9 +1,5 @@
 import { Map } from 'immutable';
-import { INIT_MAP, QUEUE_TILE_REQUEST, RECEIVE_TILE } from '../actions';
-
-/*function clearRequests(state) {
-  return state;//.set('requests', Map());
-}*/
+import { QUEUE_TILE_REQUEST, RECEIVE_TILE } from '../actions/tiles';
 
 function addRequest(state, place, request) {
   return state.setIn(['requests', place.id], request);
@@ -18,9 +14,6 @@ function addTile(state, place, tile, zoom) {
 
 export default function tiles(state = Map(), action) {
   switch (action.type) {
-    /*case INIT_MAP:
-      return clearRequests(state);*/
-
     case QUEUE_TILE_REQUEST:
       return addRequest(state, action.place, action.request);
 
