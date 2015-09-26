@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux';
-import config from '../config';
 import store from '../store';
+import { app } from '../selector';
 import { requestStoryline } from '../actions/storyline';
-import { initMap, moveMap, resizeMap, zoomMap } from '../actions/map';
+import { initVis, moveVis, resizeVis, zoomVis } from '../actions/vis';
 import { updateScales } from '../actions/scales';
 import { requestTiles } from '../actions/tiles';
+import { updateMapState } from '../actions/map';
 import Map from './map';
 import Vis from './vis';
 import Scales from './scales';
@@ -16,12 +17,6 @@ class App extends Component {
 
     this._dragging = false;
     this._firstZoom = true;
-
-    this.state = {
-      mapId: config.mapbox.id,
-      mapZoom: 10,
-      mapCenter: [52.520007, 13.404954]
-    };
   }
 
   componentDidMount() {
@@ -29,28 +24,36 @@ class App extends Component {
   }
 
   onMapInit(event) {
-    this.props.dispatch(initMap(event.target, event));
+    let { dispatch } = this.props;
+
+    dispatch(updateMapState(event.target));
+    dispatch(initVis(event.target, event));
   }
 
   onMapDragStart() {
     this._dragging = true;
   }
+
   onMapMoveEnd(event) {
     if (!this._dragging)
       return;
 
+    let { dispatch } = this.props;
+
     this._dragging = false;
-    this.props.dispatch(moveMap(event.target, event));
-    this.props.dispatch(requestTiles());
+    dispatch(moveVis(event.target, event));
+    dispatch(requestTiles());
   }
 
   onMapResize(event) {
-    this.props.dispatch(resizeMap(event.target, event));
-    this.props.dispatch(requestTiles());
+    let { dispatch } = this.props;
+
+    dispatch(resizeVis(event.target, event));
+    dispatch(requestTiles());
   }
 
   onMapZoomAnim(event) {
-    this.props.dispatch(zoomMap(event.target, event));
+    this.props.dispatch(zoomVis(event.target, event));
   }
 
   onMapZoomEnd() {
@@ -65,11 +68,14 @@ class App extends Component {
   }
 
   render() {
+    let { map } = this.props;
+
     return (
       <div className="app">
-        <Map id={this.state.mapId}
-             zoom={this.state.mapZoom}
-             center={this.state.mapCenter}
+        <Map id={map.get('id')}
+             zoom={map.get('zoom')}
+             center={map.get('center')}
+             bounds={map.get('bounds')}
              className="app-map"
              onViewReset={this.onMapInit.bind(this)}
              onDragStart={this.onMapDragStart.bind(this)}
@@ -88,4 +94,4 @@ class App extends Component {
   }
 }
 
-export default connect()(App);
+export default connect(app)(App);

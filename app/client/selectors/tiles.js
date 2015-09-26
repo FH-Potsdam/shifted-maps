@@ -1,13 +1,13 @@
 import { Map } from 'immutable';
 import { createSelector } from 'reselect';
-import { visMapZoomSelector } from './vis';
+import { mapZoomSelector } from './map';
 
 const tilesSelector = state => state.tiles;
 
 export const tilesLevelSelector = createSelector(
   [
     tilesSelector,
-    visMapZoomSelector
+    mapZoomSelector
   ],
   (tiles, zoom) => tiles.get(zoom, Map())
 );

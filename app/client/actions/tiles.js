@@ -2,10 +2,11 @@ import { createTileRequest } from '../services/tiles';
 import Tile from '../models/tile';
 import { placeRadiusRangeScaleSelector } from '../selectors/scales';
 import { placeRadiusScaleSelector, tiledPlacesSelector } from '../selectors/places';
-import { visMapSelector, visMapZoomSelector } from '../selectors/vis';
+import { mapMapSelector, mapZoomSelector } from '../selectors/map';
 import { tileRequestsSelector } from '../selectors/tiles';
 
 export const QUEUE_TILE_REQUEST = 'QUEUE_TILE_REQUEST';
+export const REQUEST_TILES = 'REQUEST_TILES';
 export const RECEIVE_TILE = 'RECEIVE_TILE';
 export const FAIL_TILE_REQUEST = 'FAIL_TILE_REQUEST';
 
@@ -16,8 +17,10 @@ export function requestTiles() {
       requests = tileRequestsSelector(state),
       placeRadiusScale = placeRadiusScaleSelector(state),
       placeRadiusRangeScale = placeRadiusRangeScaleSelector(state),
-      map = visMapSelector(state),
-      zoom = visMapZoomSelector(state);
+      map = mapMapSelector(state),
+      zoom = mapZoomSelector(state);
+
+    dispatch({ type: REQUEST_TILES });
 
     places.forEach(function(place) {
       if (!place.visible || place.tile != null || requests.has(place.id))

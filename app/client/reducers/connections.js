@@ -1,6 +1,6 @@
 import { Map } from 'immutable';
 import Connection from '../models/connection';
-import { RECEIVE_STORYLINE, ADD_TRIP } from '../actions/storyline';
+import { SET_STORYLINE, ADD_TRIP } from '../actions/storyline';
 
 function uniqueId(idOne, idTwo) {
   return idOne + idTwo * idTwo;
@@ -8,7 +8,7 @@ function uniqueId(idOne, idTwo) {
 
 export default function connections(state = Map(), action) {
   switch (action.type) {
-    case RECEIVE_STORYLINE:
+    case SET_STORYLINE:
       let trips = action.trips;
 
       return state.withMutations(function(state) {

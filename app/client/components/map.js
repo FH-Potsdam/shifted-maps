@@ -2,15 +2,25 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
 
+function computeEventName(name) {
+  return name.toLowerCase().slice(2); // Strip "on"
+}
+
+function pickListeners(props) {
+  return _.pick(props, _.isFunction);
+}
+
 class Map extends Component {
   componentDidMount() {
-    this.map = L.mapbox.map(this.refs.map, this.props.id, {
+    let { id, center, zoom } = this.props;
+
+    this.map = L.mapbox.map(this.refs.map, id, {
       maxZoom: 19
     });
 
-    this.addEventListeners(this.props);
+    this.addEventListeners(pickListeners(this.props));
 
-    this.map.setView(this.props.center, this.props.zoom);
+    this.map.setView(center, zoom);
 
     // Need to render overlay including children in next tick to let map set the view first and create the corresponding
     // overlay pane element we use here.
@@ -19,22 +29,34 @@ class Map extends Component {
     }.bind(this));
   }
 
-  componentDidUpdate(prevProps) {
-    this.removeEventListeners(prevProps);
-    this.addEventListeners(this.props);
+  componentWillUpdate(nextProps) {
+    let nextListeners = pickListeners(nextProps),
+      listeners = this.props;
+
+    nextListeners = _.pick(nextListeners, function(listener, name) {
+      return listeners[name] !== listener;
+    });
+
+    listeners = _.pick(listeners, _.keys(nextListeners))
+
+    this.removeEventListeners(listeners);
+    this.addEventListeners(nextListeners);
+  }
+
+  componentDidUpdate() {
+    let { bounds } = this.props;
+
+    if (bounds != null) {
+      this.map.fitBounds(bounds);
+    }
   }
 
   componentWillUnmount() {
-    this.removeEventListeners(this.props);
+    this.map.remove();
   }
 
   addEventListener(name, listener) {
-    if (!_.isFunction(listener))
-      return;
-
-    name = name.toLowerCase().slice(2); // Strip "on"
-
-    this.map.on(name, listener);
+    this.map.on(computeEventName(name), listener);
   }
 
   addEventListeners(listeners) {
@@ -42,12 +64,7 @@ class Map extends Component {
   }
 
   removeEventListener(name, listener) {
-    if (!_.isFunction(listener))
-      return;
-
-    name = name.toLowerCase().slice(2); // Strip "on"
-
-    this.map.off(name, listener);
+    this.map.off(computeEventName(name), listener);
   }
 
   removeEventListeners(listeners) {

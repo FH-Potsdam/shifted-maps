@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import selector from '../selector';
+import { vis } from '../selector';
 import { requestTile } from '../actions/tiles';
 import PlaceCircleList from './place-circle-list';
 import PlaceClipList from './place-clip-list';
@@ -51,4 +51,4 @@ class Vis extends Component {
   }
 }
 
-export default connect(selector)(Vis);
+export default connect(vis)(Vis);

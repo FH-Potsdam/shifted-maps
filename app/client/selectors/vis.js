@@ -1,4 +1,4 @@
-import { createStructuredSelector } from 'reselect';
+import { createSelector, createStructuredSelector } from 'reselect';
 
 function toBounds(bounds) {
   let min = bounds.get('min'),
@@ -6,8 +6,6 @@ function toBounds(bounds) {
 
   return L.bounds([[min.get('x'), min.get('y')], [max.get('x'), max.get('y')]])
 }
-
-export default state => state.vis;
 
 export const visScaleSelector = state => state.vis.get('scale');
 
@@ -17,13 +15,9 @@ export const visViewSelector = state => state.vis.get('view');
 
 export const visTransformSelector = state => state.vis.get('transform');
 
-export const visMapSelector = state => state.vis.get('map');
-
-export const visMapZoomSelector = state => state.vis.get('mapZoom');
-
 export default createStructuredSelector({
-  vis: visScaleSelector,
+  scale: visScaleSelector,
   bounds: visBoundsSelector,
   view: visViewSelector,
   transform: visTransformSelector
-})
+});

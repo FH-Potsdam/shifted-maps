@@ -1,6 +1,7 @@
 import oboe from 'oboe';
 import moment from 'moment';
 import { requestTiles } from './tiles';
+import { fitPlaces } from './places';
 import Place from '../models/place';
 import Stay from '../models/stay';
 import Trip from '../models/trip';
@@ -9,8 +10,8 @@ export const ADD_PLACE = 'ADD_PLACE';
 export const ADD_STAY = 'ADD_STAY';
 export const ADD_TRIP = 'ADD_TRIP';
 export const REQUEST_STORYLINE = 'REQUEST_STORYLINE';
-export const RECEIVE_STORYLINE = 'RECEIVE_STORYLINE';
-export const FAIL_STORYLINE_REQUEST = 'FAIL_STORYLINE_REQUEST';
+export const SET_STORYLINE = 'SET_STORYLINE';
+export const FAILED_STORYLINE_REQUEST = 'FAILED_STORYLINE_REQUEST';
 
 export function addPlace(place) {
   return { type: ADD_PLACE, place };
@@ -68,18 +69,19 @@ export function requestStoryline() {
 
         return oboe.drop;
       })
-      .done(() => dispatch(receiveStoryline(places, trips, stays)))
-      .fail(error => dispatch(failStorylineRequest(error)));
+      .done(() => dispatch(setStoryline(places, trips, stays)))
+      .fail(error => dispatch(failedStorylineRequest(error)));
   }
 }
 
-export function receiveStoryline(places, trips, stays) {
+export function setStoryline(places, trips, stays) {
   return function(dispatch) {
-    dispatch({ type: RECEIVE_STORYLINE, places, trips, stays});
+    dispatch({ type: SET_STORYLINE, places, trips, stays});
     dispatch(requestTiles());
+    dispatch(fitPlaces());
   };
 }
 
-export function failStorylineRequest(error) {
-  return { type: FAIL_STORYLINE_REQUEST, error };
+export function failedStorylineRequest(error) {
+  return { type: FAILED_STORYLINE_REQUEST, error };
 }

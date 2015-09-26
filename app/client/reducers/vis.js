@@ -1,5 +1,5 @@
 import { Map } from 'immutable';
-import { INIT_MAP, ZOOM_MAP, MOVE_MAP, RESIZE_MAP } from '../actions/map';
+import { INIT_VIS, ZOOM_VIS, MOVE_VIS, RESIZE_VIS } from '../actions/vis';
 
 const CLIP_PADDING = 0.5;
 
@@ -19,13 +19,11 @@ function initVis(map) {
     return map.latLngToLayerPoint(place.location);
   }
 
-  let mapZoom = map.getZoom();
-
   return {
     translate: bounds.min,
-    scale: scale(mapZoom),
+    scale: scale(map.getZoom()),
     transform: { translate: bounds.min, scale: null },
-    view, bounds, map, mapZoom
+    view, bounds
   };
 }
 
@@ -35,30 +33,29 @@ function zoomVis(map, bounds, event) {
     translate = map._getCenterOffset(event.center)._multiplyBy(-scale)._add(boundsMin);
 
   return {
-    transform: { translate, scale, map }
+    transform: { translate, scale }
   };
 }
 
 function moveVis(map) {
-  let bounds = calculateBounds(map),
-    mapZoom = map.getZoom();
+  let bounds = calculateBounds(map);
 
   return {
     transform: { translate: bounds.min, scale: null },
-    bounds, map, mapZoom
+    bounds
   };
 }
 
 export default function vis(state = Map(), action) {
   switch (action.type) {
-    case INIT_MAP:
+    case INIT_VIS:
       return state.merge(initVis(action.map));
 
-    case ZOOM_MAP:
+    case ZOOM_VIS:
       return state.merge(zoomVis(action.map, state.get('bounds'), action.event));
 
-    case MOVE_MAP:
-    case RESIZE_MAP:
+    case MOVE_VIS:
+    case RESIZE_VIS:
       return state.merge(moveVis(action.map));
 
     default:
