@@ -2,12 +2,16 @@ import { Map } from 'immutable';
 import { createSelector } from 'reselect';
 import { visMapZoomSelector } from './vis';
 
-export const zoomTilesSelector = (state) => state.tiles;
+const tilesSelector = state => state.tiles;
 
-export default createSelector(
+export const tilesLevelSelector = createSelector(
   [
-    zoomTilesSelector,
+    tilesSelector,
     visMapZoomSelector
   ],
   (tiles, zoom) => tiles.get(zoom, Map())
-)
+);
+
+export const tileRequestsSelector = state => state.tiles.get('requests', Map());
+
+export default tilesSelector;

@@ -35,8 +35,7 @@ function zoomVis(map, bounds, event) {
     translate = map._getCenterOffset(event.center)._multiplyBy(-scale)._add(boundsMin);
 
   return {
-    transform: { translate, scale, map },
-    mapZoom: event.zoom
+    transform: { translate, scale, map }
   };
 }
 

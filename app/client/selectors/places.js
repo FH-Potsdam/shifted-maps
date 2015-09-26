@@ -2,7 +2,7 @@ import d3 from 'd3';
 import { createSelector } from 'reselect';
 import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector } from './scales';
 import { visBoundsSelector, visViewSelector, visScaleSelector } from './vis';
-import tilesSelector from './tiles';
+import { tilesLevelSelector } from './tiles';
 
 function computePlaceScales(places, strokeWidthRangeScale, radiusRangeScale, visScale) {
   let strokeWidthRange = strokeWidthRangeScale(visScale),
@@ -102,13 +102,7 @@ function boundPlaces(places, visBounds) {
 }
 
 function tilePlaces(places, tiles) {
-  if (tiles.size === 0)
-    return places;
-
   return places.map(function(place, id) {
-    if (!place.visible)
-      return place;
-
     let tile = tiles.get(id);
 
     return place.set('tile', tile);
@@ -176,7 +170,7 @@ export const boundedPlacesSelector = createSelector(
 export const tiledPlacesSelector = createSelector(
   [
     boundedPlacesSelector,
-    tilesSelector
+    tilesLevelSelector
   ],
   tilePlaces
 );

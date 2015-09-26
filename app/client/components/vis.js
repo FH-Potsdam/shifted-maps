@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import selector from '../selector';
-import { fetchTile } from '../actions';
+import { requestTile } from '../actions';
 import PlaceCircleList from './place-circle-list';
 import PlaceClipList from './place-clip-list';
 import ConnectionList from './connection-list';
@@ -14,8 +14,14 @@ class Vis extends Component {
       this.props.edges !== nextProps.edges;
   }
 
+  onRequestTile(node) {
+    let { dispatch } = this.props;
+
+    dispatch(requestTile(node));
+  }
+
   render() {
-    let { dispatch, vis, nodes, edges } = this.props;
+    let { vis, nodes, edges } = this.props;
 
     let {bounds, transform } = vis,
       boundSize = bounds.getSize();
@@ -39,7 +45,7 @@ class Vis extends Component {
         </defs>
 
         <ConnectionList edges={edges} />
-        <PlaceList nodes={nodes} onRequestTile={(node) => dispatch(fetchTile(node))} />
+        <PlaceList nodes={nodes} onRequestTile={this.onRequestTile.bind(this)} />
       </svg>
     );
   }

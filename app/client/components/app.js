@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux';
 import config from '../config';
 import store from '../store';
-import { fetchStoryline, initMap, moveMap, resizeMap, zoomMap, updateScales } from '../actions';
+import { requestStoryline, initMap, moveMap, resizeMap, zoomMap, updateScales, requestTiles } from '../actions';
 import Map from './map';
 import Vis from './vis';
 import Scales from './scales';
@@ -12,6 +12,7 @@ class App extends Component {
     super(props);
 
     this._dragging = false;
+    this._firstZoom = true;
 
     this.state = {
       mapId: config.mapbox.id,
@@ -21,10 +22,10 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch(fetchStoryline());
+    this.props.dispatch(requestStoryline());
   }
 
-  onMapViewReset(event) {
+  onMapInit(event) {
     this.props.dispatch(initMap(event.target, event));
   }
 
@@ -38,14 +39,23 @@ class App extends Component {
 
     this._dragging = false;
     this.props.dispatch(moveMap(event.target, event));
+    this.props.dispatch(requestTiles());
   }
 
   onMapResize(event) {
     this.props.dispatch(resizeMap(event.target, event));
+    this.props.dispatch(requestTiles());
   }
 
   onMapZoomAnim(event) {
     this.props.dispatch(zoomMap(event.target, event));
+  }
+
+  onMapZoomEnd() {
+    if (!this._firstZoom)
+      this.props.dispatch(requestTiles());
+
+    this._firstZoom = false;
   }
 
   onScaleUpdate(elements) {
@@ -59,11 +69,12 @@ class App extends Component {
              zoom={this.state.mapZoom}
              center={this.state.mapCenter}
              className="app-map"
-             onViewReset={this.onMapViewReset.bind(this)}
+             onViewReset={this.onMapInit.bind(this)}
              onDragStart={this.onMapDragStart.bind(this)}
              onDragEnd={this.onMapMoveEnd.bind(this)}
              onResize={this.onMapResize.bind(this)}
-             onZoomAnim={this.onMapZoomAnim.bind(this)}>
+             onZoomAnim={this.onMapZoomAnim.bind(this)}
+             onZoomEnd={this.onMapZoomEnd.bind(this)}>
           <Provider store={store}>
             <Vis className="leaflet-zoom-animated" />
           </Provider>

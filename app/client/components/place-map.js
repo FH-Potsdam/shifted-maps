@@ -2,30 +2,32 @@ import React, { Component } from 'react';
 import PlaceClip from './place-clip';
 
 class PlaceMap extends Component {
-  componentDidMount() {
-    this.requestTile();
+  shouldComponentUpdate(nextProps) {
+    let { node } = this.props,
+      nextNode = nextProps.node;
+
+    return node.radius !== nextNode.radius || node.point !== nextNode.point || node.tile !== nextNode.tile;
   }
 
-  componentDidUpdate() {
-    this.requestTile();
-  }
+  componentWillUpdate(nextProps) {
+    if (nextProps.node.tile != null)
+      return;
 
-  requestTile() {
-    let { node, onRequestTile } = this.props;
-
-    if (node.visible && node.tile == null)
-      onRequestTile(node);
+    this.oldTile = this.props.node.tile || this.oldTile;
   }
 
   render() {
     let { node } = this.props,
-      { radius, tile, point } = node,
+      { radius, point } = node,
+      tile = node.tile || this.oldTile,
       clipPath = 'url(#' + PlaceClip.createId(node) + ')',
       size = radius * 2,
       image = null;
 
     if (tile != null) {
-      image = <image x={point.x - tile.radius} y={point.y - tile.radius} width={tile.size} height={tile.size} xlinkHref={tile.src} />;
+      let tileRadius = Math.min(tile.width / 2, tile.height / 2);
+
+      image = <image x={point.x - tileRadius} y={point.y - tileRadius} width={tile.width} height={tile.height} xlinkHref={tile.url} />;
     }
 
     return (

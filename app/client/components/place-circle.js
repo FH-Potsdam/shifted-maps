@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 class PlaceCircle extends Component {
   shouldComponentUpdate(nextProps) {
-    let node = this.props.node,
+    let { node } = this.props,
       nextNode = nextProps.node;
 
     return node.point !== nextNode.point || node.radius !== nextNode.radius;

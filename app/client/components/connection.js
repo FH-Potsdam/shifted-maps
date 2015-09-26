@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 
 class Connection extends Component {
   shouldComponentUpdate(nextProps) {
-    return this.props.edge !== nextProps.edge;
+    let { edge } = this.props,
+      nextEdge = nextProps.edge;
+
+    return edge.fromPoint !== nextEdge.toPoint || edge.strokeWidth !== nextEdge.strokeWidth;
   }
 
   render() {

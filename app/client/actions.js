@@ -1,12 +1,14 @@
 import oboe from 'oboe';
 import moment from 'moment';
-import tileRequester from './services/tileRequester';
+import { createTileRequest } from './services/tiles';
 import Place from './models/place';
 import Stay from './models/stay';
 import Trip from './models/trip';
+import Tile from './models/tile';
 import { placeRadiusRangeScaleSelector } from './selectors/scales';
-import { placeRadiusScaleSelector } from './selectors/places';
-import { visMapSelector } from './selectors/vis';
+import { placeRadiusScaleSelector, tiledPlacesSelector } from './selectors/places';
+import { visMapSelector, visMapZoomSelector } from './selectors/vis';
+import { tileRequestsSelector } from './selectors/tiles';
 
 /*
  * action types
@@ -15,7 +17,7 @@ import { visMapSelector } from './selectors/vis';
 export const REQUEST_STORYLINE = 'REQUEST_STORYLINE';
 export const RECEIVE_STORYLINE = 'RECEIVE_STORYLINE';
 export const FAIL_STORYLINE_REQUEST = 'FAIL_STORYLINE_REQUEST';
-export const REQUEST_TILE = 'REQUEST_TILE';
+export const QUEUE_TILE_REQUEST = 'QUEUE_TILE_REQUEST';
 export const RECEIVE_TILE = 'RECEIVE_TILE';
 export const FAIL_TILE_REQUEST = 'FAIL_TILE_REQUEST';
 export const ADD_PLACE = 'ADD_PLACE';
@@ -46,16 +48,16 @@ export function addTrip(trip) {
   return { type: ADD_TRIP, trip };
 }
 
-export function initMap(map) {
-  return { type: INIT_MAP, map };
+export function initMap(map, event) {
+  return { type: INIT_MAP, map, event };
 }
 
-export function moveMap(map) {
-  return { type: MOVE_MAP, map };
+export function moveMap(map, event) {
+  return { type: MOVE_MAP, map, event };
 }
 
-export function resizeMap(map) {
-  return { type: RESIZE_MAP, map };
+export function resizeMap(map, event) {
+  return { type: RESIZE_MAP, map, event };
 }
 
 export function zoomMap(map, event) {
@@ -78,21 +80,20 @@ export function updateScales(elements) {
   return { type: UPDATE_SCALES, elements };
 }
 
-export function requestStoryline() {
-  return { type: REQUEST_STORYLINE };
-}
-
 export function receiveStoryline(places, trips, stays) {
-  return { type: RECEIVE_STORYLINE, places, trips, stays};
+  return function(dispatch) {
+    dispatch({ type: RECEIVE_STORYLINE, places, trips, stays});
+    dispatch(requestTiles());
+  };
 }
 
 export function failStorylineRequest(error) {
   return { type: FAIL_STORYLINE_REQUEST, error };
 }
 
-export function fetchStoryline() {
+export function requestStoryline() {
   return function(dispatch) {
-    dispatch(requestStoryline());
+    dispatch({ type: REQUEST_STORYLINE });
 
     let places = [],
       trips = [],
@@ -139,34 +140,72 @@ export function fetchStoryline() {
   }
 }
 
-export function requestTile(node) {
-  return { type: REQUEST_TILE };
-}
-
-export function receiveTile(node, tile, zoom) {
-  return { type: RECEIVE_TILE, node, tile, zoom};
-}
-
-export function failTileRequest(node, error) {
-  return { type: FAIL_TILE_REQUEST, error };
-}
-
-export function fetchTile(node) {
+export function requestTiles() {
   return function(dispatch, getState) {
-    process.nextTick(function() {
-      let state = getState(),
-        placeRadiusScale = placeRadiusScaleSelector(state),
-        placeRadiusRangeScale = placeRadiusRangeScaleSelector(state),
-        map = visMapSelector(state);
+    let state = getState(),
+      places = tiledPlacesSelector(state),
+      requests = tileRequestsSelector(state),
+      placeRadiusScale = placeRadiusScaleSelector(state),
+      placeRadiusRangeScale = placeRadiusRangeScaleSelector(state),
+      map = visMapSelector(state),
+      zoom = visMapZoomSelector(state);
 
-      dispatch(requestTile(node));
+    places.forEach(function(place) {
+      if (!place.visible || place.tile != null || requests.has(place.id))
+        return;
 
-      tileRequester(node, map, placeRadiusScale, placeRadiusRangeScale, function(error, tile) {
-        if (error)
-          return dispatch(failTileRequest(node, error));
+      // @TODO Use webworker
+      process.nextTick(function() {
+        let request = createTileRequest(place, map, placeRadiusScale, placeRadiusRangeScale);
 
-        dispatch(receiveTile(node, tile, map.getZoom()));
+        dispatch(queueTileRequest(place, request, zoom));
       });
     });
+  }
+}
+
+export function receiveTile(place, tile, zoom) {
+  return function(dispatch, getState) {
+    dispatch({ type: RECEIVE_TILE, place, tile, zoom})
+
+    let state = getState(),
+      requests = tileRequestsSelector(state);
+
+    // request next
+    if (requests.size > 0) {
+      let request = requests.first(),
+        places = tiledPlacesSelector(state),
+        place = places.get(request.id);
+
+      dispatch(requestTile(place, request, zoom));
+    }
   };
+}
+
+export function failTileRequest(place, error) {
+  return { type: FAIL_TILE_REQUEST, place, error };
+}
+
+export function queueTileRequest(place, request, zoom) {
+  return function(dispatch, getState) {
+    dispatch({ type: QUEUE_TILE_REQUEST, place, request });
+
+    let state = getState(),
+      requests = tileRequestsSelector(state);
+
+    if (requests.size === 1) {
+      dispatch(requestTile(place, request, zoom));
+    }
+  };
+}
+
+export function requestTile(place, request, zoom) {
+  return function(dispatch) {
+    request.send(function (error, tile) {
+      if (error)
+        return dispatch(failTileRequest(place, error));
+
+      dispatch(receiveTile(place, new Tile(tile), zoom));
+    });
+  }
 }
