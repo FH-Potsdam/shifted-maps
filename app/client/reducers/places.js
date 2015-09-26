@@ -1,5 +1,5 @@
 import { Map } from 'immutable';
-import { SET_STORYLINE, ADD_PLACE, ADD_STAY } from '../actions/storyline'
+import { SET_STORYLINE, ADD_PLACE, ADD_STAY } from '../actions/storyline';
 
 export default function places(state = Map(), action) {
   switch (action.type) {

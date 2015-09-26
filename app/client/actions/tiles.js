@@ -12,6 +12,8 @@ export const FAIL_TILE_REQUEST = 'FAIL_TILE_REQUEST';
 
 export function requestTiles() {
   return function(dispatch, getState) {
+    dispatch({ type: REQUEST_TILES });
+
     let state = getState(),
       places = tiledPlacesSelector(state),
       requests = tileRequestsSelector(state),
@@ -19,8 +21,6 @@ export function requestTiles() {
       placeRadiusRangeScale = placeRadiusRangeScaleSelector(state),
       map = mapMapSelector(state),
       zoom = mapZoomSelector(state);
-
-    dispatch({ type: REQUEST_TILES });
 
     places.forEach(function(place) {
       if (!place.visible || place.tile != null || requests.has(place.id))

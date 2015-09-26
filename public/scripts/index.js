@@ -236,6 +236,8 @@ exports.FAIL_TILE_REQUEST = FAIL_TILE_REQUEST;
 
 function requestTiles() {
   return function (dispatch, getState) {
+    dispatch({ type: REQUEST_TILES });
+
     var state = getState(),
         places = (0, _selectorsPlaces.tiledPlacesSelector)(state),
         requests = (0, _selectorsTiles.tileRequestsSelector)(state),
@@ -243,8 +245,6 @@ function requestTiles() {
         placeRadiusRangeScale = (0, _selectorsScales.placeRadiusRangeScaleSelector)(state),
         map = (0, _selectorsMap.mapMapSelector)(state),
         zoom = (0, _selectorsMap.mapZoomSelector)(state);
-
-    dispatch({ type: REQUEST_TILES });
 
     places.forEach(function (place) {
       if (!place.visible || place.tile != null || requests.has(place.id)) return;
