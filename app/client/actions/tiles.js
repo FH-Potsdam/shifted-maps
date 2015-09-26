@@ -23,10 +23,7 @@ export function requestTiles() {
       if (!place.visible || place.tile != null || requests.has(place.id))
         return;
 
-      // @TODO Use webworker
-      process.nextTick(function() {
-        let request = createTileRequest(place, map, placeRadiusScale, placeRadiusRangeScale);
-
+      createTileRequest(place, map, placeRadiusScale, placeRadiusRangeScale, function(error, request) {
         dispatch(queueTileRequest(place, request, zoom));
       });
     });
@@ -35,7 +32,7 @@ export function requestTiles() {
 
 export function receiveTile(place, tile, zoom) {
   return function(dispatch, getState) {
-    dispatch({ type: RECEIVE_TILE, place, tile, zoom})
+    dispatch({ type: RECEIVE_TILE, place, tile, zoom});
 
     let state = getState(),
       requests = tileRequestsSelector(state);
