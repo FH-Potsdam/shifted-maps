@@ -7,9 +7,11 @@ import { initVis, moveVis, resizeVis, zoomVis } from '../actions/vis';
 import { updateScales } from '../actions/scales';
 import { requestTiles } from '../actions/tiles';
 import { updateMapState } from '../actions/map';
+import { changeTimeSpan } from '../actions/ui';
 import Map from './map';
 import Vis from './vis';
 import Scales from './scales';
+import UI from './ui';
 
 class App extends Component {
   constructor(props) {
@@ -17,6 +19,12 @@ class App extends Component {
 
     this._dragging = false;
     this._firstZoom = true;
+  }
+
+  shouldComponentUpdate(nextProps) {
+    let { map, ui } = this.props;
+
+    return map !== nextProps.map || ui !== nextProps.ui;
   }
 
   componentDidMount() {
@@ -63,12 +71,22 @@ class App extends Component {
     this._firstZoom = false;
   }
 
+  onTimeSpanChange(timeSpan) {
+    let { dispatch } = this.props;
+
+    dispatch(changeTimeSpan(timeSpan));
+    dispatch(requestTiles());
+  }
+
   onScaleUpdate(elements) {
-    this.props.dispatch(updateScales(elements));
+    let { dispatch } = this.props;
+
+    dispatch(updateScales(elements));
+    dispatch(requestTiles());
   }
 
   render() {
-    let { map } = this.props;
+    let { map, ui } = this.props;
 
     return (
       <div className="app">
@@ -87,8 +105,8 @@ class App extends Component {
             <Vis className="leaflet-zoom-animated" />
           </Provider>
         </Map>
+        <UI ui={ui} onTimeSpanChange={this.onTimeSpanChange.bind(this)} />
         <Scales onUpdate={this.onScaleUpdate.bind(this)} />
-        {/*<Ui />*/}
       </div>
     );
   }

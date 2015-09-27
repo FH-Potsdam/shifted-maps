@@ -5,6 +5,6 @@ export function changeView(view) {
   return { type: CHANGE_VIEW, view };
 }
 
-export function changeTimeSpan(start, end) {
-  return { type: CHANGE_TIME_SPAN, start, end };
+export function changeTimeSpan(timeSpan) {
+  return { type: CHANGE_TIME_SPAN, timeSpan };
 }

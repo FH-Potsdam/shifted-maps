@@ -1,30 +1,28 @@
 .time-slider {
-  width: 100%;
+  position: absolute;
+  bottom: $base-spacing-unit * 3;
+  left: $base-spacing-unit;
+  right: $base-spacing-unit;
+  height: $base-spacing-unit;
+  margin-right: $base-spacing-unit;
 
-  &-handle {
-    height: $base-spacing-unit;
-    width: $base-spacing-unit / 2;
-    background-color: white;
-    position: relative;
-
-    &-time {
-      position: absolute;
-      bottom: $base-spacing-unit * 1.5;
-      font-size: $base-font-size;
-      color: white;
-      left: 0;
-      white-space: nowrap;
-    }
-
-    &-1 &-time {
-      right: 0;
-      left: auto;
-      text-align: right;
-    }
+  &__track {
+    position: absolute;
+    z-index: 0;
+    height: $base-spacing-unit / 4;
+    top: $base-spacing-unit / 4 * 1.5;
+    background-color: grey;
+    left: 0;
+    right: -$base-spacing-unit;
   }
 
-  &-bar {
+  &__thumb {
+    position: absolute;
+    top: 0;
+    right: 100%;
     height: $base-spacing-unit;
-    background-color: rgba(white, .2);
+    width: $base-spacing-unit;
+    background-color: black;
+    z-index: 1;
   }
 }

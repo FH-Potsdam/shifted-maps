@@ -17,7 +17,7 @@ class Scales extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('resize', debounce(this.dispatch.bind(this), 200));
+    window.addEventListener('resize', debounce(this.dispatch.bind(this), 1000));
     this.dispatch();
   }
 

@@ -1,8 +1,9 @@
 import d3 from 'd3';
 import { createSelector } from 'reselect';
-import { positionedPlacesSelector } from './places';
+import { filteredPlacesSelector, positionedPlacesSelector } from './places';
 import { connectionStrokeWidthRangeScaleSelector } from './scales';
 import { visBoundsSelector, visScaleSelector } from './vis';
+import { uiTimeSpanSelector } from './ui';
 
 function computeConnectionStrokeWidthScale(connections, strokeWidthRangeScale, visScale) {
   let strokeWidthRange = strokeWidthRangeScale(visScale);
@@ -24,6 +25,23 @@ function computeConnectionStrokeWidthScale(connections, strokeWidthRangeScale, v
     .domain(strokeWidthDomain);
 
   return strokeWidthScale;
+}
+
+function filterConnections(connections, places, uiTimeSpan) {
+  if (uiTimeSpan == null)
+    return connections;
+
+  let [ start, end ] = uiTimeSpan;
+
+  return connections.filter(function(connection) {
+    let trips = connection.trips;
+
+    return trips.size > 0 &&
+      trips.first().startAt >= start &&
+      trips.last().endAt <= end &&
+      places.has(connection.from) &&
+      places.has(connection.to);
+  });
 }
 
 function scaleConnections(connections, strokeWidthScale) {
@@ -68,9 +86,18 @@ export const connectionStrokeWidthScaleSelector = createSelector(
   computeConnectionStrokeWidthScale
 );
 
-export const scaledConnectionsSelector = createSelector(
+export const filteredConnectionsSelector = createSelector(
   [
     connectionsSelector,
+    filteredPlacesSelector,
+    uiTimeSpanSelector
+  ],
+  filterConnections
+);
+
+export const scaledConnectionsSelector = createSelector(
+  [
+    filteredConnectionsSelector,
     connectionStrokeWidthScaleSelector
   ],
   scaleConnections

@@ -3,6 +3,7 @@
   top: 0;
   bottom: 0;
   width: 100%;
+  z-index: 0;
   background-color: black;
 
   .leaflet-tile-pane {
@@ -38,6 +39,11 @@
   stroke: white;
 }
 
+.scale-list {
+  position: absolute;
+  z-index: -1;
+}
+
 [data-scale="place-radius"] {
   &[data-domain-max][data-range-max] {
     width: 200px;
@@ -54,11 +60,29 @@
   &[data-domain-min][data-range-min] {
     width: 10px;
   }
+
+  @media (min-width: 720px) {
+    &[data-domain-max][data-range-max] {
+      width: 250px;
+    }
+
+    &[data-domain-max][data-range-min] {
+      width: 75px;
+    }
+
+    &[data-domain-min][data-range-max] {
+      width: 50px;
+    }
+
+    &[data-domain-min][data-range-min] {
+      width: 20px;
+    }
+  }
 }
 
 [data-scale="place-stroke-width"] {
   &[data-domain-max][data-range-max] {
-    width: 10px;
+    width: 20px;
   }
 
   &[data-domain-max][data-range-min] {
@@ -71,6 +95,16 @@
 
   &[data-domain-min][data-range-min] {
     width: 1px;
+  }
+
+  @media (min-width: 720px) {
+    &[data-domain-max][data-range-max] {
+      width: 30px;
+    }
+
+    &[data-domain-min][data-range-max] {
+      width: 10px;
+    }
   }
 }
 
@@ -89,5 +123,15 @@
 
   &[data-domain-min][data-range-min] {
     width: 1px;
+  }
+
+  @media (min-width: 720px) {
+    &[data-domain-max][data-range-max] {
+      width: 15px;
+    }
+
+    &[data-domain-min][data-range-max] {
+      width: 2px;
+    }
   }
 }

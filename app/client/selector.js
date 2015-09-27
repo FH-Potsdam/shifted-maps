@@ -3,6 +3,7 @@ import { tiledPlacesSelector } from './selectors/places';
 import { boundedConnectionsSelector } from './selectors/connections';
 import visSelector from './selectors/vis';
 import mapSelector from './selectors/map';
+import uiSelector from './selectors/ui';
 
 export const vis = createStructuredSelector({
   vis: visSelector,
@@ -11,5 +12,6 @@ export const vis = createStructuredSelector({
 });
 
 export const app = createStructuredSelector({
-  map: mapSelector
+  map: mapSelector,
+  ui: uiSelector
 });

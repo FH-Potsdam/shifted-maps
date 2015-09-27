@@ -1,45 +1,200 @@
-var React = require('react'),
-  ReactSlider = require('react-slider'),
-  Reflux = require('reflux'),
-  moment = require('moment'),
-  uiStore = require('../stores/ui'),
-  UiActions = require('../actions/ui');
+import React, { Component } from 'react';
+import { findDOMNode } from 'react-dom';
+import $ from 'jquery';
 
-var TIME_HANDLE_FORMAT = 'dddd, MMMM Do YYYY';
+class TimeSlider extends Component {
+  constructor(props) {
+    super(props);
 
-module.exports = React.createClass({
-  mixins: [Reflux.connect(uiStore, 'ui')],
+    this.state = {
+      values: this.props.defaultValues
+    };
+  }
 
-  onChange: function(values) {
-    UiActions.updateTimeFilter(values);
-  },
+  componentDidMount() {
+    this.$element = $(findDOMNode(this));
+  }
 
-  render: function() {
-    var timeFilter = this.state.ui.get('timeFilter');
+  componentDidUpdate() {
+    this.$element = $(findDOMNode(this));
+  }
 
-    if (timeFilter == null)
-      return null;
+  onThumbMove(key, thumbLeft, thumbTop) {
+    let value = this.computeValue(thumbLeft, thumbTop);
 
-    var start = moment(timeFilter.get('start')),
-      end = moment(timeFilter.get('end')),
-      min = moment(timeFilter.get('min')),
-      max = moment(timeFilter.get('max')),
-      step = 60 * 60 * 24;
+    this.changeValue(key, value);
+  }
+
+  computeValue(valueLeft) {
+    let $element = this.$element,
+      { left } = $element.offset(),
+      width = $element.width();
+
+    let position = (Math.max(left, Math.min(left + width, valueLeft)) - left) / width,
+      { start, end } = this.props;
+
+    return position * (end - start) + start;
+  }
+
+  changeValue(key, value) {
+    let { start, end, distance, step } = this.props,
+      { values } = this.state,
+      prevValue = values[key];
+
+    value = this.normalize(value);
+
+    if (prevValue === value)
+      return;
+
+    if (value > end)
+      value -= step;
+
+    let nextValues = [...values],
+      movingLeft = value <= prevValue,
+      otherValues = values.slice.apply(values, movingLeft ? [0, key] : [key + 1]);
+
+    nextValues[key] = value;
+
+    if (!movingLeft)
+      otherValues = otherValues.reverse();
+
+    for (let i = 0; i < otherValues.length; i++) {
+      let otherValue = otherValues[i],
+        otherKey = movingLeft ? i : values.length - i - 1,
+        nextValue = otherValue;
+
+      if (movingLeft) {
+        if (value < nextValue)
+          nextValue = value - step;
+      } else if (value > nextValue) {
+        nextValue = value + step;
+      }
+
+      let valueDistance = Math.abs(value - otherValue),
+        keyDistance = Math.abs(key - otherKey),
+        minDistance = distance * keyDistance;
+
+      if (valueDistance < minDistance)
+        nextValue += Math.abs(valueDistance - minDistance) * (movingLeft ? -1 : 1);
+
+      nextValue = this.normalize(nextValue);
+
+      if (nextValue < start || nextValue > end)
+        return;
+
+      nextValues[otherKey] = nextValue;
+    }
+
+    this.setState({
+      values: nextValues
+    });
+
+    this.props.onChange(nextValues);
+  }
+
+  normalize(value) {
+    let { step } = this.props;
+
+    return Math.round(value / step) * step;
+  }
+
+  renderThumbs() {
+    let { start, end } = this.props,
+      { values } = this.state;
+
+    return values.map((value, key) => {
+      let onMove = (left, top) => {
+        this.onThumbMove(key, left, top);
+      };
+
+      value = this.normalize(value);
+
+      let position = (value - start) / (end - start);
+
+      return <Thumb key={key} position={position} onMove={onMove} />
+    });
+  }
+
+  onClick(event) {
+    event.stopPropagation();
+
+    let { values } = this.state,
+      clickValue = this.computeValue(event.pageX, event.pageY),
+      clickKey = null,
+      clickDistance = Infinity;
+
+    values.forEach(function(value, key) {
+      let distance = Math.abs(clickValue - value);
+
+      if (clickDistance > distance) {
+        clickDistance = distance;
+        clickKey = key;
+      }
+    });
+
+    this.changeValue(clickKey, clickValue);
+  }
+
+  render() {
+    let thumbs = this.renderThumbs();
 
     return (
-      <ReactSlider
-        className="time-slider"
-        handleClassName="time-slider-handle"
-        barClassName="time-slider-bar"
-        value={[+start, +end]}
-        min={+min} max={+max}
-        step={step}
-        minDinstance={step}
-        onChange={this.onChange}
-        withBars>
-        <div className="time-slider-handle-time">{start.format(TIME_HANDLE_FORMAT)}</div>
-        <div className="time-slider-handle-time">{end.format(TIME_HANDLE_FORMAT)}</div>
-      </ReactSlider>
+      <div className="time-slider" onClick={this.onClick.bind(this)}>
+        <div ref="track" className="time-slider__track" />
+        {thumbs}
+      </div>
     );
   }
-});
+}
+
+class Thumb extends Component {
+  componentDidMount() {
+    this.$element = $(findDOMNode(this));
+  }
+
+  componentDidUpdate() {
+    this.$element = $(findDOMNode(this));
+  }
+
+  onClick(event) {
+    event.stopPropagation();
+  }
+
+  onMouseDown(event) {
+    event.preventDefault();
+
+    let offset = this.$element.offset(),
+      left = event.pageX - offset.left,
+      top = event.pageY - offset.top;
+
+    let onMouseMove = event => {
+      this.onMove(event.clientX - left, event.clientY - top);
+    };
+
+    let onMouseUp = event => {
+      event.preventDefault();
+
+      $(window).off('mousemove', onMouseMove);
+    };
+
+    $(window)
+      .on('mousemove', onMouseMove)
+      .one('mouseup', onMouseUp);
+  }
+
+  onMove(left, top) {
+    this.props.onMove(left, top);
+  }
+
+  render() {
+    let { position } = this.props;
+
+    let style = {
+      left: position * 100 + '%'
+    };
+
+    return <div className="time-slider__thumb" onMouseDown={this.onMouseDown.bind(this)} onClick={this.onClick.bind(this)} style={style} />;
+  }
+}
+
+export default TimeSlider;

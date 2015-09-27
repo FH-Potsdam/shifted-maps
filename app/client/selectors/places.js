@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector } from './scales';
 import { visBoundsSelector, visViewSelector, visScaleSelector } from './vis';
 import { tilesLevelSelector } from './tiles';
+import { uiTimeSpanSelector } from './ui';
 
 function computePlaceScales(places, strokeWidthRangeScale, radiusRangeScale, visScale) {
   let strokeWidthRange = strokeWidthRangeScale(visScale),
@@ -34,6 +35,19 @@ function computePlaceScales(places, strokeWidthRangeScale, radiusRangeScale, vis
     .domain(radiusDomain);
 
   return { strokeWidthScale, radiusScale };
+}
+
+function filterPlaces(places, uiTimeSpan) {
+  if (uiTimeSpan == null)
+    return places;
+
+  let [ start, end ] = uiTimeSpan;
+
+  return places.filter(function(place) {
+    let stays = place.stays;
+
+    return stays.size > 0 && stays.first().startAt >= start && stays.last().endAt <= end;
+  });
 }
 
 function scalePlaces(places, strokeWidthScale, radiusScale) {
@@ -135,9 +149,17 @@ export const placeRadiusScaleSelector = createSelector(
   (state) => state.radiusScale
 );
 
-export const scaledPlacesSelector = createSelector(
+export const filteredPlacesSelector = createSelector(
   [
     placesSelector,
+    uiTimeSpanSelector
+  ],
+  filterPlaces
+);
+
+export const scaledPlacesSelector = createSelector(
+  [
+    filteredPlacesSelector,
     placeStrokeWidthScaleSelector,
     placeRadiusScaleSelector
   ],
