@@ -7,4 +7,4 @@ import tiles from './reducers/tiles';
 import map from './reducers/map';
 import ui from './reducers/ui';
 
-export default combineReducers({ scales, vis, tiles, connections, places, map, ui });
+export default combineReducers({ scales, vis, ui, map, places, connections, tiles });

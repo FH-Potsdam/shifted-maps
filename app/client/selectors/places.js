@@ -1,9 +1,34 @@
 import d3 from 'd3';
+import { Seq } from 'immutable';
 import { createSelector } from 'reselect';
 import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector } from './scales';
 import { visBoundsSelector, visViewSelector, visScaleSelector } from './vis';
 import { tilesLevelSelector } from './tiles';
 import { uiTimeSpanSelector } from './ui';
+
+function filterPlaces(places, uiTimeSpan) {
+  if (places.size === 0)
+    return places;
+
+  let [ start, end ] = uiTimeSpan;
+
+  return Seq(places)
+    .map(function(place) {
+      let stays = place.stays.filter(function(stay) {
+        return stay.startAt >= start && stay.endAt <= end;
+      });
+
+      let duration = stays.reduce((duration, stay) => duration + stay.duration, 0);
+
+      return place.merge({
+        stays: stays,
+        duration: duration,
+        frequency: stays.size
+      });
+    })
+    .filter(place => place.duration > 0)
+    .toOrderedMap();
+}
 
 function computePlaceScales(places, strokeWidthRangeScale, radiusRangeScale, visScale) {
   let strokeWidthRange = strokeWidthRangeScale(visScale),
@@ -35,19 +60,6 @@ function computePlaceScales(places, strokeWidthRangeScale, radiusRangeScale, vis
     .domain(radiusDomain);
 
   return { strokeWidthScale, radiusScale };
-}
-
-function filterPlaces(places, uiTimeSpan) {
-  if (uiTimeSpan == null)
-    return places;
-
-  let [ start, end ] = uiTimeSpan;
-
-  return places.filter(function(place) {
-    let stays = place.stays;
-
-    return stays.size > 0 && stays.first().startAt >= start && stays.last().endAt <= end;
-  });
 }
 
 function scalePlaces(places, strokeWidthScale, radiusScale) {
@@ -125,9 +137,17 @@ function tilePlaces(places, tiles) {
 
 const placesSelector = state => state.places;
 
-export const placeScalesSelector = createSelector(
+export const filteredPlacesSelector = createSelector(
   [
     placesSelector,
+    uiTimeSpanSelector
+  ],
+  filterPlaces
+);
+
+export const placeScalesSelector = createSelector(
+  [
+    filteredPlacesSelector,
     placeStrokeWidthRangeScaleSelector,
     placeRadiusRangeScaleSelector,
     visScaleSelector
@@ -147,14 +167,6 @@ export const placeRadiusScaleSelector = createSelector(
     placeScalesSelector
   ],
   (state) => state.radiusScale
-);
-
-export const filteredPlacesSelector = createSelector(
-  [
-    placesSelector,
-    uiTimeSpanSelector
-  ],
-  filterPlaces
 );
 
 export const scaledPlacesSelector = createSelector(

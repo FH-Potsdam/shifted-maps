@@ -43,7 +43,8 @@ Transformer.prototype._transformPlace = function(object, callback) {
   var stay = new Stay({
     at: object.place.id,
     startAt: object.startTime,
-    endAt: object.endTime
+    endAt: object.endTime,
+    duration: object.endTime - object.startTime
   });
 
   if (this._lastTrip != null) {
@@ -72,7 +73,8 @@ Transformer.prototype._transformMove = function(object, callback) {
     from: this._lastPlace.id,
     startAt: object.startTime,
     endAt: object.endTime,
-    distance: distance
+    distance: distance,
+    duration: object.endTime - object.startTime
   });
 
   callback();

@@ -38,6 +38,7 @@
     "gulp-uglify": "^1.1.0",
     "gulp-watch": "^4.2.0",
     "html5shiv": "^3.7.2",
+    "immutable": "^3.7.5",
     "inherits": "^2.0.1",
     "jquery": "^2.1.4",
     "node-notifier": "^4.1.2",

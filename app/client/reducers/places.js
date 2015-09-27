@@ -6,7 +6,7 @@ export default function places(state = Map(), action) {
     case SET_STORYLINE:
       let { places, stays } = action;
 
-      state = state.withMutations(function(state) {
+      return state.withMutations(function(state) {
         places.forEach(function(place) {
           state.set(place.id, place);
         });
@@ -18,21 +18,12 @@ export default function places(state = Map(), action) {
 
           keys = keys.delete(stay.at);
 
-          place = place.merge({
-            stays: place.stays.push(stay),
-            duration: place.duration + stay.duration,
-            frequency: place.frequency + 1
-          });
-
-          state.set(place.id, place);
+          state.setIn([stay.at, 'stays'], place.stays.push(stay));
         });
 
-        console.log(keys.toJS());
+        if (keys.size > 0)
+          console.error('There are ' + keys.size + ' places without any stays.');
       });
-
-      /*state.forEach(function(place) {
-        console.log(place.stays.size > 0);
-      });*/
 
       return state;
 

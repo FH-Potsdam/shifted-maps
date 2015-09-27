@@ -14,7 +14,7 @@ export function fitPlaces() {
       places = scaledPlacesSelector(state);
 
     let bounds = new L.LatLngBounds(),
-      importantPlaces = places.slice(0, 10);
+      importantPlaces = places.slice(-3);
 
     importantPlaces.forEach(function(place) {
       bounds.extend(place.location);

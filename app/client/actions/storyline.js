@@ -1,5 +1,4 @@
 import oboe from 'oboe';
-import moment from 'moment';
 import { requestTiles } from './tiles';
 import { fitPlaces } from './places';
 import Place from '../models/place';
@@ -52,7 +51,6 @@ export function requestStoryline() {
         return oboe.drop;
       })
       .node('stay', function(stay) {
-        stay.duration = moment(stay.endAt).diff(stay.startAt, 's');
         stay = new Stay(stay);
 
         stays.push(stay);
@@ -61,7 +59,6 @@ export function requestStoryline() {
         return oboe.drop;
       })
       .node('trip', function(trip) {
-        trip.duration = moment(trip.endAt).diff(trip.startAt, 's');
         trip = new Trip(trip);
 
         trips.push(trip);

@@ -1,9 +1,37 @@
 import d3 from 'd3';
+import { Seq } from 'immutable';
 import { createSelector } from 'reselect';
 import { filteredPlacesSelector, positionedPlacesSelector } from './places';
 import { connectionStrokeWidthRangeScaleSelector } from './scales';
 import { visBoundsSelector, visScaleSelector } from './vis';
 import { uiTimeSpanSelector } from './ui';
+
+function filterConnections(connections, places, uiTimeSpan) {
+  if (connections.size === 0)
+    return connections;
+
+  let [ start, end ] = uiTimeSpan;
+
+  return Seq(connections)
+    .map(function(connection) {
+      let trips = connection.trips.filter(function(trip) {
+        return trip.startAt >= start &&
+          trip.endAt <= end &&
+          places.has(connection.from) &&
+          places.has(connection.to);
+      });
+
+      let duration = trips.reduce((duration, trip) => duration + trip.duration, 0);
+
+      return connection.merge({
+        trips: trips,
+        duration: duration,
+        frequency: trips.size
+      });
+    })
+    .filter(connection => connection.duration > 0)
+    .toMap();
+}
 
 function computeConnectionStrokeWidthScale(connections, strokeWidthRangeScale, visScale) {
   let strokeWidthRange = strokeWidthRangeScale(visScale);
@@ -25,23 +53,6 @@ function computeConnectionStrokeWidthScale(connections, strokeWidthRangeScale, v
     .domain(strokeWidthDomain);
 
   return strokeWidthScale;
-}
-
-function filterConnections(connections, places, uiTimeSpan) {
-  if (uiTimeSpan == null)
-    return connections;
-
-  let [ start, end ] = uiTimeSpan;
-
-  return connections.filter(function(connection) {
-    let trips = connection.trips;
-
-    return trips.size > 0 &&
-      trips.first().startAt >= start &&
-      trips.last().endAt <= end &&
-      places.has(connection.from) &&
-      places.has(connection.to);
-  });
 }
 
 function scaleConnections(connections, strokeWidthScale) {
@@ -77,15 +88,6 @@ function boundConnections(connections, visBounds) {
 
 const connectionsSelector = state => state.connections;
 
-export const connectionStrokeWidthScaleSelector = createSelector(
-  [
-    connectionsSelector,
-    connectionStrokeWidthRangeScaleSelector,
-    visScaleSelector
-  ],
-  computeConnectionStrokeWidthScale
-);
-
 export const filteredConnectionsSelector = createSelector(
   [
     connectionsSelector,
@@ -93,6 +95,15 @@ export const filteredConnectionsSelector = createSelector(
     uiTimeSpanSelector
   ],
   filterConnections
+);
+
+export const connectionStrokeWidthScaleSelector = createSelector(
+  [
+    filteredConnectionsSelector,
+    connectionStrokeWidthRangeScaleSelector,
+    visScaleSelector
+  ],
+  computeConnectionStrokeWidthScale
 );
 
 export const scaledConnectionsSelector = createSelector(

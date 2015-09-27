@@ -19,9 +19,11 @@ class UI extends Component {
       timeSlider = null;
 
     if (timeSpanRange != null && timeSpan != null) {
-      let onTimeSliderChange = debounce(this.onTimeSliderChange.bind(this), 200);
+      let onTimeSliderChange = debounce(this.onTimeSliderChange.bind(this), 200),
+        step = ui.get('timeSpanStep'),
+        [ start, end ] = timeSpanRange;
 
-      timeSlider = <TimeSlider start={timeSpanRange[0]} end={timeSpanRange[1]} step={1} defaultValues={timeSpan} distance={1} onChange={onTimeSliderChange} />;
+      timeSlider = <TimeSlider start={start} end={end} step={step} defaultValues={timeSpan} distance={step} onChange={onTimeSliderChange} />;
     }
 
     // @TODO define default prop values and add disabled, active and focused states.

@@ -20,16 +20,15 @@ export default function connections(state = Map(), action) {
           let connection = state.get(tripId);
 
           if (connection == null)
-            connection = new Connection({ from: trip.from, to: trip.to });
+            connection = new Connection({ id: tripId, from: trip.from, to: trip.to });
 
-          connection = connection.merge({
-            id: tripId,
+          /*connection = connection.merge({
             trips: connection.trips.push(trip),
             duration: connection.duration + trip.duration,
             frequency: connection.frequency + 1
-          });
+          });*/
 
-          state.set(tripId, connection);
+          state.set(tripId, connection.set('trips', connection.trips.push(trip)));
         });
       });
 
