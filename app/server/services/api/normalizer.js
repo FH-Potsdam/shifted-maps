@@ -37,22 +37,17 @@ Normalizer.prototype._transform = function(object, encoding, callback) {
 Normalizer.prototype._normalizePlace = function(place, callback) {
   var normalizer = this;
 
-  function normalize(place) {
-    normalizer._pushObject('place', place);
-    normalizer._pushedPlaces.push(place.id);
-
-    callback();
-  }
-
+  // We do not push places, we already pushed
   if (this._pushedPlaces.indexOf(place.id) > -1)
     return callback();
 
-  if (this._lastPlace != null && this._lastPlace.equals(place)) {
-    this._pushedPlaces.push(place.id);
-    return callback();
-  }
+  this._pushedPlaces.push(place.id);
 
-  this._lastPlace = place;
+  function normalize(place) {
+    normalizer._pushObject('place', place);
+
+    callback();
+  }
 
   if (place.name != null)
     return normalize(place);
@@ -71,34 +66,18 @@ Normalizer.prototype._normalizePlace = function(place, callback) {
 };
 
 Normalizer.prototype._normalizeStay = function(stay, callback) {
-  if (this._lastStay != null && this._lastStay.id == stay.id)
-    this._lastStay = this._lastStay.set('endAt', stay.endAt);
-  else
-    this._lastStay = stay;
-
-  // Wait for pushing this stay until we now how many stays need to be merged into one.
-
+  this._pushObject('stay', stay);
   callback();
 };
 
 Normalizer.prototype._normalizeTrip = function(trip, callback) {
-  this._pushLastStay();
   this._pushObject('trip', trip);
   callback();
 };
 
 Normalizer.prototype._normalizeOff = function(stay, callback) {
-  this._pushLastStay();
   this._pushObject('off', null);
   callback();
-};
-
-Normalizer.prototype._pushLastStay = function() {
-  if (this._lastStay == null)
-    return;
-
-  this._pushObject('stay', this._lastStay);
-  this._lastStay = null;
 };
 
 Normalizer.prototype._pushObject = function(name, object) {

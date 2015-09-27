@@ -33,7 +33,7 @@ Transformer.prototype._transformDate = function(object, callback) {
 };
 
 Transformer.prototype._transformPlace = function(object, callback) {
-  this._lastPlace = new Place({
+  var place = this._lastPlace = new Place({
     id: object.place.id,
     location: object.place.location,
     name: object.place.name,
@@ -47,12 +47,14 @@ Transformer.prototype._transformPlace = function(object, callback) {
   });
 
   if (this._lastTrip != null) {
-    this._lastTrip = this._lastTrip.set('to', this._lastPlace.id);
+    this._lastTrip = this._lastTrip.merge({
+      to: place.id
+    });
     this.push(this._lastTrip);
     this._lastTrip = null;
   }
 
-  this.push(this._lastPlace);
+  this.push(place);
   this.push(stay);
 
   callback();
