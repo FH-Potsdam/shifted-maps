@@ -2,35 +2,35 @@ import React, { Component } from 'react';
 import { Map } from 'immutable';
 import debounce from 'mout/function/debounce';
 import TimeSlider from './time-slider';
+import ViewList from './view-list';
 
 class UI extends Component {
   shouldComponentUpdate(nextProps) {
     return this.props.ui !== nextProps.ui;
   }
 
-  onTimeSliderChange(values) {
-    this.props.onTimeSpanChange(values);
-  }
-
   render() {
     let { ui } = this.props,
-      timeSpanRange = ui.get('timeSpanRange'),
-      timeSpan = ui.get('timeSpan'),
-      timeSlider = null;
+      timeSlider = null,
+      viewList = null;
 
-    if (timeSpanRange != null && timeSpan != null) {
-      let onTimeSliderChange = debounce(this.onTimeSliderChange.bind(this), 200),
-        step = ui.get('timeSpanStep'),
-        [ start, end ] = timeSpanRange;
+    if (ui.has('timeSpanRange')) {
+      let onTimeSliderChange = debounce(this.props.onTimeSpanChange, 200),
+        timeSpanRange = ui.get('timeSpanRange'),
+        step = ui.get('timeSpanStep');
 
-      timeSlider = <TimeSlider start={start} end={end} step={step} defaultValues={timeSpan} distance={step} onChange={onTimeSliderChange} />;
+      // @TODO define default prop values and add disabled, active and focused states.
+      timeSlider = <TimeSlider defaultValues={timeSpanRange} step={step} distance={step} onChange={onTimeSliderChange} />;
     }
 
-    // @TODO define default prop values and add disabled, active and focused states.
+    if (ui.has('activeView')) {
+      viewList = <ViewList activeView={ui.get('activeView')} onViewChange={this.props.onViewChange} />;
+    }
 
     return (
       <div className="ui">
         {timeSlider}
+        {viewList}
       </div>
     );
   }

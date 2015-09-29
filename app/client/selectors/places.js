@@ -4,7 +4,7 @@ import { createSelector } from 'reselect';
 import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector } from './scales';
 import { visBoundsSelector, visViewSelector, visScaleSelector } from './vis';
 import { tilesLevelSelector } from './tiles';
-import { uiTimeSpanSelector } from './ui';
+import { uiTimeSpanSelector, uiLocatorSelector } from './ui';
 
 function filterPlaces(places, uiTimeSpan) {
   if (places.size === 0)
@@ -77,14 +77,17 @@ function scalePlaces(places, strokeWidthScale, radiusScale) {
     });
 }
 
-function positionPlaces(places, visView) {
+function positionPlaces(places, uiLocator) {
   return places.map(function(place) {
-    return place.set('point', visView(place));
+    return place.set('point', uiLocator(place));
   });
 }
 
-function calcDist(nodeOne, nodeTwo) {
-  return Math.sqrt(Math.pow(nodeTwo.point.x - nodeOne.point.x, 2) + Math.pow(nodeTwo.point.y - nodeOne.point.y, 2));
+function computeDistance(nodeOne, nodeTwo) {
+  let nodeOnePoint = nodeOne.point,
+    nodeTwoPoint = nodeTwo.point;
+
+  return Math.sqrt(Math.pow(nodeTwoPoint.x - nodeOnePoint.x, 2) + Math.pow(nodeTwoPoint.y - nodeOnePoint.y, 2));
 }
 
 function clusterPlaces(places) {
@@ -106,7 +109,7 @@ function clusterPlaces(places) {
         if (placeTwo.calculated)
           continue;
 
-        if (calcDist(placeOne, placeTwo) < (placeOne.radius - placeTwo.radius)) {
+        if (computeDistance(placeOne, placeTwo) < (placeOne.radius - placeTwo.radius)) {
           placeTwo.calculated = true;
 
           places.setIn([placeTwo.id, 'visible'], false);
@@ -181,7 +184,7 @@ export const scaledPlacesSelector = createSelector(
 export const positionedPlacesSelector = createSelector(
   [
     scaledPlacesSelector,
-    visViewSelector
+    uiLocatorSelector
   ],
   positionPlaces
 );

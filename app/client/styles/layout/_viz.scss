@@ -54,7 +54,7 @@
   }
 
   &[data-domain-min][data-range-max] {
-    width: 30px;
+    width: 20px;
   }
 
   &[data-domain-min][data-range-min] {
@@ -67,15 +67,15 @@
     }
 
     &[data-domain-max][data-range-min] {
-      width: 75px;
-    }
-
-    &[data-domain-min][data-range-max] {
       width: 50px;
     }
 
+    &[data-domain-min][data-range-max] {
+      width: 30px;
+    }
+
     &[data-domain-min][data-range-min] {
-      width: 20px;
+      width: 10px;
     }
   }
 }

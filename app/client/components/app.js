@@ -7,7 +7,8 @@ import { initVis, moveVis, resizeVis, zoomVis } from '../actions/vis';
 import { updateScales } from '../actions/scales';
 import { requestTiles } from '../actions/tiles';
 import { updateMapState } from '../actions/map';
-import { changeTimeSpan } from '../actions/ui';
+import { changeTimeSpan, changeView } from '../actions/ui';
+import { GEOGRAPHIC_VIEW } from '../models/views';
 import Map from './map';
 import Vis from './vis';
 import Scales from './scales';
@@ -28,10 +29,19 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch(requestStoryline());
+    let { dispatch } = this.props;
+
+    dispatch(requestStoryline());
   }
 
-  onMapInit(event) {
+  onMapLoad() {
+    let { dispatch } = this.props;
+
+    console.log('init');
+    dispatch(changeView(GEOGRAPHIC_VIEW));
+  }
+
+  onMapViewReset(event) {
     let { dispatch } = this.props;
 
     dispatch(updateMapState(event.target));
@@ -78,6 +88,12 @@ class App extends Component {
     dispatch(requestTiles());
   }
 
+  onViewChange(view) {
+    let { dispatch } = this.props;
+
+    dispatch(changeView(view));
+  }
+
   onScaleUpdate(elements) {
     let { dispatch } = this.props;
 
@@ -95,7 +111,8 @@ class App extends Component {
              center={map.get('center')}
              bounds={map.get('bounds')}
              className="app-map"
-             onViewReset={this.onMapInit.bind(this)}
+             onLoad={this.onMapLoad.bind(this)}
+             onViewReset={this.onMapViewReset.bind(this)}
              onDragStart={this.onMapDragStart.bind(this)}
              onMoveEnd={this.onMapMoveEnd.bind(this)}
              onResize={this.onMapResize.bind(this)}
@@ -105,7 +122,7 @@ class App extends Component {
             <Vis className="leaflet-zoom-animated" />
           </Provider>
         </Map>
-        <UI ui={ui} onTimeSpanChange={this.onTimeSpanChange.bind(this)} />
+        <UI ui={ui} onTimeSpanChange={this.onTimeSpanChange.bind(this)} onViewChange={this.onViewChange.bind(this)} />
         <Scales onUpdate={this.onScaleUpdate.bind(this)} />
       </div>
     );

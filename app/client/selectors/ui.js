@@ -9,4 +9,18 @@ export const uiTimeSpanSelector = createSelector(
   ui => ui.get('timeSpan')
 );
 
+export const uiActiveViewSelector = createSelector(
+  [
+    uiSelector
+  ],
+  ui => ui.get('actieView')
+);
+
+export const uiLocatorSelector = createSelector(
+  [
+    uiSelector
+  ],
+  ui => ui.get('locator')
+);
+
 export default uiSelector;

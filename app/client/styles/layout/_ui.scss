@@ -28,3 +28,27 @@
     z-index: 1;
   }
 }
+
+.view-list {
+  position: absolute;
+  top: $base-spacing-unit;
+  right: $base-spacing-unit;
+
+  &__button {
+    display: block;
+    text-align: center;
+    margin-bottom: $base-spacing-unit / 2;
+    width: $base-spacing-unit * 10;
+    height: $base-spacing-unit * 2;
+    border: 0;
+    background-color: rgba(grey, .5);
+    color: white;
+    border-radius: $base-spacing-unit * 2;
+    outline: none;
+
+    &.active {
+      background-color: white;
+      color: black;
+    }
+  }
+}

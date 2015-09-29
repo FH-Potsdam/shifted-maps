@@ -33,24 +33,33 @@ function filterConnections(connections, places, uiTimeSpan) {
     .toMap();
 }
 
-function computeConnectionStrokeWidthScale(connections, strokeWidthRangeScale, visScale) {
-  let strokeWidthRange = strokeWidthRangeScale(visScale);
-
+function computeConnectionDomains(connections) {
   let minFrequency = Infinity,
-    maxFrequency = -Infinity;
+    maxFrequency = -Infinity,
+    minDuration = Infinity,
+    maxDuration = -Infinity;
 
   connections.forEach(function(connection) {
-    let { frequency } = connection;
+    let { frequency, duration } = connection;
 
     minFrequency = Math.min(minFrequency, frequency);
     maxFrequency = Math.max(maxFrequency, frequency);
+    minDuration = Math.min(minDuration, duration);
+    maxDuration = Math.max(maxDuration, duration);
   });
 
-  let strokeWidthDomain = [minFrequency, maxFrequency];
+  let frequencyDomain = [minFrequency, maxFrequency],
+    durationDomain = [minDuration, maxDuration];
+
+  return { frequencyDomain, durationDomain };
+}
+
+function computeConnectionStrokeWidthScale(strokeWidthRangeScale, frequencyDomain, visScale) {
+  let strokeWidthRange = strokeWidthRangeScale(visScale);
 
   let strokeWidthScale = d3.scale.pow().exponent(.25)
     .range(strokeWidthRange)
-    .domain(strokeWidthDomain);
+    .domain(frequencyDomain);
 
   return strokeWidthScale;
 }
@@ -97,10 +106,33 @@ export const filteredConnectionsSelector = createSelector(
   filterConnections
 );
 
+export const connectionDomainSelector = createSelector(
+  [
+    filteredConnectionsSelector
+  ],
+  computeConnectionDomains
+);
+
+export const connectionFrequencyDomainSelector = createSelector(
+  [
+    connectionDomainSelector
+  ],
+  domains => domains.frequencyDomain
+);
+
+
+export const connectionDurationDomainSelector = createSelector(
+  [
+    connectionDomainSelector
+  ],
+  domains => domains.durationDomain
+);
+
+
 export const connectionStrokeWidthScaleSelector = createSelector(
   [
-    filteredConnectionsSelector,
     connectionStrokeWidthRangeScaleSelector,
+    connectionFrequencyDomainSelector,
     visScaleSelector
   ],
   computeConnectionStrokeWidthScale

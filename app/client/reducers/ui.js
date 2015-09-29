@@ -1,6 +1,7 @@
 import { Map } from 'immutable';
 import { SET_STORYLINE } from '../actions/storyline';
-import { CHANGE_TIME_SPAN } from '../actions/ui';
+import { CHANGE_TIME_SPAN, CHANGE_VIEW, CHANGE_VIEW_SERVICE } from '../actions/ui';
+import { GEOGRAPHIC_VIEW } from '../models/views';
 
 export default function ui(state = Map(), action) {
   switch (action.type) {
@@ -31,6 +32,20 @@ export default function ui(state = Map(), action) {
       let { timeSpan } = action;
 
       return state.set('timeSpan', timeSpan);
+
+    case CHANGE_VIEW:
+      let { view } = action;
+
+      console.log(view);
+
+      return state.set('activeView', view);
+
+    case CHANGE_VIEW_SERVICE:
+      let { locator } = action;
+
+      console.log(locator);
+
+      return state.set('locator', locator);
 
     default:
       return state;

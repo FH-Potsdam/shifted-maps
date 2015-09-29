@@ -21,19 +21,31 @@ class PlaceMap extends Component {
       { radius, point } = node,
       tile = node.tile || this.oldTile,
       clipPath = 'url(#' + PlaceClip.createId(node) + ')',
-      size = radius * 2,
-      image = null;
+      size = radius * 2;
+
+    let imageProps = {
+      x: point.x - radius,
+      y: point.y - radius,
+      width: size,
+      height: size
+    };
 
     if (tile != null) {
       let tileRadius = Math.min(tile.width / 2, tile.height / 2);
 
-      image = <image x={point.x - tileRadius} y={point.y - tileRadius} width={tile.width} height={tile.height} xlinkHref={tile.url} />;
+      imageProps = {
+        x: point.x - tileRadius,
+        y: point.y - tileRadius,
+        width: tile.width,
+        height: tile.height,
+        xlinkHref: tile.url
+      };
     }
 
     return (
       <g className="place-map" clipPath={clipPath}>
         <rect className="place-map-background" x={point.x - radius} y={point.y - radius} width={size} height={size} />
-        {image}
+        <image {...imageProps} />
       </g>
     );
   }

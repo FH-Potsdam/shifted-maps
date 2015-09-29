@@ -12,7 +12,7 @@ export const FAIL_TILE_REQUEST = 'FAIL_TILE_REQUEST';
 
 export function requestTiles() {
   return function(dispatch, getState) {
-    dispatch({ type: REQUEST_TILES });
+    /*dispatch({ type: REQUEST_TILES });
 
     let state = getState(),
       places = tiledPlacesSelector(state),
@@ -29,7 +29,7 @@ export function requestTiles() {
       createTileRequest(place, map, placeRadiusScale, placeRadiusRangeScale, function(error, request) {
         dispatch(queueTileRequest(place, request, zoom));
       });
-    });
+    });*/
   }
 }
 
@@ -73,6 +73,8 @@ export function requestTile(place, request, zoom) {
     request.send(function (error, tile) {
       if (error)
         return dispatch(failTileRequest(place, error));
+
+      tile.duration = place.duration;
 
       dispatch(receiveTile(place, new Tile(tile), zoom));
     });

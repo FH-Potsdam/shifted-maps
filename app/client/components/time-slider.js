@@ -19,6 +19,14 @@ class TimeSlider extends Component {
     this.$element = $(findDOMNode(this));
   }
 
+  start() {
+    return this.props.start || this.props.defaultValues[0];
+  }
+
+  end() {
+    return this.props.end || this.props.defaultValues[1];
+  }
+
   onThumbMove(key, thumbLeft, thumbTop) {
     let value = this.computeValue(thumbLeft, thumbTop);
 
@@ -31,13 +39,16 @@ class TimeSlider extends Component {
       width = $element.width();
 
     let position = (Math.max(left, Math.min(left + width, valueLeft)) - left) / width,
-      { start, end } = this.props;
+      start = this.start(),
+      end = this.end();
 
     return position * (end - start) + start;
   }
 
   changeValue(key, value) {
-    let { start, end, distance, step } = this.props,
+    let { distance, step } = this.props,
+      start = this.start(),
+      end = this.end(),
       { values } = this.state,
       prevValue = values[key];
 
@@ -99,7 +110,8 @@ class TimeSlider extends Component {
   }
 
   renderThumbs() {
-    let { start, end } = this.props,
+    let start = this.start(),
+      end = this.end(),
       { values } = this.state;
 
     return values.map((value, key) => {
