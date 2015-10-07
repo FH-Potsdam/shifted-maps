@@ -1,6 +1,7 @@
 import oboe from 'oboe';
 import { requestTiles } from './tiles';
 import { fitPlaces } from './places';
+import { initViews } from './ui';
 import Place from '../models/place';
 import Stay from '../models/stay';
 import Trip from '../models/trip';
@@ -76,6 +77,7 @@ export function setStoryline(places, trips, stays) {
     dispatch({ type: SET_STORYLINE, places, trips, stays});
     dispatch(requestTiles());
     dispatch(fitPlaces());
+    dispatch(initViews());
   };
 }
 

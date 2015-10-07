@@ -1,7 +1,6 @@
 import { createSelector } from 'reselect';
 import partial from 'mout/function/partial';
 import _ from 'lodash';
-import { mapMapSelector } from './map';
 import { filteredPlacesSelector } from './places';
 import { filteredConnectionsSelector, connectionFrequencyDomainSelector, connectionDurationDomainSelector } from './connections';
 import { geographicView, frequencyView, durationView } from '../services/views';
@@ -49,38 +48,34 @@ const beelineDomainSelector = createSelector(
 
 export const geographicViewSelector = createSelector(
   [
-    mapMapSelector,
-    beelineDomainSelector
+    filteredPlacesSelector,
+    filteredConnectionsSelector,
   ],
-  function(map) {
-    return function(done) {
-      geographicView(map, done);
-    }
+  function(places, connections) {
+    return partial(geographicView, places, connections);
   }
 );
 
 export const frequencyViewSelector = createSelector(
   [
-    mapMapSelector,
     filteredPlacesSelector,
     filteredConnectionsSelector,
     connectionFrequencyDomainSelector,
     beelineDomainSelector
   ],
-  function(map, places, connections, connectionFrequencyDomain, beelineRange) {
-    return partial(frequencyView, map, places, connections, connectionFrequencyDomain, beelineRange);
+  function(places, connections, connectionFrequencyDomain, beelineRange) {
+    return partial(frequencyView, places, connections, connectionFrequencyDomain, beelineRange);
   }
 );
 
 export const durationViewSelector = createSelector(
   [
-    mapMapSelector,
     filteredPlacesSelector,
     filteredConnectionsSelector,
     connectionDurationDomainSelector,
     beelineDomainSelector
   ],
-  function(map, places, connections, connectionDurationDomain, beelineRange) {
-    return partial(durationView, map, places, connections, connectionDurationDomain, beelineRange);
+  function(places, connections, connectionDurationDomain, beelineRange) {
+    return partial(durationView, places, connections, connectionDurationDomain, beelineRange);
   }
 );

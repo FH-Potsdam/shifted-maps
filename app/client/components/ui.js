@@ -11,8 +11,7 @@ class UI extends Component {
 
   render() {
     let { ui } = this.props,
-      timeSlider = null,
-      viewList = null;
+      timeSlider = null;
 
     if (ui.has('timeSpanRange')) {
       let onTimeSliderChange = debounce(this.props.onTimeSpanChange, 200),
@@ -23,9 +22,8 @@ class UI extends Component {
       timeSlider = <TimeSlider defaultValues={timeSpanRange} step={step} distance={step} onChange={onTimeSliderChange} />;
     }
 
-    if (ui.has('activeView')) {
-      viewList = <ViewList activeView={ui.get('activeView')} onViewChange={this.props.onViewChange} />;
-    }
+    // @TODO add disabled and active state
+    let viewList = <ViewList activeView={ui.get('activeView')} onViewChange={this.props.onViewChange} />;
 
     return (
       <div className="ui">

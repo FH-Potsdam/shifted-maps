@@ -4,7 +4,8 @@ import { createSelector } from 'reselect';
 import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector } from './scales';
 import { visBoundsSelector, visViewSelector, visScaleSelector } from './vis';
 import { tilesLevelSelector } from './tiles';
-import { uiTimeSpanSelector, uiLocatorSelector } from './ui';
+import { mapMapSelector } from './map';
+import { uiTimeSpanSelector, uiLocationsSelector } from './ui';
 
 function filterPlaces(places, uiTimeSpan) {
   if (places.size === 0)
@@ -77,9 +78,16 @@ function scalePlaces(places, strokeWidthScale, radiusScale) {
     });
 }
 
-function positionPlaces(places, uiLocator) {
+function positionPlaces(places, mapMap, uiLocations) {
   return places.map(function(place) {
-    return place.set('point', uiLocator(place));
+    let location = place.location;
+
+    if (uiLocations != null)
+      location = uiLocations.get(place.id);
+
+    let point = mapMap.latLngToLayerPoint(location);
+
+    return place.set('point', point);
   });
 }
 
@@ -184,7 +192,8 @@ export const scaledPlacesSelector = createSelector(
 export const positionedPlacesSelector = createSelector(
   [
     scaledPlacesSelector,
-    uiLocatorSelector
+    mapMapSelector,
+    uiLocationsSelector
   ],
   positionPlaces
 );

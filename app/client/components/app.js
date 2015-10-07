@@ -34,12 +34,6 @@ class App extends Component {
     dispatch(requestStoryline());
   }
 
-  onMapLoad() {
-    let { dispatch } = this.props;
-
-    dispatch(changeView(GEOGRAPHIC_VIEW));
-  }
-
   onMapViewReset(event) {
     let { dispatch } = this.props;
 
@@ -110,7 +104,6 @@ class App extends Component {
              center={map.get('center')}
              bounds={map.get('bounds')}
              className="app-map"
-             onLoad={this.onMapLoad.bind(this)}
              onViewReset={this.onMapViewReset.bind(this)}
              onDragStart={this.onMapDragStart.bind(this)}
              onMoveEnd={this.onMapMoveEnd.bind(this)}

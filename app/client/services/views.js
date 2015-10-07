@@ -1,3 +1,4 @@
+import { Map } from 'immutable';
 import d3 from 'd3';
 import _ from 'lodash';
 
@@ -64,39 +65,27 @@ function computeLocations(places, connections, linkDistance, done) {
   });*/
 
   force.on('end', function() {
-    let locations = {};
-
-    nodes.forEach(function(node) {
-      locations[node.place] = L.latLng(node.y - 90, node.x - 180);
+    let locations = Map().withMutations(function(locations) {
+      nodes.forEach(function(node) {
+        locations.set(node.place, L.latLng(node.y - 90, node.x - 180));
+      });
     });
 
     done(null, locations);
   });
 }
 
-function view(map, places, connections, linkDistance, done) {
-  console.log('view');
+export function geographicView(places, connections, done) {
+  function linkDistance(connection) {
+    return connection.beeline;
+  }
 
   computeLocations(places, connections, linkDistance, function(error, locations) {
-    done(null, function(place) {
-      let location = locations[place.id];
-
-      return map.latLngToLayerPoint(location);
-    });
+    done(null, locations);
   });
 }
 
-export function geographicView(map, done) {
-  console.log('geographicView');
-
-  done(null, function(place) {
-    return map.latLngToLayerPoint(place.location);
-  });
-}
-
-export function durationView(map, places, connections, durationDomain, beelineRange, done) {
-  console.log('durationView');
-
+export function durationView(places, connections, durationDomain, beelineRange, done) {
   let beelineScale = d3.scale.linear()
     .domain(durationDomain)
     .range(beelineRange)
@@ -106,12 +95,12 @@ export function durationView(map, places, connections, durationDomain, beelineRa
     return beelineScale(connection.duration);
   }
 
-  view(map, places, connections, linkDistance, done);
+  computeLocations(places, connections, linkDistance, function(error, locations) {
+    done(null, locations);
+  });
 }
 
-export function frequencyView(map, places, connections, frequencyDomain, beelineRange, done) {
-  console.log('frequencyView');
-
+export function frequencyView(places, connections, frequencyDomain, beelineRange, done) {
   let beelineScale = d3.scale.linear()
     .domain([...frequencyDomain].reverse())
     .range(beelineRange)
@@ -121,5 +110,7 @@ export function frequencyView(map, places, connections, frequencyDomain, beeline
     return beelineScale(connection.frequency);
   }
 
-  view(map, places, connections, linkDistance, done);
+  computeLocations(places, connections, linkDistance, function(error, locations) {
+    done(null, locations);
+  });
 }

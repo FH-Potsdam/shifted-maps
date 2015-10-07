@@ -13,14 +13,15 @@ export const uiActiveViewSelector = createSelector(
   [
     uiSelector
   ],
-  ui => ui.get('actieView')
+  ui => ui.get('activeView')
 );
 
-export const uiLocatorSelector = createSelector(
+export const uiLocationsSelector = createSelector(
   [
-    uiSelector
+    uiSelector,
+    uiActiveViewSelector
   ],
-  ui => ui.get('locator')
+  (ui, view) => ui.getIn(['locations', view])
 );
 
 export default uiSelector;
