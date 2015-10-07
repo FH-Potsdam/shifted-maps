@@ -2,10 +2,13 @@ import _ from 'lodash';
 import Promise from 'promise';
 import { GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW } from '../models/views';
 import { geographicViewSelector, frequencyViewSelector, durationViewSelector } from '../selectors/views';
+import { uiActiveViewSelector } from '../selectors/ui';
 
 export const CHANGE_VIEW = 'CHANGE_VIEW';
 export const SET_LOCATIONS = 'SET_LOCATIONS';
 export const CHANGE_TIME_SPAN = 'CHANGE_TIME_SPAN';
+
+const VIEWS = [GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW];
 
 const VIEW_SELECTORS = {
   [GEOGRAPHIC_VIEW]: geographicViewSelector,
@@ -13,19 +16,33 @@ const VIEW_SELECTORS = {
   [DURATION_VIEW]: durationViewSelector
 };
 
-const VIEW_QUEUE = [];
+let viewQueue;
 
 export function initViews() {
-  VIEW_QUEUE.push(GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW);
+  viewQueue = [...VIEWS];
 
-  return function(dispatch) {
+  return processViewQueue();
+}
+
+export function updateViews() {
+  return function(dispatch, getState) {
+    let state = getState(),
+      activeView = uiActiveViewSelector(state);
+
+    viewQueue = [...VIEWS];
+
+    if (activeView != null) {
+      viewQueue = _.without(viewQueue, activeView);
+      viewQueue.unshift(activeView);
+    }
+
     dispatch(processViewQueue());
   };
 }
 
 function processViewQueue() {
   return function(dispatch) {
-    let view = VIEW_QUEUE.shift();
+    let view = viewQueue.shift();
 
     if (view == null) return;
 

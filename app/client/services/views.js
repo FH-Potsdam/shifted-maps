@@ -31,8 +31,6 @@ function createLinkArray(nodes, connections) {
 }
 
 function computeLocations(places, connections, linkDistance, done) {
-  console.log('computeLocations');
-
   let nodes = createNodeArray(places),
     links = createLinkArray(nodes, connections);
 
@@ -76,6 +74,8 @@ function computeLocations(places, connections, linkDistance, done) {
 }
 
 export function geographicView(places, connections, done) {
+  console.log('geographicView');
+
   function linkDistance(connection) {
     return connection.beeline;
   }
@@ -86,6 +86,8 @@ export function geographicView(places, connections, done) {
 }
 
 export function durationView(places, connections, durationDomain, beelineRange, done) {
+  console.log('durationView');
+
   let beelineScale = d3.scale.linear()
     .domain(durationDomain)
     .range(beelineRange)
@@ -101,6 +103,8 @@ export function durationView(places, connections, durationDomain, beelineRange, 
 }
 
 export function frequencyView(places, connections, frequencyDomain, beelineRange, done) {
+  console.log('frequencyView');
+
   let beelineScale = d3.scale.linear()
     .domain([...frequencyDomain].reverse())
     .range(beelineRange)

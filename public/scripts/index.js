@@ -310,6 +310,7 @@ Object.defineProperty(exports, '__esModule', {
 var _VIEW_SELECTORS;
 
 exports.initViews = initViews;
+exports.updateViews = updateViews;
 exports.changeView = changeView;
 exports.changeTimeSpan = changeTimeSpan;
 
@@ -329,6 +330,8 @@ var _modelsViews = require('../models/views');
 
 var _selectorsViews = require('../selectors/views');
 
+var _selectorsUi = require('../selectors/ui');
+
 var CHANGE_VIEW = 'CHANGE_VIEW';
 exports.CHANGE_VIEW = CHANGE_VIEW;
 var SET_LOCATIONS = 'SET_LOCATIONS';
@@ -336,21 +339,37 @@ exports.SET_LOCATIONS = SET_LOCATIONS;
 var CHANGE_TIME_SPAN = 'CHANGE_TIME_SPAN';
 
 exports.CHANGE_TIME_SPAN = CHANGE_TIME_SPAN;
+var VIEWS = [_modelsViews.GEOGRAPHIC_VIEW, _modelsViews.FREQUENCY_VIEW, _modelsViews.DURATION_VIEW];
+
 var VIEW_SELECTORS = (_VIEW_SELECTORS = {}, _defineProperty(_VIEW_SELECTORS, _modelsViews.GEOGRAPHIC_VIEW, _selectorsViews.geographicViewSelector), _defineProperty(_VIEW_SELECTORS, _modelsViews.FREQUENCY_VIEW, _selectorsViews.frequencyViewSelector), _defineProperty(_VIEW_SELECTORS, _modelsViews.DURATION_VIEW, _selectorsViews.durationViewSelector), _VIEW_SELECTORS);
 
-var VIEW_QUEUE = [];
+var viewQueue = undefined;
 
 function initViews() {
-  VIEW_QUEUE.push(_modelsViews.GEOGRAPHIC_VIEW, _modelsViews.FREQUENCY_VIEW, _modelsViews.DURATION_VIEW);
+  viewQueue = [].concat(VIEWS);
 
-  return function (dispatch) {
+  return processViewQueue();
+}
+
+function updateViews() {
+  return function (dispatch, getState) {
+    var state = getState(),
+        activeView = (0, _selectorsUi.uiActiveViewSelector)(state);
+
+    viewQueue = [].concat(VIEWS);
+
+    if (activeView != null) {
+      viewQueue = _lodash2['default'].without(viewQueue, activeView);
+      viewQueue.unshift(activeView);
+    }
+
     dispatch(processViewQueue());
   };
 }
 
 function processViewQueue() {
   return function (dispatch) {
-    var view = VIEW_QUEUE.shift();
+    var view = viewQueue.shift();
 
     if (view == null) return;
 
@@ -381,7 +400,7 @@ function changeTimeSpan(timeSpan) {
   return { type: CHANGE_TIME_SPAN, timeSpan: timeSpan };
 }
 
-},{"../models/views":32,"../selectors/views":48,"lodash":60,"promise":71}],7:[function(require,module,exports){
+},{"../models/views":32,"../selectors/ui":47,"../selectors/views":48,"lodash":60,"promise":71}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -555,6 +574,7 @@ var App = (function (_Component) {
 
       dispatch((0, _actionsUi.changeTimeSpan)(timeSpan));
       dispatch((0, _actionsTiles.requestTiles)());
+      dispatch((0, _actionsUi.updateViews)());
     }
   }, {
     key: 'onViewChange',
@@ -2598,7 +2618,7 @@ function setLocations(state, action) {
   var view = action.view;
   var locations = action.locations;
 
-  return state.setIn(['locations', view], locations);
+  return state.mergeIn(['locations', view], locations);
 }
 
 function ui(state, action) {
@@ -3046,7 +3066,7 @@ function positionPlaces(places, mapMap, uiLocations) {
   return places.map(function (place) {
     var location = place.location;
 
-    if (uiLocations != null) location = uiLocations.get(place.id);
+    if (uiLocations != null && uiLocations.has(place.id)) location = uiLocations.get(place.id);
 
     var point = mapMap.latLngToLayerPoint(location);
 
@@ -3264,8 +3284,6 @@ function computeBeelineRange(connections) {
   var groupedBeelineMeans = _lodash2['default'].map(groupedBeelines, function (connections) {
     return _lodash2['default'].sum(connections, 'beeline') / connections.length;
   });
-
-  console.log([_lodash2['default'].min(groupedBeelineMeans), _lodash2['default'].max(groupedBeelineMeans)]);
 
   return [_lodash2['default'].min(groupedBeelineMeans), _lodash2['default'].max(groupedBeelineMeans)];
 
@@ -3504,8 +3522,6 @@ function createLinkArray(nodes, connections) {
 }
 
 function computeLocations(places, connections, linkDistance, done) {
-  console.log('computeLocations');
-
   var nodes = createNodeArray(places),
       links = createLinkArray(nodes, connections);
 
@@ -3538,6 +3554,8 @@ function computeLocations(places, connections, linkDistance, done) {
 }
 
 function geographicView(places, connections, done) {
+  console.log('geographicView');
+
   function linkDistance(connection) {
     return connection.beeline;
   }
@@ -3548,6 +3566,8 @@ function geographicView(places, connections, done) {
 }
 
 function durationView(places, connections, durationDomain, beelineRange, done) {
+  console.log('durationView');
+
   var beelineScale = _d32['default'].scale.linear().domain(durationDomain).range(beelineRange).clamp(true);
 
   function linkDistance(connection) {
@@ -3560,6 +3580,8 @@ function durationView(places, connections, durationDomain, beelineRange, done) {
 }
 
 function frequencyView(places, connections, frequencyDomain, beelineRange, done) {
+  console.log('frequencyView');
+
   var beelineScale = _d32['default'].scale.linear().domain([].concat(_toConsumableArray(frequencyDomain)).reverse()).range(beelineRange).clamp(true);
 
   function linkDistance(connection) {

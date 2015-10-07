@@ -42,7 +42,7 @@ function changeView(state, action) {
 function setLocations(state, action) {
   let { view, locations } = action;
 
-  return state.setIn(['locations', view], locations);
+  return state.mergeIn(['locations', view], locations);
 }
 
 export default function ui(state = Map(), action) {

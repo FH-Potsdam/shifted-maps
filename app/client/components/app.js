@@ -7,7 +7,7 @@ import { initVis, moveVis, resizeVis, zoomVis } from '../actions/vis';
 import { updateScales } from '../actions/scales';
 import { requestTiles } from '../actions/tiles';
 import { updateMapState } from '../actions/map';
-import { changeTimeSpan, changeView } from '../actions/ui';
+import { changeTimeSpan, changeView, updateViews } from '../actions/ui';
 import { GEOGRAPHIC_VIEW } from '../models/views';
 import Map from './map';
 import Vis from './vis';
@@ -79,6 +79,7 @@ class App extends Component {
 
     dispatch(changeTimeSpan(timeSpan));
     dispatch(requestTiles());
+    dispatch(updateViews());
   }
 
   onViewChange(view) {

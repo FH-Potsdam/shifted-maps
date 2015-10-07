@@ -82,7 +82,7 @@ function positionPlaces(places, mapMap, uiLocations) {
   return places.map(function(place) {
     let location = place.location;
 
-    if (uiLocations != null)
+    if (uiLocations != null && uiLocations.has(place.id))
       location = uiLocations.get(place.id);
 
     let point = mapMap.latLngToLayerPoint(location);

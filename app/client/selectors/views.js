@@ -20,8 +20,6 @@ function computeBeelineRange(connections) {
     return _.sum(connections, 'beeline') / connections.length;
   });
 
-  console.log([_.min(groupedBeelineMeans), _.max(groupedBeelineMeans)]);
-
   return [_.min(groupedBeelineMeans), _.max(groupedBeelineMeans)];
 
   /*let minBeeline = Infinity,
