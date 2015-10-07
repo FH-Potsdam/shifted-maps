@@ -36,8 +36,6 @@ export default function ui(state = Map(), action) {
     case CHANGE_VIEW:
       let { view } = action;
 
-      console.log(view);
-
       return state.set('activeView', view);
 
     case CHANGE_VIEW_SERVICE:

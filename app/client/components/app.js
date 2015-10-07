@@ -37,7 +37,6 @@ class App extends Component {
   onMapLoad() {
     let { dispatch } = this.props;
 
-    console.log('init');
     dispatch(changeView(GEOGRAPHIC_VIEW));
   }
 

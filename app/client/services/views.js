@@ -39,29 +39,29 @@ function computeLocations(places, connections, linkDistance, done) {
     .nodes(nodes)
     .links(links)
     .size([360, 180])
-    .charge(0)
+    .charge(-0.01)
+    .chargeDistance(1)
     .gravity(0)
+    .linkStrength(1)
     .linkDistance(function(link) {
-      let distance = linkDistance(connections.get(link.connection))
-
-      console.log(distance);
+      let distance = linkDistance(connections.get(link.connection));
 
       return distance;
     })
     .start();
 
   // Add small gravity for every node to its start position
-  force.on('tick', function(event) {
+  /*force.on('tick', function(event) {
     let { alpha } = event;
 
     nodes.forEach(function(node) {
       let x = node.start.x - node.x,
         y = node.start.y - node.y;
 
-      node.x += x * alpha;
-      node.y += y * alpha;
+      node.x += x * alpha * .5;
+      node.y += y * alpha * .5;
     });
-  });
+  });*/
 
   force.on('end', function() {
     let locations = {};
@@ -99,7 +99,8 @@ export function durationView(map, places, connections, durationDomain, beelineRa
 
   let beelineScale = d3.scale.linear()
     .domain(durationDomain)
-    .range(beelineRange);
+    .range(beelineRange)
+    .clamp(true);
 
   function linkDistance(connection) {
     return beelineScale(connection.duration);
@@ -111,11 +112,10 @@ export function durationView(map, places, connections, durationDomain, beelineRa
 export function frequencyView(map, places, connections, frequencyDomain, beelineRange, done) {
   console.log('frequencyView');
 
-  //console.log(frequencyDomain);
-
   let beelineScale = d3.scale.linear()
     .domain([...frequencyDomain].reverse())
-    .range(beelineRange);
+    .range(beelineRange)
+    .clamp(true);
 
   function linkDistance(connection) {
     return beelineScale(connection.frequency);

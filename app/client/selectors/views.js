@@ -1,62 +1,56 @@
 import { createSelector } from 'reselect';
 import partial from 'mout/function/partial';
+import _ from 'lodash';
 import { mapMapSelector } from './map';
 import { filteredPlacesSelector } from './places';
 import { filteredConnectionsSelector, connectionFrequencyDomainSelector, connectionDurationDomainSelector } from './connections';
 import { geographicView, frequencyView, durationView } from '../services/views';
 
-function computeBeeline(from, to) {
-  let fromLat = from.lat + 180,
-    toLat = to.lat + 180,
-    fromLng = from.lng + 90,
-    toLng = to.lng + 90;
+function computeBeelineRange(connections) {
+  let groupedBeelines = _.chain(connections.toJS())
+    .groupBy(function(connection) {
+      return Math.round(connection.beeline * 100) / 100;
+    })
+    .groupBy('length')
+    .mapValues(function(connections) {
+      return _.flatten(connections);
+    })
+    .value();
 
-  return Math.sqrt(Math.pow(toLng - fromLng, 2) + Math.pow(toLat - fromLat, 2));
-}
+  let groupedBeelineMeans = _.map(groupedBeelines, function(connections) {
+    return _.sum(connections, 'beeline') / connections.length;
+  });
 
-/*function computeBeeline(from, to) {
-  let rad = Math.PI / 180,
-    lat1 = from.lat * rad,
-    lat2 = to.lat * rad,
-    a = Math.sin(lat1) * Math.sin(lat2) +
-      Math.cos(lat1) * Math.cos(lat2) * Math.cos((from.lng - to.lng) * rad);
+  console.log([_.min(groupedBeelineMeans), _.max(groupedBeelineMeans)]);
 
-  return Math.acos(Math.min(1, a));
-}*/
+  return [_.min(groupedBeelineMeans), _.max(groupedBeelineMeans)];
 
-function computeBeelineRange(connections, places) {
-  // @TODO:
-  // 1. Mittelwert/Durschnittswert aller Frequenzen, Durations finden
-  // 2. Verbindung finden, die diesem Mittel-/Durschnittswert am nächsten ist
-  // 3. Entfernung dieser Verbindung ausrechnen
-  // 4. Diese Entfernung als Mittelwert für die neue Entfernungsskala verwenden
-
-  let minBeeline = Infinity,
+  /*let minBeeline = Infinity,
     maxBeeline = -Infinity;
 
   connections.forEach(function(connection) {
-    let from = places.get(connection.from),
-      to = places.get(connection.to),
-      beeline = computeBeeline(from.location, to.location);
+    let { beeline } = connection;
 
     minBeeline = Math.min(beeline, minBeeline);
     maxBeeline = Math.max(beeline, maxBeeline);
   });
 
-  return [minBeeline, maxBeeline];
+  console.log([minBeeline, maxBeeline]);
+
+  return [minBeeline, maxBeeline];*/
 }
 
 const beelineDomainSelector = createSelector(
   [
-    filteredConnectionsSelector,
-    filteredPlacesSelector
+    filteredConnectionsSelector
   ],
   computeBeelineRange
 );
 
 export const geographicViewSelector = createSelector(
   [
-    mapMapSelector
+    mapMapSelector,
+    beelineDomainSelector
   ],
   function(map) {
     return function(done) {

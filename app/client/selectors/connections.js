@@ -1,10 +1,31 @@
 import d3 from 'd3';
+import _ from 'lodash';
 import { Seq } from 'immutable';
 import { createSelector } from 'reselect';
-import { filteredPlacesSelector, positionedPlacesSelector } from './places';
+import placesSelector, { filteredPlacesSelector, positionedPlacesSelector } from './places';
 import { connectionStrokeWidthRangeScaleSelector } from './scales';
 import { visBoundsSelector, visScaleSelector } from './vis';
 import { uiTimeSpanSelector } from './ui';
+
+function computeBeeline(from, to) {
+  let fromLat = from.lat + 180,
+    toLat = to.lat + 180,
+    fromLng = from.lng + 90,
+    toLng = to.lng + 90;
+
+  return Math.sqrt(Math.pow(toLng - fromLng, 2) + Math.pow(toLat - fromLat, 2));
+}
+
+function beelineConnections(connections, places) {
+  return connections.map(function(connection) {
+    let from = places.get(connection.from),
+      to = places.get(connection.to);
+
+    let beeline = computeBeeline(from.location, to.location);
+
+    return connection.set('beeline', beeline);
+  });
+}
 
 function filterConnections(connections, places, uiTimeSpan) {
   if (connections.size === 0)
@@ -97,9 +118,17 @@ function boundConnections(connections, visBounds) {
 
 const connectionsSelector = state => state.connections;
 
-export const filteredConnectionsSelector = createSelector(
+export const beelinedConnectionsSelector = createSelector(
   [
     connectionsSelector,
+    placesSelector
+  ],
+  beelineConnections
+);
+
+export const filteredConnectionsSelector = createSelector(
+  [
+    beelinedConnectionsSelector, //connectionsSelector,
     filteredPlacesSelector,
     uiTimeSpanSelector
   ],

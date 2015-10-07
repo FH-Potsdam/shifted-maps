@@ -230,21 +230,23 @@ exports.FAIL_TILE_REQUEST = FAIL_TILE_REQUEST;
 
 function requestTiles() {
   return function (dispatch, getState) {
-    /*dispatch({ type: REQUEST_TILES });
-     let state = getState(),
-      places = tiledPlacesSelector(state),
-      requests = tileRequestsSelector(state),
-      placeRadiusScale = placeRadiusScaleSelector(state),
-      placeRadiusRangeScale = placeRadiusRangeScaleSelector(state),
-      map = mapMapSelector(state),
-      zoom = mapZoomSelector(state);
-     places.forEach(function(place) {
-      if (!place.visible || place.tile != null || requests.has(place.id))
-        return;
-       createTileRequest(place, map, placeRadiusScale, placeRadiusRangeScale, function(error, request) {
+    dispatch({ type: REQUEST_TILES });
+
+    var state = getState(),
+        places = (0, _selectorsPlaces.tiledPlacesSelector)(state),
+        requests = (0, _selectorsTiles.tileRequestsSelector)(state),
+        placeRadiusScale = (0, _selectorsPlaces.placeRadiusScaleSelector)(state),
+        placeRadiusRangeScale = (0, _selectorsScales.placeRadiusRangeScaleSelector)(state),
+        map = (0, _selectorsMap.mapMapSelector)(state),
+        zoom = (0, _selectorsMap.mapZoomSelector)(state);
+
+    places.forEach(function (place) {
+      if (!place.visible || place.tile != null || requests.has(place.id)) return;
+
+      (0, _servicesTiles.createTileRequest)(place, map, placeRadiusScale, placeRadiusRangeScale, function (error, request) {
         dispatch(queueTileRequest(place, request, zoom));
       });
-    });*/
+    });
   };
 }
 
@@ -474,7 +476,6 @@ var App = (function (_Component) {
     value: function onMapLoad() {
       var dispatch = this.props.dispatch;
 
-      console.log('init');
       dispatch((0, _actionsUi.changeView)(_modelsViews.GEOGRAPHIC_VIEW));
     }
   }, {
@@ -2088,6 +2089,7 @@ exports['default'] = (0, _immutable.Record)({
   duration: 0,
   frequency: 0,
   distance: 0,
+  beeline: 0,
   trips: new _immutable.List(),
   strokeWidth: 0,
   connection: null,
@@ -2561,8 +2563,6 @@ function ui(state, action) {
     case _actionsUi.CHANGE_VIEW:
       var view = action.view;
 
-      console.log(view);
-
       return state.set('activeView', view);
 
     case _actionsUi.CHANGE_VIEW_SERVICE:
@@ -2711,17 +2711,43 @@ var _d3 = require('d3');
 
 var _d32 = _interopRequireDefault(_d3);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _immutable = require('immutable');
 
 var _reselect = require('reselect');
 
 var _places = require('./places');
 
+var _places2 = _interopRequireDefault(_places);
+
 var _scales = require('./scales');
 
 var _vis = require('./vis');
 
 var _ui = require('./ui');
+
+function computeBeeline(from, to) {
+  var fromLat = from.lat + 180,
+      toLat = to.lat + 180,
+      fromLng = from.lng + 90,
+      toLng = to.lng + 90;
+
+  return Math.sqrt(Math.pow(toLng - fromLng, 2) + Math.pow(toLat - fromLat, 2));
+}
+
+function beelineConnections(connections, places) {
+  return connections.map(function (connection) {
+    var from = places.get(connection.from),
+        to = places.get(connection.to);
+
+    var beeline = computeBeeline(from.location, to.location);
+
+    return connection.set('beeline', beeline);
+  });
+}
 
 function filterConnections(connections, places, uiTimeSpan) {
   if (connections.size === 0) return connections;
@@ -2813,7 +2839,11 @@ var connectionsSelector = function connectionsSelector(state) {
   return state.connections;
 };
 
-var filteredConnectionsSelector = (0, _reselect.createSelector)([connectionsSelector, _places.filteredPlacesSelector, _ui.uiTimeSpanSelector], filterConnections);
+var beelinedConnectionsSelector = (0, _reselect.createSelector)([connectionsSelector, _places2['default']], beelineConnections);
+
+exports.beelinedConnectionsSelector = beelinedConnectionsSelector;
+var filteredConnectionsSelector = (0, _reselect.createSelector)([beelinedConnectionsSelector, //connectionsSelector,
+_places.filteredPlacesSelector, _ui.uiTimeSpanSelector], filterConnections);
 
 exports.filteredConnectionsSelector = filteredConnectionsSelector;
 var connectionDomainSelector = (0, _reselect.createSelector)([filteredConnectionsSelector], computeConnectionDomains);
@@ -2843,7 +2873,7 @@ var boundedConnectionsSelector = (0, _reselect.createSelector)([positionedConnec
 exports.boundedConnectionsSelector = boundedConnectionsSelector;
 exports['default'] = connectionsSelector;
 
-},{"./places":44,"./scales":45,"./ui":47,"./vis":49,"d3":55,"immutable":56,"reselect":247}],43:[function(require,module,exports){
+},{"./places":44,"./scales":45,"./ui":47,"./vis":49,"d3":55,"immutable":56,"lodash":58,"reselect":247}],43:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -3161,6 +3191,10 @@ var _moutFunctionPartial = require('mout/function/partial');
 
 var _moutFunctionPartial2 = _interopRequireDefault(_moutFunctionPartial);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _map = require('./map');
 
 var _places = require('./places');
@@ -3169,50 +3203,35 @@ var _connections = require('./connections');
 
 var _servicesViews = require('../services/views');
 
-function computeBeeline(from, to) {
-  var fromLat = from.lat + 180,
-      toLat = to.lat + 180,
-      fromLng = from.lng + 90,
-      toLng = to.lng + 90;
+function computeBeelineRange(connections) {
+  var groupedBeelines = _lodash2['default'].chain(connections.toJS()).groupBy(function (connection) {
+    return Math.round(connection.beeline * 100) / 100;
+  }).groupBy('length').mapValues(function (connections) {
+    return _lodash2['default'].flatten(connections);
+  }).value();
 
-  return Math.sqrt(Math.pow(toLng - fromLng, 2) + Math.pow(toLat - fromLat, 2));
-}
-
-/*function computeBeeline(from, to) {
-  let rad = Math.PI / 180,
-    lat1 = from.lat * rad,
-    lat2 = to.lat * rad,
-    a = Math.sin(lat1) * Math.sin(lat2) +
-      Math.cos(lat1) * Math.cos(lat2) * Math.cos((from.lng - to.lng) * rad);
-
-  return Math.acos(Math.min(1, a));
-}*/
-
-function computeBeelineRange(connections, places) {
-  // @TODO:
-  // 1. Mittelwert/Durschnittswert aller Frequenzen, Durations finden
-  // 2. Verbindung finden, die diesem Mittel-/Durschnittswert am nächsten ist
-  // 3. Entfernung dieser Verbindung ausrechnen
-  // 4. Diese Entfernung als Mittelwert für die neue Entfernungsskala verwenden
-
-  var minBeeline = Infinity,
-      maxBeeline = -Infinity;
-
-  connections.forEach(function (connection) {
-    var from = places.get(connection.from),
-        to = places.get(connection.to),
-        beeline = computeBeeline(from.location, to.location);
-
-    minBeeline = Math.min(beeline, minBeeline);
-    maxBeeline = Math.max(beeline, maxBeeline);
+  var groupedBeelineMeans = _lodash2['default'].map(groupedBeelines, function (connections) {
+    return _lodash2['default'].sum(connections, 'beeline') / connections.length;
   });
 
-  return [minBeeline, maxBeeline];
+  console.log([_lodash2['default'].min(groupedBeelineMeans), _lodash2['default'].max(groupedBeelineMeans)]);
+
+  return [_lodash2['default'].min(groupedBeelineMeans), _lodash2['default'].max(groupedBeelineMeans)];
+
+  /*let minBeeline = Infinity,
+    maxBeeline = -Infinity;
+   connections.forEach(function(connection) {
+    let { beeline } = connection;
+     minBeeline = Math.min(beeline, minBeeline);
+    maxBeeline = Math.max(beeline, maxBeeline);
+  });
+   console.log([minBeeline, maxBeeline]);
+   return [minBeeline, maxBeeline];*/
 }
 
-var beelineDomainSelector = (0, _reselect.createSelector)([_connections.filteredConnectionsSelector, _places.filteredPlacesSelector], computeBeelineRange);
+var beelineDomainSelector = (0, _reselect.createSelector)([_connections.filteredConnectionsSelector], computeBeelineRange);
 
-var geographicViewSelector = (0, _reselect.createSelector)([_map.mapMapSelector], function (map) {
+var geographicViewSelector = (0, _reselect.createSelector)([_map.mapMapSelector, beelineDomainSelector], function (map) {
   return function (done) {
     (0, _servicesViews.geographicView)(map, done);
   };
@@ -3229,7 +3248,7 @@ var durationViewSelector = (0, _reselect.createSelector)([_map.mapMapSelector, _
 });
 exports.durationViewSelector = durationViewSelector;
 
-},{"../services/views":51,"./connections":42,"./map":43,"./places":44,"mout/function/partial":61,"reselect":247}],49:[function(require,module,exports){
+},{"../services/views":51,"./connections":42,"./map":43,"./places":44,"lodash":58,"mout/function/partial":61,"reselect":247}],49:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -3439,26 +3458,22 @@ function computeLocations(places, connections, linkDistance, done) {
   var nodes = createNodeArray(places),
       links = createLinkArray(nodes, connections);
 
-  var force = _d32['default'].layout.force().nodes(nodes).links(links).size([360, 180]).charge(0).gravity(0).linkDistance(function (link) {
+  var force = _d32['default'].layout.force().nodes(nodes).links(links).size([360, 180]).charge(-0.01).chargeDistance(1).gravity(0).linkStrength(1).linkDistance(function (link) {
     var distance = linkDistance(connections.get(link.connection));
-
-    console.log(distance);
 
     return distance;
   }).start();
 
   // Add small gravity for every node to its start position
-  force.on('tick', function (event) {
-    var alpha = event.alpha;
-
-    nodes.forEach(function (node) {
-      var x = node.start.x - node.x,
-          y = node.start.y - node.y;
-
-      node.x += x * alpha;
-      node.y += y * alpha;
+  /*force.on('tick', function(event) {
+    let { alpha } = event;
+     nodes.forEach(function(node) {
+      let x = node.start.x - node.x,
+        y = node.start.y - node.y;
+       node.x += x * alpha * .5;
+      node.y += y * alpha * .5;
     });
-  });
+  });*/
 
   force.on('end', function () {
     var locations = {};
@@ -3494,7 +3509,7 @@ function geographicView(map, done) {
 function durationView(map, places, connections, durationDomain, beelineRange, done) {
   console.log('durationView');
 
-  var beelineScale = _d32['default'].scale.linear().domain(durationDomain).range(beelineRange);
+  var beelineScale = _d32['default'].scale.linear().domain(durationDomain).range(beelineRange).clamp(true);
 
   function linkDistance(connection) {
     return beelineScale(connection.duration);
@@ -3506,9 +3521,7 @@ function durationView(map, places, connections, durationDomain, beelineRange, do
 function frequencyView(map, places, connections, frequencyDomain, beelineRange, done) {
   console.log('frequencyView');
 
-  //console.log(frequencyDomain);
-
-  var beelineScale = _d32['default'].scale.linear().domain([].concat(_toConsumableArray(frequencyDomain)).reverse()).range(beelineRange);
+  var beelineScale = _d32['default'].scale.linear().domain([].concat(_toConsumableArray(frequencyDomain)).reverse()).range(beelineRange).clamp(true);
 
   function linkDistance(connection) {
     return beelineScale(connection.frequency);
