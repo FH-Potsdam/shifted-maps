@@ -4,9 +4,12 @@ var express = require('express'),
   Normalizer = require('../services/api/normalizer'),
   MovesSegmentReader = require('../services/moves/segment-reader'),
   MovesAPI = require('../services/moves/api'),
-  MovesTransformer = require('../services/moves/transformer');
+  MovesLimiter = require('../services/moves/limiter'),
+  MovesTransformer = require('../services/moves/transformer'),
+  config = require('../config');
 
-var router = express.Router();
+var router = express.Router(),
+  limiter = new MovesLimiter(config.moves.hour_limit, config.moves.minute_limit);
 
 router.use(function(req, res, next) {
   if (!req.user)
@@ -28,7 +31,7 @@ router.use(function(req, res, next) {
 
 router.get('/', function(req, res) {
   var user = req.user,
-    api = new MovesAPI(user.accessToken),
+    api = new MovesAPI(user.accessToken, limiter, config.moves),
     segmentReader = new MovesSegmentReader(api, user.firstDate);
 
   segmentReader

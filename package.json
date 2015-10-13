@@ -13,6 +13,7 @@
     "geolib": "^2.0.14",
     "helmet": "^0.7.1",
     "immutable": "^3.7.3",
+    "limiter": "^1.0.5",
     "lodash": "^3.6.0",
     "moment": "^2.10.2",
     "mongoose": "^4.0.1",

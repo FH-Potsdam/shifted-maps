@@ -32,7 +32,15 @@ MovesSegmentReader.prototype._initRequest = function(months) {
   var reader = this,
     month = moment(this._firstDate).add(months, 'month');
 
-  this._api.daily('/user/storyline', month.format('YYYY-MM'), this._query)
+  this._api.daily('/user/storyline', month.format('YYYY-MM'), this._query, function(request) {
+    reader._handleRequest(months, request)
+  });
+};
+
+MovesSegmentReader.prototype._handleRequest = function(months, request) {
+  var reader = this;
+
+  request
     .node('startTime', function(startTime) {
       return moment(MovesAPI.parseDate(startTime)).unix();
     })
