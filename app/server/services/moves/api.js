@@ -1,10 +1,11 @@
+"use strict";
+
 var util = require('util'),
   url = require('url'),
   oboe = require('oboe'),
   Promise = require('promise'),
   _ = require('lodash'),
-  moment = require('moment'),
-  request = require('request');
+  moment = require('moment');
 
 // @TODO Separate into client and request
 function API(accessToken, limiter, options) {
@@ -27,13 +28,7 @@ API.prototype.request = function(getURL, query, callback) {
     gzip: true
   };
 
-  this._limiter.removeTokens(1, function() {
-    var req = request(options);
-
-    req.on('response', function(response) {
-      console.log(response.headers);
-    });
-
+  this._limiter.schedule(options, function(req) {
     callback(oboe(req));
   });
 };
