@@ -10,12 +10,13 @@ function MovesSegmentReader(api, firstDate) {
   this._api = api;
   this._firstDate = firstDate;
   this._inited = false;
+  this._destroyed = false;
 }
 
 util.inherits(MovesSegmentReader, Readable);
 
 MovesSegmentReader.prototype._init = function() {
-  if (this._inited)
+  if (this._inited || this._destroyed)
     return;
 
   this._inited = true;
@@ -26,7 +27,7 @@ MovesSegmentReader.prototype._init = function() {
 };
 
 MovesSegmentReader.prototype._initRequest = function(months) {
-  if (months >= this._months)
+  if (this._destroyed || months >= this._months)
     return this.push(null);
 
   var reader = this,
@@ -60,6 +61,10 @@ MovesSegmentReader.prototype._handleRequest = function(months, request) {
 
 MovesSegmentReader.prototype._read = function() {
   this._init();
+};
+
+MovesSegmentReader.prototype.destroy = function() {
+  this._destroyed = true;
 };
 
 module.exports = MovesSegmentReader;

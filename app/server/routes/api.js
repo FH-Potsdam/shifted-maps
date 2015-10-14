@@ -34,6 +34,10 @@ router.get('/', function(req, res) {
     api = new MovesAPI(user.accessToken, limiter, config.moves),
     segmentReader = new MovesSegmentReader(api, user.firstDate);
 
+  req.on('close', function() {
+    segmentReader.destroy();
+  });
+
   segmentReader
     .pipe(new MovesTransformer)
     .pipe(new Normalizer)
