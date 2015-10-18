@@ -13,12 +13,13 @@ function MovesStrategy(options, verify) {
   OAuth2Strategy.call(this, options, verify);
 
   this.name = 'moves';
+  this._limiter = new MovesLimiter();
 }
 
 util.inherits(MovesStrategy, OAuth2Strategy);
 
 MovesStrategy.prototype.userProfile = function(accessToken, done) {
-  var api = new MovesAPI(accessToken);
+  var api = new MovesAPI(accessToken, this._limiter, config.moves);
 
   api.profile()
     .done(function(data) {

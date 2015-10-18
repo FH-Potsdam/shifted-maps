@@ -9,7 +9,7 @@ var express = require('express'),
   config = require('../config');
 
 var router = express.Router(),
-  limiter = new MovesLimiter(config.moves.hour_limit, config.moves.minute_limit);
+  limiter = new MovesLimiter();
 
 router.use(function(req, res, next) {
   if (!req.user)

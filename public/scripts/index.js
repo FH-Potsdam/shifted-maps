@@ -3628,7 +3628,7 @@ module.exports = exports['default'];
 },{"./reducer":33,"redux":251,"redux-logger":247,"redux-thunk":249}],53:[function(require,module,exports){
 module.exports={
   "mapbox": {
-    "id": "lennerd.m344jc7n",
+    "id": "heike.6bac2bcd",
     "token": "pk.eyJ1IjoibGVubmVyZCIsImEiOiJXRjB3WGswIn0.3plnt32h0h8pfb9aZ_oGyw"
   }
 }
