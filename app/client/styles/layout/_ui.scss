@@ -1,19 +1,80 @@
+$button-size: $base-spacing-unit * 1.75;
+
 .ui {
   position: absolute;
   background-color: rgba($background, .9);
   top: $base-spacing-unit;
   left: $base-spacing-unit;
   padding: $base-spacing-unit;
+  padding-bottom: $base-spacing-unit * 1.5;
+  text-align: center;
+  width: $base-spacing-unit * 11;
 
   h1 {
     font-size: $font-size-big;
     text-transform: uppercase;
     margin: 0;
+    margin-top: $base-spacing-unit / 2;
+    text-align: left;
+  }
+
+  &__info {
+    color: $foreground;
+    position: absolute;
+    top: $base-spacing-unit / 2;
+    right: $base-spacing-unit / 2;
+    font-size: $font-size-big;
+    text-decoration: none;
+  }
+}
+
+.try-demo {
+  font-size: $font-size-medium;
+  font-style: italic;
+  padding-top: $base-spacing-unit / 2;
+  text-align: left;
+
+  .icon {
+    font-size: $button-size;
+    float: right;
+    padding-top: $base-font-size / 4;
+    margin-left: $base-spacing-unit;
+  }
+}
+
+.view-list {
+  /*position: absolute;
+  top: $base-spacing-unit;
+  right: $base-spacing-unit;*/
+  display: inline-block;
+  margin-top: $base-spacing-unit * 3;
+
+  &__button {
+    display: block;
+    text-align: center;
+    float: left;
+    border: 0;
+    background-color: transparent;
+    color: $foreground;
+    padding: 0;
+    font-size: $button-size;
+    outline: none;
+    overflow: hidden;
+    width: $button-size;
+    height: $button-size;
+
+    &.active {
+      color: $highlight;
+    }
+  }
+
+  &__button + &__button {
+    margin-left: $base-spacing-unit * 1.25;
   }
 }
 
 .time-slider {
-  $thumb-size: $base-spacing-unit / 3;
+  $thumb-size: floor($base-spacing-unit / 3);
   $track-height: $base-spacing-unit--thin / 2;
 
   margin-right: $thumb-size;
@@ -44,37 +105,6 @@
   }
 }
 
-.view-list {
-  /*position: absolute;
-  top: $base-spacing-unit;
-  right: $base-spacing-unit;*/
-  display: inline-block;
-  margin-top: $base-spacing-unit * 2;
-
-  &__button {
-    display: block;
-    text-align: center;
-    float: left;
-    border: 0;
-    background-color: transparent;
-    color: $foreground;
-    padding: 0;
-    font-size: $base-spacing-unit * 1.5;
-    outline: none;
-    overflow: hidden;
-    width: $base-spacing-unit * 1.5;
-    height: $base-spacing-unit * 1.5;
-
-    &.active {
-      color: $highlight;
-    }
-  }
-
-  &__button + &__button {
-    margin-left: $base-spacing-unit;
-  }
-}
-
 .time-range {
   font-style: italic;
   line-height: $base-font-size;
@@ -91,6 +121,7 @@
 
   &__start {
     float: left;
+    text-align: left;
   }
 
   &__end {

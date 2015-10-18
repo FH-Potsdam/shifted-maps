@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Map } from 'immutable';
 import debounce from 'mout/function/debounce';
 import TimeSlider from './time-slider';
+import TryDemo from './try-demo';
 import TimeRange from './time-range';
 import ViewList from './view-list';
 
@@ -20,12 +21,12 @@ class UI extends Component {
         timeSpanRange = ui.get('timeSpanRange'),
         step = ui.get('timeSpanStep');
 
-      console.log(timeSpanRange);
-
       // @TODO define default prop values and add disabled, active and focused states.
       timeSlider = <TimeSlider defaultValues={timeSpanRange} step={step} distance={step} onChange={onTimeSliderChange} />;
       timeRange = <TimeRange range={ui.get('timeSpan')} />
     }
+
+    let tryDemo = <TryDemo />
 
     // @TODO add disabled and active state
     let viewList = <ViewList activeView={ui.get('activeView')} onViewChange={this.props.onViewChange} />;
@@ -33,6 +34,8 @@ class UI extends Component {
     return (
       <div className="ui">
         <h1>Shifted Maps</h1>
+        <a href="#" className="ui__info"><i className="icon icon--info" /></a>
+        {tryDemo}
         {viewList}
         {timeSlider}
         {timeRange}
