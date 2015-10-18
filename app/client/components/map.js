@@ -22,6 +22,8 @@ class Map extends Component {
 
     this.map.setView(center, zoom);
 
+    this.map.zoomControl.setPosition('bottomright');
+
     // Need to render overlay including children in next tick to let map set the view first and create the corresponding
     // overlay pane element we use here.
     process.nextTick(function() {

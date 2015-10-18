@@ -3,9 +3,9 @@ import _ from 'lodash';
 import { GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW } from '../models/views';
 
 const VIEWS = {
-  [GEOGRAPHIC_VIEW]: 'Geographic',
-  [FREQUENCY_VIEW]: 'Frequency',
-  [DURATION_VIEW]: 'Duration'
+  [GEOGRAPHIC_VIEW]: 'geographic',
+  [FREQUENCY_VIEW]: 'frequency',
+  [DURATION_VIEW]: 'duration'
 };
 
 class ViewList extends Component {
@@ -23,7 +23,7 @@ class ViewList extends Component {
   render() {
     let { activeView } = this.props;
 
-    let buttons = _.map(VIEWS, (label, view) => {
+    let buttons = _.map(VIEWS, (key, view) => {
       let className = 'view-list__button';
 
       if (activeView === view)
@@ -34,7 +34,11 @@ class ViewList extends Component {
         this.toggleView(view)
       };
 
-      return <button className={className} key={view} onClick={onClick}>{label}</button>
+      return (
+        <button className={className} key={view} onClick={onClick}>
+          <i className={'icon icon--' + key} />
+        </button>
+      )
     });
 
     return (

@@ -1,54 +1,100 @@
-.time-slider {
+.ui {
   position: absolute;
-  bottom: $base-spacing-unit * 3;
+  background-color: rgba($background, .9);
+  top: $base-spacing-unit;
   left: $base-spacing-unit;
-  right: $base-spacing-unit;
-  height: $base-spacing-unit;
-  margin-right: $base-spacing-unit;
+  padding: $base-spacing-unit;
+
+  h1 {
+    font-size: $font-size-big;
+    text-transform: uppercase;
+    margin: 0;
+  }
+}
+
+.time-slider {
+  $thumb-size: $base-spacing-unit / 3;
+  $track-height: $base-spacing-unit--thin / 2;
+
+  margin-right: $thumb-size;
+  position: relative;
+  margin-top: $base-spacing-unit;
 
   &__track {
     position: absolute;
     z-index: 0;
-    height: $base-spacing-unit;
+    height: $track-height;
     top: 0;
-    background-color: rgba($foreground, .5);
+    background-color: $foreground;
     left: 0;
-    right: -$base-spacing-unit;
-    border-radius: $base-spacing-unit;
+    right: -$thumb-size;
+    border-radius: $track-height;
+    margin: (($thumb-size - $track-height) / 2) 0;
   }
 
   &__thumb {
     position: absolute;
     top: 0;
     right: 100%;
-    height: $base-spacing-unit;
-    width: $base-spacing-unit;
-    border-radius: $base-spacing-unit;
+    height: $thumb-size;
+    width: $thumb-size;
+    border-radius: $thumb-size;
     background-color: $foreground;
     z-index: 1;
   }
 }
 
 .view-list {
-  position: absolute;
+  /*position: absolute;
   top: $base-spacing-unit;
-  right: $base-spacing-unit;
+  right: $base-spacing-unit;*/
+  display: inline-block;
+  margin-top: $base-spacing-unit * 2;
 
   &__button {
     display: block;
     text-align: center;
-    margin-bottom: $base-spacing-unit / 2;
-    width: $base-spacing-unit * 10;
-    height: $base-spacing-unit * 2;
+    float: left;
     border: 0;
-    background-color: rgba($foreground, .5);
-    color: $background;
-    border-radius: $base-spacing-unit * 2;
+    background-color: transparent;
+    color: $foreground;
+    padding: 0;
+    font-size: $base-spacing-unit * 1.5;
     outline: none;
+    overflow: hidden;
+    width: $base-spacing-unit * 1.5;
+    height: $base-spacing-unit * 1.5;
 
     &.active {
-      background-color: white;
-      color: black;
+      color: $highlight;
     }
+  }
+
+  &__button + &__button {
+    margin-left: $base-spacing-unit;
+  }
+}
+
+.time-range {
+  font-style: italic;
+  line-height: $base-font-size;
+  display: inline-block;
+  width: 100%;
+  margin-top: $base-spacing-unit / 2;
+
+  strong {
+    text-transform: uppercase;
+    display: block;
+    font-style: normal;
+    font-size: $font-size-small;
+  }
+
+  &__start {
+    float: left;
+  }
+
+  &__end {
+    float: right;
+    text-align: right;
   }
 }

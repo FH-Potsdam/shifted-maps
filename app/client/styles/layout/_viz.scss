@@ -9,6 +9,14 @@
   .leaflet-tile-pane {
     opacity: .25;
   }
+
+  .leaflet-right .leaflet-control-zoom {
+    margin-right: $base-spacing-unit;
+  }
+
+  .leaflet-bottom .leaflet-control-zoom {
+    margin-bottom: $base-spacing-unit;
+  }
 }
 
 .place-deco {

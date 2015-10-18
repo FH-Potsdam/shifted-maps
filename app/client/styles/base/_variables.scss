@@ -1,10 +1,13 @@
 // Layout
-$base-spacing-unit: 14px;
+$base-spacing-unit: 22px;
+$base-spacing-unit--thin: 2px;
 
 // Typography
-$base-font-size: $base-spacing-unit;
+$base-font-size: 12px;
+$font-size-big: 18px;
+$font-size-small: 10px;
 
 // Colors
 $background: white;
-$foreground: black;
-$highlight: red;
+$foreground: #333333;
+$highlight: #2963a5;
