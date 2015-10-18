@@ -15,6 +15,9 @@
     {% block content %}
 
     {% endblock %}
-    {% block scripts %}{% endblock %}
+    {% block scripts %}
+        <script src="https://use.typekit.net/hil0jky.js"></script>
+        <script>try{Typekit.load({ async: true });}catch(e){}</script>
+    {% endblock %}
 </body>
 </html>
