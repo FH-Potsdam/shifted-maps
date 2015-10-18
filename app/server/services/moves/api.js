@@ -33,8 +33,8 @@ API.prototype.request = function(getURL, query, callback) {
   });
 };
 
-API.prototype.profile = function() {
-  return this.request('/user/profile');
+API.prototype.profile = function(callback) {
+  this.request('/user/profile', null, callback);
 };
 
 API.prototype.daily = function(getURL, date, query, callback) {

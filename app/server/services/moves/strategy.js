@@ -22,14 +22,16 @@ util.inherits(MovesStrategy, OAuth2Strategy);
 MovesStrategy.prototype.userProfile = function(accessToken, done) {
   var api = new MovesAPI(accessToken, this._limiter, config.moves);
 
-  api.profile()
-    .done(function(data) {
-      data.profile.userId = data.userId;
-      done(null, data.profile);
-    })
-    .fail(function(error) {
-      done(new OAuth2Strategy.InternalOAuthError('Failed to fetch user profile', error));
-    });
+  api.profile(function(request) {
+    request
+      .done(function(data) {
+        data.profile.userId = data.userId;
+        done(null, data.profile);
+      })
+      .fail(function(error) {
+        done(new OAuth2Strategy.InternalOAuthError('Failed to fetch user profile', error));
+      });
+  });
 };
 
 MovesStrategy.prototype.validate = function(accessToken, done) {
