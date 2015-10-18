@@ -4,7 +4,7 @@
   bottom: 0;
   width: 100%;
   z-index: 0;
-  background-color: black;
+  background-color: $background;
 
   .leaflet-tile-pane {
     opacity: .25;
@@ -12,7 +12,7 @@
 }
 
 .place-deco {
-  stroke: white;
+  stroke: $foreground;
   fill: none;
 }
 
@@ -21,7 +21,7 @@
 }
 
 .place-label {
-  fill: white;
+  fill: $foreground;
   font-size: $base-font-size;
   transform: translate(0, 20px);
 
@@ -32,11 +32,11 @@
 }
 
 .place-map-background {
-  fill: white;
+  fill: $foreground;
 }
 
 .connection {
-  stroke: white;
+  stroke: $foreground;
 }
 
 .scale-list {

@@ -11,7 +11,7 @@
     z-index: 0;
     height: $base-spacing-unit;
     top: 0;
-    background-color: rgba(grey, .5);
+    background-color: rgba($foreground, .5);
     left: 0;
     right: -$base-spacing-unit;
     border-radius: $base-spacing-unit;
@@ -24,7 +24,7 @@
     height: $base-spacing-unit;
     width: $base-spacing-unit;
     border-radius: $base-spacing-unit;
-    background-color: white;
+    background-color: $foreground;
     z-index: 1;
   }
 }
@@ -41,8 +41,8 @@
     width: $base-spacing-unit * 10;
     height: $base-spacing-unit * 2;
     border: 0;
-    background-color: rgba(grey, .5);
-    color: white;
+    background-color: rgba($foreground, .5);
+    color: $background;
     border-radius: $base-spacing-unit * 2;
     outline: none;
 
