@@ -2,6 +2,7 @@ var OAuth2Strategy = require('passport-oauth2'),
   util = require('util'),
   config = require('../../config'),
   MovesAPI = require('./api'),
+  MovesLimiter = require('./limiter'),
   request = require('request');
 
 function MovesStrategy(options, verify) {
