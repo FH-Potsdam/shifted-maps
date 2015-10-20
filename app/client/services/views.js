@@ -41,8 +41,8 @@ function computeLocations(places, connections, linkStrength, linkDistance, done)
     .nodes(nodes)
     .links(links)
     .size([360, 180])
-    .charge(-0.001)
-    .chargeDistance(2)
+    .charge(-0.01)
+    .chargeDistance(1)
     .gravity(0)
     .linkStrength(function(link) {
       return linkStrength(connections.get(link.connection));
@@ -81,6 +81,7 @@ export function geographicView(places, connections, distanceDomain, beelineRange
 
   let strengthScale = d3.scale.linear()
     .domain(distanceDomain)
+    .range([0.5, 1])
     .clamp(true);
 
   let distanceScale = d3.scale.linear()
@@ -106,6 +107,7 @@ export function durationView(places, connections, durationDomain, beelineRange, 
 
   let strengthScale = d3.scale.linear()
     .domain(durationDomain)
+    .range([0.5, 1])
     .clamp(true);
 
   let distanceScale = d3.scale.linear()
@@ -133,6 +135,7 @@ export function frequencyView(places, connections, frequencyDomain, beelineRange
 
   let strengthScale = d3.scale.linear()
     .domain(reversedFrequencyDomainy)
+    .range([0.5, 1])
     .clamp(true);
 
   let distanceScale = d3.scale.linear()
