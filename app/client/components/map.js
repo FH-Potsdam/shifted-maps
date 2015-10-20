@@ -22,7 +22,7 @@ class Map extends Component {
     this.addEventListeners(pickListeners(this.props));
 
     this.map.setView(center, zoom);
-    this.map.zoomControl.setPosition('bottomright');
+    this.map.zoomControl.removeFrom(this.map);
 
     // Need to render overlay including children in next tick to let map set the view first and create the corresponding
     // overlay pane element we use here.
