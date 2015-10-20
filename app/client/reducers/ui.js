@@ -1,6 +1,6 @@
 import { Map } from 'immutable';
 import { SET_STORYLINE } from '../actions/storyline';
-import { CHANGE_TIME_SPAN, CHANGE_VIEW, SET_LOCATIONS } from '../actions/ui';
+import { CHANGE_TIME_SPAN, CHANGE_VIEW, SET_LOCATIONS, HOVER_PLACE } from '../actions/ui';
 import { GEOGRAPHIC_VIEW } from '../models/views';
 
 function setStoryline(state, action) {
@@ -45,6 +45,15 @@ function setLocations(state, action) {
   return state.mergeIn(['locations', view], locations);
 }
 
+function setHoveredPlace(state, action) {
+  let { placeId, hover } = action;
+
+  return state.merge({
+    hoveredPlaceId: placeId,
+    hover
+  });
+}
+
 export default function ui(state = Map(), action) {
   switch (action.type) {
     case SET_STORYLINE:
@@ -58,6 +67,9 @@ export default function ui(state = Map(), action) {
 
     case SET_LOCATIONS:
       return setLocations(state, action);
+
+    case HOVER_PLACE:
+      return setHoveredPlace(state, action);
 
     default:
       return state;

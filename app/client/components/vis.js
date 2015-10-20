@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { vis } from '../selector';
 import { requestTile } from '../actions/tiles';
-import { hoverPlace } from '../actions/places';
+import { hoverPlace } from '../actions/ui';
 import PlaceCircleList from './place-circle-list';
 import PlaceClipList from './place-clip-list';
 import ConnectionList from './connection-list';

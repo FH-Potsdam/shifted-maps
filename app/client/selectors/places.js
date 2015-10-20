@@ -5,7 +5,7 @@ import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector } fro
 import { visBoundsSelector, visViewSelector, visScaleSelector } from './vis';
 import { tilesLevelSelector } from './tiles';
 import { mapMapSelector } from './map';
-import { uiTimeSpanSelector, uiLocationsSelector } from './ui';
+import { uiTimeSpanSelector, uiLocationsSelector, uiHoveredPlaceIdSelector, uiHoverSelector } from './ui';
 
 function filterPlaces(places, uiTimeSpan) {
   if (places.size === 0)
@@ -73,16 +73,8 @@ function scalePlaces(places, strokeWidthScale, radiusScale) {
         radius: radiusScale(duration)
       });
     })
-    .sort(function(placeOne, placeTwo) {
-      if (placeOne.hover !== placeTwo.hover) {
-        if (placeOne.hover) return 1;
-        else return -1;
-      }
-
-      if (placeOne.radius === placeTwo.radius) return 0;
-
-      if (placeOne.radius > placeTwo.radius) return 1;
-      else return -1;
+    .sortBy(function(place) {
+      return place.radius;
     });
 }
 
@@ -152,6 +144,21 @@ function tilePlaces(places, tiles) {
 
     return place.set('tile', tile);
   });
+}
+
+function hoverPlaces(places, uiHoveredPlaceId, uiHover) {
+  return places
+    .map(function(place) {
+      return place.set('hover', uiHover && uiHoveredPlaceId === place.id);
+    })
+    .sort(function(placeOne, placeTwo) {
+      if (placeOne.hover !== placeTwo.hover) {
+        if (placeOne.hover) return 1;
+        else return -1;
+      }
+
+      return 0;
+    });
 }
 
 const placesSelector = state => state.places;
@@ -227,6 +234,15 @@ export const tiledPlacesSelector = createSelector(
     tilesLevelSelector
   ],
   tilePlaces
+);
+
+export const hoveredPlacesSelector = createSelector(
+  [
+    tiledPlacesSelector,
+    uiHoveredPlaceIdSelector,
+    uiHoverSelector
+  ],
+  hoverPlaces
 );
 
 export default placesSelector;

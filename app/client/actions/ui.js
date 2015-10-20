@@ -7,6 +7,7 @@ import { uiActiveViewSelector } from '../selectors/ui';
 export const CHANGE_VIEW = 'CHANGE_VIEW';
 export const SET_LOCATIONS = 'SET_LOCATIONS';
 export const CHANGE_TIME_SPAN = 'CHANGE_TIME_SPAN';
+export const HOVER_PLACE = 'HOVER_PLACE';
 
 const VIEWS = [GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW];
 
@@ -71,4 +72,8 @@ export function changeView(view) {
 
 export function changeTimeSpan(timeSpan) {
   return { type: CHANGE_TIME_SPAN, timeSpan };
+}
+
+export function hoverPlace(placeId, hover) {
+  return { type: HOVER_PLACE, placeId, hover };
 }

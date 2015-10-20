@@ -24,4 +24,18 @@ export const uiLocationsSelector = createSelector(
   (ui, view) => ui.getIn(['locations', view])
 );
 
+export const uiHoveredPlaceIdSelector = createSelector(
+  [
+    uiSelector
+  ],
+  ui => ui.get('hoveredPlaceId')
+);
+
+export const uiHoverSelector = createSelector(
+  [
+    uiSelector
+  ],
+  ui => ui.get('hover')
+);
+
 export default uiSelector;
