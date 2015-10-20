@@ -6,8 +6,20 @@
   z-index: 0;
   background-color: $background;
 
-  .leaflet-tile-pane {
-    opacity: .25;
+  .leaflet-tile-pane,
+  .leaflet-control-container {
+    @include transition(opacity, $base-transition-duration);
+    opacity: 0;
+  }
+
+  &.active {
+    .leaflet-tile-pane {
+      opacity: .25;
+    }
+
+    .leaflet-control-container {
+      opacity: 1;
+    }
   }
 
   .leaflet-right .leaflet-control-zoom {

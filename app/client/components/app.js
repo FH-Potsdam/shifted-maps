@@ -96,7 +96,8 @@ class App extends Component {
   }
 
   render() {
-    let { map, ui } = this.props;
+    let { map, ui } = this.props,
+      mapClassName = 'app-map';
 
     return (
       <div className="app">
@@ -105,6 +106,7 @@ class App extends Component {
              center={map.get('center')}
              bounds={map.get('bounds')}
              className="app-map"
+             active={ui.get('activeView') == null}
              onViewReset={this.onMapViewReset.bind(this)}
              onDragStart={this.onMapDragStart.bind(this)}
              onMoveEnd={this.onMapMoveEnd.bind(this)}

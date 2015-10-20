@@ -1,10 +1,11 @@
 var gulp = require('gulp'),
+  path = require('path'),
   browserify = require('browserify'),
   buffer = require('vinyl-buffer'),
   source = require('vinyl-source-stream'),
   sourcemaps = require('gulp-sourcemaps'),
   babelify = require('babelify'),
-  sass = require('gulp-sass'),
+  compass = require('gulp-compass'),
   uglify = require('gulp-uglify'),
   chalk = require('chalk'),
   notifier = require('node-notifier'),
@@ -33,10 +34,11 @@ gulp.task('browserify', function() {
     .pipe(server.notify());
 });
 
-gulp.task('sass', function() {
+gulp.task('compass', function() {
   return gulp.src(['app/client/styles/**/*.scss', '!app/client/styles/**/_*.scss'])
-    .pipe(sass({
-      outputStyle: 'compressed'
+    .pipe(compass({
+      project: path.join(__dirname, 'app/client/styles/'),
+      css: path.join(__dirname, 'public/styles')
     }))
     .on('error', swallowError)
     .pipe(gulp.dest('public/styles'))
@@ -44,7 +46,7 @@ gulp.task('sass', function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(['app/client/styles/**/*.scss'], ['sass']);
+  gulp.watch(['app/client/styles/**/*.scss'], ['compass']);
   gulp.watch(['app/client/**/*.js', 'config/client.json', 'app/shared/**/*.js'], ['browserify']);
   gulp.watch(['app/server/**/*.js', 'app/server/**/*.nunj'], ['serve']);
 });
@@ -65,4 +67,4 @@ function swallowError(error) {
   this.emit('end');
 }
 
-gulp.task('default', ['serve', 'sass', 'browserify', 'watch']);
+gulp.task('default', ['serve', 'compass', 'browserify', 'watch']);

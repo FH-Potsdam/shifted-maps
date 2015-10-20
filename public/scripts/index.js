@@ -597,6 +597,7 @@ var App = (function (_Component) {
       var _props2 = this.props;
       var map = _props2.map;
       var ui = _props2.ui;
+      var mapClassName = 'app-map';
 
       return _react2['default'].createElement(
         'div',
@@ -608,6 +609,7 @@ var App = (function (_Component) {
             center: map.get('center'),
             bounds: map.get('bounds'),
             className: 'app-map',
+            active: ui.get('activeView') == null,
             onViewReset: this.onMapViewReset.bind(this),
             onDragStart: this.onMapDragStart.bind(this),
             onMoveEnd: this.onMapMoveEnd.bind(this),
@@ -786,6 +788,10 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _jquery = require('jquery');
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
 function computeEventName(name) {
   return name.toLowerCase().slice(2); // Strip "on"
 }
@@ -818,7 +824,6 @@ var Map = (function (_Component) {
       this.addEventListeners(pickListeners(this.props));
 
       this.map.setView(center, zoom);
-
       this.map.zoomControl.setPosition('bottomright');
 
       // Need to render overlay including children in next tick to let map set the view first and create the corresponding
@@ -854,6 +859,8 @@ var Map = (function (_Component) {
       if (bounds != null) {
         this.map.fitBounds(bounds);
       }
+
+      (0, _jquery2['default'])(this.refs.map).toggleClass('active', this.props.active);
     }
   }, {
     key: 'componentWillUnmount',
@@ -902,7 +909,7 @@ exports['default'] = Map;
 module.exports = exports['default'];
 
 }).call(this,require('_process'))
-},{"_process":59,"lodash":63,"react":249,"react-dom":85}],12:[function(require,module,exports){
+},{"_process":59,"jquery":62,"lodash":63,"react":249,"react-dom":85}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {

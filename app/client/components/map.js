@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
+import $ from 'jquery';
 
 function computeEventName(name) {
   return name.toLowerCase().slice(2); // Strip "on"
@@ -21,7 +22,6 @@ class Map extends Component {
     this.addEventListeners(pickListeners(this.props));
 
     this.map.setView(center, zoom);
-
     this.map.zoomControl.setPosition('bottomright');
 
     // Need to render overlay including children in next tick to let map set the view first and create the corresponding
@@ -51,6 +51,8 @@ class Map extends Component {
     if (bounds != null) {
       this.map.fitBounds(bounds);
     }
+
+    $(this.refs.map).toggleClass('active', this.props.active);
   }
 
   componentWillUnmount() {
