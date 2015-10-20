@@ -88,10 +88,10 @@ class App extends Component {
     dispatch(changeView(view));
   }
 
-  onScaleUpdate(elements) {
+  onScaleUpdate(scaleElements, sizerElements) {
     let { dispatch } = this.props;
 
-    dispatch(updateScales(elements));
+    dispatch(updateScales(scaleElements, sizerElements));
     dispatch(requestTiles());
   }
 

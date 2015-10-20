@@ -1,7 +1,7 @@
 import d3 from 'd3';
 import { Seq } from 'immutable';
 import { createSelector } from 'reselect';
-import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector } from './scales';
+import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector, placeMinimizeRadiusSelector } from './scales';
 import { visBoundsSelector, visViewSelector, visScaleSelector } from './vis';
 import { tilesLevelSelector } from './tiles';
 import { mapMapSelector } from './map';

@@ -13,5 +13,6 @@ export default Record({
   point: null,
   visible: false,
   tile: null,
-  hover: false
+  hover: false,
+  minimize: false
 });

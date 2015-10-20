@@ -6,4 +6,6 @@ export const placeRadiusRangeScaleSelector = state => state.scales.get('placeRad
 
 export const connectionStrokeWidthRangeScaleSelector = state => state.scales.get('connectionStrokeWidthRangeScale');
 
+export const placeMinimizeRadiusSelector = state => state.scales.get('placeMinimizeRadius');
+
 export default scaleSelector;

@@ -26,22 +26,15 @@ function fitMapToBounds(bounds) {
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
-exports.hoverPlace = hoverPlace;
 exports.fitPlaces = fitPlaces;
 
 var _selectorsPlaces = require('../selectors/places');
 
 var _map = require('./map');
 
-var HOVER_PLACE = 'HOVER_PLACE';
-exports.HOVER_PLACE = HOVER_PLACE;
 var FIT_PLACES = 'FIT_PLACES';
 
 exports.FIT_PLACES = FIT_PLACES;
-
-function hoverPlace(placeId, hover) {
-  return { type: HOVER_PLACE, placeId: placeId, hover: hover };
-}
 
 function fitPlaces() {
   return function (dispatch, getState) {
@@ -70,8 +63,8 @@ var UPDATE_SCALES = 'UPDATE_SCALES';
 
 exports.UPDATE_SCALES = UPDATE_SCALES;
 
-function updateScales(elements) {
-  return { type: UPDATE_SCALES, elements: elements };
+function updateScales(scaleElements, sizerElements) {
+  return { type: UPDATE_SCALES, scaleElements: scaleElements, sizerElements: sizerElements };
 }
 
 },{}],4:[function(require,module,exports){
@@ -313,6 +306,7 @@ exports.initViews = initViews;
 exports.updateViews = updateViews;
 exports.changeView = changeView;
 exports.changeTimeSpan = changeTimeSpan;
+exports.hoverPlace = hoverPlace;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -337,11 +331,13 @@ exports.CHANGE_VIEW = CHANGE_VIEW;
 var SET_LOCATIONS = 'SET_LOCATIONS';
 exports.SET_LOCATIONS = SET_LOCATIONS;
 var CHANGE_TIME_SPAN = 'CHANGE_TIME_SPAN';
-
 exports.CHANGE_TIME_SPAN = CHANGE_TIME_SPAN;
+var HOVER_PLACE = 'HOVER_PLACE';
+
+exports.HOVER_PLACE = HOVER_PLACE;
 var VIEWS = [_modelsViews.GEOGRAPHIC_VIEW, _modelsViews.FREQUENCY_VIEW, _modelsViews.DURATION_VIEW];
 
-var VIEW_SELECTORS = (_VIEW_SELECTORS = {}, _defineProperty(_VIEW_SELECTORS, _modelsViews.GEOGRAPHIC_VIEW, _selectorsViews.geographicViewSelector), _defineProperty(_VIEW_SELECTORS, _modelsViews.FREQUENCY_VIEW, _selectorsViews.frequencyViewSelector), _defineProperty(_VIEW_SELECTORS, _modelsViews.DURATION_VIEW, _selectorsViews.durationViewSelector), _VIEW_SELECTORS);
+var VIEW_SELECTORS = (_VIEW_SELECTORS = {}, _defineProperty(_VIEW_SELECTORS, _modelsViews.GEOGRAPHIC_VIEW, _selectorsViews.geographicViewSelector), _defineProperty(_VIEW_SELECTORS, _modelsViews.DURATION_VIEW, _selectorsViews.durationViewSelector), _defineProperty(_VIEW_SELECTORS, _modelsViews.FREQUENCY_VIEW, _selectorsViews.frequencyViewSelector), _VIEW_SELECTORS);
 
 var viewQueue = undefined;
 
@@ -398,6 +394,10 @@ function changeView(view) {
 
 function changeTimeSpan(timeSpan) {
   return { type: CHANGE_TIME_SPAN, timeSpan: timeSpan };
+}
+
+function hoverPlace(placeId, hover) {
+  return { type: HOVER_PLACE, placeId: placeId, hover: hover };
 }
 
 },{"../models/views":35,"../selectors/ui":50,"../selectors/views":51,"lodash":63,"promise":75}],7:[function(require,module,exports){
@@ -585,10 +585,10 @@ var App = (function (_Component) {
     }
   }, {
     key: 'onScaleUpdate',
-    value: function onScaleUpdate(elements) {
+    value: function onScaleUpdate(scaleElements, sizerElements) {
       var dispatch = this.props.dispatch;
 
-      dispatch((0, _actionsScales.updateScales)(elements));
+      dispatch((0, _actionsScales.updateScales)(scaleElements, sizerElements));
       dispatch((0, _actionsTiles.requestTiles)());
     }
   }, {
@@ -824,7 +824,7 @@ var Map = (function (_Component) {
       this.addEventListeners(pickListeners(this.props));
 
       this.map.setView(center, zoom);
-      this.map.zoomControl.setPosition('bottomright');
+      this.map.zoomControl.removeFrom(this.map);
 
       // Need to render overlay including children in next tick to let map set the view first and create the corresponding
       // overlay pane element we use here.
@@ -1271,6 +1271,11 @@ var PlaceLabel = (function (_Component) {
         { className: "place-label" },
         _react2["default"].createElement(
           "text",
+          { x: x, y: y, textAnchor: "middle", className: "place-label-stroke" },
+          node.name
+        ),
+        _react2["default"].createElement(
+          "text",
           { x: x, y: y, textAnchor: "middle" },
           node.name
         )
@@ -1561,7 +1566,8 @@ var Scales = (function (_Component) {
     _get(Object.getPrototypeOf(Scales.prototype), 'constructor', this).call(this, props);
 
     this.state = {
-      scales: ['place-radius', 'place-stroke-width', 'connection-stroke-width']
+      scales: ['place-radius', 'place-stroke-width', 'connection-stroke-width'],
+      sizers: ['place-minimize-radius']
     };
   }
 
@@ -1579,21 +1585,30 @@ var Scales = (function (_Component) {
   }, {
     key: 'dispatch',
     value: function dispatch() {
-      this.props.onUpdate((0, _reactDom.findDOMNode)(this).querySelectorAll('[data-scale]'));
+      var DOMNode = (0, _reactDom.findDOMNode)(this);
+
+      this.props.onUpdate(DOMNode.querySelectorAll('[data-scale]'), DOMNode.querySelectorAll('[data-sizer]'));
     }
   }, {
     key: 'render',
     value: function render() {
-      var scales = this.state.scales;
+      var _state = this.state;
+      var scales = _state.scales;
+      var sizers = _state.sizers;
 
       var scaleElements = (0, _lodash.flatten)((0, _lodash.map)(scales, function (scale) {
         return [_react2['default'].createElement('div', { key: scale + '-max-max', 'data-scale': scale, 'data-domain-max': true, 'data-range-max': true }), _react2['default'].createElement('div', { key: scale + '-max-min', 'data-scale': scale, 'data-domain-max': true, 'data-range-min': true }), _react2['default'].createElement('div', { key: scale + '-min-max', 'data-scale': scale, 'data-domain-min': true, 'data-range-max': true }), _react2['default'].createElement('div', { key: scale + '-min-min', 'data-scale': scale, 'data-domain-min': true, 'data-range-min': true })];
       }));
 
+      var sizerElements = (0, _lodash.map)(sizers, function (sizer) {
+        return [_react2['default'].createElement('div', { key: sizer, 'data-sizer': sizer })];
+      });
+
       return _react2['default'].createElement(
         'div',
         { className: 'scale-list' },
-        scaleElements
+        scaleElements,
+        sizerElements
       );
     }
   }]);
@@ -2232,7 +2247,7 @@ var _selector = require('../selector');
 
 var _actionsTiles = require('../actions/tiles');
 
-var _actionsPlaces = require('../actions/places');
+var _actionsUi = require('../actions/ui');
 
 var _placeCircleList = require('./place-circle-list');
 
@@ -2276,7 +2291,7 @@ var Vis = (function (_Component) {
     value: function onHover(placeId, hover) {
       var dispatch = this.props.dispatch;
 
-      dispatch((0, _actionsPlaces.hoverPlace)(placeId, hover));
+      dispatch((0, _actionsUi.hoverPlace)(placeId, hover));
     }
   }, {
     key: 'render',
@@ -2322,7 +2337,7 @@ var Vis = (function (_Component) {
 exports['default'] = (0, _reactRedux.connect)(_selector.vis)(Vis);
 module.exports = exports['default'];
 
-},{"../actions/places":2,"../actions/tiles":5,"../selector":44,"./connection-list":9,"./place-circle-list":12,"./place-clip-list":14,"./place-list":18,"react":249,"react-redux":89}],28:[function(require,module,exports){
+},{"../actions/tiles":5,"../actions/ui":6,"../selector":44,"./connection-list":9,"./place-circle-list":12,"./place-clip-list":14,"./place-list":18,"react":249,"react-redux":89}],28:[function(require,module,exports){
 'use strict';
 
 var config = require('../../config/client.json');
@@ -2413,7 +2428,8 @@ exports['default'] = (0, _immutable.Record)({
   point: null,
   visible: false,
   tile: null,
-  hover: false
+  hover: false,
+  minimize: false
 });
 module.exports = exports['default'];
 
@@ -2650,8 +2666,6 @@ exports['default'] = places;
 
 var _immutable = require('immutable');
 
-var _actionsPlaces = require('../actions/places');
-
 var _actionsStoryline = require('../actions/storyline');
 
 function places(state, action) {
@@ -2682,14 +2696,6 @@ function places(state, action) {
 
       return state;
 
-    case _actionsPlaces.HOVER_PLACE:
-      var placeId = action.placeId,
-          hover = action.hover;
-
-      return state.map(function (place, id) {
-        return place.set('hover', hover && id === placeId);
-      });
-
     default:
       return state;
   }
@@ -2697,7 +2703,7 @@ function places(state, action) {
 
 module.exports = exports['default'];
 
-},{"../actions/places":2,"../actions/storyline":4,"immutable":61}],40:[function(require,module,exports){
+},{"../actions/storyline":4,"immutable":61}],40:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -2721,8 +2727,49 @@ var _moutStringCamelCase2 = _interopRequireDefault(_moutStringCamelCase);
 
 var _actionsScales = require('../actions/scales');
 
-function computeRangeScaleKey(key) {
-  return (0, _moutStringCamelCase2['default'])(key) + 'RangeScale';
+function updateScales(state, action) {
+  var scaleElements = action.scaleElements;
+  var sizerElements = action.sizerElements;
+
+  return state.withMutations(function (scales) {
+    for (var i = 0; i < scaleElements.length; i++) {
+      var scaleElement = scaleElements.item(i),
+          key = scaleElement.getAttribute('data-scale'),
+          width = parseFloat(window.getComputedStyle(scaleElement).width);
+
+      key = (0, _moutStringCamelCase2['default'])(key + '-range-scale');
+
+      var scale = scales.get(key);
+
+      scale = scale == null ? _d32['default'].scale.pow().exponent(2).range([[0, 0], [0, 0]]) : scale.copy();
+
+      var range = scale.range();
+
+      if (scaleElement.hasAttribute('data-domain-min')) {
+        if (scaleElement.hasAttribute('data-range-min')) range[0][0] = width;
+
+        if (scaleElement.hasAttribute('data-range-max')) range[0][1] = width;
+      }
+
+      if (scaleElement.hasAttribute('data-domain-max')) {
+        if (scaleElement.hasAttribute('data-range-min')) range[1][0] = width;
+
+        if (scaleElement.hasAttribute('data-range-max')) {
+          range[1][1] = width;
+        }
+      }
+
+      scales.set(key, scale.range(range));
+    }
+
+    for (var j = 0; j < sizerElements.length; j++) {
+      var sizerElement = sizerElements.item(j),
+          key = sizerElement.getAttribute('data-sizer'),
+          width = parseFloat(window.getComputedStyle(sizerElement).width);
+
+      scales.set((0, _moutStringCamelCase2['default'])(key), width);
+    }
+  });
 }
 
 function scales(state, action) {
@@ -2730,39 +2777,7 @@ function scales(state, action) {
 
   switch (action.type) {
     case _actionsScales.UPDATE_SCALES:
-      var scaleElements = action.elements;
-
-      return state.withMutations(function (scales) {
-        for (var i = 0; i < scaleElements.length; i++) {
-          var element = scaleElements.item(i),
-              key = element.getAttribute('data-scale'),
-              width = parseFloat(window.getComputedStyle(element).width);
-
-          key = computeRangeScaleKey(key);
-
-          var scale = scales.get(key);
-
-          scale = scale == null ? _d32['default'].scale.linear().range([[0, 0], [0, 0]]) : scale.copy();
-
-          var range = scale.range();
-
-          if (element.hasAttribute('data-domain-min')) {
-            if (element.hasAttribute('data-range-min')) range[0][0] = width;
-
-            if (element.hasAttribute('data-range-max')) range[0][1] = width;
-          }
-
-          if (element.hasAttribute('data-domain-max')) {
-            if (element.hasAttribute('data-range-min')) range[1][0] = width;
-
-            if (element.hasAttribute('data-range-max')) {
-              range[1][1] = width;
-            }
-          }
-
-          scales.set(key, scale.range(range));
-        }
-      });
+      return updateScales(state, action);
 
     default:
       return state;
@@ -2877,6 +2892,16 @@ function setLocations(state, action) {
   return state.mergeIn(['locations', view], locations);
 }
 
+function setHoveredPlace(state, action) {
+  var placeId = action.placeId;
+  var hover = action.hover;
+
+  return state.merge({
+    hoveredPlaceId: placeId,
+    hover: hover
+  });
+}
+
 function ui(state, action) {
   if (state === undefined) state = (0, _immutable.Map)();
 
@@ -2892,6 +2917,9 @@ function ui(state, action) {
 
     case _actionsUi.SET_LOCATIONS:
       return setLocations(state, action);
+
+    case _actionsUi.HOVER_PLACE:
+      return setHoveredPlace(state, action);
 
     default:
       return state;
@@ -3006,7 +3034,7 @@ var _selectorsUi2 = _interopRequireDefault(_selectorsUi);
 
 var vis = (0, _reselect.createStructuredSelector)({
   vis: _selectorsVis2['default'],
-  nodes: _selectorsPlaces.tiledPlacesSelector,
+  nodes: _selectorsPlaces.hoveredPlacesSelector,
   edges: _selectorsConnections.boundedConnectionsSelector
 });
 
@@ -3328,14 +3356,8 @@ function scalePlaces(places, strokeWidthScale, radiusScale) {
       strokeWidth: strokeWidthScale(frequency),
       radius: radiusScale(duration)
     });
-  }).sort(function (placeOne, placeTwo) {
-    if (placeOne.hover !== placeTwo.hover) {
-      if (placeOne.hover) return 1;else return -1;
-    }
-
-    if (placeOne.radius === placeTwo.radius) return 0;
-
-    if (placeOne.radius > placeTwo.radius) return 1;else return -1;
+  }).sortBy(function (place) {
+    return place.radius;
   });
 }
 
@@ -3403,6 +3425,18 @@ function tilePlaces(places, tiles) {
   });
 }
 
+function hoverPlaces(places, uiHoveredPlaceId, uiHover) {
+  return places.map(function (place) {
+    return place.set('hover', uiHover && uiHoveredPlaceId === place.id);
+  }).sort(function (placeOne, placeTwo) {
+    if (placeOne.hover !== placeTwo.hover) {
+      if (placeOne.hover) return 1;else return -1;
+    }
+
+    return 0;
+  });
+}
+
 var placesSelector = function placesSelector(state) {
   return state.places;
 };
@@ -3438,6 +3472,9 @@ exports.boundedPlacesSelector = boundedPlacesSelector;
 var tiledPlacesSelector = (0, _reselect.createSelector)([boundedPlacesSelector, _tiles.tilesLevelSelector], tilePlaces);
 
 exports.tiledPlacesSelector = tiledPlacesSelector;
+var hoveredPlacesSelector = (0, _reselect.createSelector)([tiledPlacesSelector, _ui.uiHoveredPlaceIdSelector, _ui.uiHoverSelector], hoverPlaces);
+
+exports.hoveredPlacesSelector = hoveredPlacesSelector;
 exports['default'] = placesSelector;
 
 },{"./map":46,"./scales":48,"./tiles":49,"./ui":50,"./vis":52,"d3":60,"immutable":61,"reselect":263}],48:[function(require,module,exports){
@@ -3465,6 +3502,11 @@ var connectionStrokeWidthRangeScaleSelector = function connectionStrokeWidthRang
 };
 
 exports.connectionStrokeWidthRangeScaleSelector = connectionStrokeWidthRangeScaleSelector;
+var placeMinimizeRadiusSelector = function placeMinimizeRadiusSelector(state) {
+  return state.scales.get('placeMinimizeRadius');
+};
+
+exports.placeMinimizeRadiusSelector = placeMinimizeRadiusSelector;
 exports['default'] = scaleSelector;
 
 },{}],49:[function(require,module,exports){
@@ -3524,6 +3566,16 @@ var uiLocationsSelector = (0, _reselect.createSelector)([uiSelector, uiActiveVie
 });
 
 exports.uiLocationsSelector = uiLocationsSelector;
+var uiHoveredPlaceIdSelector = (0, _reselect.createSelector)([uiSelector], function (ui) {
+  return ui.get('hoveredPlaceId');
+});
+
+exports.uiHoveredPlaceIdSelector = uiHoveredPlaceIdSelector;
+var uiHoverSelector = (0, _reselect.createSelector)([uiSelector], function (ui) {
+  return ui.get('hover');
+});
+
+exports.uiHoverSelector = uiHoverSelector;
 exports['default'] = uiSelector;
 
 },{"reselect":263}],51:[function(require,module,exports){
@@ -3577,17 +3629,17 @@ function computeBeelineRange(connections) {
 
 var beelineDomainSelector = (0, _reselect.createSelector)([_connections.filteredConnectionsSelector], computeBeelineRange);
 
-var geographicViewSelector = (0, _reselect.createSelector)([_places.filteredPlacesSelector, _connections.filteredConnectionsSelector, _connections.connectionDistanceDomainSelector, beelineDomainSelector], function (places, connections, connectionDistanceDomain, beelineRange) {
+var geographicViewSelector = (0, _reselect.createSelector)([_places.scaledPlacesSelector, _connections.filteredConnectionsSelector, _connections.connectionDistanceDomainSelector, beelineDomainSelector], function (places, connections, connectionDistanceDomain, beelineRange) {
   return (0, _moutFunctionPartial2['default'])(_servicesViews.geographicView, places, connections, connectionDistanceDomain, beelineRange);
 });
 
 exports.geographicViewSelector = geographicViewSelector;
-var frequencyViewSelector = (0, _reselect.createSelector)([_places.filteredPlacesSelector, _connections.filteredConnectionsSelector, _connections.connectionFrequencyDomainSelector, beelineDomainSelector], function (places, connections, connectionFrequencyDomain, beelineRange) {
+var frequencyViewSelector = (0, _reselect.createSelector)([_places.scaledPlacesSelector, _connections.filteredConnectionsSelector, _connections.connectionFrequencyDomainSelector, beelineDomainSelector], function (places, connections, connectionFrequencyDomain, beelineRange) {
   return (0, _moutFunctionPartial2['default'])(_servicesViews.frequencyView, places, connections, connectionFrequencyDomain, beelineRange);
 });
 
 exports.frequencyViewSelector = frequencyViewSelector;
-var durationViewSelector = (0, _reselect.createSelector)([_places.filteredPlacesSelector, _connections.filteredConnectionsSelector, _connections.connectionDurationDomainSelector, beelineDomainSelector], function (places, connections, connectionDurationDomain, beelineRange) {
+var durationViewSelector = (0, _reselect.createSelector)([_places.scaledPlacesSelector, _connections.filteredConnectionsSelector, _connections.connectionDurationDomainSelector, beelineDomainSelector], function (places, connections, connectionDurationDomain, beelineRange) {
   return (0, _moutFunctionPartial2['default'])(_servicesViews.durationView, places, connections, connectionDurationDomain, beelineRange);
 });
 exports.durationViewSelector = durationViewSelector;
@@ -3771,6 +3823,8 @@ var _lodash = require('lodash');
 var _lodash2 = _interopRequireDefault(_lodash);
 
 function createNodeArray(places) {
+  var lastPlace = places.last();
+
   return places.map(function (place) {
     var location = place.location;
     var x = location.lng + 180;
@@ -3779,7 +3833,8 @@ function createNodeArray(places) {
     return {
       place: place.id,
       x: x, y: y,
-      start: { x: x, y: y }
+      start: { x: x, y: y },
+      fixed: place === lastPlace
     };
   }).toArray();
 }
@@ -3798,14 +3853,14 @@ function createLinkArray(nodes, connections) {
   }).toArray();
 }
 
-function computeLocations(places, connections, linkDistance, done) {
+function computeLocations(places, connections, linkStrength, linkDistance, done) {
   var nodes = createNodeArray(places),
       links = createLinkArray(nodes, connections);
 
-  var force = _d32['default'].layout.force().nodes(nodes).links(links).size([360, 180]).charge(-0.01).chargeDistance(1).gravity(0).linkStrength(1).linkDistance(function (link) {
-    var distance = linkDistance(connections.get(link.connection));
-
-    return distance;
+  var force = _d32['default'].layout.force().nodes(nodes).links(links).size([360, 180]).charge(-0.01).chargeDistance(1).gravity(0).linkStrength(function (link) {
+    return linkStrength(connections.get(link.connection));
+  }).linkDistance(function (link) {
+    return linkDistance(connections.get(link.connection));
   }).start();
 
   // Add small gravity for every node to its start position
@@ -3833,13 +3888,19 @@ function computeLocations(places, connections, linkDistance, done) {
 function geographicView(places, connections, distanceDomain, beelineRange, done) {
   console.log('geographicView');
 
-  var beelineScale = _d32['default'].scale.linear().domain(distanceDomain).range(beelineRange).clamp(true);
+  var strengthScale = _d32['default'].scale.linear().domain(distanceDomain).range([0.5, 1]).clamp(true);
 
-  function linkDistance(connection) {
-    return beelineScale(connection.distance);
+  var distanceScale = _d32['default'].scale.linear().domain(distanceDomain).range(beelineRange).clamp(true);
+
+  function linkStrength(connection) {
+    return strengthScale(connection.distance);
   }
 
-  computeLocations(places, connections, linkDistance, function (error, locations) {
+  function linkDistance(connection) {
+    return distanceScale(connection.distance);
+  }
+
+  computeLocations(places, connections, linkStrength, linkDistance, function (error, locations) {
     done(null, locations);
   });
 }
@@ -3847,13 +3908,19 @@ function geographicView(places, connections, distanceDomain, beelineRange, done)
 function durationView(places, connections, durationDomain, beelineRange, done) {
   console.log('durationView');
 
-  var beelineScale = _d32['default'].scale.linear().domain(durationDomain).range(beelineRange).clamp(true);
+  var strengthScale = _d32['default'].scale.linear().domain(durationDomain).range([0.5, 1]).clamp(true);
 
-  function linkDistance(connection) {
-    return beelineScale(connection.duration);
+  var distanceScale = _d32['default'].scale.linear().domain(durationDomain).range(beelineRange).clamp(true);
+
+  function linkStrength(connection) {
+    return strengthScale(connection.duration);
   }
 
-  computeLocations(places, connections, linkDistance, function (error, locations) {
+  function linkDistance(connection) {
+    return distanceScale(connection.duration);
+  }
+
+  computeLocations(places, connections, linkStrength, linkDistance, function (error, locations) {
     done(null, locations);
   });
 }
@@ -3861,13 +3928,21 @@ function durationView(places, connections, durationDomain, beelineRange, done) {
 function frequencyView(places, connections, frequencyDomain, beelineRange, done) {
   console.log('frequencyView');
 
-  var beelineScale = _d32['default'].scale.linear().domain([].concat(_toConsumableArray(frequencyDomain)).reverse()).range(beelineRange).clamp(true);
+  var reversedFrequencyDomainy = [].concat(_toConsumableArray(frequencyDomain)).reverse();
 
-  function linkDistance(connection) {
-    return beelineScale(connection.frequency);
+  var strengthScale = _d32['default'].scale.linear().domain(reversedFrequencyDomainy).range([0.5, 1]).clamp(true);
+
+  var distanceScale = _d32['default'].scale.linear().domain(reversedFrequencyDomainy).range(beelineRange).clamp(true);
+
+  function linkStrength(connection) {
+    return strengthScale(connection.frequency);
   }
 
-  computeLocations(places, connections, linkDistance, function (error, locations) {
+  function linkDistance(connection) {
+    return distanceScale(connection.frequency);
+  }
+
+  computeLocations(places, connections, linkStrength, linkDistance, function (error, locations) {
     done(null, locations);
   });
 }
