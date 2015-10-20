@@ -31,6 +31,9 @@ function geocode(location, callback) {
       .node('place_name', function(placeName) {
         this.abort();
 
+        // Take only the first two parts of the location name
+        placeName = placeName.split(', ').slice(0, 2).join(', ');
+
         geocodeCache.set(lonLat, placeName, function(error) {
           callback(error, placeName);
         });
@@ -40,14 +43,14 @@ function geocode(location, callback) {
       });
   }
 
-  geocodeCache.get(lonLat, function(error, value) {
+  geocodeCache.get(lonLat, function(error, placeName) {
     if (error)
       return callback(error);
 
-    if (value == null)
+    if (placeName == null)
       return requestApi();
 
-    callback(null, value);
+    callback(null, placeName);
   });
 }
 
