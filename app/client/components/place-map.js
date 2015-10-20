@@ -43,7 +43,8 @@ class PlaceMap extends Component {
     }
 
     return (
-      <g className="place-map" clipPath={clipPath}>
+      <g className="place-map"
+         clipPath={clipPath}>
         <rect className="place-map-background" x={point.x - radius} y={point.y - radius} width={size} height={size} />
         <image {...imageProps} />
       </g>

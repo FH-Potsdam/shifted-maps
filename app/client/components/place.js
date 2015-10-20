@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PlaceMap from './place-map';
 import PlaceDeco from './place-deco';
-//import PlaceLabel from './place-label';
+import PlaceLabel from './place-label';
 
 class Place extends Component {
   shouldComponentUpdate(nextProps) {
@@ -10,17 +10,21 @@ class Place extends Component {
   }
 
   render() {
-    let { node, onRequestTile } = this.props,
-      style = { display: 'none' };
+    let { node, onRequestTile, onHover } = this.props,
+      style = { display: 'none' },
+      className = 'place';
 
     if (node.visible)
       style.display = 'block';
 
+    if (node.hover)
+      className += ' hover';
+
     return (
-      <g style={style} className="place">
+      <g style={style} className={className} onMouseEnter={onHover.bind(this, true)} onMouseLeave={onHover.bind(this, false)}>
         <PlaceMap node={node} onRequestTile={onRequestTile} />
         <PlaceDeco node={node} />
-        {/*<PlaceLabel node={node} />*/}
+        <PlaceLabel node={node} />
       </g>
     );
   }

@@ -73,8 +73,16 @@ function scalePlaces(places, strokeWidthScale, radiusScale) {
         radius: radiusScale(duration)
       });
     })
-    .sortBy(function(place) {
-      return place.radius;
+    .sort(function(placeOne, placeTwo) {
+      if (placeOne.hover !== placeTwo.hover) {
+        if (placeOne.hover) return 1;
+        else return -1;
+      }
+
+      if (placeOne.radius === placeTwo.radius) return 0;
+
+      if (placeOne.radius > placeTwo.radius) return 1;
+      else return -1;
     });
 }
 

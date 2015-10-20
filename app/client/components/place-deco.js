@@ -10,7 +10,7 @@ class PlaceDeco extends Component {
   }
 
   render() {
-    var node = this.props.node;
+    let { node } = this.props;
 
     return (
       <g className="place-deco" strokeWidth={node.strokeWidth}>

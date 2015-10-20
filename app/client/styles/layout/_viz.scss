@@ -22,6 +22,10 @@
 .place-deco {
   stroke: $foreground;
   fill: none;
+
+  .hover & {
+    stroke: $highlight;
+  }
 }
 
 .place-map image {
@@ -29,13 +33,15 @@
 }
 
 .place-label {
-  fill: $foreground;
+  fill: $highlight;
   font-size: $base-font-size;
   transform: translate(0, 20px);
+  font-family: "soleil", sans-serif;
+  font-style: italic;
+  display: none;
 
-  &-stroke {
-    stroke: rgba(black, .25);
-    stroke-width: 4px;
+  .hover & {
+    display: block;
   }
 }
 

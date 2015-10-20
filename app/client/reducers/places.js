@@ -1,4 +1,5 @@
 import { Map, Set } from 'immutable';
+import { HOVER_PLACE } from '../actions/places';
 import { SET_STORYLINE, ADD_PLACE, ADD_STAY } from '../actions/storyline';
 
 export default function places(state = Map(), action) {
@@ -26,6 +27,11 @@ export default function places(state = Map(), action) {
       });
 
       return state;
+
+    case HOVER_PLACE:
+      let { placeId, hover } = action;
+
+      return state.setIn([placeId, 'hover'], hover);
 
     default:
       return state

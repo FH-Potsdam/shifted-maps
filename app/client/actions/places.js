@@ -1,11 +1,11 @@
 import { scaledPlacesSelector } from '../selectors/places';
 import { fitMapToBounds } from './map';
 
-export const TOGGLE_Place = 'TOGGLE_PLACE';
+export const HOVER_PLACE = 'HOVER_PLACE';
 export const FIT_PLACES = 'FIT_PLACES';
 
-export function togglePlace(place) {
-  return { type: TOGGLE_PLACE, place };
+export function hoverPlace(placeId, hover) {
+  return { type: HOVER_PLACE, placeId, hover };
 }
 
 export function fitPlaces() {

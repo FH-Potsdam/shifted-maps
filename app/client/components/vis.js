@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { vis } from '../selector';
 import { requestTile } from '../actions/tiles';
+import { hoverPlace } from '../actions/places';
 import PlaceCircleList from './place-circle-list';
 import PlaceClipList from './place-clip-list';
 import ConnectionList from './connection-list';
@@ -18,6 +19,12 @@ class Vis extends Component {
     let { dispatch } = this.props;
 
     dispatch(requestTile(node));
+  }
+
+  onHover(placeId, hover) {
+    let { dispatch } = this.props;
+
+    dispatch(hoverPlace(placeId, hover));
   }
 
   render() {
@@ -45,7 +52,7 @@ class Vis extends Component {
         </defs>
 
         <ConnectionList edges={edges} />
-        <PlaceList nodes={nodes} onRequestTile={this.onRequestTile.bind(this)} />
+        <PlaceList nodes={nodes} onRequestTile={this.onRequestTile.bind(this)} onHover={this.onHover.bind(this)} />
       </svg>
     );
   }

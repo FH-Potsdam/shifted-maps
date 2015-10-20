@@ -12,5 +12,6 @@ export default Record({
   strokeWidth: 0,
   point: null,
   visible: false,
-  tile: null
+  tile: null,
+  hover: false
 });
