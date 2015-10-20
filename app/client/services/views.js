@@ -73,11 +73,16 @@ function computeLocations(places, connections, linkDistance, done) {
   });
 }
 
-export function geographicView(places, connections, done) {
+export function geographicView(places, connections, distanceDomain, beelineRange, done) {
   console.log('geographicView');
 
+  let beelineScale = d3.scale.linear()
+    .domain(distanceDomain)
+    .range(beelineRange)
+    .clamp(true);
+
   function linkDistance(connection) {
-    return connection.beeline;
+    return beelineScale(connection.distance);
   }
 
   computeLocations(places, connections, linkDistance, function(error, locations) {

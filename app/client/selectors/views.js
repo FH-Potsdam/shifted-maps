@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 import partial from 'mout/function/partial';
 import _ from 'lodash';
 import { filteredPlacesSelector } from './places';
-import { filteredConnectionsSelector, connectionFrequencyDomainSelector, connectionDurationDomainSelector } from './connections';
+import { filteredConnectionsSelector, connectionFrequencyDomainSelector, connectionDistanceDomainSelector, connectionDurationDomainSelector } from './connections';
 import { geographicView, frequencyView, durationView } from '../services/views';
 
 function computeBeelineRange(connections) {
@@ -48,9 +48,11 @@ export const geographicViewSelector = createSelector(
   [
     filteredPlacesSelector,
     filteredConnectionsSelector,
+    connectionDistanceDomainSelector,
+    beelineDomainSelector
   ],
-  function(places, connections) {
-    return partial(geographicView, places, connections);
+  function(places, connections, connectionDistanceDomain, beelineRange) {
+    return partial(geographicView, places, connections, connectionDistanceDomain, beelineRange);
   }
 );
 

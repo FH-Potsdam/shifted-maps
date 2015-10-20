@@ -42,11 +42,13 @@ function filterConnections(connections, places, uiTimeSpan) {
           places.has(connection.to);
       });
 
-      let duration = trips.reduce((duration, trip) => duration + trip.duration, 0);
+      let duration = trips.reduce((duration, trip) => duration + trip.duration, 0),
+        distance = trips.reduce((distance, trip) => distance + trip.distance, 0);
 
       return connection.merge({
         trips: trips,
         duration: duration,
+        distance: distance,
         frequency: trips.size
       });
     })
@@ -58,21 +60,26 @@ function computeConnectionDomains(connections) {
   let minFrequency = Infinity,
     maxFrequency = -Infinity,
     minDuration = Infinity,
-    maxDuration = -Infinity;
+    maxDuration = -Infinity,
+    minDistance = Infinity,
+    maxDistance = -Infinity;
 
   connections.forEach(function(connection) {
-    let { frequency, duration } = connection;
+    let { frequency, duration, distance } = connection;
 
     minFrequency = Math.min(minFrequency, frequency);
     maxFrequency = Math.max(maxFrequency, frequency);
     minDuration = Math.min(minDuration, duration);
     maxDuration = Math.max(maxDuration, duration);
+    minDistance = Math.min(minDistance, distance);
+    maxDistance = Math.max(maxDistance, distance);
   });
 
   let frequencyDomain = [minFrequency, maxFrequency],
-    durationDomain = [minDuration, maxDuration];
+    durationDomain = [minDuration, maxDuration],
+    distanceDomain = [minDistance, maxDistance];
 
-  return { frequencyDomain, durationDomain };
+  return { frequencyDomain, durationDomain, distanceDomain };
 }
 
 function computeConnectionStrokeWidthScale(strokeWidthRangeScale, frequencyDomain, visScale) {
@@ -149,7 +156,6 @@ export const connectionFrequencyDomainSelector = createSelector(
   domains => domains.frequencyDomain
 );
 
-
 export const connectionDurationDomainSelector = createSelector(
   [
     connectionDomainSelector
@@ -157,6 +163,12 @@ export const connectionDurationDomainSelector = createSelector(
   domains => domains.durationDomain
 );
 
+export const connectionDistanceDomainSelector = createSelector(
+  [
+    connectionDomainSelector
+  ],
+  domains => domains.distanceDomain
+);
 
 export const connectionStrokeWidthScaleSelector = createSelector(
   [

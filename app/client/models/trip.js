@@ -5,5 +5,6 @@ export default Record({
   to: null,
   startAt: null,
   endAt: null,
-  duration: 0
+  duration: 0,
+  distance: 0
 });
