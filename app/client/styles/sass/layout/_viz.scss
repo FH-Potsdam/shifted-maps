@@ -55,6 +55,11 @@
   .hover & {
     display: block;
   }
+
+  &-stroke {
+    stroke-width: 1;
+    stroke: $background;
+  }
 }
 
 .place-map-background {

@@ -16,6 +16,7 @@ class PlaceLabel extends Component {
 
     return (
       <g className="place-label">
+        <text x={x} y={y} textAnchor="middle" className="place-label-stroke">{node.name}</text>
         <text x={x} y={y} textAnchor="middle">{node.name}</text>
       </g>
     );
