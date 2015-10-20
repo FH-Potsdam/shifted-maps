@@ -6,6 +6,6 @@ export const FREQUENCY_VIEW = 'FREQUENCY_VIEW';
 
 export const VIEW_SERVICES = {
   [GEOGRAPHIC_VIEW]: geographicView,
-  [FREQUENCY_VIEW]: frequencyView,
-  [DURATION_VIEW]: durationView
+  [DURATION_VIEW]: durationView,
+  [FREQUENCY_VIEW]: frequencyView
 };

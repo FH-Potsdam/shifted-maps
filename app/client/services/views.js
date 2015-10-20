@@ -57,8 +57,8 @@ function computeLocations(places, connections, linkDistance, done) {
       let x = node.start.x - node.x,
         y = node.start.y - node.y;
 
-      node.x += x * alpha * .5;
-      node.y += y * alpha * .5;
+      node.x += x * alpha * .01;
+      node.y += y * alpha * .01;
     });
   });*/
 

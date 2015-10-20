@@ -4,8 +4,8 @@ import { GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW } from '../models/views'
 
 const VIEWS = {
   [GEOGRAPHIC_VIEW]: 'geographic',
-  [FREQUENCY_VIEW]: 'frequency',
-  [DURATION_VIEW]: 'duration'
+  [DURATION_VIEW]: 'duration',
+  [FREQUENCY_VIEW]: 'frequency'
 };
 
 class ViewList extends Component {
