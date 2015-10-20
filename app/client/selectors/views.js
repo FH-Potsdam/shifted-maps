@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import partial from 'mout/function/partial';
 import _ from 'lodash';
-import { filteredPlacesSelector } from './places';
+import { scaledPlacesSelector } from './places';
 import { filteredConnectionsSelector, connectionFrequencyDomainSelector, connectionDistanceDomainSelector, connectionDurationDomainSelector } from './connections';
 import { geographicView, frequencyView, durationView } from '../services/views';
 
@@ -46,7 +46,7 @@ const beelineDomainSelector = createSelector(
 
 export const geographicViewSelector = createSelector(
   [
-    filteredPlacesSelector,
+    scaledPlacesSelector,
     filteredConnectionsSelector,
     connectionDistanceDomainSelector,
     beelineDomainSelector
@@ -58,7 +58,7 @@ export const geographicViewSelector = createSelector(
 
 export const frequencyViewSelector = createSelector(
   [
-    filteredPlacesSelector,
+    scaledPlacesSelector,
     filteredConnectionsSelector,
     connectionFrequencyDomainSelector,
     beelineDomainSelector
@@ -70,7 +70,7 @@ export const frequencyViewSelector = createSelector(
 
 export const durationViewSelector = createSelector(
   [
-    filteredPlacesSelector,
+    scaledPlacesSelector,
     filteredConnectionsSelector,
     connectionDurationDomainSelector,
     beelineDomainSelector

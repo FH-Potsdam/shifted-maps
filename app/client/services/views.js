@@ -3,6 +3,8 @@ import d3 from 'd3';
 import _ from 'lodash';
 
 function createNodeArray(places) {
+  var lastPlace = places.last();
+
   return places.map(function(place) {
     let { location } = place,
       x = location.lng + 180,
@@ -11,7 +13,8 @@ function createNodeArray(places) {
     return {
       place: place.id,
       x, y,
-      start: { x, y }
+      start: { x, y },
+      fixed: place === lastPlace
     };
   }).toArray();
 }
