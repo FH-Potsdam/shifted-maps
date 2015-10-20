@@ -2686,7 +2686,9 @@ function places(state, action) {
       var placeId = action.placeId,
           hover = action.hover;
 
-      return state.setIn([placeId, 'hover'], hover);
+      return state.map(function (place, id) {
+        return place.set('hover', hover && id === placeId);
+      });
 
     default:
       return state;

@@ -31,7 +31,9 @@ export default function places(state = Map(), action) {
     case HOVER_PLACE:
       let { placeId, hover } = action;
 
-      return state.setIn([placeId, 'hover'], hover);
+      return state.map(function(place, id) {
+        return place.set('hover', hover && id === placeId);
+      });
 
     default:
       return state
