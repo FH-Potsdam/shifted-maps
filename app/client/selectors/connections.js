@@ -93,8 +93,17 @@ function computeConnectionStrokeWidthScale(strokeWidthRangeScale, frequencyDomai
 }
 
 function scaleConnections(connections, strokeWidthScale) {
+  let rankScale = strokeWidthScale.copy()
+    .exponent(.1)
+    .range([1, 10]);
+
   return connections.map(function(connection) {
-    return connection.set('strokeWidth', strokeWidthScale(connection.frequency));
+    let { frequency } = connection;
+
+    return connection.merge({
+      strokeWidth: strokeWidthScale(frequency),
+      rank: Math.round(rankScale(frequency))
+    });
   });
 }
 

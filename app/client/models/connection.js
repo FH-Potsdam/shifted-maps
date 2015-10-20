@@ -13,5 +13,6 @@ export default Record({
   trips: new List(),
   strokeWidth: 0,
   connection: null,
-  visible: false
+  visible: false,
+  rank: 0
 });

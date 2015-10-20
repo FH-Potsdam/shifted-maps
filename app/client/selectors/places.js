@@ -2,7 +2,7 @@ import d3 from 'd3';
 import { Seq } from 'immutable';
 import { createSelector } from 'reselect';
 import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector, placeMinimizeRadiusSelector } from './scales';
-import { visBoundsSelector, visViewSelector, visScaleSelector } from './vis';
+import { visBoundsSelector, visScaleSelector } from './vis';
 import { tilesLevelSelector } from './tiles';
 import { mapMapSelector } from './map';
 import { uiTimeSpanSelector, uiLocationsSelector, uiHoveredPlaceIdSelector, uiHoverSelector } from './ui';
@@ -64,13 +64,18 @@ function computePlaceScales(places, strokeWidthRangeScale, radiusRangeScale, vis
 }
 
 function scalePlaces(places, strokeWidthScale, radiusScale) {
+  let rankScale = radiusScale.copy()
+    .exponent(.1)
+    .range([1, 10]);
+
   return places
     .map(function(place) {
       let { frequency, duration } = place;
 
       return place.merge({
         strokeWidth: strokeWidthScale(frequency),
-        radius: radiusScale(duration)
+        radius: radiusScale(duration),
+        rank: Math.round(rankScale(duration))
       });
     })
     .sortBy(function(place) {

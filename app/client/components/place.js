@@ -21,7 +21,11 @@ class Place extends Component {
       className += ' hover';
 
     return (
-      <g style={style} className={className} onMouseEnter={onHover.bind(this, true)} onMouseLeave={onHover.bind(this, false)}>
+      <g style={style}
+         data-rank={node.rank}
+         className={className}
+         onMouseEnter={onHover.bind(this, true)}
+         onMouseLeave={onHover.bind(this, false)}>
         <PlaceMap node={node} onRequestTile={onRequestTile} />
         <PlaceDeco node={node} />
         <PlaceLabel node={node} />

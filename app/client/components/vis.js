@@ -30,7 +30,7 @@ class Vis extends Component {
   render() {
     let { vis, nodes, edges } = this.props;
 
-    let {bounds, transform } = vis,
+    let {bounds, transform, zoom } = vis,
       boundSize = bounds.getSize();
 
     let { translate, scale } = transform.toJS();
@@ -45,7 +45,7 @@ class Vis extends Component {
     style[L.DomUtil.TRANSFORM] = transformString;
 
     return (
-      <svg className={this.props.className} width={boundSize.x} height={boundSize.y} viewBox={viewBox} style={style}>
+      <svg className={this.props.className} width={boundSize.x} height={boundSize.y} viewBox={viewBox} style={style} data-zoom={zoom}>
         <defs>
           <PlaceCircleList nodes={nodes} />
           <PlaceClipList nodes={nodes} />

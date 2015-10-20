@@ -17,6 +17,7 @@ class Connection extends Component {
 
     return (
       <line style={style}
+            data-rank={edge.rank}
             x1={edge.fromPoint.get('x')}
             y1={edge.fromPoint.get('y')}
             x2={edge.toPoint.get('x')}

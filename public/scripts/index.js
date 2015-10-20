@@ -743,6 +743,7 @@ var Connection = (function (_Component) {
       if (edge.visible) style.display = 'block';
 
       return _react2['default'].createElement('line', { style: style,
+        'data-rank': edge.rank,
         x1: edge.fromPoint.get('x'),
         y1: edge.fromPoint.get('y'),
         x2: edge.toPoint.get('x'),
@@ -1514,7 +1515,11 @@ var Place = (function (_Component) {
 
       return _react2['default'].createElement(
         'g',
-        { style: style, className: className, onMouseEnter: onHover.bind(this, true), onMouseLeave: onHover.bind(this, false) },
+        { style: style,
+          'data-rank': node.rank,
+          className: className,
+          onMouseEnter: onHover.bind(this, true),
+          onMouseLeave: onHover.bind(this, false) },
         _react2['default'].createElement(_placeMap2['default'], { node: node, onRequestTile: onRequestTile }),
         _react2['default'].createElement(_placeDeco2['default'], { node: node }),
         _react2['default'].createElement(_placeLabel2['default'], { node: node })
@@ -2302,6 +2307,7 @@ var Vis = (function (_Component) {
       var edges = _props.edges;
       var bounds = vis.bounds;
       var transform = vis.transform;
+      var zoom = vis.zoom;
       var boundSize = bounds.getSize();
       var _transform$toJS = transform.toJS();
 
@@ -2318,7 +2324,7 @@ var Vis = (function (_Component) {
 
       return _react2['default'].createElement(
         'svg',
-        { className: this.props.className, width: boundSize.x, height: boundSize.y, viewBox: viewBox, style: style },
+        { className: this.props.className, width: boundSize.x, height: boundSize.y, viewBox: viewBox, style: style, 'data-zoom': zoom },
         _react2['default'].createElement(
           'defs',
           null,
@@ -2402,7 +2408,8 @@ exports['default'] = (0, _immutable.Record)({
   trips: new _immutable.List(),
   strokeWidth: 0,
   connection: null,
-  visible: false
+  visible: false,
+  rank: 0
 });
 module.exports = exports['default'];
 
@@ -2429,7 +2436,7 @@ exports['default'] = (0, _immutable.Record)({
   visible: false,
   tile: null,
   hover: false,
-  minimize: false
+  rank: 0
 });
 module.exports = exports['default'];
 
@@ -2951,17 +2958,14 @@ function calculateBounds(map) {
 
 function initVis(map) {
   var bounds = calculateBounds(map),
+      zoom = map.getZoom(),
       scale = d3.scale.linear().domain([map.getMinZoom(), map.getMaxZoom()]);
-
-  function view(place) {
-    return map.latLngToLayerPoint(place.location);
-  }
 
   return {
     translate: bounds.min,
-    scale: scale(map.getZoom()),
+    scale: scale(zoom),
     transform: { translate: bounds.min, scale: null },
-    view: view, bounds: bounds
+    bounds: bounds, zoom: zoom
   };
 }
 
@@ -3166,8 +3170,15 @@ function computeConnectionStrokeWidthScale(strokeWidthRangeScale, frequencyDomai
 }
 
 function scaleConnections(connections, strokeWidthScale) {
+  var rankScale = strokeWidthScale.copy().exponent(.1).range([1, 10]);
+
   return connections.map(function (connection) {
-    return connection.set('strokeWidth', strokeWidthScale(connection.frequency));
+    var frequency = connection.frequency;
+
+    return connection.merge({
+      strokeWidth: strokeWidthScale(frequency),
+      rank: Math.round(rankScale(frequency))
+    });
   });
 }
 
@@ -3348,13 +3359,16 @@ function computePlaceScales(places, strokeWidthRangeScale, radiusRangeScale, vis
 }
 
 function scalePlaces(places, strokeWidthScale, radiusScale) {
+  var rankScale = radiusScale.copy().exponent(.1).range([1, 10]);
+
   return places.map(function (place) {
     var frequency = place.frequency;
     var duration = place.duration;
 
     return place.merge({
       strokeWidth: strokeWidthScale(frequency),
-      radius: radiusScale(duration)
+      radius: radiusScale(duration),
+      rank: Math.round(rankScale(duration))
     });
   }).sortBy(function (place) {
     return place.radius;
@@ -3670,21 +3684,21 @@ var visBoundsSelector = function visBoundsSelector(state) {
 };
 
 exports.visBoundsSelector = visBoundsSelector;
-var visViewSelector = function visViewSelector(state) {
-  return state.vis.get('view');
-};
-
-exports.visViewSelector = visViewSelector;
 var visTransformSelector = function visTransformSelector(state) {
   return state.vis.get('transform');
 };
 
 exports.visTransformSelector = visTransformSelector;
+var visZoomSelector = function visZoomSelector(state) {
+  return state.vis.get('zoom');
+};
+
+exports.visZoomSelector = visZoomSelector;
 exports['default'] = (0, _reselect.createStructuredSelector)({
   scale: visScaleSelector,
   bounds: visBoundsSelector,
-  view: visViewSelector,
-  transform: visTransformSelector
+  transform: visTransformSelector,
+  zoom: visZoomSelector
 });
 
 },{"reselect":263}],53:[function(require,module,exports){

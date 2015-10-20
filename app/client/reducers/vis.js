@@ -12,18 +12,15 @@ function calculateBounds(map) {
 
 function initVis(map) {
   let bounds = calculateBounds(map),
+    zoom = map.getZoom(),
     scale = d3.scale.linear()
       .domain([map.getMinZoom(), map.getMaxZoom()]);
 
-  function view(place) {
-    return map.latLngToLayerPoint(place.location);
-  }
-
   return {
     translate: bounds.min,
-    scale: scale(map.getZoom()),
+    scale: scale(zoom),
     transform: { translate: bounds.min, scale: null },
-    view, bounds
+    bounds, zoom
   };
 }
 

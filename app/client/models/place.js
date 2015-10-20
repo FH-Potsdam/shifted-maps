@@ -14,5 +14,5 @@ export default Record({
   visible: false,
   tile: null,
   hover: false,
-  minimize: false
+  rank: 0
 });
