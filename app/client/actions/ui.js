@@ -13,8 +13,8 @@ const VIEWS = [GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW];
 
 const VIEW_SELECTORS = {
   [GEOGRAPHIC_VIEW]: geographicViewSelector,
-  [FREQUENCY_VIEW]: frequencyViewSelector,
-  [DURATION_VIEW]: durationViewSelector
+  [DURATION_VIEW]: durationViewSelector,
+  [FREQUENCY_VIEW]: frequencyViewSelector
 };
 
 let viewQueue;
