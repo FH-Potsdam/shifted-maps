@@ -11,6 +11,7 @@ function Transformer() {
 
   this._lastTrip = null;
   this._lastPlace = null;
+  this._firstPlace = true;
 }
 
 util.inherits(Transformer, Transform);
@@ -33,6 +34,10 @@ Transformer.prototype._transformDate = function(object, callback) {
 };
 
 Transformer.prototype._transformPlace = function(object, callback) {
+  // Moves tend to have places without any trips from or to this this place. Let's filter these.
+  if (!this._firstPlace && this._lastTrip == null)
+    return callback();
+
   var place = this._lastPlace = new Place({
     id: object.place.id,
     location: object.place.location,
@@ -57,6 +62,8 @@ Transformer.prototype._transformPlace = function(object, callback) {
 
   this.push(place);
   this.push(stay);
+
+  this._firstPlace = false;
 
   callback();
 };

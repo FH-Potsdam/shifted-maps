@@ -12,7 +12,6 @@ function Normalizer() {
   Transform.call(this, { objectMode: true });
 
   this._pushedPlaces = [];
-  this._lastStay = null;
   this._lastPlace = null;
 }
 
