@@ -1,3 +1,13 @@
 * {
   box-sizing: border-box;
 }
+
+a {
+  @include transition(color $short-transition-duration);
+  text-decoration: none;
+  color: $foreground;
+
+  &:hover {
+    color: $highlight;
+  }
+}

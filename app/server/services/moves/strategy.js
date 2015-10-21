@@ -39,6 +39,10 @@ MovesStrategy.prototype.validate = function(accessToken, done) {
     if (!error)
       return done(null, true);
 
+    // No internet connection (app is running locally without internet)
+    if (error.code === 'ENOTFOUND')
+      return done(new Error('Cannot reach ' + error.host + '.'));
+
     if (error.statusCode !== 404)
       return done(new Error('Moves returned unknown error.'));
 

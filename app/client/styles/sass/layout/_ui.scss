@@ -26,19 +26,20 @@ $button-size: $base-spacing-unit * 1.75;
     font-size: $font-size-big;
     text-decoration: none;
   }
-}
 
-.try-demo {
-  font-size: $font-size-medium;
-  font-style: italic;
-  padding-top: $base-spacing-unit / 2;
-  text-align: left;
+  &__try-own-data {
+    font-size: $font-size-medium;
+    font-style: italic;
+    padding-top: $base-spacing-unit / 2;
+    text-align: left;
+    display: block;
 
-  .icon {
-    font-size: $button-size;
-    float: right;
-    padding-top: $base-font-size / 4;
-    margin-left: $base-spacing-unit;
+    .icon {
+      font-size: $button-size;
+      float: right;
+      padding-top: $base-font-size / 4;
+      margin-left: $base-spacing-unit;
+    }
   }
 }
 
@@ -50,6 +51,7 @@ $button-size: $base-spacing-unit * 1.75;
   margin-top: $base-spacing-unit * 3;
 
   &__button {
+    @include transition(color $short-transition-duration);
     display: block;
     text-align: center;
     float: left;
@@ -63,7 +65,8 @@ $button-size: $base-spacing-unit * 1.75;
     width: $button-size;
     height: $button-size;
 
-    &.active {
+    &.active,
+    &:hover {
       color: $highlight;
     }
   }

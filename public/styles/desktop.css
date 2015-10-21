@@ -223,6 +223,18 @@ th {
   box-sizing: border-box;
 }
 
+a {
+  -moz-transition: color 200ms;
+  -o-transition: color 200ms;
+  -webkit-transition: color 200ms;
+  transition: color 200ms;
+  text-decoration: none;
+  color: #333333;
+}
+a:hover {
+  color: #2963a5;
+}
+
 @font-face {
   font-family: 'icomoon';
   src: url("/fonts/icomoon.eot?3vnion");
@@ -507,14 +519,14 @@ body {
   font-size: 24px;
   text-decoration: none;
 }
-
-.try-demo {
+.ui__try-own-data {
   font-size: 18px;
   font-style: italic;
   padding-top: 11px;
   text-align: left;
+  display: block;
 }
-.try-demo .icon {
+.ui__try-own-data .icon {
   font-size: 38.5px;
   float: right;
   padding-top: 4px;
@@ -529,6 +541,10 @@ body {
   margin-top: 66px;
 }
 .view-list__button {
+  -moz-transition: color 200ms;
+  -o-transition: color 200ms;
+  -webkit-transition: color 200ms;
+  transition: color 200ms;
   display: block;
   text-align: center;
   float: left;
@@ -542,7 +558,7 @@ body {
   width: 38.5px;
   height: 38.5px;
 }
-.view-list__button.active {
+.view-list__button.active, .view-list__button:hover {
   color: #2963a5;
 }
 .view-list__button + .view-list__button {

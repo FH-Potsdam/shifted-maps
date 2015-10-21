@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import $ from 'jquery';
 
-class TryDemo extends Component {
+class TryOwnData extends Component {
   render() {
     return (
-      <div className="try-demo">
+      <a className="ui__try-own-data" href="/auth">
         <i className="icon icon--go" />
         Try it with your own data!
-      </div>
+      </a>
     );
   }
 }
 
-export default TryDemo;
+export default TryOwnData;

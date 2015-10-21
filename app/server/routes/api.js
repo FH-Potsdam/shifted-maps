@@ -1,4 +1,5 @@
 var express = require('express'),
+  path = require('path'),
   moment = require('moment'),
   JSONStream = require('../services/api/json-stream'),
   Normalizer = require('../services/api/normalizer'),
@@ -10,17 +11,18 @@ var express = require('express'),
   config = require('../config');
 
 var router = express.Router(),
-  limiter = new MovesLimiter();
+  limiter = new MovesLimiter(),
+  demoPath = path.resolve(__dirname + '/../data/demo.json');
 
-router.use(function(req, res, next) {
-  if (!req.user)
-    return res.sendStatus(403);
-
-  next();
+router.get('/demo', function(req, res) {
+  res.json(req.user == null);
 });
 
 // HTTP Caching for API requests
-router.use(function(req, res, next) {
+router.get('/', function(req, res, next) {
+  if (req.user == null)
+    return next();
+
   res.setHeader('cache-control', 'public, max-age=0');
   res.setHeader('last-modified', req.user.lastUpdateAt.toString());
 
@@ -31,8 +33,13 @@ router.use(function(req, res, next) {
 });
 
 router.get('/', function(req, res) {
-  var user = req.user,
-    api = new MovesAPI(user.accessToken, limiter, config.moves),
+  var user = req.user;
+
+  // No user logged in. Return demo data.
+  if (user == null)
+    return res.sendFile(demoPath);
+
+  var api = new MovesAPI(user.accessToken, limiter, config.moves),
     segmentReader = new MovesSegmentReader(api, user.firstDate);
 
   req.on('close', function() {

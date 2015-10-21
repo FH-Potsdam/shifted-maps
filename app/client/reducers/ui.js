@@ -1,6 +1,6 @@
 import { Map } from 'immutable';
 import { SET_STORYLINE } from '../actions/storyline';
-import { CHANGE_TIME_SPAN, CHANGE_VIEW, SET_LOCATIONS, HOVER_PLACE } from '../actions/ui';
+import { CHANGE_TIME_SPAN, CHANGE_VIEW, SET_LOCATIONS, HOVER_PLACE, DEMO } from '../actions/ui';
 import { GEOGRAPHIC_VIEW } from '../models/views';
 
 function setStoryline(state, action) {
@@ -54,6 +54,10 @@ function setHoveredPlace(state, action) {
   });
 }
 
+function setDemo(state, action) {
+  return state.set('demo', action.demo);
+}
+
 export default function ui(state = Map(), action) {
   switch (action.type) {
     case SET_STORYLINE:
@@ -70,6 +74,9 @@ export default function ui(state = Map(), action) {
 
     case HOVER_PLACE:
       return setHoveredPlace(state, action);
+
+    case DEMO:
+      return setDemo(state, action);
 
     default:
       return state;
