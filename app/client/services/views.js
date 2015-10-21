@@ -82,7 +82,7 @@ export function geographicView(places, connections, distanceDomain, beelineRange
 
   let strengthScale = d3.scale.linear()
     .domain(distanceDomain)
-    .range([0.5, 1])
+    .range([1, 0.5])
     .clamp(true);
 
   let distanceScale = d3.scale.linear()
@@ -108,7 +108,7 @@ export function durationView(places, connections, durationDomain, beelineRange, 
 
   let strengthScale = d3.scale.linear()
     .domain(durationDomain)
-    .range([0.5, 1])
+    .range([1, 0.5])
     .clamp(true);
 
   let distanceScale = d3.scale.linear()
@@ -132,15 +132,15 @@ export function durationView(places, connections, durationDomain, beelineRange, 
 export function frequencyView(places, connections, frequencyDomain, beelineRange, done) {
   console.log('frequencyView');
 
-  let reversedFrequencyDomainy = [...frequencyDomain].reverse();
+  let reversedFrequencyDomain = [...frequencyDomain].reverse();
 
   let strengthScale = d3.scale.linear()
-    .domain(reversedFrequencyDomainy)
-    .range([0.5, 1])
+    .domain(reversedFrequencyDomain)
+    .range([1, 0.5])
     .clamp(true);
 
   let distanceScale = d3.scale.linear()
-    .domain(reversedFrequencyDomainy)
+    .domain(reversedFrequencyDomain)
     .range(beelineRange)
     .clamp(true);
 

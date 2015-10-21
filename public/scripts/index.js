@@ -326,6 +326,8 @@ var _selectorsViews = require('../selectors/views');
 
 var _selectorsUi = require('../selectors/ui');
 
+var _actionsTiles = require('../actions/tiles');
+
 var CHANGE_VIEW = 'CHANGE_VIEW';
 exports.CHANGE_VIEW = CHANGE_VIEW;
 var SET_LOCATIONS = 'SET_LOCATIONS';
@@ -381,6 +383,7 @@ function computeViewLocations(view) {
 
     viewService(function (error, locations) {
       dispatch({ type: SET_LOCATIONS, view: view, locations: locations });
+      dispatch((0, _actionsTiles.requestTiles)());
       dispatch(processViewQueue());
     });
   };
@@ -400,7 +403,7 @@ function hoverPlace(placeId, hover) {
   return { type: HOVER_PLACE, placeId: placeId, hover: hover };
 }
 
-},{"../models/views":36,"../selectors/ui":51,"../selectors/views":52,"lodash":64,"promise":76}],7:[function(require,module,exports){
+},{"../actions/tiles":5,"../models/views":36,"../selectors/ui":51,"../selectors/views":52,"lodash":64,"promise":76}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -3212,15 +3215,15 @@ function filterConnections(connections, places, uiTimeSpan) {
 
     var duration = trips.reduce(function (duration, trip) {
       return duration + trip.duration;
-    }, 0),
+    }, 0) / trips.size,
         distance = trips.reduce(function (distance, trip) {
       return distance + trip.distance;
-    }, 0);
+    }, 0) / trips.size;
 
     return connection.merge({
       trips: trips,
-      duration: duration,
-      distance: distance,
+      duration: Math.round(duration),
+      distance: Math.round(distance),
       frequency: trips.size
     });
   }).filter(function (connection) {
@@ -4015,7 +4018,7 @@ function computeLocations(places, connections, linkStrength, linkDistance, done)
 function geographicView(places, connections, distanceDomain, beelineRange, done) {
   console.log('geographicView');
 
-  var strengthScale = _d32['default'].scale.linear().domain(distanceDomain).range([0.5, 1]).clamp(true);
+  var strengthScale = _d32['default'].scale.linear().domain(distanceDomain).range([1, 0.5]).clamp(true);
 
   var distanceScale = _d32['default'].scale.linear().domain(distanceDomain).range(beelineRange).clamp(true);
 
@@ -4035,7 +4038,7 @@ function geographicView(places, connections, distanceDomain, beelineRange, done)
 function durationView(places, connections, durationDomain, beelineRange, done) {
   console.log('durationView');
 
-  var strengthScale = _d32['default'].scale.linear().domain(durationDomain).range([0.5, 1]).clamp(true);
+  var strengthScale = _d32['default'].scale.linear().domain(durationDomain).range([1, 0.5]).clamp(true);
 
   var distanceScale = _d32['default'].scale.linear().domain(durationDomain).range(beelineRange).clamp(true);
 
@@ -4055,11 +4058,11 @@ function durationView(places, connections, durationDomain, beelineRange, done) {
 function frequencyView(places, connections, frequencyDomain, beelineRange, done) {
   console.log('frequencyView');
 
-  var reversedFrequencyDomainy = [].concat(_toConsumableArray(frequencyDomain)).reverse();
+  var reversedFrequencyDomain = [].concat(_toConsumableArray(frequencyDomain)).reverse();
 
-  var strengthScale = _d32['default'].scale.linear().domain(reversedFrequencyDomainy).range([0.5, 1]).clamp(true);
+  var strengthScale = _d32['default'].scale.linear().domain(reversedFrequencyDomain).range([1, 0.5]).clamp(true);
 
-  var distanceScale = _d32['default'].scale.linear().domain(reversedFrequencyDomainy).range(beelineRange).clamp(true);
+  var distanceScale = _d32['default'].scale.linear().domain(reversedFrequencyDomain).range(beelineRange).clamp(true);
 
   function linkStrength(connection) {
     return strengthScale(connection.frequency);
