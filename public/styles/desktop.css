@@ -384,7 +384,7 @@ body {
   stroke-width: 3;
   stroke: white;
 }
-[data-zoom~="9"] .connection-label {
+[data-zoom~="8"] .connection-label {
   display: block;
 }
 
