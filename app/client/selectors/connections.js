@@ -43,13 +43,13 @@ function filterConnections(connections, places, uiTimeSpan) {
           places.has(connection.to);
       });
 
-      let duration = trips.reduce((duration, trip) => duration + trip.duration, 0),
-        distance = trips.reduce((distance, trip) => distance + trip.distance, 0);
+      let duration = trips.reduce((duration, trip) => duration + trip.duration, 0) / trips.size,
+        distance = trips.reduce((distance, trip) => distance + trip.distance, 0) / trips.size;
 
       return connection.merge({
         trips: trips,
-        duration: duration,
-        distance: distance,
+        duration: Math.round(duration),
+        distance: Math.round(distance),
         frequency: trips.size
       });
     })
