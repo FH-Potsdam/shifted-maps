@@ -2336,6 +2336,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _reactRedux = require('react-redux');
 
 var _selector = require('../selector');
@@ -2412,9 +2416,11 @@ var Vis = (function (_Component) {
 
       style[L.DomUtil.TRANSFORM] = transformString;
 
+      var zoomRange = _lodash2['default'].range(zoom).join(' ');
+
       return _react2['default'].createElement(
         'svg',
-        { className: this.props.className, width: boundSize.x, height: boundSize.y, viewBox: viewBox, style: style, 'data-zoom': zoom },
+        { className: this.props.className, width: boundSize.x, height: boundSize.y, viewBox: viewBox, style: style, 'data-zoom': zoomRange },
         _react2['default'].createElement(
           'defs',
           null,
@@ -2433,7 +2439,7 @@ var Vis = (function (_Component) {
 exports['default'] = (0, _reactRedux.connect)(_selector.vis)(Vis);
 module.exports = exports['default'];
 
-},{"../actions/tiles":5,"../actions/ui":6,"../selector":45,"./connection-list":10,"./place-circle-list":13,"./place-clip-list":15,"./place-list":19,"react":250,"react-redux":90}],29:[function(require,module,exports){
+},{"../actions/tiles":5,"../actions/ui":6,"../selector":45,"./connection-list":10,"./place-circle-list":13,"./place-clip-list":15,"./place-list":19,"lodash":64,"react":250,"react-redux":90}],29:[function(require,module,exports){
 'use strict';
 
 var config = require('../../config/client.json');
@@ -4078,7 +4084,7 @@ function frequencyView(places, connections, frequencyDomain, beelineRange, done)
 function geographicLabel(connection) {
   var distance = connection.distance;
 
-  if (distance >= 1000) distance = Math.round(distance / 1000) + ' km';else distance += 'm';
+  if (distance >= 1000) distance = Math.round(distance / 1000) + ' km';else distance += ' m';
 
   return distance;
 }

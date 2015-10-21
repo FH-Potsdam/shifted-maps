@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import { vis } from '../selector';
 import { requestTile } from '../actions/tiles';
@@ -44,8 +45,10 @@ class Vis extends Component {
 
     style[L.DomUtil.TRANSFORM] = transformString;
 
+    let zoomRange = _.range(zoom).join(' ');
+
     return (
-      <svg className={this.props.className} width={boundSize.x} height={boundSize.y} viewBox={viewBox} style={style} data-zoom={zoom}>
+      <svg className={this.props.className} width={boundSize.x} height={boundSize.y} viewBox={viewBox} style={style} data-zoom={zoomRange}>
         <defs>
           <PlaceCircleList nodes={nodes} />
           <PlaceClipList nodes={nodes} />

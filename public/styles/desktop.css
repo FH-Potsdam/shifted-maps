@@ -358,6 +358,7 @@ body {
   font-family: "soleil", sans-serif;
   font-style: italic;
   font-size: 14px;
+  display: none;
 }
 .connection-label text {
   text-anchor: middle;
@@ -366,6 +367,9 @@ body {
 .connection-label-stroke {
   stroke-width: 3;
   stroke: white;
+}
+[data-zoom~="9"] .connection-label {
+  display: block;
 }
 
 .scale-list {

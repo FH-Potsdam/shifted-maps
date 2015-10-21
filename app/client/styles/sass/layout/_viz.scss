@@ -79,6 +79,7 @@
     font-family: "soleil", sans-serif;
     font-style: italic;
     font-size: $font-size-small;
+    display: none;
 
     text {
       text-anchor: middle;
@@ -88,6 +89,10 @@
     &-stroke {
       stroke-width: 3;
       stroke: $background;
+    }
+
+    [data-zoom~="9"] & {
+      display: block;
     }
   }
 }
