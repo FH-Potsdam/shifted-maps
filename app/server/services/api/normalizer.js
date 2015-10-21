@@ -8,10 +8,9 @@ var Transform = require('stream').Transform,
   Trip = require('../../models/trip'),
   Off = require('../../models/off');
 
-function Normalizer(placeLimit) {
+function Normalizer() {
   Transform.call(this, { objectMode: true });
 
-  this._placeLimit = placeLimit;
   this._pushedPlaces = [];
   this._lastPlace = null;
 }
@@ -42,9 +41,6 @@ Normalizer.prototype._normalizePlace = function(place, callback) {
     return callback();
 
   this._pushedPlaces.push(place.id);
-
-  if (this._pushedPlaces.length > this._placeLimit)
-    return this.push(null);
 
   function pushPlace(place) {
     normalizer._pushObject('place', place);
@@ -88,11 +84,5 @@ Normalizer.prototype._pushObject = function(name, object) {
   temp[name] = object;
   this.push(temp);
 };
-
-function LimitError() {}
-
-LimitError.prototype = new Error;
-
-Normalizer.LimitError = LimitError;
 
 module.exports = Normalizer;

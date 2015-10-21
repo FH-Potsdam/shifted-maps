@@ -2,6 +2,7 @@ var express = require('express'),
   moment = require('moment'),
   JSONStream = require('../services/api/json-stream'),
   Normalizer = require('../services/api/normalizer'),
+  Limiter = require('../services/api/limiter'),
   MovesSegmentReader = require('../services/moves/segment-reader'),
   MovesAPI = require('../services/moves/api'),
   MovesLimiter = require('../services/moves/limiter'),
@@ -32,8 +33,7 @@ router.use(function(req, res, next) {
 router.get('/', function(req, res) {
   var user = req.user,
     api = new MovesAPI(user.accessToken, limiter, config.moves),
-    segmentReader = new MovesSegmentReader(api, user.firstDate),
-    normalizer = new Normalizer(config.api.place_limit);
+    segmentReader = new MovesSegmentReader(api, user.firstDate);
 
   req.on('close', function() {
     segmentReader.destroy();
@@ -41,7 +41,8 @@ router.get('/', function(req, res) {
 
   segmentReader
     .pipe(new MovesTransformer)
-    .pipe(normalizer)
+    .pipe(new Limiter(config.api.place_limit))
+    .pipe(new Normalizer)
     .pipe(new JSONStream)
     .pipe(res);
 });
