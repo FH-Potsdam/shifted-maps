@@ -4059,11 +4059,9 @@ function durationView(places, connections, durationDomain, beelineRange, done) {
 function frequencyView(places, connections, frequencyDomain, beelineRange, done) {
   console.log('frequencyView');
 
-  var reversedFrequencyDomain = [].concat(_toConsumableArray(frequencyDomain)).reverse();
+  var strengthScale = _d32['default'].scale.linear().domain(frequencyDomain).range([0.1, 1]).clamp(true);
 
-  var strengthScale = _d32['default'].scale.linear().domain(reversedFrequencyDomain).range([1, 0.5]).clamp(true);
-
-  var distanceScale = _d32['default'].scale.linear().domain(reversedFrequencyDomain).range(beelineRange).clamp(true);
+  var distanceScale = _d32['default'].scale.linear().domain([].concat(_toConsumableArray(frequencyDomain)).reverse()).range(beelineRange).clamp(true);
 
   function linkStrength(connection) {
     return strengthScale(connection.frequency);

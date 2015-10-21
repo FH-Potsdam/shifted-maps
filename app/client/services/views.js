@@ -132,15 +132,13 @@ export function durationView(places, connections, durationDomain, beelineRange, 
 export function frequencyView(places, connections, frequencyDomain, beelineRange, done) {
   console.log('frequencyView');
 
-  let reversedFrequencyDomain = [...frequencyDomain].reverse();
-
   let strengthScale = d3.scale.linear()
-    .domain(reversedFrequencyDomain)
-    .range([1, 0.5])
+    .domain(frequencyDomain)
+    .range([0.1, 1])
     .clamp(true);
 
   let distanceScale = d3.scale.linear()
-    .domain(reversedFrequencyDomain)
+    .domain([...frequencyDomain].reverse())
     .range(beelineRange)
     .clamp(true);
 
