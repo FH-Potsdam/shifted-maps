@@ -32,7 +32,8 @@ router.use(function(req, res, next) {
 router.get('/', function(req, res) {
   var user = req.user,
     api = new MovesAPI(user.accessToken, limiter, config.moves),
-    segmentReader = new MovesSegmentReader(api, user.firstDate);
+    segmentReader = new MovesSegmentReader(api, user.firstDate),
+    normalizer = new Normalizer(config.api.place_limit);
 
   req.on('close', function() {
     segmentReader.destroy();
@@ -40,7 +41,7 @@ router.get('/', function(req, res) {
 
   segmentReader
     .pipe(new MovesTransformer)
-    .pipe(new Normalizer)
+    .pipe(normalizer)
     .pipe(new JSONStream)
     .pipe(res);
 });

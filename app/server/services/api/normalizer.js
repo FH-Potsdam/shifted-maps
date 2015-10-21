@@ -8,9 +8,10 @@ var Transform = require('stream').Transform,
   Trip = require('../../models/trip'),
   Off = require('../../models/off');
 
-function Normalizer() {
+function Normalizer(placeLimit) {
   Transform.call(this, { objectMode: true });
 
+  this._placeLimit = placeLimit;
   this._pushedPlaces = [];
   this._lastPlace = null;
 }
@@ -42,14 +43,17 @@ Normalizer.prototype._normalizePlace = function(place, callback) {
 
   this._pushedPlaces.push(place.id);
 
-  function normalize(place) {
+  if (this._pushedPlaces.length > this._placeLimit)
+    return this.push(null);
+
+  function pushPlace(place) {
     normalizer._pushObject('place', place);
 
     callback();
   }
 
   if (place.name != null)
-    return normalize(place);
+    return pushPlace(place);
 
   geocode(place.location, function(error, name) {
     if (error)
@@ -60,7 +64,7 @@ Normalizer.prototype._normalizePlace = function(place, callback) {
       placeType: 'geocode'
     });
 
-    normalize(place);
+    pushPlace(place);
   });
 };
 
@@ -84,5 +88,11 @@ Normalizer.prototype._pushObject = function(name, object) {
   temp[name] = object;
   this.push(temp);
 };
+
+function LimitError() {}
+
+LimitError.prototype = new Error;
+
+Normalizer.LimitError = LimitError;
 
 module.exports = Normalizer;

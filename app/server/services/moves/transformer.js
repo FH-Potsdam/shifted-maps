@@ -52,6 +52,11 @@ Transformer.prototype._transformPlace = function(object, callback) {
     duration: object.endTime - object.startTime
   });
 
+  this.push(place);
+  this.push(stay);
+
+  this._firstPlace = false;
+
   if (this._lastTrip != null) {
     this._lastTrip = this._lastTrip.merge({
       to: place.id
@@ -59,11 +64,6 @@ Transformer.prototype._transformPlace = function(object, callback) {
     this.push(this._lastTrip);
     this._lastTrip = null;
   }
-
-  this.push(place);
-  this.push(stay);
-
-  this._firstPlace = false;
 
   callback();
 };
