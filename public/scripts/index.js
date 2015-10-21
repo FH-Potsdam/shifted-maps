@@ -1063,21 +1063,21 @@ exports['default'] = PlaceCircleList;
 module.exports = exports['default'];
 
 },{"./place-circle":14,"react":250}],14:[function(require,module,exports){
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _react = require('react');
 
@@ -1089,24 +1089,21 @@ var PlaceCircle = (function (_Component) {
   function PlaceCircle() {
     _classCallCheck(this, PlaceCircle);
 
-    _get(Object.getPrototypeOf(PlaceCircle.prototype), 'constructor', this).apply(this, arguments);
+    _get(Object.getPrototypeOf(PlaceCircle.prototype), "constructor", this).apply(this, arguments);
   }
 
   _createClass(PlaceCircle, [{
-    key: 'shouldComponentUpdate',
+    key: "shouldComponentUpdate",
     value: function shouldComponentUpdate(nextProps) {
-      var node = this.props.node;
-      var nextNode = nextProps.node;
-
-      return node.point !== nextNode.point || node.radius !== nextNode.radius;
+      return this.props.radius !== nextProps.node.radius;
     }
   }, {
-    key: 'render',
+    key: "render",
     value: function render() {
       var node = this.props.node,
           id = PlaceCircle.createId(node);
 
-      return _react2['default'].createElement('circle', { className: 'place-circle', cx: node.point.x, cy: node.point.y, r: node.radius, id: id });
+      return _react2["default"].createElement("circle", { className: "place-circle", cx: "0", cy: "0", r: node.radius, id: id });
     }
   }]);
 
@@ -1117,8 +1114,8 @@ PlaceCircle.createId = function (node) {
   return 'place-circle-' + node.id;
 };
 
-exports['default'] = PlaceCircle;
-module.exports = exports['default'];
+exports["default"] = PlaceCircle;
+module.exports = exports["default"];
 
 },{"react":250}],15:[function(require,module,exports){
 'use strict';
@@ -1342,32 +1339,24 @@ var PlaceLabel = (function (_Component) {
   _createClass(PlaceLabel, [{
     key: "shouldComponentUpdate",
     value: function shouldComponentUpdate(nextProps) {
-      var node = this.props.node,
-          nextNode = nextProps.node;
-
-      return node.point !== nextNode.point || node.radius !== nextNode.radius || node.strokeWidth !== nextNode.strokeWidth;
+      return this.props.node.radius !== nextProps.node.radius;
     }
   }, {
     key: "render",
     value: function render() {
       var node = this.props.node;
-      var _node$point = node.point;
-      var x = _node$point.x;
-      var y = _node$point.y;
-
-      y += node.radius;
 
       return _react2["default"].createElement(
         "g",
         { className: "place-label" },
         _react2["default"].createElement(
           "text",
-          { x: x, y: y, className: "place-label-stroke" },
+          { x: "0", y: node.radius, className: "place-label-stroke" },
           node.name
         ),
         _react2["default"].createElement(
           "text",
-          { x: x, y: y },
+          { x: "0", y: node.radius },
           node.name
         )
       );
@@ -1488,7 +1477,7 @@ var PlaceMap = (function (_Component) {
       var node = this.props.node;
       var nextNode = nextProps.node;
 
-      return node.radius !== nextNode.radius || node.point !== nextNode.point || node.tile !== nextNode.tile;
+      return node.radius !== nextNode.radius || node.tile !== nextNode.tile;
     }
   }, {
     key: 'componentWillUpdate',
@@ -1508,8 +1497,8 @@ var PlaceMap = (function (_Component) {
       var size = radius * 2;
 
       var imageProps = {
-        x: point.x - radius,
-        y: point.y - radius,
+        x: -radius,
+        y: -radius,
         width: size,
         height: size
       };
@@ -1518,8 +1507,8 @@ var PlaceMap = (function (_Component) {
         var tileRadius = Math.min(tile.width / 2, tile.height / 2);
 
         imageProps = {
-          x: point.x - tileRadius,
-          y: point.y - tileRadius,
+          x: -tileRadius,
+          y: -tileRadius,
           width: tile.width,
           height: tile.height,
           xlinkHref: tile.url
@@ -1530,7 +1519,7 @@ var PlaceMap = (function (_Component) {
         'g',
         { className: 'place-map',
           clipPath: clipPath },
-        _react2['default'].createElement('rect', { className: 'place-map-background', x: point.x - radius, y: point.y - radius, width: size, height: size }),
+        _react2['default'].createElement('rect', { className: 'place-map-background', x: -radius, y: -radius, width: size, height: size }),
         _react2['default'].createElement('image', imageProps)
       );
     }
@@ -1603,9 +1592,13 @@ var Place = (function (_Component) {
 
       if (node.hover) className += ' hover';
 
+      var point = node.point,
+          transform = 'translate(' + point.x + ', ' + point.y + ')';
+
       return _react2['default'].createElement(
         'g',
         { style: style,
+          transform: transform,
           'data-rank': node.rank,
           className: className,
           onMouseEnter: onHover.bind(this, true),

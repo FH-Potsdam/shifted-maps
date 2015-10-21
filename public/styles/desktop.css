@@ -316,6 +316,28 @@ body {
   margin-bottom: 22px;
 }
 
+.place {
+  /*&[data-rank="1"],
+  &[data-rank="2"] {
+    &:not(.hover) {
+      .place-map {
+        &-background {
+          fill: $foreground;
+        }
+
+        image {
+          display: none;
+        }
+      }
+    }
+  }*/
+}
+.place-deco, .place-map {
+  -moz-transform-origin: center center;
+  -ms-transform-origin: center center;
+  -webkit-transform-origin: center center;
+  transform-origin: center center;
+}
 .place-deco {
   stroke: #333333;
   fill: none;
@@ -323,11 +345,6 @@ body {
 .hover .place-deco {
   stroke: #2963a5;
 }
-
-.place-map image {
-  transition: opacity 400ms;
-}
-
 .place-label {
   fill: #2963a5;
   font-size: 16px;
@@ -346,7 +363,6 @@ body {
   stroke-width: 3;
   stroke: white;
 }
-
 .place-map-background {
   fill: white;
 }

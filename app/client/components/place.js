@@ -20,8 +20,12 @@ class Place extends Component {
     if (node.hover)
       className += ' hover';
 
+    let point = node.point,
+      transform = `translate(${point.x}, ${point.y})`;
+
     return (
       <g style={style}
+         transform={transform}
          data-rank={node.rank}
          className={className}
          onMouseEnter={onHover.bind(this, true)}

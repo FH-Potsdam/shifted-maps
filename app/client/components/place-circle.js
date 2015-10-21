@@ -2,17 +2,14 @@ import React, { Component } from 'react';
 
 class PlaceCircle extends Component {
   shouldComponentUpdate(nextProps) {
-    let { node } = this.props,
-      nextNode = nextProps.node;
-
-    return node.point !== nextNode.point || node.radius !== nextNode.radius;
+    return this.props.radius !== nextProps.node.radius;
   }
 
   render() {
     let node = this.props.node,
       id = PlaceCircle.createId(node);
 
-    return <circle className="place-circle" cx={node.point.x} cy={node.point.y} r={node.radius} id={id} />;
+    return <circle className="place-circle" cx="0" cy="0" r={node.radius} id={id} />;
   }
 }
 

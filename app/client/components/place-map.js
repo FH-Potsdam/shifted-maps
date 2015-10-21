@@ -6,7 +6,7 @@ class PlaceMap extends Component {
     let { node } = this.props,
       nextNode = nextProps.node;
 
-    return node.radius !== nextNode.radius || node.point !== nextNode.point || node.tile !== nextNode.tile;
+    return node.radius !== nextNode.radius || node.tile !== nextNode.tile;
   }
 
   componentWillUpdate(nextProps) {
@@ -24,8 +24,8 @@ class PlaceMap extends Component {
       size = radius * 2;
 
     let imageProps = {
-      x: point.x - radius,
-      y: point.y - radius,
+      x: -radius,
+      y: -radius,
       width: size,
       height: size
     };
@@ -34,8 +34,8 @@ class PlaceMap extends Component {
       let tileRadius = Math.min(tile.width / 2, tile.height / 2);
 
       imageProps = {
-        x: point.x - tileRadius,
-        y: point.y - tileRadius,
+        x: -tileRadius,
+        y: -tileRadius,
         width: tile.width,
         height: tile.height,
         xlinkHref: tile.url
@@ -45,7 +45,7 @@ class PlaceMap extends Component {
     return (
       <g className="place-map"
          clipPath={clipPath}>
-        <rect className="place-map-background" x={point.x - radius} y={point.y - radius} width={size} height={size} />
+        <rect className="place-map-background" x={-radius} y={-radius} width={size} height={size} />
         <image {...imageProps} />
       </g>
     );

@@ -2,22 +2,16 @@ import React, { Component } from 'react';
 
 class PlaceLabel extends Component {
   shouldComponentUpdate(nextProps) {
-    let node = this.props.node,
-      nextNode = nextProps.node;
-
-    return (node.point !== nextNode.point || node.radius !== nextNode.radius || node.strokeWidth !== nextNode.strokeWidth);
+    return this.props.node.radius !== nextProps.node.radius;
   }
 
   render() {
-    let node = this.props.node,
-      { x, y } = node.point;
-
-    y += node.radius;
+    let { node } = this.props;
 
     return (
       <g className="place-label">
-        <text x={x} y={y} className="place-label-stroke">{node.name}</text>
-        <text x={x} y={y}>{node.name}</text>
+        <text x="0" y={node.radius} className="place-label-stroke">{node.name}</text>
+        <text x="0" y={node.radius}>{node.name}</text>
       </g>
     );
   }
