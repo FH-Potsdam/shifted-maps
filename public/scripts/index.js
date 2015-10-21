@@ -1523,7 +1523,8 @@ var PlaceMap = (function (_Component) {
         { className: 'place-map',
           clipPath: clipPath },
         _react2['default'].createElement('rect', { className: 'place-map-background', x: -radius, y: -radius, width: size, height: size }),
-        _react2['default'].createElement('image', imageProps)
+        _react2['default'].createElement('image', imageProps),
+        _react2['default'].createElement('circle', { className: 'place-map-dot', r: '3', cx: '0', cy: '0' })
       );
     }
   }]);

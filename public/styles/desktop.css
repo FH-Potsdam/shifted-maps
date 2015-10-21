@@ -366,6 +366,11 @@ body {
 .place-map-background {
   fill: white;
 }
+.place-map-dot {
+  fill: #333333;
+  stroke-width: 2;
+  stroke: white;
+}
 
 .connection-line {
   stroke: #333333;

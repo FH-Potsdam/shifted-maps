@@ -72,6 +72,12 @@
     &-background {
       fill: $background;
     }
+
+    &-dot {
+      fill: $foreground;
+      stroke-width: 2;
+      stroke: $background;
+    }
   }
 
   /*&[data-rank="1"],
