@@ -4076,7 +4076,11 @@ function frequencyView(places, connections, frequencyDomain, beelineRange, done)
 }
 
 function geographicLabel(connection) {
-  return connection.distance + ' m';
+  var distance = connection.distance;
+
+  if (distance >= 1000) distance = Math.round(distance / 1000) + ' km';else distance += 'm';
+
+  return distance;
 }
 
 function durationLabel(connection) {

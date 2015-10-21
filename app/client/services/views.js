@@ -158,7 +158,14 @@ export function frequencyView(places, connections, frequencyDomain, beelineRange
 }
 
 export function geographicLabel(connection) {
-  return connection.distance + ' m';
+  let { distance } = connection;
+
+  if (distance >= 1000)
+    distance = Math.round(distance / 1000) + ' km';
+  else
+    distance += ' m';
+
+  return distance;
 }
 
 export function durationLabel(connection) {
