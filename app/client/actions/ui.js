@@ -3,6 +3,7 @@ import Promise from 'promise';
 import { GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW } from '../models/views';
 import { geographicViewSelector, frequencyViewSelector, durationViewSelector } from '../selectors/views';
 import { uiActiveViewSelector } from '../selectors/ui';
+import { requestTiles } from '../actions/tiles';
 
 export const CHANGE_VIEW = 'CHANGE_VIEW';
 export const SET_LOCATIONS = 'SET_LOCATIONS';
@@ -59,6 +60,7 @@ function computeViewLocations(view) {
 
     viewService(function(error, locations) {
       dispatch({ type: SET_LOCATIONS, view, locations });
+      dispatch(requestTiles());
       dispatch(processViewQueue());
     });
   }
