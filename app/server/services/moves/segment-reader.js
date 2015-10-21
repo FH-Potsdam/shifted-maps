@@ -23,11 +23,11 @@ MovesSegmentReader.prototype._init = function() {
   this._months = moment().diff(this._firstDate, 'month');
   this._query = { updatedSince: MovesAPI.formatDate(this._firstDate) };
 
-  this._initRequest(0);
+  this._initRequest(this._months);
 };
 
 MovesSegmentReader.prototype._initRequest = function(months) {
-  if (this._destroyed || months >= this._months)
+  if (this._destroyed || months < 0)
     return this.push(null);
 
   var reader = this,
@@ -52,7 +52,7 @@ MovesSegmentReader.prototype._handleRequest = function(months, request) {
       reader.push(segment);
     })
     .done(function() {
-      reader._initRequest(months + 1);
+      reader._initRequest(months - 1);
     })
     .fail(function(error) {
       reader.emit('error', error.thrown || error);
