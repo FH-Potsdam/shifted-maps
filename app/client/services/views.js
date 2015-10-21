@@ -1,6 +1,7 @@
 import { Map } from 'immutable';
 import d3 from 'd3';
 import _ from 'lodash';
+import moment from 'moment';
 
 function createNodeArray(places) {
   var lastPlace = places.last();
@@ -154,4 +155,16 @@ export function frequencyView(places, connections, frequencyDomain, beelineRange
   computeLocations(places, connections, linkStrength, linkDistance, function(error, locations) {
     done(null, locations);
   });
+}
+
+export function geographicLabel(connection) {
+  return connection.distance + ' m';
+}
+
+export function durationLabel(connection) {
+  return moment.duration(connection.duration, 'seconds').humanize();
+}
+
+export function frequencyLabel(connection) {
+  return connection.frequency + ' ×';
 }

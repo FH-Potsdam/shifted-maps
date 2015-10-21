@@ -52,22 +52,44 @@
   font-style: italic;
   display: none;
 
+  text {
+    text-anchor: middle;
+  }
+
   .hover & {
     display: block;
   }
 
   &-stroke {
-    stroke-width: 1;
+    stroke-width: 3;
     stroke: $background;
   }
 }
 
 .place-map-background {
-  fill: $foreground;
+  fill: $background;
 }
 
 .connection {
-  stroke: $foreground;
+  &-line {
+    stroke: $foreground;
+  }
+
+  &-label {
+    font-family: "soleil", sans-serif;
+    font-style: italic;
+    font-size: $font-size-small;
+
+    text {
+      text-anchor: middle;
+      alignment-baseline: middle;
+    }
+
+    &-stroke {
+      stroke-width: 3;
+      stroke: $background;
+    }
+  }
 }
 
 .scale-list {

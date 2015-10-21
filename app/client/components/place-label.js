@@ -12,12 +12,12 @@ class PlaceLabel extends Component {
     let node = this.props.node,
       { x, y } = node.point;
 
-    y += node.radius + node.strokeWidth / 2;
+    y += node.radius;
 
     return (
       <g className="place-label">
-        <text x={x} y={y} textAnchor="middle" className="place-label-stroke">{node.name}</text>
-        <text x={x} y={y} textAnchor="middle">{node.name}</text>
+        <text x={x} y={y} className="place-label-stroke">{node.name}</text>
+        <text x={x} y={y}>{node.name}</text>
       </g>
     );
   }

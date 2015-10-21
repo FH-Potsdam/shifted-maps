@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ConnectionLabel from './connection-label';
 
 class Connection extends Component {
   shouldComponentUpdate(nextProps) {
@@ -16,14 +17,15 @@ class Connection extends Component {
       style.display = 'block';
 
     return (
-      <line style={style}
-            data-rank={edge.rank}
-            x1={edge.fromPoint.get('x')}
-            y1={edge.fromPoint.get('y')}
-            x2={edge.toPoint.get('x')}
-            y2={edge.toPoint.get('y')}
-            strokeWidth={edge.strokeWidth}
-            className="connection" />
+      <g className="connection" style={style} data-rank={edge.rank}>
+        <line x1={edge.fromPoint.get('x')}
+              y1={edge.fromPoint.get('y')}
+              x2={edge.toPoint.get('x')}
+              y2={edge.toPoint.get('y')}
+              strokeWidth={edge.strokeWidth}
+              className="connection-line" />
+        <ConnectionLabel edge={edge} />
+      </g>
     );
   }
 }

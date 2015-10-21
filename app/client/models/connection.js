@@ -14,5 +14,6 @@ export default Record({
   strokeWidth: 0,
   connection: null,
   visible: false,
-  rank: 0
+  rank: 0,
+  label: null
 });

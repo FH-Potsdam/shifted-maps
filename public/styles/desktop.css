@@ -336,20 +336,36 @@ body {
   font-style: italic;
   display: none;
 }
+.place-label text {
+  text-anchor: middle;
+}
 .hover .place-label {
   display: block;
 }
 .place-label-stroke {
-  stroke-width: 1;
+  stroke-width: 3;
   stroke: white;
 }
 
 .place-map-background {
-  fill: #333333;
+  fill: white;
 }
 
-.connection {
+.connection-line {
   stroke: #333333;
+}
+.connection-label {
+  font-family: "soleil", sans-serif;
+  font-style: italic;
+  font-size: 14px;
+}
+.connection-label text {
+  text-anchor: middle;
+  alignment-baseline: middle;
+}
+.connection-label-stroke {
+  stroke-width: 3;
+  stroke: white;
 }
 
 .scale-list {

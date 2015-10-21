@@ -5,7 +5,8 @@ import { createSelector } from 'reselect';
 import placesSelector, { filteredPlacesSelector, positionedPlacesSelector } from './places';
 import { connectionStrokeWidthRangeScaleSelector } from './scales';
 import { visBoundsSelector, visScaleSelector } from './vis';
-import { uiTimeSpanSelector } from './ui';
+import { uiTimeSpanSelector, uiActiveViewSelector } from './ui';
+import { CONNECTION_LABEL_SERVICES } from '../models/views';
 
 function computeBeeline(from, to) {
   let fromLat = from.lat + 180,
@@ -107,6 +108,15 @@ function scaleConnections(connections, strokeWidthScale) {
   });
 }
 
+function labelConnection(connections, uiActiveView) {
+  if (uiActiveView == null)
+    return connections;
+
+  return connections.map(function(connection) {
+    return connection.set('label', CONNECTION_LABEL_SERVICES[uiActiveView](connection));
+  });
+}
+
 function positionConnections(connections, places) {
   return connections.map(function(connection) {
     let from = places.get(connection.from),
@@ -196,9 +206,17 @@ export const scaledConnectionsSelector = createSelector(
   scaleConnections
 );
 
-export const positionedConnectionSelector = createSelector(
+export const labeledConnectionsSelector = createSelector(
   [
     scaledConnectionsSelector,
+    uiActiveViewSelector
+  ],
+  labelConnection
+);
+
+export const positionedConnectionSelector = createSelector(
+  [
+    labeledConnectionsSelector,
     positionedPlacesSelector
   ],
   positionConnections
