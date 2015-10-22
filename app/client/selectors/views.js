@@ -6,6 +6,20 @@ import { filteredConnectionsSelector, connectionFrequencyDomainSelector, connect
 import { geographicView, frequencyView, durationView } from '../services/views';
 
 function computeBeelineRange(connections) {
+  let minBeeline = Infinity,
+    maxBeeline = -Infinity
+
+  connections.forEach(function(connection) {
+    let { beeline } = connection;
+
+    minBeeline = Math.min(minBeeline, beeline);
+    maxBeeline = Math.max(maxBeeline, beeline);
+  });
+
+  return [ minBeeline, maxBeeline ];
+}
+
+function computeNormalizedBeelineRange(connections) {
   let groupedBeelines = _.chain(connections.toJS())
     .groupBy(function(connection) {
       return Math.round(connection.beeline * 100) / 100;
@@ -44,6 +58,13 @@ const beelineDomainSelector = createSelector(
   computeBeelineRange
 );
 
+const normalizedBeelineDomainSelector = createSelector(
+  [
+    filteredConnectionsSelector
+  ],
+  computeNormalizedBeelineRange
+);
+
 export const geographicViewSelector = createSelector(
   [
     scaledPlacesSelector,
@@ -61,7 +82,7 @@ export const frequencyViewSelector = createSelector(
     scaledPlacesSelector,
     filteredConnectionsSelector,
     connectionFrequencyDomainSelector,
-    beelineDomainSelector
+    normalizedBeelineDomainSelector
   ],
   function(places, connections, connectionFrequencyDomain, beelineRange) {
     return partial(frequencyView, places, connections, connectionFrequencyDomain, beelineRange);

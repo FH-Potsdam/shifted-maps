@@ -3752,6 +3752,20 @@ var _connections = require('./connections');
 var _servicesViews = require('../services/views');
 
 function computeBeelineRange(connections) {
+  var minBeeline = Infinity,
+      maxBeeline = -Infinity;
+
+  connections.forEach(function (connection) {
+    var beeline = connection.beeline;
+
+    minBeeline = Math.min(minBeeline, beeline);
+    maxBeeline = Math.max(maxBeeline, beeline);
+  });
+
+  return [minBeeline, maxBeeline];
+}
+
+function computeNormalizedBeelineRange(connections) {
   var groupedBeelines = _lodash2['default'].chain(connections.toJS()).groupBy(function (connection) {
     return Math.round(connection.beeline * 100) / 100;
   }).groupBy('length').mapValues(function (connections) {
@@ -3777,12 +3791,14 @@ function computeBeelineRange(connections) {
 
 var beelineDomainSelector = (0, _reselect.createSelector)([_connections.filteredConnectionsSelector], computeBeelineRange);
 
+var normalizedBeelineDomainSelector = (0, _reselect.createSelector)([_connections.filteredConnectionsSelector], computeNormalizedBeelineRange);
+
 var geographicViewSelector = (0, _reselect.createSelector)([_places.scaledPlacesSelector, _connections.filteredConnectionsSelector, _connections.connectionDistanceDomainSelector, beelineDomainSelector], function (places, connections, connectionDistanceDomain, beelineRange) {
   return (0, _moutFunctionPartial2['default'])(_servicesViews.geographicView, places, connections, connectionDistanceDomain, beelineRange);
 });
 
 exports.geographicViewSelector = geographicViewSelector;
-var frequencyViewSelector = (0, _reselect.createSelector)([_places.scaledPlacesSelector, _connections.filteredConnectionsSelector, _connections.connectionFrequencyDomainSelector, beelineDomainSelector], function (places, connections, connectionFrequencyDomain, beelineRange) {
+var frequencyViewSelector = (0, _reselect.createSelector)([_places.scaledPlacesSelector, _connections.filteredConnectionsSelector, _connections.connectionFrequencyDomainSelector, normalizedBeelineDomainSelector], function (places, connections, connectionFrequencyDomain, beelineRange) {
   return (0, _moutFunctionPartial2['default'])(_servicesViews.frequencyView, places, connections, connectionFrequencyDomain, beelineRange);
 });
 
