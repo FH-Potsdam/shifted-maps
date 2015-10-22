@@ -179,12 +179,16 @@ class Thumb extends Component {
       left = event.pageX - offset.left,
       top = event.pageY - offset.top;
 
+    this.$element.addClass('active');
+
     let onMouseMove = event => {
       this.onMove(event.clientX - left, event.clientY - top);
     };
 
     let onMouseUp = event => {
       event.preventDefault();
+
+      this.$element.removeClass('active');
 
       $(window).off('mousemove', onMouseMove);
     };

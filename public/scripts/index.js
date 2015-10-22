@@ -2036,12 +2036,16 @@ var Thumb = (function (_Component2) {
           left = event.pageX - offset.left,
           top = event.pageY - offset.top;
 
+      this.$element.addClass('active');
+
       var onMouseMove = function onMouseMove(event) {
         _this2.onMove(event.clientX - left, event.clientY - top);
       };
 
       var onMouseUp = function onMouseUp(event) {
         event.preventDefault();
+
+        _this2.$element.removeClass('active');
 
         (0, _jquery2['default'])(window).off('mousemove', onMouseMove);
       };

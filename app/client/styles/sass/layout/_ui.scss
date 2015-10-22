@@ -109,7 +109,8 @@ $button-size: $base-spacing-unit * 1.75;
     z-index: 1;
     cursor: pointer;
 
-    &:hover {
+    &:hover,
+    &.active {
       @include transform(scale(1.25));
       background-color: $highlight;
     }
