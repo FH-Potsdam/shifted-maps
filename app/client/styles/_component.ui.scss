@@ -1,4 +1,4 @@
-$button-size: $base-spacing-unit * 1.75;
+$button-size: $base-spacing-unit * 2;
 
 .ui {
   position: absolute;
@@ -8,7 +8,7 @@ $button-size: $base-spacing-unit * 1.75;
   padding: $base-spacing-unit;
   padding-bottom: $base-spacing-unit * 1.5;
   text-align: center;
-  width: $base-spacing-unit * 11;
+  width: $base-spacing-unit * 13;
 
   h1 {
     font-size: $font-size-big;
@@ -28,7 +28,6 @@ $button-size: $base-spacing-unit * 1.75;
   }
 
   &__try-own-data {
-    font-size: $font-size-medium;
     font-style: italic;
     padding-top: $base-spacing-unit / 2;
     text-align: left;
@@ -39,6 +38,7 @@ $button-size: $base-spacing-unit * 1.75;
       float: right;
       padding-top: $base-font-size / 4;
       margin-left: $base-spacing-unit;
+      line-height: $base-line-height * 2;
     }
   }
 }
@@ -61,6 +61,7 @@ $button-size: $base-spacing-unit * 1.75;
     overflow: hidden;
     width: $button-size;
     height: $button-size;
+    line-height: 2rem;
 
     &.active,
     &:hover {
@@ -74,8 +75,8 @@ $button-size: $base-spacing-unit * 1.75;
 }
 
 .time-slider {
-  $thumb-size: floor($base-spacing-unit / 3);
-  $track-height: $base-spacing-unit--thin / 2;
+  $thumb-size: $base-spacing-unit / 2;
+  $track-height: $base-spacing-unit--thin;
 
   margin-right: $thumb-size;
   position: relative;
@@ -116,10 +117,9 @@ $button-size: $base-spacing-unit * 1.75;
 
 .time-range {
   font-style: italic;
-  line-height: $base-font-size;
   display: inline-block;
   width: 100%;
-  margin-top: $base-spacing-unit / 2;
+  margin-top: $base-spacing-unit;
 
   strong {
     text-transform: uppercase;

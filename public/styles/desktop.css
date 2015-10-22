@@ -655,7 +655,7 @@ h1 + p {
   padding: 1rem;
   padding-bottom: 1.5rem;
   text-align: center;
-  width: 11rem;
+  width: 13rem;
 }
 .ui h1 {
   font-size: 1.25rem;
@@ -673,17 +673,17 @@ h1 + p {
   text-decoration: none;
 }
 .ui__try-own-data {
-  font-size: 1.125rem;
   font-style: italic;
   padding-top: 0.5rem;
   text-align: left;
   display: block;
 }
 .ui__try-own-data .icon {
-  font-size: 1.75rem;
+  font-size: 2rem;
   float: right;
   padding-top: 0.25rem;
   margin-left: 1rem;
+  line-height: 2rem;
 }
 
 .view-list {
@@ -702,11 +702,12 @@ h1 + p {
   background-color: transparent;
   color: #333333;
   padding: 0;
-  font-size: 1.75rem;
+  font-size: 2rem;
   outline: none;
   overflow: hidden;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
 }
 .view-list__button.active, .view-list__button:hover {
   color: #2963a5;
@@ -716,20 +717,20 @@ h1 + p {
 }
 
 .time-slider {
-  margin-right: 0rem;
+  margin-right: 0.5rem;
   position: relative;
   margin-top: 1rem;
 }
 .time-slider__track {
   position: absolute;
   z-index: 0;
-  height: 0.04545rem;
+  height: 0.0909rem;
   top: 0;
   background-color: #333333;
   left: 0;
-  right: 0rem;
-  border-radius: 0.04545rem;
-  margin: -0.02273rem 0;
+  right: -0.5rem;
+  border-radius: 0.0909rem;
+  margin: 0.20455rem 0;
 }
 .time-slider__thumb {
   -moz-transition: background-color 200ms, -moz-transform 200ms;
@@ -739,9 +740,9 @@ h1 + p {
   position: absolute;
   top: 0;
   right: 100%;
-  height: 0rem;
-  width: 0rem;
-  border-radius: 0rem;
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 0.5rem;
   background-color: #333333;
   z-index: 1;
   cursor: pointer;
@@ -756,10 +757,9 @@ h1 + p {
 
 .time-range {
   font-style: italic;
-  line-height: 1rem;
   display: inline-block;
   width: 100%;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 .time-range strong {
   text-transform: uppercase;
