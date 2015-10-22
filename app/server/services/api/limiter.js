@@ -12,8 +12,8 @@ function Limiter(placeLimit) {
 util.inherits(Limiter, Transform);
 
 Limiter.prototype._transform = function(object, encoding, callback) {
-  if (object instanceof Place && this._pushedPlaces.indexOf(object) === -1) {
-    this._pushedPlaces.push(object);
+  if (object instanceof Place && this._pushedPlaces.indexOf(object.id) === -1) {
+    this._pushedPlaces.push(object.id);
 
     if (this._pushedPlaces.length > this._placeLimit)
       return this.push(null);
