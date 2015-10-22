@@ -2,7 +2,6 @@ var express = require('express'),
   cookieParser = require('cookie-parser'),
   session = require('express-session'),
   helmet = require('helmet'),
-  templating = require('./nunjucks-env'),
   auth = require('./routes/auth'),
   map = require('./routes/map'),
   api = require('./routes/api'),
@@ -14,9 +13,8 @@ var express = require('express'),
 var app = express();
 
 app.set('debug', app.get('env') == 'development');
-
-// Templating
-templating.express(app);
+app.set('views', __dirname + '/templates')
+app.set('view engine', 'jade');
 
 // Server middlewares
 app.use(helmet());

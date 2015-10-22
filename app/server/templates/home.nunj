@@ -1,9 +1,0 @@
-{% extends './base.nunj' %}
-
-{% block content %}
-    <div class="page">
-        <div class="page-content">
-            <p><a href="/map">Authorize via Moves</a></p>
-        </div>
-    </div>
-{% endblock %}
