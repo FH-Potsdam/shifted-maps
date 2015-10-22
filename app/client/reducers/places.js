@@ -28,6 +28,6 @@ export default function places(state = Map(), action) {
       return state;
 
     default:
-      return state
+      return state;
   }
 }

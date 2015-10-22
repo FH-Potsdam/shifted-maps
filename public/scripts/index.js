@@ -175,6 +175,8 @@ function requestStoryline() {
 
 function setStoryline(places, trips, stays) {
   return function (dispatch) {
+    console.log('Places: ' + places.length + ', Trips: ' + trips.length + ', Stays: ' + stays.length);
+
     dispatch({ type: SET_STORYLINE, places: places, trips: trips, stays: stays });
     dispatch((0, _tiles.requestTiles)());
     dispatch((0, _places.fitPlaces)());

@@ -74,6 +74,8 @@ export function requestStoryline() {
 
 export function setStoryline(places, trips, stays) {
   return function(dispatch) {
+    console.log(`Places: ${places.length}, Trips: ${trips.length}, Stays: ${stays.length}`);
+
     dispatch({ type: SET_STORYLINE, places, trips, stays});
     dispatch(requestTiles());
     dispatch(fitPlaces());
