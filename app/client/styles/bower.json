@@ -1,0 +1,7 @@
+{
+  "name": "shifted-maps-styles",
+  "dependencies": {
+    "inuit-layout": "~0.3.2",
+    "inuit-widths": "~0.4.2"
+  }
+}

@@ -1,0 +1,140 @@
+$button-size: $base-spacing-unit * 1.75;
+
+.ui {
+  position: absolute;
+  background-color: rgba($background, .9);
+  top: $base-spacing-unit;
+  left: $base-spacing-unit;
+  padding: $base-spacing-unit;
+  padding-bottom: $base-spacing-unit * 1.5;
+  text-align: center;
+  width: $base-spacing-unit * 11;
+
+  h1 {
+    font-size: $font-size-big;
+    text-transform: uppercase;
+    margin: 0;
+    margin-top: $base-spacing-unit / 2;
+    text-align: left;
+  }
+
+  &__info {
+    color: $foreground;
+    position: absolute;
+    top: $base-spacing-unit / 2;
+    right: $base-spacing-unit / 2;
+    font-size: $font-size-big;
+    text-decoration: none;
+  }
+
+  &__try-own-data {
+    font-size: $font-size-medium;
+    font-style: italic;
+    padding-top: $base-spacing-unit / 2;
+    text-align: left;
+    display: block;
+
+    .icon {
+      font-size: $button-size;
+      float: right;
+      padding-top: $base-font-size / 4;
+      margin-left: $base-spacing-unit;
+    }
+  }
+}
+
+.view-list {
+  display: inline-block;
+  margin-top: $base-spacing-unit * 3;
+
+  &__button {
+    @include transition(color $short-transition-duration);
+    display: block;
+    text-align: center;
+    float: left;
+    border: 0;
+    background-color: transparent;
+    color: $foreground;
+    padding: 0;
+    font-size: $button-size;
+    outline: none;
+    overflow: hidden;
+    width: $button-size;
+    height: $button-size;
+
+    &.active,
+    &:hover {
+      color: $highlight;
+    }
+  }
+
+  &__button + &__button {
+    margin-left: $base-spacing-unit * 1.25;
+  }
+}
+
+.time-slider {
+  $thumb-size: floor($base-spacing-unit / 3);
+  $track-height: $base-spacing-unit--thin / 2;
+
+  margin-right: $thumb-size;
+  position: relative;
+  margin-top: $base-spacing-unit;
+
+  &__track {
+    position: absolute;
+    z-index: 0;
+    height: $track-height;
+    top: 0;
+    background-color: $foreground;
+    left: 0;
+    right: -$thumb-size;
+    border-radius: $track-height;
+    margin: (($thumb-size - $track-height) / 2) 0;
+  }
+
+  &__thumb {
+    @include transition(background-color $short-transition-duration,
+      transform $short-transition-duration);
+    position: absolute;
+    top: 0;
+    right: 100%;
+    height: $thumb-size;
+    width: $thumb-size;
+    border-radius: $thumb-size;
+    background-color: $foreground;
+    z-index: 1;
+    cursor: pointer;
+
+    &:hover,
+    &.active {
+      @include transform(scale(1.25));
+      background-color: $highlight;
+    }
+  }
+}
+
+.time-range {
+  font-style: italic;
+  line-height: $base-font-size;
+  display: inline-block;
+  width: 100%;
+  margin-top: $base-spacing-unit / 2;
+
+  strong {
+    text-transform: uppercase;
+    display: block;
+    font-style: normal;
+    font-size: $font-size-small;
+  }
+
+  &__start {
+    float: left;
+    text-align: left;
+  }
+
+  &__end {
+    float: right;
+    text-align: right;
+  }
+}

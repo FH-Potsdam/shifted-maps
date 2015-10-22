@@ -1,3 +1,8 @@
+/*!
+ * inuitcss, by @csswizardry
+ *
+ * github.com/inuitcss | inuitcss.com
+ */
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 html {
   font-family: sans-serif;
@@ -219,8 +224,19 @@ th {
   padding: 0;
 }
 
+body {
+  font-family: "soleil", sans-serif;
+  font-size: 16px;
+  color: #333333;
+}
+
 * {
   box-sizing: border-box;
+}
+
+body,
+html {
+  height: 100%;
 }
 
 a {
@@ -233,6 +249,74 @@ a {
 }
 a:hover {
   color: #2963a5;
+}
+
+h1, h2, h3 {
+  color: #2963a5;
+  margin: 0;
+}
+
+h1 {
+  text-transform: uppercase;
+}
+
+p {
+  margin: 0;
+}
+p + p {
+  margin-top: 1rem;
+}
+
+.lede {
+  font-style: italic;
+  font-size: 1.25rem;
+}
+
+h1 + p {
+  margin-top: 1rem;
+}
+
+/*------------------------------------*\
+    #LAYOUT
+\*------------------------------------*/
+/**
+ * The inuitcss layout system uses `box-sizing: border-box;` and
+ * `display: inline-block;` to create an extremely powerful, flexible
+ * alternative to the traditional grid system. Combine the layout items with
+ * the widths found in `trumps.widths`.
+ */
+/**
+ * Begin a layout group.
+ */
+.layout {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-left: -24px;
+}
+
+/**
+ * 1. Cause columns to stack side-by-side.
+ * 2. Space columns apart.
+ * 3. Align columns to the tops of each other.
+ * 4. Full-width unless told to behave otherwise.
+ * 5. Required to combine fluid widths and fixed gutters.
+ */
+.layout__item {
+  display: inline-block;
+  /* [1] */
+  padding-left: 24px;
+  /* [2] */
+  vertical-align: top;
+  /* [3] */
+  width: 100%;
+  /* [4] */
+  -webkit-box-sizing: border-box;
+  /* [5] */
+  -moz-box-sizing: border-box;
+  /* [5] */
+  box-sizing: border-box;
+  /* [5] */
 }
 
 @font-face {
@@ -275,15 +359,84 @@ a:hover {
   content: "\e804";
 }
 
-body {
-  font-family: "soleil", sans-serif;
-  font-size: 16px;
-  line-height: 22px;
-  color: #333333;
+.hero {
+  position: absolute;
+  width: 20rem;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  top: 0;
+  right: 0;
+  padding: 2rem;
+  padding-top: 3rem;
+}
+.hero h1 {
+  font-size: 2rem;
+}
+.hero__section + .hero__section {
+  margin-top: 1rem;
+}
+.hero__highlight {
+  margin-top: 2rem;
+}
+.hero__credits {
+  font-size: 0.75rem;
+  font-style: italic;
+  opacity: .75;
+}
+.hero__go {
+  display: block;
+  line-height: 2rem;
+}
+.hero__go .icon {
+  font-size: 2rem;
+  vertical-align: middle;
+  margin-left: 1rem;
+  float: right;
+}
+.hero__go + .hero__go {
+  margin-top: 1rem;
+}
+.hero__download {
+  display: block;
+}
+.hero__download .icon {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.hero__download .icon:before {
+  display: inline-block;
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+.hero__download em {
+  display: block;
+  font-size: 0.75rem;
+}
+.hero__bottom {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  padding: 2rem;
+}
+.hero__logo {
+  height: 65px;
 }
 
-.page-content {
-  padding: 20px;
+.screencast {
+  position: absolute;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+}
+.screencast video {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  background-color: #2963a5;
 }
 
 .app-map {
@@ -292,10 +445,10 @@ body {
 .app-ui {
   z-index: 1;
   position: absolute;
-  bottom: 66px;
+  bottom: 3rem;
   left: 0;
   width: 100%;
-  padding: 22px;
+  padding: 1rem;
   box-sizing: border-box;
 }
 
@@ -322,10 +475,10 @@ body {
   opacity: 1;
 }
 .app-map .leaflet-right .leaflet-control-zoom {
-  margin-right: 22px;
+  margin-right: 1rem;
 }
 .app-map .leaflet-bottom .leaflet-control-zoom {
-  margin-bottom: 22px;
+  margin-bottom: 1rem;
 }
 
 .place {
@@ -359,7 +512,7 @@ body {
 }
 .place-label {
   fill: #2963a5;
-  font-size: 16px;
+  font-size: 1rem;
   transform: translate(0, 20px);
   font-family: "soleil", sans-serif;
   font-style: italic;
@@ -390,7 +543,7 @@ body {
 .connection-label {
   font-family: "soleil", sans-serif;
   font-style: italic;
-  font-size: 14px;
+  font-size: 0.75rem;
   display: none;
 }
 .connection-label text {
@@ -497,48 +650,45 @@ body {
 .ui {
   position: absolute;
   background-color: rgba(255, 255, 255, 0.9);
-  top: 22px;
-  left: 22px;
-  padding: 22px;
-  padding-bottom: 33px;
+  top: 1rem;
+  left: 1rem;
+  padding: 1rem;
+  padding-bottom: 1.5rem;
   text-align: center;
-  width: 242px;
+  width: 11rem;
 }
 .ui h1 {
-  font-size: 24px;
+  font-size: 1.25rem;
   text-transform: uppercase;
   margin: 0;
-  margin-top: 11px;
+  margin-top: 0.5rem;
   text-align: left;
 }
 .ui__info {
   color: #333333;
   position: absolute;
-  top: 11px;
-  right: 11px;
-  font-size: 24px;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 1.25rem;
   text-decoration: none;
 }
 .ui__try-own-data {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-style: italic;
-  padding-top: 11px;
+  padding-top: 0.5rem;
   text-align: left;
   display: block;
 }
 .ui__try-own-data .icon {
-  font-size: 38.5px;
+  font-size: 1.75rem;
   float: right;
-  padding-top: 4px;
-  margin-left: 22px;
+  padding-top: 0.25rem;
+  margin-left: 1rem;
 }
 
 .view-list {
-  /*position: absolute;
-  top: $base-spacing-unit;
-  right: $base-spacing-unit;*/
   display: inline-block;
-  margin-top: 66px;
+  margin-top: 3rem;
 }
 .view-list__button {
   -moz-transition: color 200ms;
@@ -552,34 +702,34 @@ body {
   background-color: transparent;
   color: #333333;
   padding: 0;
-  font-size: 38.5px;
+  font-size: 1.75rem;
   outline: none;
   overflow: hidden;
-  width: 38.5px;
-  height: 38.5px;
+  width: 1.75rem;
+  height: 1.75rem;
 }
 .view-list__button.active, .view-list__button:hover {
   color: #2963a5;
 }
 .view-list__button + .view-list__button {
-  margin-left: 27.5px;
+  margin-left: 1.25rem;
 }
 
 .time-slider {
-  margin-right: 7px;
+  margin-right: 0rem;
   position: relative;
-  margin-top: 22px;
+  margin-top: 1rem;
 }
 .time-slider__track {
   position: absolute;
   z-index: 0;
-  height: 1px;
+  height: 0.04545rem;
   top: 0;
   background-color: #333333;
   left: 0;
-  right: -7px;
-  border-radius: 1px;
-  margin: 3px 0;
+  right: 0rem;
+  border-radius: 0.04545rem;
+  margin: -0.02273rem 0;
 }
 .time-slider__thumb {
   -moz-transition: background-color 200ms, -moz-transform 200ms;
@@ -589,9 +739,9 @@ body {
   position: absolute;
   top: 0;
   right: 100%;
-  height: 7px;
-  width: 7px;
-  border-radius: 7px;
+  height: 0rem;
+  width: 0rem;
+  border-radius: 0rem;
   background-color: #333333;
   z-index: 1;
   cursor: pointer;
@@ -606,16 +756,16 @@ body {
 
 .time-range {
   font-style: italic;
-  line-height: 16px;
+  line-height: 1rem;
   display: inline-block;
   width: 100%;
-  margin-top: 11px;
+  margin-top: 0.5rem;
 }
 .time-range strong {
   text-transform: uppercase;
   display: block;
   font-style: normal;
-  font-size: 14px;
+  font-size: 0.75rem;
 }
 .time-range__start {
   float: left;
@@ -624,4 +774,58 @@ body {
 .time-range__end {
   float: right;
   text-align: right;
+}
+
+/*------------------------------------*\
+    #WIDTHS
+\*------------------------------------*/
+/**
+ * A series of width helper classes that you can use to size things like grid
+ * systems. Classes can take a fraction-like format (e.g. `.u-2/3`) or a spoken-
+ * word format (e.g. `.u-2-of-3`). Use these in your markup:
+ *
+ * <div class="u-7/12">
+ */
+.u-1-of-1 {
+  width: 100% !important;
+}
+
+.u-1-of-2 {
+  width: 50% !important;
+}
+
+.u-1-of-3 {
+  width: 33.33333% !important;
+}
+
+.u-2-of-3 {
+  width: 66.66667% !important;
+}
+
+.u-1-of-4 {
+  width: 25% !important;
+}
+
+.u-2-of-4 {
+  width: 50% !important;
+}
+
+.u-3-of-4 {
+  width: 75% !important;
+}
+
+.u-1-of-5 {
+  width: 20% !important;
+}
+
+.u-2-of-5 {
+  width: 40% !important;
+}
+
+.u-3-of-5 {
+  width: 60% !important;
+}
+
+.u-4-of-5 {
+  width: 80% !important;
 }

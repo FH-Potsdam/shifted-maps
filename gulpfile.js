@@ -38,7 +38,8 @@ gulp.task('compass', function() {
   return gulp.src(['app/client/styles/**/*.scss', '!app/client/styles/**/_*.scss'])
     .pipe(compass({
       project: path.join(__dirname, 'app/client/styles/'),
-      css: path.join(__dirname, 'public/styles')
+      css: path.join(__dirname, 'public/styles'),
+      sass: path.join(__dirname, 'app/client/styles/')
     }))
     .on('error', swallowError)
     .pipe(gulp.dest('public/styles'))

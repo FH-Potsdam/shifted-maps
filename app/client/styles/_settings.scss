@@ -1,0 +1,23 @@
+// Layout
+$base-spacing-unit: 1rem; // = $base-font-size
+$base-spacing-unit--thin: .0909rem;
+
+// Typography
+$base-font-size: $base-spacing-unit;
+$font-size-hero: $base-spacing-unit * 2;
+$font-size-big: $base-spacing-unit * 1.25;
+$font-size-medium: $base-spacing-unit * 1.125;
+$font-size-small: $base-spacing-unit * 0.75;
+
+// Colors
+$background: white;
+$foreground: #333333;
+$highlight: #2963a5;
+
+// Timing
+$base-transition-duration: 400ms;
+$short-transition-duration: 200ms;
+
+// Inuit
+$inuit-widths-columns: 1, 2, 3, 4, 5;
+$inuit-use-fractions: false;

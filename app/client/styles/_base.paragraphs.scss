@@ -1,0 +1,16 @@
+p {
+  margin: 0;
+
+  & + & {
+    margin-top: $base-spacing-unit;
+  }
+}
+
+.lede {
+  font-style: italic;
+  font-size: $font-size-big;
+}
+
+h1 + p {
+  margin-top: $base-spacing-unit;
+}

@@ -1,0 +1,6 @@
+{
+  "name": "shifted-maps",
+  "dependencies": {
+    "video.js": "video-js#~5.0.0"
+  }
+}
