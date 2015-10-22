@@ -8,7 +8,7 @@ config.moves.token_info_url = config.moves.oauth_url + '/tokeninfo';
 
 config.mapbox.api_url = 'http://api.tiles.mapbox.com/v4';
 
-config.api = { place_limit: 300 };
+config.api = { place_limit: 150 };
 config.session.store_ttl = 60 * 60 * 24;
 
 module.exports = config;
