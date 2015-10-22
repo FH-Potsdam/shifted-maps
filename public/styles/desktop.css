@@ -582,6 +582,10 @@ body {
   margin: 3px 0;
 }
 .time-slider__thumb {
+  -moz-transition: background-color 200ms, -moz-transform 200ms;
+  -o-transition: background-color 200ms, -o-transform 200ms;
+  -webkit-transition: background-color 200ms, -webkit-transform 200ms;
+  transition: background-color 200ms, transform 200ms;
   position: absolute;
   top: 0;
   right: 100%;
@@ -590,6 +594,14 @@ body {
   border-radius: 7px;
   background-color: #333333;
   z-index: 1;
+  cursor: pointer;
+}
+.time-slider__thumb:hover {
+  -moz-transform: scale(1.25);
+  -ms-transform: scale(1.25);
+  -webkit-transform: scale(1.25);
+  transform: scale(1.25);
+  background-color: #2963a5;
 }
 
 .time-range {

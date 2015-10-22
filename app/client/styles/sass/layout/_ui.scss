@@ -97,6 +97,8 @@ $button-size: $base-spacing-unit * 1.75;
   }
 
   &__thumb {
+    @include transition(background-color $short-transition-duration,
+      transform $short-transition-duration);
     position: absolute;
     top: 0;
     right: 100%;
@@ -105,6 +107,12 @@ $button-size: $base-spacing-unit * 1.75;
     border-radius: $thumb-size;
     background-color: $foreground;
     z-index: 1;
+    cursor: pointer;
+
+    &:hover {
+      @include transform(scale(1.25));
+      background-color: $highlight;
+    }
   }
 }
 
