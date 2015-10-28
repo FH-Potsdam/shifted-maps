@@ -27,7 +27,7 @@ class UI extends Component {
       timeRange = <TimeRange range={ui.get('timeSpan')} />
     }
 
-    if (ui.get('demo'))
+    if (!ui.get('authorized'))
       tryOwnData = <TryOwnData />;
 
     // @TODO add disabled and active state

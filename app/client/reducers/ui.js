@@ -1,7 +1,13 @@
 import { Map } from 'immutable';
 import { SET_STORYLINE } from '../actions/storyline';
-import { CHANGE_TIME_SPAN, CHANGE_VIEW, SET_LOCATIONS, HOVER_PLACE, DEMO } from '../actions/ui';
+import { CHANGE_TIME_SPAN, CHANGE_VIEW, SET_LOCATIONS, HOVER_PLACE } from '../actions/ui';
 import { GEOGRAPHIC_VIEW } from '../models/views';
+
+const DEFAULT_STATE = Map({
+  authorized: ENV.authorized,
+  placeLimit: ENV.place_limit,
+  loaded: false
+});
 
 function setStoryline(state, action) {
   let { stays } = action,
@@ -21,6 +27,7 @@ function setStoryline(state, action) {
   let range = [timeSpanStart, timeSpanEnd];
 
   return state.withMutations(function(state) {
+    state.set('loaded', true);
     state.set('timeSpanRange', range);
     state.set('timeSpan', range);
     state.set('timeSpanStep', day);
@@ -54,11 +61,7 @@ function setHoveredPlace(state, action) {
   });
 }
 
-function setDemo(state, action) {
-  return state.set('demo', action.demo);
-}
-
-export default function ui(state = Map(), action) {
+export default function ui(state = DEFAULT_STATE, action) {
   switch (action.type) {
     case SET_STORYLINE:
       return setStoryline(state, action);
@@ -74,9 +77,6 @@ export default function ui(state = Map(), action) {
 
     case HOVER_PLACE:
       return setHoveredPlace(state, action);
-
-    case DEMO:
-      return setDemo(state, action);
 
     default:
       return state;

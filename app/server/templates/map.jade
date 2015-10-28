@@ -8,4 +8,5 @@ append scripts
     script(src="/scripts/index.js")
 
 block content
+    script var ENV = !{JSON.stringify(env)};
     #app

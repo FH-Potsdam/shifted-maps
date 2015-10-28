@@ -14,10 +14,6 @@ var router = express.Router(),
   limiter = new MovesLimiter(),
   demoPath = path.resolve(__dirname + '/../data/demo.json');
 
-router.get('/demo', function(req, res) {
-  res.json(req.user == null);
-});
-
 // HTTP Caching for API requests
 router.get('/', function(req, res, next) {
   if (req.user == null)

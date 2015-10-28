@@ -5,7 +5,6 @@ import { geographicViewSelector, frequencyViewSelector, durationViewSelector } f
 import { uiActiveViewSelector } from '../selectors/ui';
 import { requestTiles } from '../actions/tiles';
 
-export const DEMO = 'DEMO';
 export const CHANGE_VIEW = 'CHANGE_VIEW';
 export const SET_LOCATIONS = 'SET_LOCATIONS';
 export const CHANGE_TIME_SPAN = 'CHANGE_TIME_SPAN';
@@ -79,13 +78,4 @@ export function changeTimeSpan(timeSpan) {
 
 export function hoverPlace(placeId, hover) {
   return { type: HOVER_PLACE, placeId, hover };
-}
-
-export function requestIfDemo() {
-  return function(dispatch) {
-    $.ajax('/api/demo')
-      .then(function(demo) {
-        dispatch({ type: DEMO, demo });
-      });
-  }
 }
