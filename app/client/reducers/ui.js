@@ -1,37 +1,41 @@
 import { Map } from 'immutable';
-import { SET_STORYLINE } from '../actions/storyline';
+import { DONE_STORYLINE_REQUEST, ADD_STAY } from '../actions/storyline';
 import { CHANGE_TIME_SPAN, CHANGE_VIEW, SET_LOCATIONS, HOVER_PLACE } from '../actions/ui';
 import { GEOGRAPHIC_VIEW } from '../models/views';
+
+const DAY = 1000 * 60 * 60 * 24;
 
 const DEFAULT_STATE = Map({
   authorized: ENV.authorized,
   placeLimit: ENV.place_limit,
-  loaded: false
+  storylineLoaded: false,
+  timeSpanStep: DAY, // TODO Model or global const
+  timeSpanRange: [Infinity, -Infinity],
+  timeSpan: []
 });
 
-function setStoryline(state, action) {
-  let { stays } = action,
-    timeSpanStart = Infinity,
-    timeSpanEnd = -Infinity;
+function addStay(state, action) {
+  let { stay } = action,
+    [ start, end ] = state.get('timeSpanRange');
 
-  stays.forEach(function(stay) {
-    timeSpanStart = Math.min(stay.startAt, timeSpanStart);
-    timeSpanEnd = Math.max(stay.endAt, timeSpanEnd);
-  });
+  let day = state.get('timeSpanStep');
 
-  let day = 1000 * 60 * 60 * 24;
+  if (stay.startAt < start)
+    start = Math.floor(stay.startAt / day) * day;
 
-  timeSpanStart = Math.floor(timeSpanStart / day) * day;
-  timeSpanEnd = Math.ceil(timeSpanEnd / day) * day;
+  if (stay.endAt > end)
+    end = Math.ceil(stay.endAt / day) * day;
 
-  let range = [timeSpanStart, timeSpanEnd];
+  let range = [ start, end ];
 
   return state.withMutations(function(state) {
-    state.set('loaded', true);
     state.set('timeSpanRange', range);
     state.set('timeSpan', range);
-    state.set('timeSpanStep', day);
   });
+}
+
+function doneStorylineRequest(state, action) {
+  return state.set('storylineLoaded', true);
 }
 
 function changeTimeSpan(state, action) {
@@ -63,8 +67,11 @@ function setHoveredPlace(state, action) {
 
 export default function ui(state = DEFAULT_STATE, action) {
   switch (action.type) {
-    case SET_STORYLINE:
-      return setStoryline(state, action);
+    case ADD_STAY:
+      return addStay(state, action);
+
+    case DONE_STORYLINE_REQUEST:
+      return doneStorylineRequest(state, action);
 
     case CHANGE_TIME_SPAN:
       return changeTimeSpan(state, action);

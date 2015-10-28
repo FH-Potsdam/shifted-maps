@@ -2,14 +2,4 @@
   &-map {
     z-index: 0;
   }
-
-  &-ui {
-    z-index: 1;
-    position: absolute;
-    bottom: $inuit-base-spacing-unit * 3;
-    left: 0;
-    width: 100%;
-    padding: $inuit-base-spacing-unit;
-    box-sizing: border-box;
-  }
 }

@@ -463,15 +463,6 @@ h1 + p {
 .app-map {
   z-index: 0;
 }
-.app-ui {
-  z-index: 1;
-  position: absolute;
-  bottom: 48px;
-  left: 0;
-  width: 100%;
-  padding: 16px;
-  box-sizing: border-box;
-}
 
 .app-map {
   position: absolute;
@@ -677,6 +668,7 @@ h1 + p {
   padding-bottom: 24px;
   text-align: center;
   width: 208px;
+  z-index: 1;
 }
 .ui h1 {
   font-size: 20px;
@@ -795,6 +787,29 @@ h1 + p {
 .time-range__end {
   float: right;
   text-align: right;
+}
+
+.loading-screen {
+  -moz-transition: opacity 400ms;
+  -o-transition: opacity 400ms;
+  -webkit-transition: opacity 400ms;
+  transition: opacity 400ms;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  background-color: #2963a5;
+  color: white;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  padding: 16px;
+}
+.loading-screen.active {
+  pointer-events: auto;
+  opacity: 1;
 }
 
 /*------------------------------------*\

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Map } from 'immutable';
 import debounce from 'mout/function/debounce';
 import TimeSlider from './time-slider';
 import TryOwnData from './try-own-data';

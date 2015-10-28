@@ -77,7 +77,7 @@ exports.addPlace = addPlace;
 exports.addStay = addStay;
 exports.addTrip = addTrip;
 exports.requestStoryline = requestStoryline;
-exports.setStoryline = setStoryline;
+exports.doneStorylineRequest = doneStorylineRequest;
 exports.failedStorylineRequest = failedStorylineRequest;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -112,8 +112,8 @@ var ADD_TRIP = 'ADD_TRIP';
 exports.ADD_TRIP = ADD_TRIP;
 var REQUEST_STORYLINE = 'REQUEST_STORYLINE';
 exports.REQUEST_STORYLINE = REQUEST_STORYLINE;
-var SET_STORYLINE = 'SET_STORYLINE';
-exports.SET_STORYLINE = SET_STORYLINE;
+var DONE_STORYLINE_REQUEST = 'DONE_STORYLINE_REQUEST';
+exports.DONE_STORYLINE_REQUEST = DONE_STORYLINE_REQUEST;
 var FAILED_STORYLINE_REQUEST = 'FAILED_STORYLINE_REQUEST';
 
 exports.FAILED_STORYLINE_REQUEST = FAILED_STORYLINE_REQUEST;
@@ -134,10 +134,6 @@ function requestStoryline() {
   return function (dispatch) {
     dispatch({ type: REQUEST_STORYLINE });
 
-    var places = [],
-        trips = [],
-        stays = [];
-
     (0, _oboe2['default'])('/api').node('startAt', function (startAt) {
       return new Date(startAt * 1000);
     }).node('endAt', function (endAt) {
@@ -146,38 +142,30 @@ function requestStoryline() {
       return L.latLng(location.lat, location.lon);
     }).node('place', function (place) {
       place = new _modelsPlace2['default'](place);
-
-      places.push(place);
       dispatch(addPlace(place));
 
       return _oboe2['default'].drop;
     }).node('stay', function (stay) {
       stay = new _modelsStay2['default'](stay);
-
-      stays.push(stay);
       dispatch(addStay(stay));
 
       return _oboe2['default'].drop;
     }).node('trip', function (trip) {
       trip = new _modelsTrip2['default'](trip);
-
-      trips.push(trip);
       dispatch(addTrip(trip));
 
       return _oboe2['default'].drop;
     }).done(function () {
-      return dispatch(setStoryline(places, trips, stays));
+      return dispatch(doneStorylineRequest());
     }).fail(function (error) {
       return dispatch(failedStorylineRequest(error));
     });
   };
 }
 
-function setStoryline(places, trips, stays) {
+function doneStorylineRequest() {
   return function (dispatch) {
-    console.log('Places: ' + places.length + ', Trips: ' + trips.length + ', Stays: ' + stays.length);
-
-    dispatch({ type: SET_STORYLINE, places: places, trips: trips, stays: stays });
+    dispatch({ type: DONE_STORYLINE_REQUEST });
     dispatch((0, _tiles.requestTiles)());
     dispatch((0, _places.fitPlaces)());
     dispatch((0, _ui.initViews)());
@@ -606,14 +594,12 @@ var App = (function (_Component) {
       var _props2 = this.props;
       var map = _props2.map;
       var ui = _props2.ui;
+      var children = [_react2['default'].createElement(_loadingScreen2['default'], { key: 'loading-screen', ui: ui })];
 
-      return _react2['default'].createElement(
-        'div',
-        { className: 'app' },
-        _react2['default'].createElement(_loadingScreen2['default'], { ui: ui }),
-        _react2['default'].createElement(
+      if (ui.get('storylineLoaded')) {
+        children.push(_react2['default'].createElement(
           _map2['default'],
-          { id: map.get('id'),
+          { key: 'map', id: map.get('id'),
             zoom: map.get('zoom'),
             center: map.get('center'),
             bounds: map.get('bounds'),
@@ -630,9 +616,13 @@ var App = (function (_Component) {
             { store: _store2['default'] },
             _react2['default'].createElement(_vis2['default'], { className: 'leaflet-zoom-animated' })
           )
-        ),
-        _react2['default'].createElement(_ui2['default'], { ui: ui, onTimeSpanChange: this.onTimeSpanChange.bind(this), onViewChange: this.onViewChange.bind(this) }),
-        _react2['default'].createElement(_scales2['default'], { onUpdate: this.onScaleUpdate.bind(this) })
+        ), _react2['default'].createElement(_ui2['default'], { key: 'ui', ui: ui, onTimeSpanChange: this.onTimeSpanChange.bind(this), onViewChange: this.onViewChange.bind(this) }), _react2['default'].createElement(_scales2['default'], { key: 'scales', onUpdate: this.onScaleUpdate.bind(this) }));
+      }
+
+      return _react2['default'].createElement(
+        'div',
+        { className: 'app' },
+        children
       );
     }
   }]);
@@ -879,28 +869,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _immutable = require('immutable');
-
-var _moutFunctionDebounce = require('mout/function/debounce');
-
-var _moutFunctionDebounce2 = _interopRequireDefault(_moutFunctionDebounce);
-
-var _timeSlider = require('./time-slider');
-
-var _timeSlider2 = _interopRequireDefault(_timeSlider);
-
-var _tryOwnData = require('./try-own-data');
-
-var _tryOwnData2 = _interopRequireDefault(_tryOwnData);
-
-var _timeRange = require('./time-range');
-
-var _timeRange2 = _interopRequireDefault(_timeRange);
-
-var _viewList = require('./view-list');
-
-var _viewList2 = _interopRequireDefault(_viewList);
-
 var LoadingScreen = (function (_Component) {
   _inherits(LoadingScreen, _Component);
 
@@ -923,7 +891,7 @@ var LoadingScreen = (function (_Component) {
 
       if (!ui.get('authorized')) return null;
 
-      if (!ui.get('loaded')) className += ' active';
+      if (!ui.get('storylineLoaded')) className += ' active';
 
       return _react2['default'].createElement('div', { className: className });
     }
@@ -934,8 +902,11 @@ var LoadingScreen = (function (_Component) {
 
 exports['default'] = LoadingScreen;
 module.exports = exports['default'];
+/*<div><strong>Places:</strong> {places.size} of {ui.get('place_limit')}</div>
+<div><strong>Trips:</strong> {trips.size}</div>
+<div><strong>Visits:</strong> {stays.size}</div>*/
 
-},{"./time-range":24,"./time-slider":25,"./try-own-data":26,"./view-list":28,"immutable":61,"mout/function/debounce":66,"react":239}],13:[function(require,module,exports){
+},{"react":239}],13:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -2222,8 +2193,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _immutable = require('immutable');
-
 var _moutFunctionDebounce = require('mout/function/debounce');
 
 var _moutFunctionDebounce2 = _interopRequireDefault(_moutFunctionDebounce);
@@ -2308,7 +2277,7 @@ var UI = (function (_Component) {
 exports['default'] = UI;
 module.exports = exports['default'];
 
-},{"./time-range":24,"./time-slider":25,"./try-own-data":26,"./view-list":28,"immutable":61,"mout/function/debounce":66,"react":239}],28:[function(require,module,exports){
+},{"./time-range":24,"./time-slider":25,"./try-own-data":26,"./view-list":28,"mout/function/debounce":66,"react":239}],28:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -2764,30 +2733,24 @@ function uniqueId(idOne, idTwo) {
   return idOne + idTwo * idTwo;
 }
 
+function addTrip(state, action) {
+  var trip = action.trip;
+
+  var tripId = trip.from < trip.to ? uniqueId(trip.from, trip.to) : uniqueId(trip.to, trip.from);
+
+  var connection = state.get(tripId);
+
+  if (connection == null) connection = new _modelsConnection2['default']({ id: tripId, from: trip.from, to: trip.to });
+
+  return state.set(tripId, connection.set('trips', connection.trips.push(trip)));
+}
+
 function connections(state, action) {
   if (state === undefined) state = (0, _immutable.Map)();
 
   switch (action.type) {
-    case _actionsStoryline.SET_STORYLINE:
-      var trips = action.trips;
-
-      return state.withMutations(function (state) {
-        trips.forEach(function (trip) {
-          var tripId = trip.from < trip.to ? uniqueId(trip.from, trip.to) : uniqueId(trip.to, trip.from);
-
-          var connection = state.get(tripId);
-
-          if (connection == null) connection = new _modelsConnection2['default']({ id: tripId, from: trip.from, to: trip.to });
-
-          /*connection = connection.merge({
-            trips: connection.trips.push(trip),
-            duration: connection.duration + trip.duration,
-            frequency: connection.frequency + 1
-          });*/
-
-          state.set(tripId, connection.set('trips', connection.trips.push(trip)));
-        });
-      });
+    case _actionsStoryline.ADD_TRIP:
+      return addTrip(state, action);
 
     default:
       return state;
@@ -2860,33 +2823,30 @@ var _immutable = require('immutable');
 
 var _actionsStoryline = require('../actions/storyline');
 
+function addPlace(state, action) {
+  var place = action.place;
+
+  return state.set(place.id, place);
+}
+
+function addStay(state, action) {
+  var stay = action.stay;
+  var place = state.get(stay.at);
+
+  if (place == null) console.error('Tried to add a stay to non existing place with the id "' + stay.at + '"');
+
+  return state.setIn([stay.at, 'stays'], place.stays.push(stay));
+}
+
 function places(state, action) {
   if (state === undefined) state = (0, _immutable.Map)();
 
   switch (action.type) {
-    case _actionsStoryline.SET_STORYLINE:
-      var places = action.places,
-          stays = action.stays;
+    case _actionsStoryline.ADD_PLACE:
+      return addPlace(state, action);
 
-      return state.withMutations(function (state) {
-        places.forEach(function (place) {
-          state.set(place.id, place);
-        });
-
-        var keys = (0, _immutable.Set)(state.keys());
-
-        stays.forEach(function (stay) {
-          var place = state.get(stay.at);
-
-          keys = keys['delete'](stay.at);
-
-          state.setIn([stay.at, 'stays'], place.stays.push(stay));
-        });
-
-        if (keys.size > 0) console.error('There are ' + keys.size + ' places without any stays.');
-      });
-
-      return state;
+    case _actionsStoryline.ADD_STAY:
+      return addStay(state, action);
 
     default:
       return state;
@@ -3031,6 +2991,9 @@ module.exports = exports['default'];
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
 exports['default'] = ui;
 
 var _immutable = require('immutable');
@@ -3041,35 +3004,43 @@ var _actionsUi = require('../actions/ui');
 
 var _modelsViews = require('../models/views');
 
+var DAY = 1000 * 60 * 60 * 24;
+
 var DEFAULT_STATE = (0, _immutable.Map)({
   authorized: ENV.authorized,
   placeLimit: ENV.place_limit,
-  loaded: false
+  storylineLoaded: false,
+  timeSpanStep: DAY, // TODO Model or global const
+  timeSpanRange: [Infinity, -Infinity],
+  timeSpan: []
 });
 
-function setStoryline(state, action) {
-  var stays = action.stays;
-  var timeSpanStart = Infinity;
-  var timeSpanEnd = -Infinity;
+function addStay(state, action) {
+  var stay = action.stay;
 
-  stays.forEach(function (stay) {
-    timeSpanStart = Math.min(stay.startAt, timeSpanStart);
-    timeSpanEnd = Math.max(stay.endAt, timeSpanEnd);
-  });
+  var _state$get = state.get('timeSpanRange');
 
-  var day = 1000 * 60 * 60 * 24;
+  var _state$get2 = _slicedToArray(_state$get, 2);
 
-  timeSpanStart = Math.floor(timeSpanStart / day) * day;
-  timeSpanEnd = Math.ceil(timeSpanEnd / day) * day;
+  var start = _state$get2[0];
+  var end = _state$get2[1];
 
-  var range = [timeSpanStart, timeSpanEnd];
+  var day = state.get('timeSpanStep');
+
+  if (stay.startAt < start) start = Math.floor(stay.startAt / day) * day;
+
+  if (stay.endAt > end) end = Math.ceil(stay.endAt / day) * day;
+
+  var range = [start, end];
 
   return state.withMutations(function (state) {
-    state.set('loaded', true);
     state.set('timeSpanRange', range);
     state.set('timeSpan', range);
-    state.set('timeSpanStep', day);
   });
+}
+
+function doneStorylineRequest(state, action) {
+  return state.set('storylineLoaded', true);
 }
 
 function changeTimeSpan(state, action) {
@@ -3105,8 +3076,11 @@ function ui(state, action) {
   if (state === undefined) state = DEFAULT_STATE;
 
   switch (action.type) {
-    case _actionsStoryline.SET_STORYLINE:
-      return setStoryline(state, action);
+    case _actionsStoryline.ADD_STAY:
+      return addStay(state, action);
+
+    case _actionsStoryline.DONE_STORYLINE_REQUEST:
+      return doneStorylineRequest(state, action);
 
     case _actionsUi.CHANGE_TIME_SPAN:
       return changeTimeSpan(state, action);
@@ -3508,6 +3482,8 @@ var _map = require('./map');
 var _ui = require('./ui');
 
 function filterPlaces(places, uiTimeSpan) {
+  console.log('Filtered Places!', uiTimeSpan);
+
   if (places.size === 0) return places;
 
   var _uiTimeSpan = _slicedToArray(uiTimeSpan, 2);

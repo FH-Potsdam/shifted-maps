@@ -8,6 +8,8 @@ import { mapMapSelector } from './map';
 import { uiTimeSpanSelector, uiLocationsSelector, uiHoveredPlaceIdSelector, uiHoverSelector } from './ui';
 
 function filterPlaces(places, uiTimeSpan) {
+  console.log('Filtered Places!', uiTimeSpan);
+
   if (places.size === 0)
     return places;
 

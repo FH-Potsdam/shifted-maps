@@ -9,6 +9,7 @@ $button-size: $inuit-base-spacing-unit * 2;
   padding-bottom: $inuit-base-spacing-unit * 1.5;
   text-align: center;
   width: $inuit-base-spacing-unit * 13;
+  z-index: 1;
 
   h1 {
     font-size: $font-size-big;

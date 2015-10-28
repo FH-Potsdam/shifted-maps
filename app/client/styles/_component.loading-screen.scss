@@ -1,0 +1,20 @@
+.loading-screen {
+  @include transition(opacity $base-transition-duration);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: $inuit-base-spacing-unit;
+  background-color: $highlight;
+  color: $background;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  padding: $inuit-base-spacing-unit;
+
+  &.active {
+    pointer-events: auto;
+    opacity: 1;
+  }
+}

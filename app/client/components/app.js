@@ -9,6 +9,7 @@ import { requestTiles } from '../actions/tiles';
 import { updateMapState } from '../actions/map';
 import { changeTimeSpan, changeView, updateViews } from '../actions/ui';
 import { GEOGRAPHIC_VIEW } from '../models/views';
+import LoadingScreen from './loading-screen';
 import Map from './map';
 import Vis from './vis';
 import Scales from './scales';
@@ -97,11 +98,11 @@ class App extends Component {
 
   render() {
     let { map, ui } = this.props,
-      mapClassName = 'app-map';
+      children = [<LoadingScreen key="loading-screen" ui={ui} />];
 
-    return (
-      <div className="app">
-        <Map id={map.get('id')}
+    if (ui.get('storylineLoaded')) {
+      children.push(
+        <Map key="map" id={map.get('id')}
              zoom={map.get('zoom')}
              center={map.get('center')}
              bounds={map.get('bounds')}
@@ -114,11 +115,17 @@ class App extends Component {
              onZoomAnim={this.onMapZoomAnim.bind(this)}
              onZoomEnd={this.onMapZoomEnd.bind(this)}>
           <Provider store={store}>
-            <Vis className="leaflet-zoom-animated" />
+            <Vis className="leaflet-zoom-animated"/>
           </Provider>
-        </Map>
-        <UI ui={ui} onTimeSpanChange={this.onTimeSpanChange.bind(this)} onViewChange={this.onViewChange.bind(this)} />
-        <Scales onUpdate={this.onScaleUpdate.bind(this)} />
+        </Map>,
+        <UI key="ui" ui={ui} onTimeSpanChange={this.onTimeSpanChange.bind(this)} onViewChange={this.onViewChange.bind(this)} />,
+        <Scales key="scales" onUpdate={this.onScaleUpdate.bind(this)} />
+      );
+    }
+
+    return (
+      <div className="app">
+        {children}
       </div>
     );
   }
