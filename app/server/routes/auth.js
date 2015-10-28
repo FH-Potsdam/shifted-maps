@@ -35,9 +35,9 @@ router.get('/', function(req, res, next) {
     if (error)
       return next(error);
 
-    // OAuth error
+    // OAuth error TODO Add flash message.
     if (!user)
-      return res.send(req.query.error);
+      return res.redirect('/');
 
     // Login user
     req.login(user, next);
