@@ -9,17 +9,13 @@ class LoadingScreen extends Component {
     let { ui } = this.props,
       className = 'loading-screen';
 
-    if (!ui.get('authorized'))
-      return null;
-
     if (!ui.get('storylineLoaded'))
       className += ' active';
 
     return (
       <div className={className}>
-        {/*<div><strong>Places:</strong> {places.size} of {ui.get('place_limit')}</div>
-        <div><strong>Trips:</strong> {trips.size}</div>
-        <div><strong>Visits:</strong> {stays.size}</div>*/}
+        <div><em>Places:</em> {ui.get('places')} of {ui.get('placeLimit')}</div>
+        <div><em>Trips:</em> {ui.get('trips')}</div>
       </div>
     );
   }

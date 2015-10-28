@@ -889,11 +889,36 @@ var LoadingScreen = (function (_Component) {
       var ui = this.props.ui;
       var className = 'loading-screen';
 
-      if (!ui.get('authorized')) return null;
-
       if (!ui.get('storylineLoaded')) className += ' active';
 
-      return _react2['default'].createElement('div', { className: className });
+      return _react2['default'].createElement(
+        'div',
+        { className: className },
+        _react2['default'].createElement(
+          'div',
+          null,
+          _react2['default'].createElement(
+            'em',
+            null,
+            'Places:'
+          ),
+          ' ',
+          ui.get('places'),
+          ' of ',
+          ui.get('placeLimit')
+        ),
+        _react2['default'].createElement(
+          'div',
+          null,
+          _react2['default'].createElement(
+            'em',
+            null,
+            'Trips:'
+          ),
+          ' ',
+          ui.get('trips')
+        )
+      );
     }
   }]);
 
@@ -902,9 +927,6 @@ var LoadingScreen = (function (_Component) {
 
 exports['default'] = LoadingScreen;
 module.exports = exports['default'];
-/*<div><strong>Places:</strong> {places.size} of {ui.get('place_limit')}</div>
-<div><strong>Trips:</strong> {trips.size}</div>
-<div><strong>Visits:</strong> {stays.size}</div>*/
 
 },{"react":239}],13:[function(require,module,exports){
 (function (process){
@@ -3012,8 +3034,14 @@ var DEFAULT_STATE = (0, _immutable.Map)({
   storylineLoaded: false,
   timeSpanStep: DAY, // TODO Model or global const
   timeSpanRange: [Infinity, -Infinity],
-  timeSpan: []
+  timeSpan: [],
+  places: 0,
+  trips: 0
 });
+
+function addPlace(state, action) {
+  return state.set('places', state.get('places') + 1);
+}
 
 function addStay(state, action) {
   var stay = action.stay;
@@ -3037,6 +3065,10 @@ function addStay(state, action) {
     state.set('timeSpanRange', range);
     state.set('timeSpan', range);
   });
+}
+
+function addTrip(state, action) {
+  return state.set('trips', state.get('trips') + 1);
 }
 
 function doneStorylineRequest(state, action) {
@@ -3076,8 +3108,14 @@ function ui(state, action) {
   if (state === undefined) state = DEFAULT_STATE;
 
   switch (action.type) {
+    case _actionsStoryline.ADD_PLACE:
+      return addPlace(state, action);
+
     case _actionsStoryline.ADD_STAY:
       return addStay(state, action);
+
+    case _actionsStoryline.ADD_TRIP:
+      return addTrip(state, action);
 
     case _actionsStoryline.DONE_STORYLINE_REQUEST:
       return doneStorylineRequest(state, action);
@@ -3482,8 +3520,6 @@ var _map = require('./map');
 var _ui = require('./ui');
 
 function filterPlaces(places, uiTimeSpan) {
-  console.log('Filtered Places!', uiTimeSpan);
-
   if (places.size === 0) return places;
 
   var _uiTimeSpan = _slicedToArray(uiTimeSpan, 2);
