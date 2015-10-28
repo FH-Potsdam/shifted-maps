@@ -2,7 +2,7 @@ p {
   margin: 0;
 
   & + & {
-    margin-top: $base-spacing-unit;
+    margin-top: $inuit-base-spacing-unit;
   }
 }
 
@@ -12,5 +12,5 @@ p {
 }
 
 h1 + p {
-  margin-top: $base-spacing-unit;
+  margin-top: $inuit-base-spacing-unit;
 }

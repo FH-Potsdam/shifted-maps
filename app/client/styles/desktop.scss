@@ -1,10 +1,12 @@
 // Settings
-@import "settings";
 @import "components/inuit-defaults/settings.defaults";
+@import "components/inuit-responsive-settings/settings.responsive";
+@import "settings";
 
 // Tools
 @import "components/inuit-functions/tools.functions";
 @import "components/inuit-tools-widths/tools.widths";
+@import "components/inuit-responsive-tools/tools.responsive";
 @import "compass/css3/transition";
 @import "compass/css3/transform";
 
@@ -12,6 +14,7 @@
 @import "generic.normalize";
 @import "generic.typography";
 @import "generic.sizing";
+@import "generic.project";
 
 // Base
 @import "base.links";

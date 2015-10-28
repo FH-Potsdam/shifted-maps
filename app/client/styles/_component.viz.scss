@@ -23,11 +23,11 @@
   }
 
   .leaflet-right .leaflet-control-zoom {
-    margin-right: $base-spacing-unit;
+    margin-right: $inuit-base-spacing-unit;
   }
 
   .leaflet-bottom .leaflet-control-zoom {
-    margin-bottom: $base-spacing-unit;
+    margin-bottom: $inuit-base-spacing-unit;
   }
 }
 
@@ -48,7 +48,7 @@
 
   &-label {
     fill: $highlight;
-    font-size: $base-font-size;
+    font-size: $inuit-base-font-size;
     transform: translate(0, 20px);
     font-family: "soleil", sans-serif;
     font-style: italic;

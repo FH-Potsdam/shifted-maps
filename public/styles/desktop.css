@@ -239,6 +239,10 @@ html {
   height: 100%;
 }
 
+body {
+  background-color: white;
+}
+
 a {
   -moz-transition: color 200ms;
   -o-transition: color 200ms;
@@ -264,16 +268,16 @@ p {
   margin: 0;
 }
 p + p {
-  margin-top: 1rem;
+  margin-top: 16px;
 }
 
 .lede {
   font-style: italic;
-  font-size: 1.25rem;
+  font-size: 20px;
 }
 
 h1 + p {
-  margin-top: 1rem;
+  margin-top: 16px;
 }
 
 /*------------------------------------*\
@@ -292,7 +296,7 @@ h1 + p {
   list-style: none;
   margin: 0;
   padding: 0;
-  margin-left: -24px;
+  margin-left: -16px;
 }
 
 /**
@@ -305,7 +309,7 @@ h1 + p {
 .layout__item {
   display: inline-block;
   /* [1] */
-  padding-left: 24px;
+  padding-left: 16px;
   /* [2] */
   vertical-align: top;
   /* [3] */
@@ -360,49 +364,58 @@ h1 + p {
 }
 
 .hero {
-  position: absolute;
-  width: 20rem;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.9);
-  top: 0;
-  right: 0;
-  padding: 2rem;
-  padding-top: 3rem;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 32px;
+  padding-top: 48px;
+}
+@media screen and (min-width: 600px) {
+  .hero {
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+}
+@media screen and (min-width: 600px) {
+  .hero {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    right: 0;
+    width: 320px;
+  }
 }
 .hero h1 {
-  font-size: 2rem;
+  font-size: 32px;
 }
 .hero__section + .hero__section {
-  margin-top: 1rem;
+  margin-top: 16px;
 }
 .hero__highlight {
-  margin-top: 2rem;
+  margin-top: 32px;
 }
 .hero__credits {
-  font-size: 0.75rem;
+  font-size: 12px;
   font-style: italic;
   opacity: .75;
 }
 .hero__go {
   display: block;
-  line-height: 2rem;
+  line-height: 32px;
 }
 .hero__go .icon {
-  font-size: 2rem;
+  font-size: 32px;
   vertical-align: middle;
-  margin-left: 1rem;
+  margin-left: 16px;
   float: right;
 }
 .hero__go + .hero__go {
-  margin-top: 1rem;
+  margin-top: 16px;
 }
 .hero__download {
   display: block;
 }
 .hero__download .icon {
   display: block;
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+  font-size: 32px;
+  margin-bottom: 8px;
 }
 .hero__download .icon:before {
   display: inline-block;
@@ -413,14 +426,20 @@ h1 + p {
 }
 .hero__download em {
   display: block;
-  font-size: 0.75rem;
+  font-size: 12px;
 }
 .hero__bottom {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  left: 0;
-  padding: 2rem;
+  margin-top: 128px;
+}
+@media screen and (min-width: 600px) {
+  .hero__bottom {
+    margin-top: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    padding: 32px;
+  }
 }
 .hero__logo {
   height: 65px;
@@ -431,6 +450,8 @@ h1 + p {
   height: 100%;
   min-width: 100%;
   min-height: 100%;
+  display: block;
+  z-index: -1;
 }
 .screencast video {
   object-fit: cover;
@@ -445,10 +466,10 @@ h1 + p {
 .app-ui {
   z-index: 1;
   position: absolute;
-  bottom: 3rem;
+  bottom: 48px;
   left: 0;
   width: 100%;
-  padding: 1rem;
+  padding: 16px;
   box-sizing: border-box;
 }
 
@@ -475,10 +496,10 @@ h1 + p {
   opacity: 1;
 }
 .app-map .leaflet-right .leaflet-control-zoom {
-  margin-right: 1rem;
+  margin-right: 16px;
 }
 .app-map .leaflet-bottom .leaflet-control-zoom {
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .place {
@@ -512,7 +533,7 @@ h1 + p {
 }
 .place-label {
   fill: #2963a5;
-  font-size: 1rem;
+  font-size: 16px;
   transform: translate(0, 20px);
   font-family: "soleil", sans-serif;
   font-style: italic;
@@ -543,7 +564,7 @@ h1 + p {
 .connection-label {
   font-family: "soleil", sans-serif;
   font-style: italic;
-  font-size: 0.75rem;
+  font-size: 12px;
   display: none;
 }
 .connection-label text {
@@ -650,45 +671,45 @@ h1 + p {
 .ui {
   position: absolute;
   background-color: rgba(255, 255, 255, 0.9);
-  top: 1rem;
-  left: 1rem;
-  padding: 1rem;
-  padding-bottom: 1.5rem;
+  top: 16px;
+  left: 16px;
+  padding: 16px;
+  padding-bottom: 24px;
   text-align: center;
-  width: 13rem;
+  width: 208px;
 }
 .ui h1 {
-  font-size: 1.25rem;
+  font-size: 20px;
   text-transform: uppercase;
   margin: 0;
-  margin-top: 0.5rem;
+  margin-top: 8px;
   text-align: left;
 }
 .ui__info {
   color: #333333;
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  font-size: 1.25rem;
+  top: 8px;
+  right: 8px;
+  font-size: 20px;
   text-decoration: none;
 }
 .ui__try-own-data {
   font-style: italic;
-  padding-top: 0.5rem;
+  padding-top: 8px;
   text-align: left;
   display: block;
 }
 .ui__try-own-data .icon {
-  font-size: 2rem;
+  font-size: 32px;
   float: right;
-  padding-top: 0.25rem;
-  margin-left: 1rem;
-  line-height: 2rem;
+  padding-top: 4px;
+  margin-left: 16px;
+  line-height: 48px;
 }
 
 .view-list {
   display: inline-block;
-  margin-top: 3rem;
+  margin-top: 48px;
 }
 .view-list__button {
   -moz-transition: color 200ms;
@@ -702,35 +723,35 @@ h1 + p {
   background-color: transparent;
   color: #333333;
   padding: 0;
-  font-size: 2rem;
+  font-size: 32px;
   outline: none;
   overflow: hidden;
-  width: 2rem;
-  height: 2rem;
+  width: 32px;
+  height: 32px;
   line-height: 2rem;
 }
 .view-list__button.active, .view-list__button:hover {
   color: #2963a5;
 }
 .view-list__button + .view-list__button {
-  margin-left: 1.25rem;
+  margin-left: 20px;
 }
 
 .time-slider {
-  margin-right: 0.5rem;
+  margin-right: 8px;
   position: relative;
-  margin-top: 1rem;
+  margin-top: 16px;
 }
 .time-slider__track {
   position: absolute;
   z-index: 0;
-  height: 0.0909rem;
+  height: 2px;
   top: 0;
   background-color: #333333;
   left: 0;
-  right: -0.5rem;
-  border-radius: 0.0909rem;
-  margin: 0.20455rem 0;
+  right: -8px;
+  border-radius: 2px;
+  margin: 3px 0;
 }
 .time-slider__thumb {
   -moz-transition: background-color 200ms, -moz-transform 200ms;
@@ -740,9 +761,9 @@ h1 + p {
   position: absolute;
   top: 0;
   right: 100%;
-  height: 0.5rem;
-  width: 0.5rem;
-  border-radius: 0.5rem;
+  height: 8px;
+  width: 8px;
+  border-radius: 8px;
   background-color: #333333;
   z-index: 1;
   cursor: pointer;
@@ -759,13 +780,13 @@ h1 + p {
   font-style: italic;
   display: inline-block;
   width: 100%;
-  margin-top: 1rem;
+  margin-top: 16px;
 }
 .time-range strong {
   text-transform: uppercase;
   display: block;
   font-style: normal;
-  font-size: 0.75rem;
+  font-size: 12px;
 }
 .time-range__start {
   float: left;
