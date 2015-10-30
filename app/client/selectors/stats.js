@@ -1,6 +1,7 @@
 import { createSelector, createStructuredSelector } from 'reselect';
 import { filteredPlacesSelector } from './places';
 import { filteredConnectionsSelector } from './connections';
+import { uiTimeSpanSelector } from './ui';
 
 function computeTotalConnectionDistance(connections) {
   return connections.reduce(function(distance, connection) {
@@ -127,6 +128,7 @@ export const averagePlaceFrequencySelector = createSelector(
 
 export default createStructuredSelector({
   placeLimit: placeLimitSelector,
+  timeSpan: uiTimeSpanSelector,
   totalConnections: totalConnectionsSelector,
   totalPlaces: totalPlacesSelector,
   totalConnectionDistance: totalConnectionDistanceSelector,

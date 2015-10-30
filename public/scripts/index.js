@@ -878,6 +878,14 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var LoadingScreen = (function (_Component) {
   _inherits(LoadingScreen, _Component);
 
@@ -902,34 +910,88 @@ var LoadingScreen = (function (_Component) {
 
       if (active) className += ' active';
 
-      console.log(stats);
+      var width = stats.totalPlaces / stats.placeLimit * 100,
+          trainStyle = { width: width + '%' },
+          placeLabel = stats.totalPlaces == 1 ? 'Place' : 'Places',
+          connectionLabel = stats.totalConnections == 1 ? 'Connection' : 'Connections';
+
+      var timeSpanStart = stats.timeSpan[0];
+
+      var progress = _lodash2['default'].range(0, width).join(' ');
 
       return _react2['default'].createElement(
         'div',
         { className: className },
         _react2['default'].createElement(
           'div',
-          null,
+          { className: 'loading-screen__hero' },
           _react2['default'].createElement(
-            'em',
+            'h1',
             null,
-            'Places:'
+            'Shifted Maps'
           ),
-          ' ',
-          stats.totalPlaces,
-          ' of ',
-          stats.placeLimit
+          _react2['default'].createElement(
+            'p',
+            { className: 'lede' },
+            'Loading the last 200 places you visited …'
+          )
         ),
+        _react2['default'].createElement('img', { className: 'loading-screen__spinner', src: '/images/spinner.png' }),
         _react2['default'].createElement(
           'div',
-          null,
+          { className: 'loading-screen__track' },
           _react2['default'].createElement(
-            'em',
-            null,
-            'Trips:'
-          ),
-          ' ',
-          stats.totalConnections
+            'div',
+            { className: 'loading-screen__train', style: trainStyle, 'data-progress': progress },
+            _react2['default'].createElement(
+              'div',
+              { className: 'loading-screen__train__start' },
+              _react2['default'].createElement(
+                'strong',
+                null,
+                (0, _moment2['default'])(timeSpanStart).format('dddd')
+              ),
+              _react2['default'].createElement(
+                'em',
+                null,
+                (0, _moment2['default'])(timeSpanStart).format('D. MMM YYYY')
+              )
+            ),
+            _react2['default'].createElement(
+              'ul',
+              { className: 'loading-screen__train__stats' },
+              _react2['default'].createElement(
+                'li',
+                null,
+                _react2['default'].createElement(
+                  'strong',
+                  null,
+                  stats.totalPlaces
+                ),
+                ' ',
+                _react2['default'].createElement(
+                  'em',
+                  null,
+                  placeLabel
+                )
+              ),
+              _react2['default'].createElement(
+                'li',
+                null,
+                _react2['default'].createElement(
+                  'strong',
+                  null,
+                  stats.totalConnections
+                ),
+                ' ',
+                _react2['default'].createElement(
+                  'em',
+                  null,
+                  connectionLabel
+                )
+              )
+            )
+          )
         )
       );
     }
@@ -941,7 +1003,7 @@ var LoadingScreen = (function (_Component) {
 exports['default'] = LoadingScreen;
 module.exports = exports['default'];
 
-},{"react":240}],13:[function(require,module,exports){
+},{"lodash":64,"moment":65,"react":240}],13:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -3754,6 +3816,8 @@ var _places = require('./places');
 
 var _connections = require('./connections');
 
+var _ui = require('./ui');
+
 function computeTotalConnectionDistance(connections) {
   return connections.reduce(function (distance, connection) {
     return distance + connection.distance;
@@ -3841,6 +3905,7 @@ var averagePlaceFrequencySelector = (0, _reselect.createSelector)([totalPlacesSe
 exports.averagePlaceFrequencySelector = averagePlaceFrequencySelector;
 exports['default'] = (0, _reselect.createStructuredSelector)({
   placeLimit: placeLimitSelector,
+  timeSpan: _ui.uiTimeSpanSelector,
   totalConnections: totalConnectionsSelector,
   totalPlaces: totalPlacesSelector,
   totalConnectionDistance: totalConnectionDistanceSelector,
@@ -3855,7 +3920,7 @@ exports['default'] = (0, _reselect.createStructuredSelector)({
   averagePlaceFrequency: averagePlaceFrequencySelector
 });
 
-},{"./connections":47,"./places":49,"reselect":254}],52:[function(require,module,exports){
+},{"./connections":47,"./places":49,"./ui":53,"reselect":254}],52:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
