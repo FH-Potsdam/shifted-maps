@@ -1,5 +1,5 @@
 import { Map } from 'immutable';
-import { DONE_STORYLINE_REQUEST, ADD_STAY, } from '../actions/storyline';
+import { DONE_STORYLINE_REQUEST, ADD_STAYS, } from '../actions/storyline';
 import { CHANGE_TIME_SPAN, CHANGE_VIEW, SET_LOCATIONS, HOVER_PLACE } from '../actions/ui';
 import { GEOGRAPHIC_VIEW } from '../models/views';
 
@@ -13,17 +13,19 @@ const DEFAULT_STATE = Map({
   timeSpan: []
 });
 
-function addStay(state, action) {
-  let { stay } = action,
+function addStays(state, action) {
+  let { stays } = action,
     [ start, end ] = state.get('timeSpanRange');
 
   let day = state.get('timeSpanStep');
 
-  if (stay.startAt < start)
-    start = Math.floor(stay.startAt / day) * day;
+  stays.forEach(function(stay) {
+    if (stay.startAt < start)
+      start = Math.floor(stay.startAt / day) * day;
 
-  if (stay.endAt > end)
-    end = Math.ceil(stay.endAt / day) * day;
+    if (stay.endAt > end)
+      end = Math.ceil(stay.endAt / day) * day;
+  });
 
   let range = [ start, end ];
 
@@ -66,8 +68,8 @@ function setHoveredPlace(state, action) {
 
 export default function ui(state = DEFAULT_STATE, action) {
   switch (action.type) {
-    case ADD_STAY:
-      return addStay(state, action);
+    case ADD_STAYS:
+      return addStays(state, action);
 
     case DONE_STORYLINE_REQUEST:
       return doneStorylineRequest(state, action);

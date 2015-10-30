@@ -24,9 +24,9 @@ class App extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    let { map, ui } = this.props;
+    let { map, ui, stats } = this.props;
 
-    return map !== nextProps.map || ui !== nextProps.ui;
+    return map !== nextProps.map || ui !== nextProps.ui || stats !== nextProps.stats;
   }
 
   componentDidMount() {

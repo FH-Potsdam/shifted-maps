@@ -1,4 +1,5 @@
 import oboe from 'oboe';
+import debounce from 'mout/function/debounce';
 import { requestTiles } from './tiles';
 import { fitPlaces } from './places';
 import { initViews } from './ui';
@@ -6,28 +7,44 @@ import Place from '../models/place';
 import Stay from '../models/stay';
 import Trip from '../models/trip';
 
-export const ADD_PLACE = 'ADD_PLACE';
-export const ADD_STAY = 'ADD_STAY';
-export const ADD_TRIP = 'ADD_TRIP';
-export const REQUEST_STORYLINE = 'REQUEST_STORYLINE';
+export const ADD_PLACES = 'ADD_PLACES';
+export const ADD_STAYS = 'ADD_STAYS';
+export const ADD_TRIPS = 'ADD_TRIPS';
 export const DONE_STORYLINE_REQUEST = 'DONE_STORYLINE_REQUEST';
 export const FAILED_STORYLINE_REQUEST = 'FAILED_STORYLINE_REQUEST';
 
-export function addPlace(place) {
-  return { type: ADD_PLACE, place };
+export function addPlaces(places) {
+  return { type: ADD_PLACES, places };
 }
 
-export function addStay(stay) {
-  return { type: ADD_STAY, stay };
+export function addStays(stays) {
+  return { type: ADD_STAYS, stays };
 }
 
-export function addTrip(trip) {
-  return { type: ADD_TRIP, trip };
+export function addTrips(trips) {
+  return { type: ADD_TRIPS, trips };
 }
 
 export function requestStoryline() {
   return function(dispatch) {
-    dispatch({ type: REQUEST_STORYLINE });
+    let places = [],
+      stays = [],
+      trips = [];
+
+    let debounceDispatch = debounce(dispatch, 5);
+
+    function sendStoryline() {
+      return function(dispatch) {
+        dispatch(addPlaces(places));
+        dispatch(addStays(stays));
+        dispatch(addTrips(trips));
+
+        // Reset data arrays
+        places = [];
+        stays = [];
+        trips = [];
+      }
+    }
 
     oboe('/api')
       .node('startAt', function(startAt) {
@@ -41,23 +58,37 @@ export function requestStoryline() {
       })
       .node('place', function(place) {
         place = new Place(place);
-        dispatch(addPlace(place));
+        places.push(place);
+
+        debounceDispatch(sendStoryline());
 
         return oboe.drop;
       })
       .node('stay', function(stay) {
         stay = new Stay(stay);
-        dispatch(addStay(stay));
+        stays.push(stay);
+
+        debounceDispatch(sendStoryline());
 
         return oboe.drop;
       })
       .node('trip', function(trip) {
         trip = new Trip(trip);
-        dispatch(addTrip(trip));
+        trips.push(trip);
+
+        debounceDispatch(sendStoryline());
 
         return oboe.drop;
       })
-      .done(() => dispatch(doneStorylineRequest()))
+      .done(function() {
+        debounceDispatch(function() {
+          dispatch(sendStoryline());
+
+          setTimeout(function() {
+            dispatch(doneStorylineRequest());
+          }, 400);
+        });
+      })
       .fail(error => dispatch(failedStorylineRequest(error)));
   }
 }

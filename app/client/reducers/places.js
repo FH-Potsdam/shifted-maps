@@ -1,29 +1,38 @@
 import { Map, Set } from 'immutable';
-import { ADD_PLACE, ADD_STAY } from '../actions/storyline';
+import { ADD_PLACES, ADD_STAYS } from '../actions/storyline';
 
-function addPlace(state, action) {
-  let { place } = action;
+function addPlaces(state, action) {
+  let { places } = action;
 
-  return state.set(place.id, place);
+  return state.withMutations(function(state) {
+    places.forEach(function(place) {
+      state.set(place.id, place);
+    });
+  });
 }
 
-function addStay(state, action) {
-  let { stay } = action,
-    place = state.get(stay.at);
+function addStays(state, action) {
+  let { stays } = action;
 
-  if (place == null)
-    console.error(`Tried to add a stay to non existing place with the id "${stay.at}"`);
+  return state.withMutations(function(state) {
+    stays.forEach(function(stay) {
+      let place = state.get(stay.at);
 
-  return state.setIn([stay.at, 'stays'], place.stays.push(stay));
+      if (place == null)
+        return console.error(`Tried to add a stay to non existing place with the id "${stay.at}"`);
+
+      state.setIn([stay.at, 'stays'], place.stays.push(stay));
+    });
+  });
 }
 
 export default function places(state = Map(), action) {
   switch (action.type) {
-    case ADD_PLACE:
-      return addPlace(state, action);
+    case ADD_PLACES:
+      return addPlaces(state, action);
 
-    case ADD_STAY:
-      return addStay(state, action);
+    case ADD_STAYS:
+      return addStays(state, action);
 
     default:
       return state;

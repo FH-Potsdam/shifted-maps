@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 class LoadingScreen extends Component {
   shouldComponentUpdate(nextProps) {
-    return this.props.stats !== nextProps.stats;
+    return this.props.stats !== nextProps.stats || this.props.active !== nextProps.active;
   }
 
   render() {

@@ -73,9 +73,9 @@ function updateScales(scaleElements, sizerElements) {
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
-exports.addPlace = addPlace;
-exports.addStay = addStay;
-exports.addTrip = addTrip;
+exports.addPlaces = addPlaces;
+exports.addStays = addStays;
+exports.addTrips = addTrips;
 exports.requestStoryline = requestStoryline;
 exports.doneStorylineRequest = doneStorylineRequest;
 exports.failedStorylineRequest = failedStorylineRequest;
@@ -85,6 +85,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 var _oboe = require('oboe');
 
 var _oboe2 = _interopRequireDefault(_oboe);
+
+var _moutFunctionDebounce = require('mout/function/debounce');
+
+var _moutFunctionDebounce2 = _interopRequireDefault(_moutFunctionDebounce);
 
 var _tiles = require('./tiles');
 
@@ -104,35 +108,50 @@ var _modelsTrip = require('../models/trip');
 
 var _modelsTrip2 = _interopRequireDefault(_modelsTrip);
 
-var ADD_PLACE = 'ADD_PLACE';
-exports.ADD_PLACE = ADD_PLACE;
-var ADD_STAY = 'ADD_STAY';
-exports.ADD_STAY = ADD_STAY;
-var ADD_TRIP = 'ADD_TRIP';
-exports.ADD_TRIP = ADD_TRIP;
-var REQUEST_STORYLINE = 'REQUEST_STORYLINE';
-exports.REQUEST_STORYLINE = REQUEST_STORYLINE;
+var ADD_PLACES = 'ADD_PLACES';
+exports.ADD_PLACES = ADD_PLACES;
+var ADD_STAYS = 'ADD_STAYS';
+exports.ADD_STAYS = ADD_STAYS;
+var ADD_TRIPS = 'ADD_TRIPS';
+exports.ADD_TRIPS = ADD_TRIPS;
 var DONE_STORYLINE_REQUEST = 'DONE_STORYLINE_REQUEST';
 exports.DONE_STORYLINE_REQUEST = DONE_STORYLINE_REQUEST;
 var FAILED_STORYLINE_REQUEST = 'FAILED_STORYLINE_REQUEST';
 
 exports.FAILED_STORYLINE_REQUEST = FAILED_STORYLINE_REQUEST;
 
-function addPlace(place) {
-  return { type: ADD_PLACE, place: place };
+function addPlaces(places) {
+  return { type: ADD_PLACES, places: places };
 }
 
-function addStay(stay) {
-  return { type: ADD_STAY, stay: stay };
+function addStays(stays) {
+  return { type: ADD_STAYS, stays: stays };
 }
 
-function addTrip(trip) {
-  return { type: ADD_TRIP, trip: trip };
+function addTrips(trips) {
+  return { type: ADD_TRIPS, trips: trips };
 }
 
 function requestStoryline() {
   return function (dispatch) {
-    dispatch({ type: REQUEST_STORYLINE });
+    var places = [],
+        stays = [],
+        trips = [];
+
+    var debounceDispatch = (0, _moutFunctionDebounce2['default'])(dispatch, 5);
+
+    function sendStoryline() {
+      return function (dispatch) {
+        dispatch(addPlaces(places));
+        dispatch(addStays(stays));
+        dispatch(addTrips(trips));
+
+        // Reset data arrays
+        places = [];
+        stays = [];
+        trips = [];
+      };
+    }
 
     (0, _oboe2['default'])('/api').node('startAt', function (startAt) {
       return new Date(startAt * 1000);
@@ -142,21 +161,33 @@ function requestStoryline() {
       return L.latLng(location.lat, location.lon);
     }).node('place', function (place) {
       place = new _modelsPlace2['default'](place);
-      dispatch(addPlace(place));
+      places.push(place);
+
+      debounceDispatch(sendStoryline());
 
       return _oboe2['default'].drop;
     }).node('stay', function (stay) {
       stay = new _modelsStay2['default'](stay);
-      dispatch(addStay(stay));
+      stays.push(stay);
+
+      debounceDispatch(sendStoryline());
 
       return _oboe2['default'].drop;
     }).node('trip', function (trip) {
       trip = new _modelsTrip2['default'](trip);
-      dispatch(addTrip(trip));
+      trips.push(trip);
+
+      debounceDispatch(sendStoryline());
 
       return _oboe2['default'].drop;
     }).done(function () {
-      return dispatch(doneStorylineRequest());
+      debounceDispatch(function () {
+        dispatch(sendStoryline());
+
+        setTimeout(function () {
+          dispatch(doneStorylineRequest());
+        }, 400);
+      });
     }).fail(function (error) {
       return dispatch(failedStorylineRequest(error));
     });
@@ -176,7 +207,7 @@ function failedStorylineRequest(error) {
   return { type: FAILED_STORYLINE_REQUEST, error: error };
 }
 
-},{"../models/place":33,"../models/stay":34,"../models/trip":36,"./places":2,"./tiles":5,"./ui":6,"oboe":75}],5:[function(require,module,exports){
+},{"../models/place":33,"../models/stay":34,"../models/trip":36,"./places":2,"./tiles":5,"./ui":6,"mout/function/debounce":67,"oboe":75}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -510,8 +541,9 @@ var App = (function (_Component) {
       var _props = this.props;
       var map = _props.map;
       var ui = _props.ui;
+      var stats = _props.stats;
 
-      return map !== nextProps.map || ui !== nextProps.ui;
+      return map !== nextProps.map || ui !== nextProps.ui || stats !== nextProps.stats;
     }
   }, {
     key: 'componentDidMount',
@@ -898,7 +930,7 @@ var LoadingScreen = (function (_Component) {
   _createClass(LoadingScreen, [{
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate(nextProps) {
-      return this.props.stats !== nextProps.stats;
+      return this.props.stats !== nextProps.stats || this.props.active !== nextProps.active;
     }
   }, {
     key: 'render',
@@ -2830,24 +2862,28 @@ function uniqueId(idOne, idTwo) {
   return idOne + idTwo * idTwo;
 }
 
-function addTrip(state, action) {
-  var trip = action.trip;
+function addTrips(state, action) {
+  var trips = action.trips;
 
-  var tripId = trip.from < trip.to ? uniqueId(trip.from, trip.to) : uniqueId(trip.to, trip.from);
+  return state.withMutations(function (state) {
+    trips.forEach(function (trip) {
+      var tripId = trip.from < trip.to ? uniqueId(trip.from, trip.to) : uniqueId(trip.to, trip.from);
 
-  var connection = state.get(tripId);
+      var connection = state.get(tripId);
 
-  if (connection == null) connection = new _modelsConnection2['default']({ id: tripId, from: trip.from, to: trip.to });
+      if (connection == null) connection = new _modelsConnection2['default']({ id: tripId, from: trip.from, to: trip.to });
 
-  return state.set(tripId, connection.set('trips', connection.trips.push(trip)));
+      state.set(tripId, connection.set('trips', connection.trips.push(trip)));
+    });
+  });
 }
 
 function connections(state, action) {
   if (state === undefined) state = (0, _immutable.Map)();
 
   switch (action.type) {
-    case _actionsStoryline.ADD_TRIP:
-      return addTrip(state, action);
+    case _actionsStoryline.ADD_TRIPS:
+      return addTrips(state, action);
 
     default:
       return state;
@@ -2920,30 +2956,39 @@ var _immutable = require('immutable');
 
 var _actionsStoryline = require('../actions/storyline');
 
-function addPlace(state, action) {
-  var place = action.place;
+function addPlaces(state, action) {
+  var places = action.places;
 
-  return state.set(place.id, place);
+  return state.withMutations(function (state) {
+    places.forEach(function (place) {
+      state.set(place.id, place);
+    });
+  });
 }
 
-function addStay(state, action) {
-  var stay = action.stay;
-  var place = state.get(stay.at);
+function addStays(state, action) {
+  var stays = action.stays;
 
-  if (place == null) console.error('Tried to add a stay to non existing place with the id "' + stay.at + '"');
+  return state.withMutations(function (state) {
+    stays.forEach(function (stay) {
+      var place = state.get(stay.at);
 
-  return state.setIn([stay.at, 'stays'], place.stays.push(stay));
+      if (place == null) return console.error('Tried to add a stay to non existing place with the id "' + stay.at + '"');
+
+      state.setIn([stay.at, 'stays'], place.stays.push(stay));
+    });
+  });
 }
 
 function places(state, action) {
   if (state === undefined) state = (0, _immutable.Map)();
 
   switch (action.type) {
-    case _actionsStoryline.ADD_PLACE:
-      return addPlace(state, action);
+    case _actionsStoryline.ADD_PLACES:
+      return addPlaces(state, action);
 
-    case _actionsStoryline.ADD_STAY:
-      return addStay(state, action);
+    case _actionsStoryline.ADD_STAYS:
+      return addStays(state, action);
 
     default:
       return state;
@@ -3111,8 +3156,8 @@ var DEFAULT_STATE = (0, _immutable.Map)({
   timeSpan: []
 });
 
-function addStay(state, action) {
-  var stay = action.stay;
+function addStays(state, action) {
+  var stays = action.stays;
 
   var _state$get = state.get('timeSpanRange');
 
@@ -3123,9 +3168,11 @@ function addStay(state, action) {
 
   var day = state.get('timeSpanStep');
 
-  if (stay.startAt < start) start = Math.floor(stay.startAt / day) * day;
+  stays.forEach(function (stay) {
+    if (stay.startAt < start) start = Math.floor(stay.startAt / day) * day;
 
-  if (stay.endAt > end) end = Math.ceil(stay.endAt / day) * day;
+    if (stay.endAt > end) end = Math.ceil(stay.endAt / day) * day;
+  });
 
   var range = [start, end];
 
@@ -3172,8 +3219,8 @@ function ui(state, action) {
   if (state === undefined) state = DEFAULT_STATE;
 
   switch (action.type) {
-    case _actionsStoryline.ADD_STAY:
-      return addStay(state, action);
+    case _actionsStoryline.ADD_STAYS:
+      return addStays(state, action);
 
     case _actionsStoryline.DONE_STORYLINE_REQUEST:
       return doneStorylineRequest(state, action);
