@@ -2647,6 +2647,10 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactRedux = require('react-redux');
 
+var _moutFunctionDebounce = require('mout/function/debounce');
+
+var _moutFunctionDebounce2 = _interopRequireDefault(_moutFunctionDebounce);
+
 var _componentsApp = require('./components/app');
 
 var _componentsApp2 = _interopRequireDefault(_componentsApp);
@@ -2659,13 +2663,21 @@ var _store2 = _interopRequireDefault(_store);
 
 L.mapbox.accessToken = _config.mapbox.token;
 
+// Fix for apples magic trackpad:
+var oldOnWheelScroll = (0, _moutFunctionDebounce2['default'])(L.Map.ScrollWheelZoom.prototype._onWheelScroll, 20, true);
+
+L.Map.ScrollWheelZoom.prototype._onWheelScroll = function (event) {
+  event.preventDefault();
+  oldOnWheelScroll.apply(this, arguments);
+};
+
 _reactDom2['default'].render(_react2['default'].createElement(
   _reactRedux.Provider,
   { store: _store2['default'] },
   _react2['default'].createElement(_componentsApp2['default'], null)
 ), document.getElementById('app'));
 
-},{"./components/app":8,"./config":30,"./store":58,"react":240,"react-dom":76,"react-redux":80}],32:[function(require,module,exports){
+},{"./components/app":8,"./config":30,"./store":58,"mout/function/debounce":67,"react":240,"react-dom":76,"react-redux":80}],32:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {

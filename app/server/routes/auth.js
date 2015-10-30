@@ -18,6 +18,9 @@ function redirect(req, res) {
 }
 
 router.get('/', function(req, res, next) {
+  if (req.user != null)
+    return redirect(req, res);
+
   var callbackURL = config.moves.callback_url;
 
   // Add redirect to query param
