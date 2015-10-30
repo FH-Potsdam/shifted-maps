@@ -97,8 +97,14 @@ class App extends Component {
   }
 
   render() {
-    let { map, ui } = this.props,
-      children = [<LoadingScreen key="loading-screen" ui={ui} />];
+    let { map, ui, stats } = this.props,
+      children = [];
+
+    children.push(
+      <LoadingScreen key="loading-screen"
+                     active={!ui.get('storylineLoaded')}
+                     stats={stats}/>
+    );
 
     if (ui.get('storylineLoaded')) {
       children.push(
@@ -118,7 +124,11 @@ class App extends Component {
             <Vis className="leaflet-zoom-animated"/>
           </Provider>
         </Map>,
-        <UI key="ui" ui={ui} onTimeSpanChange={this.onTimeSpanChange.bind(this)} onViewChange={this.onViewChange.bind(this)} />,
+        <UI key="ui"
+            ui={ui}
+            stats={stats}
+            onTimeSpanChange={this.onTimeSpanChange.bind(this)}
+            onViewChange={this.onViewChange.bind(this)} />,
         <Scales key="scales" onUpdate={this.onScaleUpdate.bind(this)} />
       );
     }

@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
 
 class LoadingScreen extends Component {
-  /*shouldComponentUpdate(nextProps) {
-    return this.props.ui !== nextProps.ui;
-  }*/
+  shouldComponentUpdate(nextProps) {
+    return this.props.stats !== nextProps.stats;
+  }
 
   render() {
-    let { ui } = this.props,
+    let { stats, active } = this.props,
       className = 'loading-screen';
 
-    if (!ui.get('storylineLoaded'))
+    if (active)
       className += ' active';
 
     return (
       <div className={className}>
-        <div><em>Places:</em> {ui.get('places')} of {ui.get('placeLimit')}</div>
-        <div><em>Trips:</em> {ui.get('trips')}</div>
+        <div><em>Places:</em> {stats.totalPlaces} of {stats.placeLimit}</div>
+        <div><em>Trips:</em> {stats.totalConnections}</div>
       </div>
     );
   }

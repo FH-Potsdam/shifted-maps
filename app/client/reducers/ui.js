@@ -1,5 +1,5 @@
 import { Map } from 'immutable';
-import { DONE_STORYLINE_REQUEST, ADD_PLACE, ADD_STAY, ADD_TRIP } from '../actions/storyline';
+import { DONE_STORYLINE_REQUEST, ADD_STAY, } from '../actions/storyline';
 import { CHANGE_TIME_SPAN, CHANGE_VIEW, SET_LOCATIONS, HOVER_PLACE } from '../actions/ui';
 import { GEOGRAPHIC_VIEW } from '../models/views';
 
@@ -7,18 +7,11 @@ const DAY = 1000 * 60 * 60 * 24;
 
 const DEFAULT_STATE = Map({
   authorized: ENV.authorized,
-  placeLimit: ENV.place_limit,
   storylineLoaded: false,
   timeSpanStep: DAY, // TODO Model or global const
   timeSpanRange: [Infinity, -Infinity],
-  timeSpan: [],
-  places: 0,
-  trips: 0
+  timeSpan: []
 });
-
-function addPlace(state, action) {
-  return state.set('places', state.get('places') + 1);
-}
 
 function addStay(state, action) {
   let { stay } = action,
@@ -38,10 +31,6 @@ function addStay(state, action) {
     state.set('timeSpanRange', range);
     state.set('timeSpan', range);
   });
-}
-
-function addTrip(state, action) {
-  return state.set('trips', state.get('trips') + 1);
 }
 
 function doneStorylineRequest(state, action) {
@@ -77,14 +66,8 @@ function setHoveredPlace(state, action) {
 
 export default function ui(state = DEFAULT_STATE, action) {
   switch (action.type) {
-    case ADD_PLACE:
-      return addPlace(state, action);
-
     case ADD_STAY:
       return addStay(state, action);
-
-    case ADD_TRIP:
-      return addTrip(state, action);
 
     case DONE_STORYLINE_REQUEST:
       return doneStorylineRequest(state, action);
