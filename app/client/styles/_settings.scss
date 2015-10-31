@@ -17,6 +17,9 @@ $highlight: #2963a5;
 $base-transition-duration: 400ms;
 $short-transition-duration: 200ms;
 
+// Components
+$ui-button-size: $inuit-base-spacing-unit * 2;
+
 // Inuit
 $breakpoints: (
   "tablet" "screen and (min-width: 600px)",

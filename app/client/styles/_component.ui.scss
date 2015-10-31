@@ -1,5 +1,3 @@
-$button-size: $inuit-base-spacing-unit * 2;
-
 .ui {
   position: absolute;
   background-color: rgba($background, .9);
@@ -8,7 +6,7 @@ $button-size: $inuit-base-spacing-unit * 2;
   padding: $inuit-base-spacing-unit;
   padding-bottom: $inuit-base-spacing-unit * 1.5;
   text-align: center;
-  width: $inuit-base-spacing-unit * 13;
+  width: $inuit-base-spacing-unit * 14;
   z-index: 1;
 
   h1 {
@@ -28,25 +26,27 @@ $button-size: $inuit-base-spacing-unit * 2;
     text-decoration: none;
   }
 
-  &__try-own-data {
-    font-style: italic;
-    padding-top: $inuit-base-spacing-unit / 2;
+  &__stats {
     text-align: left;
-    display: block;
+    padding: 0;
+    margin: $inuit-base-spacing-unit 0 0;
 
-    .icon {
-      font-size: $button-size;
+    dt {
+      float: left;
+      clear: both;
+      font-style: italic;
+    }
+
+    dd {
+      margin: 0;
       float: right;
-      padding-top: $inuit-base-font-size / 4;
-      margin-left: $inuit-base-spacing-unit;
-      line-height: $inuit-base-line-height * 2;
     }
   }
 }
 
 .view-list {
   display: inline-block;
-  margin-top: $inuit-base-spacing-unit * 3;
+  margin-top: $inuit-base-spacing-unit * 4;
 
   &__button {
     @include transition(color $short-transition-duration);
@@ -57,11 +57,11 @@ $button-size: $inuit-base-spacing-unit * 2;
     background-color: transparent;
     color: $foreground;
     padding: 0;
-    font-size: $button-size;
+    font-size: $ui-button-size;
     outline: none;
     overflow: hidden;
-    width: $button-size;
-    height: $button-size;
+    width: $ui-button-size;
+    height: $ui-button-size;
     line-height: 2rem;
 
     &.active,

@@ -460,37 +460,49 @@ h1 + p {
   background-color: #2963a5;
 }
 
-.app-map {
+.app__map {
   z-index: 0;
-}
-
-.app-map {
   position: absolute;
   top: 0;
   bottom: 0;
   width: 100%;
-  z-index: 0;
   background-color: white;
 }
-.app-map .leaflet-tile-pane,
-.app-map .leaflet-control-container {
+.app__map .leaflet-tile-pane,
+.app__map .leaflet-control-container {
   -moz-transition: opacity, 400ms;
   -o-transition: opacity, 400ms;
   -webkit-transition: opacity, 400ms;
   transition: opacity, 400ms;
   opacity: 0;
 }
-.app-map.active .leaflet-tile-pane {
+.app__map.active .leaflet-tile-pane {
   opacity: .25;
 }
-.app-map.active .leaflet-control-container {
+.app__map.active .leaflet-control-container {
   opacity: 1;
 }
-.app-map .leaflet-right .leaflet-control-zoom {
+.app__map .leaflet-right .leaflet-control-zoom {
   margin-right: 16px;
 }
-.app-map .leaflet-bottom .leaflet-control-zoom {
+.app__map .leaflet-bottom .leaflet-control-zoom {
   margin-bottom: 16px;
+}
+.app__try-own-data, .app__logout {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  font-style: italic;
+  text-align: right;
+  display: block;
+  z-index: 1;
+  width: 180px;
+}
+.app__try-own-data .icon, .app__logout .icon {
+  font-size: 32px;
+  float: right;
+  margin-left: 16px;
+  line-height: 48px;
 }
 
 .place {
@@ -667,7 +679,7 @@ h1 + p {
   padding: 16px;
   padding-bottom: 24px;
   text-align: center;
-  width: 208px;
+  width: 224px;
   z-index: 1;
 }
 .ui h1 {
@@ -685,23 +697,24 @@ h1 + p {
   font-size: 20px;
   text-decoration: none;
 }
-.ui__try-own-data {
-  font-style: italic;
-  padding-top: 8px;
+.ui__stats {
   text-align: left;
-  display: block;
+  padding: 0;
+  margin: 16px 0 0;
 }
-.ui__try-own-data .icon {
-  font-size: 32px;
+.ui__stats dt {
+  float: left;
+  clear: both;
+  font-style: italic;
+}
+.ui__stats dd {
+  margin: 0;
   float: right;
-  padding-top: 4px;
-  margin-left: 16px;
-  line-height: 48px;
 }
 
 .view-list {
   display: inline-block;
-  margin-top: 48px;
+  margin-top: 64px;
 }
 .view-list__button {
   -moz-transition: color 200ms;

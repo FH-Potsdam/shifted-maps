@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import debounce from 'mout/function/debounce';
 import TimeSlider from './time-slider';
-import TryOwnData from './try-own-data';
 import TimeRange from './time-range';
+import Stats from './stats';
 import ViewList from './view-list';
 
 class UI extends Component {
@@ -11,10 +11,9 @@ class UI extends Component {
   }
 
   render() {
-    let { ui } = this.props,
+    let { ui, stats } = this.props,
       timeSlider = null,
-      timeRange = null,
-      tryOwnData = null;
+      timeRange = null;
 
     if (ui.has('timeSpanRange')) {
       let onTimeSliderChange = debounce(this.props.onTimeSpanChange, 200),
@@ -26,17 +25,16 @@ class UI extends Component {
       timeRange = <TimeRange range={ui.get('timeSpan')} />
     }
 
-    if (!ui.get('authorized'))
-      tryOwnData = <TryOwnData />;
+    let activeView = ui.get('activeView');
 
-    // @TODO add disabled and active state
-    let viewList = <ViewList activeView={ui.get('activeView')} onViewChange={this.props.onViewChange} />;
+    // @TODO add disabled and active state when graph is calculated
+    let viewList = <ViewList activeView={activeView} onViewChange={this.props.onViewChange} />;
 
     return (
       <div className="ui">
         <h1>Shifted Maps</h1>
         <a href="/" className="ui__info"><i className="icon icon--info" /></a>
-        {tryOwnData}
+        <Stats stats={stats} activeView={activeView}/>
         {viewList}
         {timeSlider}
         {timeRange}

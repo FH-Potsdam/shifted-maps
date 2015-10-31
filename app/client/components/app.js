@@ -14,6 +14,8 @@ import Map from './map';
 import Vis from './vis';
 import Scales from './scales';
 import UI from './ui';
+import TryOwnData from './try-own-data';
+import Logout from './logout';
 
 class App extends Component {
   constructor(props) {
@@ -108,11 +110,15 @@ class App extends Component {
 
     if (ui.get('storylineLoaded')) {
       children.push(
+        ui.get('authorized') ? <Logout key="logout"/> : <TryOwnData key="try-own-data"/>
+      );
+
+      children.push(
         <Map key="map" id={map.get('id')}
              zoom={map.get('zoom')}
              center={map.get('center')}
              bounds={map.get('bounds')}
-             className="app-map"
+             className="app__map"
              active={ui.get('activeView') == null}
              onViewReset={this.onMapViewReset.bind(this)}
              onDragStart={this.onMapDragStart.bind(this)}

@@ -1,36 +1,3 @@
-.app-map {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100%;
-  z-index: 0;
-  background-color: $background;
-
-  .leaflet-tile-pane,
-  .leaflet-control-container {
-    @include transition(opacity, $base-transition-duration);
-    opacity: 0;
-  }
-
-  &.active {
-    .leaflet-tile-pane {
-      opacity: .25;
-    }
-
-    .leaflet-control-container {
-      opacity: 1;
-    }
-  }
-
-  .leaflet-right .leaflet-control-zoom {
-    margin-right: $inuit-base-spacing-unit;
-  }
-
-  .leaflet-bottom .leaflet-control-zoom {
-    margin-bottom: $inuit-base-spacing-unit;
-  }
-}
-
 .place {
   &-deco,
   &-map {

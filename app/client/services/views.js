@@ -155,9 +155,7 @@ export function frequencyView(places, connections, frequencyDomain, beelineRange
   });
 }
 
-export function geographicLabel(connection) {
-  let { distance } = connection;
-
+export function formatDistance(distance) {
   if (distance >= 1000)
     distance = Math.round(distance / 1000) + ' km';
   else
@@ -166,10 +164,22 @@ export function geographicLabel(connection) {
   return distance;
 }
 
+export function geographicLabel(connection) {
+  return formatDistance(connection.distance);
+}
+
+export function formatDuration(duration) {
+  return moment.duration(duration, 'seconds').humanize();;
+}
+
 export function durationLabel(connection) {
-  return moment.duration(connection.duration, 'seconds').humanize();
+  return formatDuration(connection.duration);
+}
+
+export function formatFrequency(frequency) {
+  return Math.round(frequency * 100) / 100 + ' ×';
 }
 
 export function frequencyLabel(connection) {
-  return connection.frequency + ' ×';
+  return formatFrequency(connection.frequency);
 }
