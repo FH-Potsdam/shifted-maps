@@ -2,6 +2,7 @@ import { Map } from 'immutable';
 import d3 from 'd3';
 import _ from 'lodash';
 import moment from 'moment';
+import currencyFormat from 'mout/number/currencyFormat';
 
 function createNodeArray(places) {
   var lastPlace = places.last();
@@ -157,7 +158,7 @@ export function frequencyView(places, connections, frequencyDomain, beelineRange
 
 export function formatDistance(distance) {
   if (distance >= 1000)
-    distance = Math.round(distance / 1000) + ' km';
+    distance = currencyFormat(Math.round(distance / 1000), 0) + ' km';
   else
     distance += ' m';
 
@@ -169,7 +170,7 @@ export function geographicLabel(connection) {
 }
 
 export function formatDuration(duration) {
-  return moment.duration(duration, 'seconds').humanize();;
+  return moment.duration(duration, 'seconds').humanize();
 }
 
 export function durationLabel(connection) {

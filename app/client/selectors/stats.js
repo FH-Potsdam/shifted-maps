@@ -5,13 +5,17 @@ import { uiTimeSpanSelector } from './ui';
 
 function computeTotalConnectionDistance(connections) {
   return connections.reduce(function(distance, connection) {
-    return distance + connection.distance;
+    return connection.trips.reduce(function(distance, trip) {
+      return distance + trip.distance;
+    }, distance);
   }, 0);
 }
 
 function computeTotalConnectionDuration(connections) {
   return connections.reduce(function(duration, connection) {
-    return duration + connection.duration;
+    return connection.trips.reduce(function(duration, trip) {
+      return duration + trip.duration;
+    }, duration);
   }, 0);
 }
 
@@ -55,14 +59,14 @@ export const totalConnectionDistanceSelector = createSelector(
   [
     filteredConnectionsSelector
   ],
-  computeTotalConnectionDuration
+  computeTotalConnectionDistance
 );
 
 export const totalConnectionDurationSelector = createSelector(
   [
     filteredConnectionsSelector
   ],
-  computeTotalConnectionDistance
+  computeTotalConnectionDuration
 );
 
 export const totalConnectionFrequencySelector = createSelector(

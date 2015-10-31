@@ -5,7 +5,9 @@ class TryOwnData extends Component {
     return (
       <a className="app__try-own-data" href="/auth">
         <i className="icon icon--go" />
-        Try it with your own data!
+        Try it with
+        <br />
+        your own data!
       </a>
     );
   }
