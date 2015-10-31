@@ -5,7 +5,9 @@ class Logout extends Component {
     return (
       <a className="app__logout" href="/auth/logout">
         <i className="icon icon--go" />
-        Logout from this Machine
+        Logout from
+        <br />
+        this Machine
       </a>
     );
   }
