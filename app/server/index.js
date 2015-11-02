@@ -13,7 +13,7 @@ var express = require('express'),
 var app = express();
 
 app.set('debug', app.get('env') == 'development');
-app.set('views', __dirname + '/templates')
+app.set('views', __dirname + '/templates');
 app.set('view engine', 'jade');
 
 // Server middlewares

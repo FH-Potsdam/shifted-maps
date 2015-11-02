@@ -4,11 +4,7 @@ var router = express.Router();
 
 // Main route
 router.get('/', function(req, res) {
-  res.render('home');
+  res.render('home', { exhibition: req.query.exhibition != null });
 });
-
-/*router.get('/', function(req, res) {
-  res.render('index.nunj');
-});*/
 
 module.exports = router;

@@ -33,7 +33,7 @@ class UI extends Component {
     return (
       <div className="ui">
         <h1>Shifted Maps</h1>
-        <a href="/" className="ui__info"><i className="icon icon--info" /></a>
+        {/*<a href="/" className="ui__info"><i className="icon icon--info" /></a>*/}
         <Stats stats={stats} activeView={activeView}/>
         {viewList}
         {timeSlider}

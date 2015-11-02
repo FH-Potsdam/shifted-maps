@@ -49,7 +49,14 @@ router.get('/', function(req, res, next) {
 
 router.get('/logout', function(req, res) {
   req.logout();
-  res.redirect('/');
+
+  var redirectURL = '/';
+
+  if (req.query.redirect != null) {
+    redirectURL = url.parse(req.query.redirect).path;
+  }
+
+  res.redirect(redirectURL);
 });
 
 module.exports = router;

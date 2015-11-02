@@ -1046,21 +1046,21 @@ exports['default'] = LoadingScreen;
 module.exports = exports['default'];
 
 },{"lodash":66,"moment":67,"react":247}],13:[function(require,module,exports){
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _react = require('react');
 
@@ -1072,19 +1072,28 @@ var Logout = (function (_Component) {
   function Logout() {
     _classCallCheck(this, Logout);
 
-    _get(Object.getPrototypeOf(Logout.prototype), "constructor", this).apply(this, arguments);
+    _get(Object.getPrototypeOf(Logout.prototype), 'constructor', this).apply(this, arguments);
   }
 
   _createClass(Logout, [{
-    key: "render",
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate() {
+      return false;
+    }
+  }, {
+    key: 'render',
     value: function render() {
-      return _react2["default"].createElement(
-        "a",
-        { className: "app__logout", href: "/auth/logout" },
-        _react2["default"].createElement("i", { className: "icon icon--go" }),
-        "Logout from",
-        _react2["default"].createElement("br", null),
-        "this Machine"
+      var logoutPath = '/auth/logout';
+
+      if (ENV.exhibition) logoutPath += '?redirect=/?exhibition';
+
+      return _react2['default'].createElement(
+        'a',
+        { className: 'app__logout', href: logoutPath },
+        _react2['default'].createElement('i', { className: 'icon icon--go' }),
+        'Logout from',
+        _react2['default'].createElement('br', null),
+        'this Machine'
       );
     }
   }]);
@@ -1092,8 +1101,8 @@ var Logout = (function (_Component) {
   return Logout;
 })(_react.Component);
 
-exports["default"] = Logout;
-module.exports = exports["default"];
+exports['default'] = Logout;
+module.exports = exports['default'];
 
 },{"react":247}],14:[function(require,module,exports){
 (function (process){
@@ -2443,21 +2452,21 @@ exports['default'] = TimeSlider;
 module.exports = exports['default'];
 
 },{"jquery":65,"react":247,"react-dom":83}],28:[function(require,module,exports){
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _react = require('react');
 
@@ -2469,19 +2478,28 @@ var TryOwnData = (function (_Component) {
   function TryOwnData() {
     _classCallCheck(this, TryOwnData);
 
-    _get(Object.getPrototypeOf(TryOwnData.prototype), "constructor", this).apply(this, arguments);
+    _get(Object.getPrototypeOf(TryOwnData.prototype), 'constructor', this).apply(this, arguments);
   }
 
   _createClass(TryOwnData, [{
-    key: "render",
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate() {
+      return false;
+    }
+  }, {
+    key: 'render',
     value: function render() {
-      return _react2["default"].createElement(
-        "a",
-        { className: "app__try-own-data", href: "/auth" },
-        _react2["default"].createElement("i", { className: "icon icon--go" }),
-        "Try it with",
-        _react2["default"].createElement("br", null),
-        "your own data!"
+      var loginPath = '/auth';
+
+      if (ENV.exhibition) loginPath += '?redirect=/map?exhibition';
+
+      return _react2['default'].createElement(
+        'a',
+        { className: 'app__try-own-data', href: loginPath },
+        _react2['default'].createElement('i', { className: 'icon icon--go' }),
+        'Try it with',
+        _react2['default'].createElement('br', null),
+        'your own data!'
       );
     }
   }]);
@@ -2489,8 +2507,8 @@ var TryOwnData = (function (_Component) {
   return TryOwnData;
 })(_react.Component);
 
-exports["default"] = TryOwnData;
-module.exports = exports["default"];
+exports['default'] = TryOwnData;
+module.exports = exports['default'];
 
 },{"react":247}],29:[function(require,module,exports){
 'use strict';
@@ -2579,11 +2597,6 @@ var UI = (function (_Component) {
           null,
           'Shifted Maps'
         ),
-        _react2['default'].createElement(
-          'a',
-          { href: '/', className: 'ui__info' },
-          _react2['default'].createElement('i', { className: 'icon icon--info' })
-        ),
         _react2['default'].createElement(_stats2['default'], { stats: stats, activeView: activeView }),
         viewList,
         timeSlider,
@@ -2597,6 +2610,7 @@ var UI = (function (_Component) {
 
 exports['default'] = UI;
 module.exports = exports['default'];
+/*<a href="/" className="ui__info"><i className="icon icon--info" /></a>*/
 
 },{"./stats":25,"./time-range":26,"./time-slider":27,"./view-list":30,"mout/function/debounce":69,"react":247}],30:[function(require,module,exports){
 'use strict';
