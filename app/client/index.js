@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import debounce from 'mout/function/debounce';
 import ShiftedMaps from './components/app';
-import { mapbox } from './config';
+import { mapbox, exhibition } from './config';
 import store from './store';
 
 L.mapbox.accessToken = mapbox.token;
@@ -15,6 +15,15 @@ L.Map.ScrollWheelZoom.prototype._onWheelScroll = function(event) {
   event.preventDefault();
   oldOnWheelScroll.apply(this, arguments);
 };
+
+if (ENV.exhibition) {
+  let logout = debounce(function() {
+    window.location.href = '/auth/logout?redirect=/?exhibition';
+  }, exhibition.timeout);
+
+  document.addEventListener('mousemove', logout);
+  logout();
+}
 
 ReactDOM.render(
   <Provider store={store}>

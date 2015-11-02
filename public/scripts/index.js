@@ -2835,6 +2835,7 @@ var config = require('../../config/client.json');
 
 config.place_to_bounds_meters = 200;
 config.place_min_tile_size = 120;
+config.exhibition = { timeout: 54000000 };
 
 module.exports = config;
 
@@ -2876,6 +2877,15 @@ L.Map.ScrollWheelZoom.prototype._onWheelScroll = function (event) {
   event.preventDefault();
   oldOnWheelScroll.apply(this, arguments);
 };
+
+if (ENV.exhibition) {
+  var logout = (0, _moutFunctionDebounce2['default'])(function () {
+    window.location.href = '/auth/logout?redirect=/?exhibition';
+  }, _config.exhibition.timeout);
+
+  document.addEventListener('mousemove', logout);
+  logout();
+}
 
 _reactDom2['default'].render(_react2['default'].createElement(
   _reactRedux.Provider,
