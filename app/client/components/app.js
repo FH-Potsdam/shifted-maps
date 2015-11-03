@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Provider, connect } from 'react-redux';
 import store from '../store';
 import { app } from '../selector';
@@ -7,9 +8,10 @@ import { initVis, moveVis, resizeVis, zoomVis } from '../actions/vis';
 import { updateScales } from '../actions/scales';
 import { requestTiles } from '../actions/tiles';
 import { updateMapState } from '../actions/map';
-import { changeTimeSpan, changeView, updateViews } from '../actions/ui';
+import { changeTimeSpan, changeView, updateViews, closeInteractionOverlay } from '../actions/ui';
 import { GEOGRAPHIC_VIEW } from '../models/views';
 import LoadingScreen from './loading-screen';
+import InteractionOverlay from './interaction-overlay';
 import Map from './map';
 import Vis from './vis';
 import Scales from './scales';
@@ -98,15 +100,28 @@ class App extends Component {
     dispatch(requestTiles());
   }
 
+  onInteractionOverlayClose() {
+    let { dispatch } = this.props;
+
+    dispatch(closeInteractionOverlay());
+  }
+
   render() {
     let { map, ui, stats } = this.props,
       children = [];
 
-    children.push(
-      <LoadingScreen key="loading-screen"
-                     active={!ui.get('storylineLoaded')}
-                     stats={stats}/>
-    );
+    if (ui.get('interactionOverlay') && ENV.exhibition) {
+      children.push(
+        <InteractionOverlay key="interaction-overlay"
+                            onClose={this.onInteractionOverlayClose.bind(this)}/>
+      );
+    }
+
+    if (!ui.get('storylineLoaded')) {
+      children.push(
+        <LoadingScreen key="loading-screen" stats={stats}/>
+      );
+    }
 
     if (ui.get('storylineLoaded')) {
       children.push(
@@ -141,7 +156,10 @@ class App extends Component {
 
     return (
       <div className="app">
-        {children}
+        <ReactCSSTransitionGroup key="overlays" transitionName="fade"
+                                 transitionEnterTimeout={400} transitionLeaveTimeout={400}>
+          {children}
+        </ReactCSSTransitionGroup>
       </div>
     );
   }

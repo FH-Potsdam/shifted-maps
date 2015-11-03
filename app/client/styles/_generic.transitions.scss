@@ -1,0 +1,14 @@
+.fade-enter.fade-enter-active,
+.fade-leave.fade-leave-active {
+  @include transition(opacity $base-transition-duration);
+}
+
+.fade-enter,
+.fade-leave.fade-leave-active {
+  opacity: 0;
+}
+
+.fade-enter.fade-enter-active,
+.fade-leave {
+  opacity: 1;
+}

@@ -243,6 +243,24 @@ body {
   background-color: white;
 }
 
+.fade-enter.fade-enter-active,
+.fade-leave.fade-leave-active {
+  -moz-transition: opacity 400ms;
+  -o-transition: opacity 400ms;
+  -webkit-transition: opacity 400ms;
+  transition: opacity 400ms;
+}
+
+.fade-enter,
+.fade-leave.fade-leave-active {
+  opacity: 0;
+}
+
+.fade-enter.fade-enter-active,
+.fade-leave {
+  opacity: 1;
+}
+
 a {
   -moz-transition: color 200ms;
   -o-transition: color 200ms;
@@ -321,6 +339,16 @@ h1 + p {
   /* [5] */
   box-sizing: border-box;
   /* [5] */
+}
+
+/**
+ * Layouts with large gutters.
+ */
+.layout--large {
+  margin-left: -32px;
+}
+.layout--large > .layout__item {
+  padding-left: 32px;
 }
 
 @font-face {
@@ -815,13 +843,9 @@ h1 + p {
   background-color: #2963a5;
   color: white;
   z-index: 2;
-  pointer-events: none;
-  opacity: 0;
-  overflow: hidden;
-}
-.loading-screen.active {
   pointer-events: auto;
   opacity: 1;
+  overflow: hidden;
 }
 .loading-screen__hero {
   position: absolute;
@@ -991,6 +1015,48 @@ h1 + p {
     transform: rotate(360deg);
   }
 }
+.interaction-overlay {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  margin-left: -250px;
+  z-index: 2;
+  background-color: rgba(41, 99, 165, 0.9);
+  color: white;
+  width: 500px;
+  padding: 48px;
+}
+.interaction-overlay__item {
+  text-align: center;
+}
+.interaction-overlay__item strong,
+.interaction-overlay__item em {
+  display: block;
+}
+.interaction-overlay__item img {
+  display: inline-block;
+  width: 80px;
+}
+.interaction-overlay__item strong {
+  margin-top: 8px;
+}
+.interaction-overlay__item em {
+  opacity: .5;
+}
+.interaction-overlay__close {
+  cursor: pointer;
+  width: 17px;
+  height: 17px;
+  overflow: hidden;
+  background-image: url("/images/close-highlight.png");
+  text-indent: -5000px;
+  background-size: 100%;
+  display: block;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
 /*------------------------------------*\
     #WIDTHS
 \*------------------------------------*/

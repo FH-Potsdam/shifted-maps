@@ -8,14 +8,9 @@
   background-color: $highlight;
   color: $background;
   z-index: 2;
-  pointer-events: none;
-  opacity: 0;
+  pointer-events: auto;
+  opacity: 1;
   overflow: hidden;
-
-  &.active {
-    pointer-events: auto;
-    opacity: 1;
-  }
 
   $spinner-size: 47px;
 

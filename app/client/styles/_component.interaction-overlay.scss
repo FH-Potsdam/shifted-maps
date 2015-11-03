@@ -1,0 +1,47 @@
+.interaction-overlay {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  margin-left: -250px;
+  z-index: 2;
+  background-color: rgba($highlight, .9);
+  color: $background;
+  width: 500px;
+  padding: $inuit-base-spacing-unit * 3;
+
+  &__item {
+    text-align: center;
+
+    strong,
+    em {
+      display: block;
+    }
+
+    img {
+      display: inline-block;
+      width: 80px;
+    }
+
+    strong {
+      margin-top: $inuit-base-spacing-unit / 2;
+    }
+
+    em {
+      opacity: .5;
+    }
+  }
+
+  &__close {
+    cursor: pointer;
+    width: 17px;
+    height: 17px;
+    overflow: hidden;
+    background-image: url('/images/close-highlight.png');
+    text-indent: -5000px;
+    background-size: 100%;
+    display: block;
+    position: absolute;
+    top: $inuit-base-spacing-unit;
+    right: $inuit-base-spacing-unit;
+  }
+}

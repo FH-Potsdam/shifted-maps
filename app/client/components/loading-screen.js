@@ -8,11 +8,7 @@ class LoadingScreen extends Component {
   }
 
   render() {
-    let { stats, active } = this.props,
-      className = 'loading-screen';
-
-    if (active)
-      className += ' active';
+    let { stats } = this.props;
 
     let width = stats.totalPlaces / stats.placeLimit * 100,
       trainStyle = { width: width + '%' },
@@ -24,7 +20,7 @@ class LoadingScreen extends Component {
     let progress = _.range(0, width).join(' ');
 
     return (
-      <div className={className}>
+      <div className="loading-screen">
         <div className="loading-screen__hero">
           <h1>Shifted Maps</h1>
           <p className="lede">Loading the last 200 places you visited …</p>

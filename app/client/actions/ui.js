@@ -9,6 +9,7 @@ export const CHANGE_VIEW = 'CHANGE_VIEW';
 export const SET_LOCATIONS = 'SET_LOCATIONS';
 export const CHANGE_TIME_SPAN = 'CHANGE_TIME_SPAN';
 export const HOVER_PLACE = 'HOVER_PLACE';
+export const CLOSE_INTERACTION_OVERLAY = 'CLOSE_INTERACTION_OVERLAY';
 
 const VIEWS = [GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW];
 
@@ -78,4 +79,8 @@ export function changeTimeSpan(timeSpan) {
 
 export function hoverPlace(placeId, hover) {
   return { type: HOVER_PLACE, placeId, hover };
+}
+
+export function closeInteractionOverlay() {
+  return { type: CLOSE_INTERACTION_OVERLAY };
 }
