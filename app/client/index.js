@@ -20,10 +20,11 @@ L.Map.ScrollWheelZoom.prototype._onWheelScroll = function(event) {
 
 // Prevent zooming the whole page via pinch when not on the map
 window.addEventListener('wheel', function() {
-  event.preventDefault()
+  event.preventDefault();
 });
 
 if (ENV.exhibition) {
+  // Logout after a certain timeout when in exhibition mode.
   let logout = debounce(function() {
     window.location.href = '/auth/logout?redirect=/?exhibition';
   }, exhibition.timeout);

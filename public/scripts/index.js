@@ -3016,6 +3016,7 @@ window.addEventListener('wheel', function () {
 });
 
 if (ENV.exhibition) {
+  // Logout after a certain timeout when in exhibition mode.
   var logout = (0, _moutFunctionDebounce2['default'])(function () {
     window.location.href = '/auth/logout?redirect=/?exhibition';
   }, _config.exhibition.timeout);
