@@ -10,3 +10,4 @@ client.json
 architecture.md
 public/components
 app/client/styles/components
+public/scripts/*.min.js

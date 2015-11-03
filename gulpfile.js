@@ -7,6 +7,7 @@ var gulp = require('gulp'),
   babelify = require('babelify'),
   compass = require('gulp-compass'),
   uglify = require('gulp-uglify'),
+  rename = require('gulp-rename'),
   chalk = require('chalk'),
   notifier = require('node-notifier'),
   gls = require('gulp-live-server');
@@ -28,7 +29,6 @@ gulp.task('browserify', function() {
     .pipe(source('index.js', 'app/client'))
     .pipe(buffer())
     .pipe(sourcemaps.init({loadMaps: true}))
-    //.pipe(uglify())
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('public/scripts'))
     .pipe(server.notify());
@@ -37,6 +37,7 @@ gulp.task('browserify', function() {
 gulp.task('compass', function() {
   return gulp.src(['app/client/styles/**/*.scss', '!app/client/styles/**/_*.scss'])
     .pipe(compass({
+      style: 'compressed',
       project: path.join(__dirname, 'app/client/styles/'),
       css: path.join(__dirname, 'public/styles'),
       sass: path.join(__dirname, 'app/client/styles/')
@@ -44,6 +45,15 @@ gulp.task('compass', function() {
     .on('error', swallowError)
     .pipe(gulp.dest('public/styles'))
     .pipe(server.notify());
+});
+
+gulp.task('compress', function() {
+  return gulp.src(['public/scripts/*.js', '!public/scripts/*.min.js'])
+    .pipe(uglify())
+    .pipe(rename(function(path) {
+      path.extname = '.min' + path.extname;
+    }))
+    .pipe(gulp.dest('public/scripts'));
 });
 
 gulp.task('watch', function() {

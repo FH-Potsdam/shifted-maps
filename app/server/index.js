@@ -12,9 +12,11 @@ var express = require('express'),
 
 var app = express();
 
-app.set('debug', app.get('env') == 'development');
+app.set('debug', 'development' == app.get('env'));
 app.set('views', __dirname + '/templates');
 app.set('view engine', 'jade');
+
+app.locals.debug = app.get('debug');
 
 // Server middlewares
 app.use(helmet());
