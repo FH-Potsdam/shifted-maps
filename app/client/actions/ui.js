@@ -84,8 +84,6 @@ export function changeTimeSpan(timeSpan) {
 }
 
 export function hoverPlace(placeId, hover) {
-  trackEvent('ui', 'hover', 'place');
-
   return { type: HOVER_PLACE, placeId, hover };
 }
 

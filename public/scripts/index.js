@@ -441,8 +441,6 @@ function changeTimeSpan(timeSpan) {
 }
 
 function hoverPlace(placeId, hover) {
-  (0, _servicesTrackEvent2['default'])('ui', 'hover', 'place');
-
   return { type: HOVER_PLACE, placeId: placeId, hover: hover };
 }
 
