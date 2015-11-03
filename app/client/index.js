@@ -12,9 +12,16 @@ L.mapbox.accessToken = mapbox.token;
 let oldOnWheelScroll = debounce(L.Map.ScrollWheelZoom.prototype._onWheelScroll, 20, true);
 
 L.Map.ScrollWheelZoom.prototype._onWheelScroll = function(event) {
+  event.stopPropagation();
   event.preventDefault();
+
   oldOnWheelScroll.apply(this, arguments);
 };
+
+// Prevent zooming the whole page via pinch when not on the map
+window.addEventListener('wheel', function() {
+  event.preventDefault()
+});
 
 if (ENV.exhibition) {
   let logout = debounce(function() {

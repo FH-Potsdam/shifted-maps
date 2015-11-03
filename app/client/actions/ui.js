@@ -68,9 +68,7 @@ function computeViewLocations(view) {
 }
 
 export function changeView(view) {
-  return function(dispatch) {
-    dispatch({ type: CHANGE_VIEW, view });
-  };
+  return { type: CHANGE_VIEW, view };
 }
 
 export function changeTimeSpan(timeSpan) {

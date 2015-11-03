@@ -1038,6 +1038,7 @@ h1 + p {
   width: 80px;
 }
 .interaction-overlay__item strong {
+  text-transform: uppercase;
   margin-top: 8px;
 }
 .interaction-overlay__item em {

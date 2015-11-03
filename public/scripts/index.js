@@ -414,9 +414,7 @@ function computeViewLocations(view) {
 }
 
 function changeView(view) {
-  return function (dispatch) {
-    dispatch({ type: CHANGE_VIEW, view: view });
-  };
+  return { type: CHANGE_VIEW, view: view };
 }
 
 function changeTimeSpan(timeSpan) {
@@ -3006,9 +3004,16 @@ L.mapbox.accessToken = _config.mapbox.token;
 var oldOnWheelScroll = (0, _moutFunctionDebounce2['default'])(L.Map.ScrollWheelZoom.prototype._onWheelScroll, 20, true);
 
 L.Map.ScrollWheelZoom.prototype._onWheelScroll = function (event) {
+  event.stopPropagation();
   event.preventDefault();
+
   oldOnWheelScroll.apply(this, arguments);
 };
+
+// Prevent zooming the whole page via pinch when not on the map
+window.addEventListener('wheel', function () {
+  event.preventDefault();
+});
 
 if (ENV.exhibition) {
   var logout = (0, _moutFunctionDebounce2['default'])(function () {
