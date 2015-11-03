@@ -1,9 +1,11 @@
 import _ from 'lodash';
 import $ from 'jquery';
+import moment from 'moment';
 import { GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW } from '../models/views';
 import { geographicViewSelector, frequencyViewSelector, durationViewSelector } from '../selectors/views';
 import { uiActiveViewSelector } from '../selectors/ui';
 import { requestTiles } from '../actions/tiles';
+import trackEvent from '../services/track-event';
 
 export const CHANGE_VIEW = 'CHANGE_VIEW';
 export const SET_LOCATIONS = 'SET_LOCATIONS';
@@ -68,14 +70,22 @@ function computeViewLocations(view) {
 }
 
 export function changeView(view) {
+  trackEvent('ui', 'change', 'view', view);
+
   return { type: CHANGE_VIEW, view };
 }
 
 export function changeTimeSpan(timeSpan) {
+  let [ start, end ] = timeSpan;
+
+  trackEvent('ui', 'filter', 'time span', moment(start).format('YYYY-MM-DD') + '-' + moment(end).format('YYYY-MM-DD'));
+
   return { type: CHANGE_TIME_SPAN, timeSpan };
 }
 
 export function hoverPlace(placeId, hover) {
+  trackEvent('ui', 'hover', 'place');
+
   return { type: HOVER_PLACE, placeId, hover };
 }
 
