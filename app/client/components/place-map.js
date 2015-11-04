@@ -6,47 +6,28 @@ class PlaceMap extends Component {
     let { node } = this.props,
       nextNode = nextProps.node;
 
-    return node.radius !== nextNode.radius || node.tile !== nextNode.tile;
+    return node.radius !== nextNode.radius || node.tileURL !== nextNode.tileURL;
   }
 
   componentWillUpdate(nextProps) {
-    if (nextProps.node.tile != null)
+    if (nextProps.node.tileURL != null)
       return;
 
-    this.oldTile = this.props.node.tile || this.oldTile;
+    this.oldTileURL = this.props.node.tileURL || this.oldTile;
   }
 
   render() {
     let { node } = this.props,
-      { radius, point } = node,
-      tile = node.tile || this.oldTile,
+      { radius } = node,
+      tileURL = node.tileURL || this.oldTileURL,
       clipPath = 'url(#' + PlaceClip.createId(node) + ')',
       size = radius * 2;
-
-    let imageProps = {
-      x: -radius,
-      y: -radius,
-      width: size,
-      height: size
-    };
-
-    if (tile != null) {
-      let tileRadius = Math.min(tile.width / 2, tile.height / 2);
-
-      imageProps = {
-        x: -tileRadius,
-        y: -tileRadius,
-        width: tile.width,
-        height: tile.height,
-        xlinkHref: tile.url
-      };
-    }
 
     return (
       <g className="place-map"
          clipPath={clipPath}>
         <rect className="place-map-background" x={-radius} y={-radius} width={size} height={size} />
-        <image {...imageProps} />
+        <image x={-radius} y={-radius} width={size} height={size} xlinkHref={tileURL} />
         <circle className="place-map-dot" r="3" cx="0" cy="0" />
       </g>
     );

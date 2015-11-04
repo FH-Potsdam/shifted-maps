@@ -6,7 +6,6 @@ import { app } from '../selector';
 import { requestStoryline } from '../actions/storyline';
 import { initVis, moveVis, resizeVis, zoomVis } from '../actions/vis';
 import { updateScales } from '../actions/scales';
-import { requestTiles } from '../actions/tiles';
 import { updateMapState } from '../actions/map';
 import { changeTimeSpan, changeView, updateViews, closeInteractionOverlay } from '../actions/ui';
 import { GEOGRAPHIC_VIEW } from '../models/views';
@@ -24,7 +23,6 @@ class App extends Component {
     super(props);
 
     this._dragging = false;
-    this._firstZoom = true;
   }
 
   shouldComponentUpdate(nextProps) {
@@ -58,32 +56,23 @@ class App extends Component {
 
     this._dragging = false;
     dispatch(moveVis(event.target, event));
-    dispatch(requestTiles());
   }
 
   onMapResize(event) {
     let { dispatch } = this.props;
 
     dispatch(resizeVis(event.target, event));
-    dispatch(requestTiles());
   }
 
   onMapZoomAnim(event) {
     this.props.dispatch(zoomVis(event.target, event));
   }
 
-  onMapZoomEnd() {
-    if (!this._firstZoom)
-      this.props.dispatch(requestTiles());
-
-    this._firstZoom = false;
-  }
-
   onTimeSpanChange(timeSpan) {
     let { dispatch } = this.props;
 
     dispatch(changeTimeSpan(timeSpan));
-    dispatch(requestTiles());
+    //dispatch(requestTiles());
     dispatch(updateViews());
   }
 
@@ -97,7 +86,7 @@ class App extends Component {
     let { dispatch } = this.props;
 
     dispatch(updateScales(scaleElements, sizerElements));
-    dispatch(requestTiles());
+    //dispatch(requestTiles());
   }
 
   onInteractionOverlayClose() {
@@ -139,8 +128,7 @@ class App extends Component {
              onDragStart={this.onMapDragStart.bind(this)}
              onMoveEnd={this.onMapMoveEnd.bind(this)}
              onResize={this.onMapResize.bind(this)}
-             onZoomAnim={this.onMapZoomAnim.bind(this)}
-             onZoomEnd={this.onMapZoomEnd.bind(this)}>
+             onZoomAnim={this.onMapZoomAnim.bind(this)}>
           <Provider store={store}>
             <Vis className="leaflet-zoom-animated"/>
           </Provider>

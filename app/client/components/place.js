@@ -10,7 +10,7 @@ class Place extends Component {
   }
 
   render() {
-    let { node, onRequestTile, onHover } = this.props,
+    let { node, onHover } = this.props,
       style = { display: 'none' },
       className = 'place';
 
@@ -30,7 +30,7 @@ class Place extends Component {
          className={className}
          onMouseEnter={onHover.bind(this, true)}
          onMouseLeave={onHover.bind(this, false)}>
-        <PlaceMap node={node} onRequestTile={onRequestTile} />
+        <PlaceMap node={node} />
         <PlaceDeco node={node} />
         <PlaceLabel node={node} />
       </g>

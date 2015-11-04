@@ -1,6 +1,5 @@
 import oboe from 'oboe';
 import debounce from 'mout/function/debounce';
-import { requestTiles } from './tiles';
 import { fitPlaces } from './places';
 import { initViews } from './ui';
 import Place from '../models/place';
@@ -96,7 +95,6 @@ export function requestStoryline() {
 export function doneStorylineRequest() {
   return function(dispatch) {
     dispatch({ type: DONE_STORYLINE_REQUEST });
-    dispatch(requestTiles());
     dispatch(fitPlaces());
     dispatch(initViews());
   };

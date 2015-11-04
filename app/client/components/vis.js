@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { vis } from '../selector';
-import { requestTile } from '../actions/tiles';
 import { hoverPlace } from '../actions/ui';
 import PlaceCircleList from './place-circle-list';
 import PlaceClipList from './place-clip-list';
@@ -14,12 +13,6 @@ class Vis extends Component {
     return this.props.vis !== nextProps.vis ||
       this.props.nodes !== nextProps.nodes ||
       this.props.edges !== nextProps.edges;
-  }
-
-  onRequestTile(node) {
-    let { dispatch } = this.props;
-
-    dispatch(requestTile(node));
   }
 
   onHover(placeId, hover) {
@@ -55,7 +48,7 @@ class Vis extends Component {
         </defs>
 
         <ConnectionList edges={edges} />
-        <PlaceList nodes={nodes} onRequestTile={this.onRequestTile.bind(this)} onHover={this.onHover.bind(this)} />
+        <PlaceList nodes={nodes} onHover={this.onHover.bind(this)} />
       </svg>
     );
   }

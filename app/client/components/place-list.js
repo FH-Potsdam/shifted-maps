@@ -8,10 +8,10 @@ class PlaceList extends Component {
 
   render() {
     let places = [],
-      { nodes, onRequestTile, onHover } = this.props;
+      { nodes, onHover } = this.props;
 
     nodes.forEach((node, id) => {
-      places.push(<Place node={node} key={id} onRequestTile={onRequestTile} onHover={onHover.bind(this, id)} />);
+      places.push(<Place node={node} key={id} onHover={onHover.bind(this, id)} />);
     });
 
     return <g className="place-list">{places}</g>;

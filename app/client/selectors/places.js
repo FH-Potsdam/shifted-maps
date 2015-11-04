@@ -3,7 +3,6 @@ import { Seq } from 'immutable';
 import { createSelector } from 'reselect';
 import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector, placeMinimizeRadiusSelector } from './scales';
 import { visBoundsSelector, visScaleSelector } from './vis';
-import { tilesLevelSelector } from './tiles';
 import { mapMapSelector } from './map';
 import { uiTimeSpanSelector, uiLocationsSelector, uiHoveredPlaceIdSelector, uiHoverSelector } from './ui';
 
@@ -143,11 +142,11 @@ function boundPlaces(places, visBounds) {
   });
 }
 
-function tilePlaces(places, tiles) {
-  return places.map(function(place, id) {
-    let tile = tiles.get(id);
+function tilePlaces(places) {
+  return places.map(function(place) {
+    let { location, radius } = place;
 
-    return place.set('tile', tile);
+    return place.set('tileURL', `/tiles/${location.lng},${location.lat},${radius}.png${L.Browser.retina ? '@2x' : ''}`);
   });
 }
 
@@ -235,8 +234,7 @@ export const boundedPlacesSelector = createSelector(
 
 export const tiledPlacesSelector = createSelector(
   [
-    boundedPlacesSelector,
-    tilesLevelSelector
+    boundedPlacesSelector
   ],
   tilePlaces
 );
