@@ -8,7 +8,9 @@
     "callback_url": null
   },
   "mapbox": {
-    "geocoding_index": "mapbox.places"
+    "geocoding_index": "mapbox.places",
+    "id": null,
+    "token": null
   },
   "mongodb": {
     "uri": "mongodb://localhost/shifted-maps",

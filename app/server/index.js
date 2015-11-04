@@ -5,6 +5,7 @@ var express = require('express'),
   auth = require('./routes/auth'),
   map = require('./routes/map'),
   api = require('./routes/api'),
+  tiles = require('./routes/tiles'),
   home = require('./routes/home'),
   config = require('./config'),
   passport = require('./services/passport'),
@@ -40,6 +41,7 @@ app.use(express.static(__dirname + '/../../public', {
 
 app.use('/map', map);
 app.use('/api', api);
+app.use('/tiles', tiles);
 app.use('/auth', auth);
 
 app.use(home);

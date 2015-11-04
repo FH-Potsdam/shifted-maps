@@ -24,7 +24,8 @@
     "passport": "^0.2.1",
     "passport-oauth2": "^1.1.2",
     "promise": "^7.0.1",
-    "request": "^2.55.0"
+    "request": "^2.55.0",
+    "sphericalmercator": "^1.0.4"
   },
   "devDependencies": {
     "babelify": "^6.1.3",
