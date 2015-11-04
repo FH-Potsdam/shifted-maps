@@ -9,7 +9,7 @@ function redirect(req, res) {
   var redirectURL = null;
 
   if (req.query.redirect != null)
-    redirectURL = url.parse(req.query.redirect).path;
+    redirectURL = req.query.redirect;
 
   if (redirectURL == null)
     redirectURL = '/map';
@@ -21,10 +21,11 @@ router.get('/', function(req, res, next) {
   if (req.user != null)
     return redirect(req, res);
 
-  var callbackURL = config.moves.callback_url;
+  var callbackURL = config.moves.callback_url,
+    redirect = req.query.redirect;
 
   // Add redirect to query param
-  if (req.query.redirect != null) {
+  if (redirect != null) {
     var callbackURLObject = url.parse(callbackURL, true);
 
     callbackURLObject.query.redirect = req.query.redirect;
@@ -35,12 +36,20 @@ router.get('/', function(req, res, next) {
   passport.authenticate('moves', {
     callbackURL: callbackURL
   }, function(error, user) {
+    // @TODO Clean up
+    var search = '';
+
     if (error)
       return next(error);
 
     // OAuth error TODO Add flash message.
-    if (!user)
-      return res.redirect('/');
+    if (!user) {
+      if (redirect != null) {
+        search = url.parse(redirect).search;
+      }
+
+      return res.redirect('/' + search);
+    }
 
     // Login user
     req.login(user, next);
@@ -53,7 +62,7 @@ router.get('/logout', function(req, res) {
   var redirectURL = '/';
 
   if (req.query.redirect != null) {
-    redirectURL = url.parse(req.query.redirect).path;
+    redirectURL = req.query.redirect;
   }
 
   res.redirect(redirectURL);
