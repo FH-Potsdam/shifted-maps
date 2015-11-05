@@ -42,7 +42,8 @@ function moveVis(map) {
 
   return {
     transform: { translate: bounds.min, scale: null },
-    bounds
+    bounds,
+    animate: false
   };
 }
 

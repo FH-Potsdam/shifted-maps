@@ -21,9 +21,11 @@ const VIEW_SELECTORS = {
 };
 
 let viewQueue;
+let viewServiceQueue;
 
 export function initViews() {
   viewQueue = [...VIEWS];
+  viewServiceQueue = [];
 
   return processViewQueue();
 }
@@ -34,6 +36,7 @@ export function updateViews() {
       activeView = uiActiveViewSelector(state);
 
     viewQueue = [...VIEWS];
+    viewServiceQueue = [];
 
     if (activeView != null) {
       viewQueue = _.without(viewQueue, activeView);
@@ -50,6 +53,8 @@ function processViewQueue() {
 
     if (view == null) return;
 
+    viewServiceQueue.push(view);
+
     dispatch(computeViewLocations(view));
   };
 }
@@ -61,6 +66,9 @@ function computeViewLocations(view) {
       viewService = viewServiceSelector(state);
 
     viewService(function(error, locations) {
+      if (viewServiceQueue.indexOf(view) === -1)
+        return;
+
       dispatch({ type: SET_LOCATIONS, view, locations });
       dispatch(processViewQueue());
     });

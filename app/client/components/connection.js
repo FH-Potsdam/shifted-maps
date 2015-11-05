@@ -23,7 +23,11 @@ class Connection extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.animate)
+    let { edge } = this.props,
+      nextEdge = nextProps.edge;
+
+    // @TODO Animate is always true, for every state change, except view changes. How to do this?
+    if (nextProps.animate && edge.fromPoint !== nextEdge.fromPoint && edge.toPoint !== nextEdge.toPoint)
       this.setState({ showLabel: false });
   }
 

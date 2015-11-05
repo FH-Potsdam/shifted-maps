@@ -264,9 +264,11 @@ var VIEWS = [_modelsViews.GEOGRAPHIC_VIEW, _modelsViews.FREQUENCY_VIEW, _modelsV
 var VIEW_SELECTORS = (_VIEW_SELECTORS = {}, _defineProperty(_VIEW_SELECTORS, _modelsViews.GEOGRAPHIC_VIEW, _selectorsViews.geographicViewSelector), _defineProperty(_VIEW_SELECTORS, _modelsViews.DURATION_VIEW, _selectorsViews.durationViewSelector), _defineProperty(_VIEW_SELECTORS, _modelsViews.FREQUENCY_VIEW, _selectorsViews.frequencyViewSelector), _VIEW_SELECTORS);
 
 var viewQueue = undefined;
+var viewServiceQueue = undefined;
 
 function initViews() {
   viewQueue = [].concat(VIEWS);
+  viewServiceQueue = [];
 
   return processViewQueue();
 }
@@ -277,6 +279,7 @@ function updateViews() {
         activeView = (0, _selectorsUi.uiActiveViewSelector)(state);
 
     viewQueue = [].concat(VIEWS);
+    viewServiceQueue = [];
 
     if (activeView != null) {
       viewQueue = _lodash2['default'].without(viewQueue, activeView);
@@ -293,6 +296,8 @@ function processViewQueue() {
 
     if (view == null) return;
 
+    viewServiceQueue.push(view);
+
     dispatch(computeViewLocations(view));
   };
 }
@@ -304,6 +309,8 @@ function computeViewLocations(view) {
         viewService = viewServiceSelector(state);
 
     viewService(function (error, locations) {
+      if (viewServiceQueue.indexOf(view) === -1) return;
+
       dispatch({ type: SET_LOCATIONS, view: view, locations: locations });
       dispatch(processViewQueue());
     });
@@ -831,7 +838,11 @@ var Connection = (function (_Component) {
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (nextProps.animate) this.setState({ showLabel: false });
+      var edge = this.props.edge;
+      var nextEdge = nextProps.edge;
+
+      // @TODO Animate is always true, for every state change, except view changes. How to do this?
+      if (nextProps.animate && edge.fromPoint !== nextEdge.fromPoint && edge.toPoint !== nextEdge.toPoint) this.setState({ showLabel: false });
     }
   }, {
     key: 'onAnimationComplete',
@@ -2913,6 +2924,8 @@ var Vis = (function (_Component) {
 
       var zoomRange = _lodash2['default'].range(zoom).join(' ');
 
+      console.log(animate);
+
       return _react2['default'].createElement(
         'svg',
         { className: this.props.className, width: boundSize.x, height: boundSize.y, viewBox: viewBox, style: style, 'data-zoom': zoomRange },
@@ -3579,7 +3592,8 @@ function moveVis(map) {
 
   return {
     transform: { translate: bounds.min, scale: null },
-    bounds: bounds
+    bounds: bounds,
+    animate: false
   };
 }
 
