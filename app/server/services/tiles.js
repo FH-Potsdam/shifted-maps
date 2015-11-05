@@ -48,8 +48,6 @@ function getBoundsZoom(bounds, size) {
 
     boundsSize = Math.max(Math.abs(sepx[0] - nwpx[0]), Math.abs(sepx[1] - nwpx[1]));
 
-    console.log(boundsSize, size);
-
     zoomNotFound = boundsSize <= size;
   } while (zoomNotFound && zoom <= maxZoom);
 
