@@ -24,7 +24,7 @@ class Vis extends Component {
   render() {
     let { vis, nodes, edges } = this.props;
 
-    let {bounds, transform, zoom } = vis,
+    let {bounds, transform, zoom, animate } = vis,
       boundSize = bounds.getSize();
 
     let { translate, scale } = transform.toJS();
@@ -47,8 +47,8 @@ class Vis extends Component {
           <PlaceClipList nodes={nodes} />
         </defs>
 
-        <ConnectionList edges={edges} />
-        <PlaceList nodes={nodes} onHover={this.onHover.bind(this)} />
+        <ConnectionList edges={edges} animate={animate} />
+        <PlaceList nodes={nodes} onHover={this.onHover.bind(this)} animate={animate} />
       </svg>
     );
   }

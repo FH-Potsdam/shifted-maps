@@ -12,8 +12,7 @@ function filterPlaces(places, uiTimeSpan) {
 
   let [ start, end ] = uiTimeSpan;
 
-  return Seq(places)
-    .map(function(place) {
+  return places.map(function(place) {
       let stays = place.stays.filter(function(stay) {
         return stay.startAt >= start && stay.endAt <= end;
       });
@@ -23,11 +22,10 @@ function filterPlaces(places, uiTimeSpan) {
       return place.merge({
         stays: stays,
         duration: duration,
-        frequency: stays.size
+        frequency: stays.size,
+        visible: duration > 0
       });
-    })
-    .filter(place => place.duration > 0)
-    .toOrderedMap();
+    });
 }
 
 function computePlaceScales(places, strokeWidthRangeScale, radiusRangeScale, visScale) {
@@ -40,7 +38,10 @@ function computePlaceScales(places, strokeWidthRangeScale, radiusRangeScale, vis
     maxDuration = -Infinity;
 
   places.forEach(function(place) {
-    let { frequency, duration } = place;
+    let { frequency, duration, visible } = place;
+
+    if (!visible)
+      return;
 
     minFrequency = Math.min(minFrequency, frequency);
     maxFrequency = Math.max(maxFrequency, frequency);
@@ -69,7 +70,10 @@ function scalePlaces(places, strokeWidthScale, radiusScale) {
 
   return places
     .map(function(place) {
-      let { frequency, duration } = place;
+      let { frequency, duration, visible } = place;
+
+      if (!visible)
+        return place;
 
       return place.merge({
         strokeWidth: strokeWidthScale(frequency),
@@ -77,6 +81,7 @@ function scalePlaces(places, strokeWidthScale, radiusScale) {
         rank: Math.round(rankScale(duration))
       });
     })
+    .toOrderedMap()
     .sortBy(function(place) {
       return place.radius;
     });
@@ -84,7 +89,10 @@ function scalePlaces(places, strokeWidthScale, radiusScale) {
 
 function positionPlaces(places, mapMap, uiLocations) {
   return places.map(function(place) {
-    let location = place.location;
+    let { location, visible } = place;
+
+    if (!visible)
+      return place;
 
     if (uiLocations != null && uiLocations.has(place.id))
       location = uiLocations.get(place.id);
@@ -110,7 +118,7 @@ function clusterPlaces(places) {
     for (var i = placesArray.length - 1; i >= 0; i--) {
       var placeOne = placesArray[i];
 
-      if (placeOne.calculated)
+      if (!placeOne.visible || placeOne.calculated)
         continue;
 
       placeOne.calculated = true;
@@ -118,7 +126,7 @@ function clusterPlaces(places) {
       for (var i = 0; i < placesArray.length; i++) {
         var placeTwo = placesArray[i];
 
-        if (placeTwo.calculated)
+        if (!placeTwo.visible || placeTwo.calculated)
           continue;
 
         if (computeDistance(placeOne, placeTwo) < (placeOne.radius - placeTwo.radius)) {
@@ -135,16 +143,21 @@ function clusterPlaces(places) {
 
 function boundPlaces(places, visBounds) {
   return places.map(function(place) {
-    if (!place.visible)
+    let { visible, point } = place;
+
+    if (!visible)
       return place;
 
-    return place.set('visible', visBounds.contains(place.point));
+    return place.set('visible', visBounds.contains(point));
   });
 }
 
 function tilePlaces(places) {
   return places.map(function(place) {
-    let { location, radius } = place;
+    let { location, radius, visible } = place;
+
+    if (!visible)
+      return place;
 
     return place.set('tileURL', `/tiles/${location.lng},${location.lat},${radius}.png${L.Browser.retina ? '@2x' : ''}`);
   });

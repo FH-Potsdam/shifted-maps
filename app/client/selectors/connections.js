@@ -36,24 +36,27 @@ function filterConnections(connections, places, uiTimeSpan) {
 
   return Seq(connections)
     .map(function(connection) {
+      if (!places.get(connection.from).visible || !places.get(connection.to).visible)
+        return connection;
+
       let trips = connection.trips.filter(function(trip) {
-        return trip.startAt >= start &&
-          trip.endAt <= end &&
-          places.has(connection.from) &&
-          places.has(connection.to);
+        return trip.startAt >= start && trip.endAt <= end;
       });
 
       let duration = trips.reduce((duration, trip) => duration + trip.duration, 0) / trips.size,
         distance = trips.reduce((distance, trip) => distance + trip.distance, 0) / trips.size;
 
+      duration = Math.round(duration);
+      distance = Math.round(distance);
+
       return connection.merge({
         trips: trips,
-        duration: Math.round(duration),
-        distance: Math.round(distance),
-        frequency: trips.size
+        duration: duration,
+        distance: distance,
+        frequency: trips.size,
+        visible: duration > 0
       });
     })
-    .filter(connection => connection.duration > 0)
     .toMap();
 }
 
@@ -66,7 +69,10 @@ function computeConnectionDomains(connections) {
     maxDistance = -Infinity;
 
   connections.forEach(function(connection) {
-    let { frequency, duration, distance } = connection;
+    let { frequency, duration, distance, visible } = connection;
+
+    if (!visible)
+      return;
 
     minFrequency = Math.min(minFrequency, frequency);
     maxFrequency = Math.max(maxFrequency, frequency);
@@ -99,7 +105,10 @@ function scaleConnections(connections, strokeWidthScale) {
     .range([1, 10]);
 
   return connections.map(function(connection) {
-    let { frequency } = connection;
+    let { frequency, visible } = connection;
+
+    if (!visible)
+      return connection;
 
     return connection.merge({
       strokeWidth: strokeWidthScale(frequency),
@@ -113,12 +122,18 @@ function labelConnection(connections, uiActiveView) {
     return connections;
 
   return connections.map(function(connection) {
+    if (!connection.visible)
+      return connection;
+
     return connection.set('label', CONNECTION_LABEL_SERVICES[uiActiveView](connection));
   });
 }
 
 function positionConnections(connections, places) {
   return connections.map(function(connection) {
+    if (!connection.visible)
+      return connection;
+
     let from = places.get(connection.from),
       to = places.get(connection.to);
 
@@ -131,7 +146,10 @@ function positionConnections(connections, places) {
 
 function boundConnections(connections, visBounds) {
   return connections.map(function(connection) {
-    let { fromPoint, toPoint } = connection;
+    let { fromPoint, toPoint, visible } = connection;
+
+    if (!visible)
+      return connection;
 
     let bounds = L.bounds([
       [fromPoint.get('x'), fromPoint.get('y')],

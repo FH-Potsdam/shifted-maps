@@ -1,4 +1,10 @@
 .place {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+
   &-deco,
   &-map {
     @include transform-origin(center, center);
@@ -64,6 +70,12 @@
 }
 
 .connection {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+
   &-line {
     stroke: $foreground;
   }
@@ -84,7 +96,7 @@
       stroke: $background;
     }
 
-    [data-zoom~="8"] & {
+    [data-zoom~="8"] &.active {
       display: block;
     }
   }

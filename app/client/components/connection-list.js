@@ -7,10 +7,11 @@ class ConnectionList extends Component {
   }
 
   render() {
-    let connections = [];
+    let connections = [],
+      { edges, animate } = this.props;
 
-    this.props.edges.map(function(edge, id) {
-      connections.push(<Connection key={id} edge={edge} />);
+    edges.forEach((edge, id) => {
+      connections.push(<Connection key={id} edge={edge} animate={animate} />);
     });
 
     return <g className="connection-list">{connections}</g>;

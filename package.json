@@ -52,6 +52,7 @@
     "redux-logger": "^1.0.9",
     "redux-thunk": "^1.0.0",
     "reselect": "^1.1.0",
+    "velocity-react": "^1.1.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }

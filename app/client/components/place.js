@@ -1,32 +1,52 @@
 import React, { Component } from 'react';
+import VelocityComponent from 'velocity-react/velocity-component';
 import PlaceMap from './place-map';
 import PlaceDeco from './place-deco';
 import PlaceLabel from './place-label';
 
 class Place extends Component {
-  shouldComponentUpdate(nextProps) {
-    return this.props.node.visible !== nextProps.node.visible ||
-      (nextProps.node.visible && this.props.node !== nextProps.node);
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      visible: props.node.visible
+    };
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.state.visible !== nextState.visible ||
+      this.props.node !== nextProps.node;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.node.visible)
+      this.setState({ visible: true });
+  }
+
+  onAnimationComplete() {
+    this.setState({ visible: this.props.node.visible });
   }
 
   render() {
-    let { node, onHover } = this.props,
-      style = { display: 'none' },
-      className = 'place';
+    let { node, onHover, animate } = this.props,
+      { point, hover, rank } = node,
+      { visible } = this.state,
+      className = 'place',
+      transform, animation;
 
-    if (node.visible)
-      style.display = 'block';
+    if (visible) {
+      className += ' active';
 
-    if (node.hover)
-      className += ' hover';
+      if (hover)
+        className += ' hover';
 
-    let point = node.point,
-      transform = `translate(${point.x}, ${point.y})`;
+      if (!animate && point != null)
+        transform = `translate(${point.x}, ${point.y})`;
+    }
 
-    return (
-      <g style={style}
-         transform={transform}
-         data-rank={node.rank}
+    let place = (
+      <g transform={transform}
+         data-rank={rank}
          className={className}
          onMouseEnter={onHover.bind(this, true)}
          onMouseLeave={onHover.bind(this, false)}>
@@ -35,6 +55,21 @@ class Place extends Component {
         <PlaceLabel node={node} />
       </g>
     );
+
+    if (animate && point != null) {
+      animation = {
+        translateX: point.x,
+        translateY: point.y
+      };
+
+      place = (
+        <VelocityComponent animation={animation} duration={200} complete={this.onAnimationComplete.bind(this)}>
+          {place}
+        </VelocityComponent>
+      );
+    }
+
+    return place;
   }
 }
 

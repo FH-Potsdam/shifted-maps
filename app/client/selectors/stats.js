@@ -5,7 +5,12 @@ import { uiTimeSpanSelector } from './ui';
 
 function computeTotalConnectionDistance(connections) {
   return connections.reduce(function(distance, connection) {
-    return connection.trips.reduce(function(distance, trip) {
+    let { trips, visible } = connection;
+
+    if (!visible)
+      return distance;
+
+    return trips.reduce(function(distance, trip) {
       return distance + trip.distance;
     }, distance);
   }, 0);
@@ -13,7 +18,12 @@ function computeTotalConnectionDistance(connections) {
 
 function computeTotalConnectionDuration(connections) {
   return connections.reduce(function(duration, connection) {
-    return connection.trips.reduce(function(duration, trip) {
+    let { trips, visible } = connection;
+
+    if (!visible)
+      return duration;
+
+    return trips.reduce(function(duration, trip) {
       return duration + trip.duration;
     }, duration);
   }, 0);
@@ -21,18 +31,27 @@ function computeTotalConnectionDuration(connections) {
 
 function computeTotalConnectionFrequency(connections) {
   return connections.reduce(function(frequency, connection) {
+    if (!connection.visible)
+      return frequency;
+
     return frequency + connection.frequency;
   }, 0);
 }
 
 function computeTotalPlaceDuration(places) {
   return places.reduce(function(duration, place) {
+    if (!place.visible)
+      return duration;
+
     return duration + place.duration;
   }, 0);
 }
 
 function computeTotalPlaceFrequency(places) {
   return places.reduce(function(frequency, place) {
+    if (!place.visible)
+      return frequency;
+
     return frequency + place.frequency;
   }, 0);
 }
@@ -45,14 +64,14 @@ export const totalConnectionsSelector = createSelector(
   [
     filteredConnectionsSelector
   ],
-  connections => connections.size
+  connections => connections.filter(connection => connection.visible).size
 );
 
 export const totalPlacesSelector = createSelector(
   [
     filteredPlacesSelector
   ],
-  places => places.size
+  places => places.filter(place => place.visible).size
 );
 
 export const totalConnectionDistanceSelector = createSelector(

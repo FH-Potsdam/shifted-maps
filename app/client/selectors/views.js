@@ -10,7 +10,10 @@ function computeBeelineRange(connections) {
     maxBeeline = -Infinity
 
   connections.forEach(function(connection) {
-    let { beeline } = connection;
+    let { beeline, visible } = connection;
+
+    if (!visible)
+      return;
 
     minBeeline = Math.min(minBeeline, beeline);
     maxBeeline = Math.max(maxBeeline, beeline);
@@ -21,6 +24,9 @@ function computeBeelineRange(connections) {
 
 function computeNormalizedBeelineRange(connections) {
   let groupedBeelines = _.chain(connections.toJS())
+    .filter(function(connection) {
+      return connection.visible;
+    })
     .groupBy(function(connection) {
       return Math.round(connection.beeline * 100) / 100;
     })
@@ -73,6 +79,9 @@ export const geographicViewSelector = createSelector(
     beelineDomainSelector
   ],
   function(places, connections, connectionDistanceDomain, beelineRange) {
+    places = places.filter(place => place.visible);
+    connections = connections.filter(connection => connection.visible);
+
     return partial(geographicView, places, connections, connectionDistanceDomain, beelineRange);
   }
 );
@@ -85,6 +94,9 @@ export const frequencyViewSelector = createSelector(
     normalizedBeelineDomainSelector
   ],
   function(places, connections, connectionFrequencyDomain, beelineRange) {
+    places = places.filter(place => place.visible);
+    connections = connections.filter(connection => connection.visible);
+
     return partial(frequencyView, places, connections, connectionFrequencyDomain, beelineRange);
   }
 );
@@ -97,6 +109,9 @@ export const durationViewSelector = createSelector(
     beelineDomainSelector
   ],
   function(places, connections, connectionDurationDomain, beelineRange) {
+    places = places.filter(place => place.visible);
+    connections = connections.filter(connection => connection.visible);
+
     return partial(durationView, places, connections, connectionDurationDomain, beelineRange);
   }
 );

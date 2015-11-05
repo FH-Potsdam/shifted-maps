@@ -1,5 +1,6 @@
 import { Map } from 'immutable';
 import { INIT_VIS, ZOOM_VIS, MOVE_VIS, RESIZE_VIS } from '../actions/vis';
+import { CHANGE_VIEW } from '../actions/ui'
 
 const CLIP_PADDING = 0.5;
 
@@ -20,6 +21,7 @@ function initVis(map) {
     translate: bounds.min,
     scale: scale(zoom),
     transform: { translate: bounds.min, scale: null },
+    animate: false,
     bounds, zoom
   };
 }
@@ -30,7 +32,8 @@ function zoomVis(map, bounds, event) {
     translate = map._getCenterOffset(event.center)._multiplyBy(-scale)._add(boundsMin);
 
   return {
-    transform: { translate, scale }
+    transform: { translate, scale },
+    animate: false
   };
 }
 
@@ -54,6 +57,9 @@ export default function vis(state = Map(), action) {
     case MOVE_VIS:
     case RESIZE_VIS:
       return state.merge(moveVis(action.map));
+
+    case CHANGE_VIEW:
+      return state.merge({ animate: true });
 
     default:
       return state

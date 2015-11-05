@@ -2,17 +2,26 @@ import React, { Component } from 'react';
 
 class ConnectionLabel extends Component {
   shouldComponentUpdate(nextProps) {
-    let { edge } = this.props,
+    let { edge, visible } = this.props,
       nextEdge = nextProps.edge;
 
-    return edge.label !== nextEdge.label || edge.fromPoint !== nextEdge.fromPoint || edge.toPoint !== nextEdge.toPoint;
+    return visible !== nextProps.visible ||
+      edge.label !== nextEdge.label ||
+      edge.fromPoint !== nextEdge.fromPoint ||
+      edge.toPoint !== nextEdge.toPoint;
   }
 
   render() {
-    let { edge } = this.props;
+    let { edge, visible } = this.props,
+      className;
 
     if (edge.label == null)
       return null;
+
+    className = 'connection-label';
+
+    if (visible)
+      className += ' active';
 
     let { fromPoint, toPoint } = edge;
 
@@ -30,7 +39,7 @@ class ConnectionLabel extends Component {
     let transform = `translate(${center.x}, ${center.y}) rotate(${rotate})`;
 
     return (
-      <g className="connection-label" transform={transform}>
+      <g className={className} transform={transform}>
         <text className="connection-label-stroke">{edge.label}</text>
         <text>{edge.label}</text>
       </g>

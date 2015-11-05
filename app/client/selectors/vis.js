@@ -15,9 +15,12 @@ export const visTransformSelector = state => state.vis.get('transform');
 
 export const visZoomSelector = state => state.vis.get('zoom');
 
+export const visAnimateSelector = state => state.vis.get('animate');
+
 export default createStructuredSelector({
   scale: visScaleSelector,
   bounds: visBoundsSelector,
   transform: visTransformSelector,
-  zoom: visZoomSelector
+  zoom: visZoomSelector,
+  animate: visAnimateSelector
 });
