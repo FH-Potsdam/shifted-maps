@@ -6,7 +6,7 @@
   left: 0;
   right: 0;
   background-color: $highlight;
-  color: $background;
+  color: white;
   z-index: 2;
   pointer-events: auto;
   opacity: 1;
@@ -21,7 +21,7 @@
 
     h1 {
       font-size: $font-size-hero;
-      color: $background;
+      color: white;
     }
 
     .lede {

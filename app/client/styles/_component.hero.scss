@@ -1,10 +1,10 @@
 .hero {
-  background-color: rgba($background, .7);
+  background-color: rgba(white, .7);
   padding: $inuit-base-spacing-unit * 2;
   padding-top: $inuit-base-spacing-unit * 3;
 
   @include media-query(tablet) {
-    background-color: rgba($background, .9);
+    background-color: rgba(white, .9);
   }
 
   @include media-query(tablet) {
