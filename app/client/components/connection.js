@@ -6,7 +6,9 @@ class Connection extends Component {
     let { edge } = this.props,
       nextEdge = nextProps.edge;
 
-    return edge.fromPoint !== nextEdge.toPoint || edge.strokeWidth !== nextEdge.strokeWidth;
+    return edge.fromPoint !== nextEdge.fromPoint ||
+      edge.toPoint !== nextEdge.fromPoint ||
+      edge.strokeWidth !== nextEdge.strokeWidth;
   }
 
   render() {
