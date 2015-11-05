@@ -7,7 +7,7 @@ class Connection extends Component {
       nextEdge = nextProps.edge;
 
     return edge.fromPoint !== nextEdge.fromPoint ||
-      edge.toPoint !== nextEdge.fromPoint ||
+      edge.toPoint !== nextEdge.toPoint ||
       edge.strokeWidth !== nextEdge.strokeWidth;
   }
 
