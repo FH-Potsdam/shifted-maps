@@ -13,7 +13,8 @@ function pickListeners(props) {
 
 class Map extends Component {
   componentDidMount() {
-    let { id, center, zoom } = this.props;
+    let { id, center, zoom } = this.props,
+      attribution;
 
     this.map = L.mapbox.map(this.refs.map, id, {
       maxZoom: 19
@@ -23,6 +24,14 @@ class Map extends Component {
 
     this.map.setView(center, zoom);
     this.map.zoomControl.removeFrom(this.map);
+
+    if (ENV.exhibition) {
+      this.map.attributionControl.removeFrom(this.map);
+
+      L.control.attribution({ prefix: '' })
+        .addAttribution('© Mapbox, © OpenStreetMap')
+        .addTo(this.map);
+    }
 
     // Need to render overlay including children in next tick to let map set the view first and create the corresponding
     // overlay pane element we use here.
