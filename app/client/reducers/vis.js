@@ -21,7 +21,6 @@ function initVis(map) {
     translate: bounds.min,
     scale: scale(zoom),
     transform: { translate: bounds.min, scale: null },
-    animate: false,
     bounds, zoom
   };
 }
@@ -42,8 +41,7 @@ function moveVis(map) {
 
   return {
     transform: { translate: bounds.min, scale: null },
-    bounds,
-    animate: false
+    bounds
   };
 }
 

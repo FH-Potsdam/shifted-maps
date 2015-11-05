@@ -40,8 +40,6 @@ class Vis extends Component {
 
     let zoomRange = _.range(zoom).join(' ');
 
-    console.log(animate);
-
     return (
       <svg className={this.props.className} width={boundSize.x} height={boundSize.y} viewBox={viewBox} style={style} data-zoom={zoomRange}>
         <defs>

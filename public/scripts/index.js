@@ -2924,8 +2924,6 @@ var Vis = (function (_Component) {
 
       var zoomRange = _lodash2['default'].range(zoom).join(' ');
 
-      console.log(animate);
-
       return _react2['default'].createElement(
         'svg',
         { className: this.props.className, width: boundSize.x, height: boundSize.y, viewBox: viewBox, style: style, 'data-zoom': zoomRange },
@@ -3571,7 +3569,6 @@ function initVis(map) {
     translate: bounds.min,
     scale: scale(zoom),
     transform: { translate: bounds.min, scale: null },
-    animate: false,
     bounds: bounds, zoom: zoom
   };
 }
@@ -3592,8 +3589,7 @@ function moveVis(map) {
 
   return {
     transform: { translate: bounds.min, scale: null },
-    bounds: bounds,
-    animate: false
+    bounds: bounds
   };
 }
 
