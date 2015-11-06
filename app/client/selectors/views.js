@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import partial from 'mout/function/partial';
-import chain from 'lodash/chain/chain';
+import _ from 'lodash'; // @TODO Replace with chain module
 import flatten from 'lodash/array/flatten';
 import map from 'lodash/collection/map';
 import sum from 'lodash/math/sum';
@@ -28,7 +28,7 @@ function computeBeelineRange(connections) {
 }
 
 function computeNormalizedBeelineRange(connections) {
-  let groupedBeelines = chain(connections.toJS())
+  let groupedBeelines = _.chain(connections.toJS())
     .filter(function(connection) {
       return connection.visible;
     })
