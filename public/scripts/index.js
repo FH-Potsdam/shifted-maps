@@ -259,7 +259,7 @@ exports.HOVER_PLACE = HOVER_PLACE;
 var CLOSE_INTERACTION_OVERLAY = 'CLOSE_INTERACTION_OVERLAY';
 
 exports.CLOSE_INTERACTION_OVERLAY = CLOSE_INTERACTION_OVERLAY;
-var VIEWS = [_modelsViews.GEOGRAPHIC_VIEW, _modelsViews.FREQUENCY_VIEW, _modelsViews.DURATION_VIEW];
+var VIEWS = [_modelsViews.GEOGRAPHIC_VIEW, _modelsViews.DURATION_VIEW, _modelsViews.FREQUENCY_VIEW];
 
 var VIEW_SELECTORS = (_VIEW_SELECTORS = {}, _defineProperty(_VIEW_SELECTORS, _modelsViews.GEOGRAPHIC_VIEW, _selectorsViews.geographicViewSelector), _defineProperty(_VIEW_SELECTORS, _modelsViews.DURATION_VIEW, _selectorsViews.durationViewSelector), _defineProperty(_VIEW_SELECTORS, _modelsViews.FREQUENCY_VIEW, _selectorsViews.frequencyViewSelector), _VIEW_SELECTORS);
 
