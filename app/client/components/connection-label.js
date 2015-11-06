@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classNames from 'classnames';
 
 class ConnectionLabel extends Component {
   shouldComponentUpdate(nextProps) {
@@ -13,16 +14,10 @@ class ConnectionLabel extends Component {
   }
 
   render() {
-    let { edge, visible } = this.props,
-      className;
+    let { edge, visible } = this.props;
 
     if (edge.label == null)
       return null;
-
-    className = 'connection-label';
-
-    if (visible)
-      className += ' active';
 
     let { fromPoint, toPoint } = edge;
 
@@ -37,7 +32,8 @@ class ConnectionLabel extends Component {
     if (rotate > 90) rotate -= 180;
     else if (rotate < -90) rotate += 180;
 
-    let transform = `translate(${center.x}, ${center.y}) rotate(${rotate})`;
+    let className = classNames('connection-label', { active: visible }),
+      transform = `translate(${center.x}, ${center.y}) rotate(${rotate})`;
 
     return (
       <g className={className} transform={transform}>

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import _ from 'lodash';
+import map from 'lodash/collection/map';
+import classNames from 'classnames';
 import { GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW } from '../models/views';
 
 const VIEWS = {
@@ -23,11 +24,8 @@ class ViewList extends Component {
   render() {
     let { activeView } = this.props;
 
-    let buttons = _.map(VIEWS, (key, view) => {
-      let className = 'view-list__button';
-
-      if (activeView === view)
-        className += ' active';
+    let buttons = map(VIEWS, (key, view) => {
+      let className = classNames('view-list__button', { active: activeView === view });
 
       let onClick = event => {
         event.preventDefault();

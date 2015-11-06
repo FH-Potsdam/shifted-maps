@@ -1,10 +1,7 @@
-"use strict";
-
 var util = require('util'),
   url = require('url'),
   oboe = require('oboe'),
-  Promise = require('promise'),
-  _ = require('lodash'),
+  extend = require('lodash/object/extend'),
   moment = require('moment');
 
 // @TODO Separate into client and request
@@ -19,7 +16,7 @@ API.prototype.request = function(getURL, query, callback) {
     getURLObject = url.parse(getURL, true);
 
   apiURLObject.pathname += getURLObject.pathname;
-  _.extend(apiURLObject.query, getURLObject.query, query || {}, {
+  extend(apiURLObject.query, getURLObject.query, query || {}, {
     access_token: this._accessToken
   });
 

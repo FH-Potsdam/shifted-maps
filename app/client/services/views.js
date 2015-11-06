@@ -1,6 +1,6 @@
 import { Map } from 'immutable';
 import d3 from 'd3';
-import _ from 'lodash';
+import find from 'lodash/collection/find';
 import moment from 'moment';
 import currencyFormat from 'mout/number/currencyFormat';
 
@@ -23,7 +23,7 @@ function createNodeArray(places) {
 
 function createLinkArray(nodes, connections) {
   let findNode = function(place) {
-    return _.find(nodes, { place });
+    return find(nodes, { place });
   };
 
   return connections.map(function(connection) {

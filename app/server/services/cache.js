@@ -1,12 +1,12 @@
 var CacheMongo = require('cacheman-mongo'),
   Cache = require('cacheman'),
-  _ = require('lodash'),
+  extend = require('lodash/object/extend'),
   mongoose = require('./mongoose');
 
 var engine = new CacheMongo(mongoose.connection);
 
 function cache(name, options) {
-  options = _.extend({
+  options = extend({
     engine: engine
   }, options || {});
 

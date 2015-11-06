@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classNames from 'classnames';
 import VelocityComponent from 'velocity-react/velocity-component';
 import ConnectionLabel from './connection-label';
 
@@ -38,13 +39,9 @@ class Connection extends Component {
   render() {
     let { edge, animate } = this.props,
       { visible, fromPoint, toPoint, strokeWidth, rank } = edge,
-      className = 'connection',
-      coords = {},
-      animation, connection;
+      coords = {};
 
     if (visible) {
-      className += ' active';
-
       coords = {
         x1: fromPoint.get('x'),
         y1: fromPoint.get('y'),
@@ -53,7 +50,7 @@ class Connection extends Component {
       };
     }
 
-    connection = <line strokeWidth={strokeWidth} className="connection-line" {...(!animate ? coords : {})} />;
+    let connection = <line strokeWidth={strokeWidth} className="connection-line" {...(!animate ? coords : {})} />;
 
     if (visible && animate) {
       connection = (
@@ -62,6 +59,8 @@ class Connection extends Component {
         </VelocityComponent>
       );
     }
+
+    let className = classNames('connection', { active: visible });
 
     return (
       <g className={className} data-rank={rank}>

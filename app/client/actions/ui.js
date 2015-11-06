@@ -1,5 +1,4 @@
-import _ from 'lodash';
-import $ from 'jquery';
+import without from 'lodash/array/without';
 import moment from 'moment';
 import { GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW } from '../models/views';
 import { geographicViewSelector, frequencyViewSelector, durationViewSelector } from '../selectors/views';
@@ -39,7 +38,7 @@ export function updateViews() {
     viewServiceQueue = [];
 
     if (activeView != null) {
-      viewQueue = _.without(viewQueue, activeView);
+      viewQueue = without(viewQueue, activeView);
       viewQueue.unshift(activeView);
     }
 

@@ -1,20 +1,27 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import _ from 'lodash';
-import $ from 'jquery';
+import pick from 'lodash/object/pick';
+import keys from 'lodash/object/keys';
+import isFunction from 'lodash/lang/isFunction';
+import forEach from 'lodash/collection/forEach';
+import classNames from 'classnames/dedupe';
 
 function computeEventName(name) {
   return name.toLowerCase().slice(2); // Strip "on"
 }
 
 function pickListeners(props) {
-  return _.pick(props, _.isFunction);
+  return pick(props, isFunction);
 }
 
 class Map extends Component {
+  shouldComponentUpdate(nextProps) {
+    return this.props.bounds !== nextProps.bounds ||
+      this.props.active !== nextProps.active;
+  }
+
   componentDidMount() {
-    let { id, center, zoom } = this.props,
-      attribution;
+    let { id, center, zoom } = this.props;
 
     this.map = L.mapbox.map(this.refs.map, id, {
       maxZoom: 19
@@ -40,28 +47,15 @@ class Map extends Component {
     }.bind(this));
   }
 
-  componentWillUpdate(nextProps) {
-    let nextListeners = pickListeners(nextProps),
-      listeners = this.props;
-
-    nextListeners = _.pick(nextListeners, function(listener, name) {
-      return listeners[name] !== listener;
-    });
-
-    listeners = _.pick(listeners, _.keys(nextListeners))
-
-    this.removeEventListeners(listeners);
-    this.addEventListeners(nextListeners);
-  }
-
   componentDidUpdate() {
-    let { bounds } = this.props;
+    let { bounds, active } = this.props,
+      map = this.refs.map;
 
     if (bounds != null) {
       this.map.fitBounds(bounds);
     }
 
-    $(this.refs.map).toggleClass('active', this.props.active);
+    map.className = classNames(map.className, { active });
   }
 
   componentWillUnmount() {
@@ -73,7 +67,7 @@ class Map extends Component {
   }
 
   addEventListeners(listeners) {
-    _.each(listeners, (listener, name) => this.addEventListener(name, listener));
+    forEach(listeners, (listener, name) => this.addEventListener(name, listener));
   }
 
   removeEventListener(name, listener) {
@@ -81,7 +75,7 @@ class Map extends Component {
   }
 
   removeEventListeners(listeners) {
-    _.each(listeners, (listener, name) => this.removeEventListener(name, listener));
+    forEach(listeners, (listener, name) => this.removeEventListener(name, listener));
   }
 
   render() {

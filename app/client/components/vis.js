@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import _ from 'lodash';
+import range from 'lodash/utility/range';
 import { connect } from 'react-redux';
 import { vis } from '../selector';
 import { hoverPlace } from '../actions/ui';
@@ -38,7 +38,7 @@ class Vis extends Component {
 
     style[L.DomUtil.TRANSFORM] = transformString;
 
-    let zoomRange = _.range(zoom).join(' ');
+    let zoomRange = range(zoom).join(' ');
 
     return (
       <svg className={this.props.className} width={boundSize.x} height={boundSize.y} viewBox={viewBox} style={style} data-zoom={zoomRange}>

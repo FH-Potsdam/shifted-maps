@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classNames from 'classnames';
 import VelocityComponent from 'velocity-react/velocity-component';
 import PlaceMap from './place-map';
 import PlaceDeco from './place-deco';
@@ -31,18 +32,12 @@ class Place extends Component {
     let { node, onHover, animate } = this.props,
       { point, hover, rank } = node,
       { visible } = this.state,
-      className = 'place',
       transform, animation;
 
-    if (visible) {
-      className += ' active';
+    if (visible && !animate && point != null)
+      transform = `translate(${point.x}, ${point.y})`;
 
-      if (hover)
-        className += ' hover';
-
-      if (!animate && point != null)
-        transform = `translate(${point.x}, ${point.y})`;
-    }
+    let className = classNames('place', { active: visible, hover });
 
     let place = (
       <g transform={transform}

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
-import $ from 'jquery';
+import classNames from 'classnames';
+import offset from '../helpers/offset';
 
 class TimeSlider extends Component {
   constructor(props) {
@@ -9,14 +10,6 @@ class TimeSlider extends Component {
     this.state = {
       values: this.props.defaultValues
     };
-  }
-
-  componentDidMount() {
-    this.$element = $(findDOMNode(this));
-  }
-
-  componentDidUpdate() {
-    this.$element = $(findDOMNode(this));
   }
 
   start() {
@@ -34,9 +27,9 @@ class TimeSlider extends Component {
   }
 
   computeValue(valueLeft) {
-    let $element = this.$element,
-      { left } = $element.offset(),
-      width = $element.width();
+    let element = findDOMNode(this),
+      { left } = offset(element),
+      width = element.offsetWidth;
 
     let position = (Math.max(left, Math.min(left + width, valueLeft)) - left) / width,
       start = this.start(),
@@ -160,12 +153,12 @@ class TimeSlider extends Component {
 }
 
 class Thumb extends Component {
-  componentDidMount() {
-    this.$element = $(findDOMNode(this));
-  }
+  constructor(props) {
+    super(props);
 
-  componentDidUpdate() {
-    this.$element = $(findDOMNode(this));
+    this.state = {
+      active: false
+    };
   }
 
   onClick(event) {
@@ -175,11 +168,12 @@ class Thumb extends Component {
   onMouseDown(event) {
     event.preventDefault();
 
-    let offset = this.$element.offset(),
-      left = event.pageX - offset.left,
-      top = event.pageY - offset.top;
 
-    this.$element.addClass('active');
+    let offset_ = offset(findDOMNode(this)),
+      left = event.pageX - offset_.left,
+      top = event.pageY - offset_.top;
+
+    this.setState({ active: true });
 
     let onMouseMove = event => {
       this.onMove(event.clientX - left, event.clientY - top);
@@ -188,14 +182,14 @@ class Thumb extends Component {
     let onMouseUp = event => {
       event.preventDefault();
 
-      this.$element.removeClass('active');
+      this.setState({ active: false });
 
-      $(window).off('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('mousemove', onMouseMove);
     };
 
-    $(window)
-      .on('mousemove', onMouseMove)
-      .one('mouseup', onMouseUp);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
   }
 
   onMove(left, top) {
@@ -203,13 +197,16 @@ class Thumb extends Component {
   }
 
   render() {
-    let { position } = this.props;
+    let { position } = this.props,
+      { active } = this.state;
 
     let style = {
       left: position * 100 + '%'
     };
 
-    return <div className="time-slider__thumb" onMouseDown={this.onMouseDown.bind(this)} onClick={this.onClick.bind(this)} style={style} />;
+    let className = classNames('time-slider__thumb', { active });
+
+    return <div className={className} onMouseDown={this.onMouseDown.bind(this)} onClick={this.onClick.bind(this)} style={style} />;
   }
 }
 

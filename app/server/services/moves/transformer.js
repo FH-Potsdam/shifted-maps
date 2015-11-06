@@ -1,5 +1,5 @@
 var util = require('util'),
-  _ = require('lodash'),
+  reduce = require('lodash/collection/reduce'),
   Transform = require('stream').Transform,
   Place = require('../../models/place'),
   Stay = require('../../models/stay'),
@@ -72,7 +72,7 @@ Transformer.prototype._transformMove = function(object, callback) {
   if (this._lastPlace == null)
     return callback();
 
-  var distance = _.reduce(object.activities, function(reduction, activity) {
+  var distance = reduce(object.activities, function(reduction, activity) {
     return reduction + activity.distance;
   }, 0);
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import _ from 'lodash';
+import range from 'lodash/utility/range';
 
 class LoadingScreen extends Component {
   shouldComponentUpdate(nextProps) {
@@ -17,7 +17,7 @@ class LoadingScreen extends Component {
 
     let timeSpanStart = stats.timeSpan[0];
 
-    let progress = _.range(0, width).join(' ');
+    let progress = range(0, width).join(' ');
 
     return (
       <div className="loading-screen">
