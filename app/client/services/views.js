@@ -35,7 +35,7 @@ function createLinkArray(nodes, connections) {
   }).toArray();
 }
 
-function computeLocations(places, connections, linkStrength, linkDistance, done) {
+function computeLocations(places, connections/*, linkStrength*/, linkDistance, done) {
   let nodes = createNodeArray(places),
     links = createLinkArray(nodes, connections);
 
@@ -43,12 +43,13 @@ function computeLocations(places, connections, linkStrength, linkDistance, done)
     .nodes(nodes)
     .links(links)
     .size([360, 180])
-    .charge(-0.01)
-    .chargeDistance(1)
+    .charge(0)//-0.01)
+    .chargeDistance(1)//1)
     .gravity(0)
-    .linkStrength(function(link) {
+    .linkStrength(1)
+    /*.linkStrength(function(link) {
       return linkStrength(connections.get(link.connection));
-    })
+    })*/
     .linkDistance(function(link) {
       return linkDistance(connections.get(link.connection));
     })
@@ -81,25 +82,25 @@ function computeLocations(places, connections, linkStrength, linkDistance, done)
 export function geographicView(places, connections, distanceDomain, beelineRange, done) {
   console.log('geographicView');
 
-  let strengthScale = d3.scale.linear()
+  /*let strengthScale = d3.scale.linear()
     .domain(distanceDomain)
     .range([1, 0.5])
-    .clamp(true);
+    .clamp(true);*/
 
   let distanceScale = d3.scale.linear()
     .domain(distanceDomain)
     .range(beelineRange)
     .clamp(true);
 
-  function linkStrength(connection) {
+  /*function linkStrength(connection) {
     return strengthScale(connection.distance);
-  }
+  }*/
 
   function linkDistance(connection) {
     return distanceScale(connection.distance);
   }
 
-  computeLocations(places, connections, linkStrength, linkDistance, function(error, locations) {
+  computeLocations(places, connections/*, linkStrength*/, linkDistance, function(error, locations) {
     done(null, locations);
   });
 }
@@ -107,25 +108,25 @@ export function geographicView(places, connections, distanceDomain, beelineRange
 export function durationView(places, connections, durationDomain, beelineRange, done) {
   console.log('durationView');
 
-  let strengthScale = d3.scale.linear()
+  /*let strengthScale = d3.scale.linear()
     .domain(durationDomain)
     .range([1, 0.5])
-    .clamp(true);
+    .clamp(true);*/
 
   let distanceScale = d3.scale.linear()
     .domain(durationDomain)
     .range(beelineRange)
     .clamp(true);
 
-  function linkStrength(connection) {
+  /*function linkStrength(connection) {
     return strengthScale(connection.duration);
-  }
+  }*/
 
   function linkDistance(connection) {
     return distanceScale(connection.duration);
   }
 
-  computeLocations(places, connections, linkStrength, linkDistance, function(error, locations) {
+  computeLocations(places, connections/*, linkStrength*/, linkDistance, function(error, locations) {
     done(null, locations);
   });
 }
@@ -133,25 +134,25 @@ export function durationView(places, connections, durationDomain, beelineRange, 
 export function frequencyView(places, connections, frequencyDomain, beelineRange, done) {
   console.log('frequencyView');
 
-  let strengthScale = d3.scale.linear()
+  /*let strengthScale = d3.scale.linear()
     .domain(frequencyDomain)
     .range([0.1, 1])
-    .clamp(true);
+    .clamp(true);*/
 
   let distanceScale = d3.scale.linear()
     .domain([...frequencyDomain].reverse())
     .range(beelineRange)
     .clamp(true);
 
-  function linkStrength(connection) {
+  /*function linkStrength(connection) {
     return strengthScale(connection.frequency);
-  }
+  }*/
 
   function linkDistance(connection) {
     return distanceScale(connection.frequency);
   }
 
-  computeLocations(places, connections, linkStrength, linkDistance, function(error, locations) {
+  computeLocations(places, connections/*, linkStrength*/, linkDistance, function(error, locations) {
     done(null, locations);
   });
 }

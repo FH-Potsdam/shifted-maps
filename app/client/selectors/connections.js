@@ -1,5 +1,7 @@
 import d3 from 'd3';
 import _ from 'lodash';
+import point from 'turf-point';
+import distance from 'turf-distance';
 import { Seq } from 'immutable';
 import { createSelector } from 'reselect';
 import placesSelector, { filteredPlacesSelector, positionedPlacesSelector } from './places';
@@ -9,12 +11,10 @@ import { uiTimeSpanSelector, uiActiveViewSelector } from './ui';
 import { CONNECTION_LABEL_SERVICES } from '../models/views';
 
 function computeBeeline(from, to) {
-  let fromLat = from.lat + 180,
-    toLat = to.lat + 180,
-    fromLng = from.lng + 90,
-    toLng = to.lng + 90;
+  from = point([from.lng, from.lat]);
+  to = point([to.lng, to.lat]);
 
-  return Math.sqrt(Math.pow(toLng - fromLng, 2) + Math.pow(toLat - fromLat, 2));
+  return distance(from, to, 'degrees');
 }
 
 function beelineConnections(connections, places) {

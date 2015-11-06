@@ -900,7 +900,7 @@ var Connection = (function (_Component) {
 exports['default'] = Connection;
 module.exports = exports['default'];
 
-},{"./connection-label":8,"react":295,"velocity-react/velocity-component":312}],11:[function(require,module,exports){
+},{"./connection-label":8,"react":295,"velocity-react/velocity-component":315}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1997,7 +1997,7 @@ var Place = (function (_Component) {
 exports['default'] = Place;
 module.exports = exports['default'];
 
-},{"./place-deco":19,"./place-label":20,"./place-map":22,"react":295,"velocity-react/velocity-component":312}],24:[function(require,module,exports){
+},{"./place-deco":19,"./place-label":20,"./place-map":22,"react":295,"velocity-react/velocity-component":315}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -3681,6 +3681,14 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _turfPoint = require('turf-point');
+
+var _turfPoint2 = _interopRequireDefault(_turfPoint);
+
+var _turfDistance = require('turf-distance');
+
+var _turfDistance2 = _interopRequireDefault(_turfDistance);
+
 var _immutable = require('immutable');
 
 var _reselect = require('reselect');
@@ -3698,12 +3706,10 @@ var _ui = require('./ui');
 var _modelsViews = require('../models/views');
 
 function computeBeeline(from, to) {
-  var fromLat = from.lat + 180,
-      toLat = to.lat + 180,
-      fromLng = from.lng + 90,
-      toLng = to.lng + 90;
+  from = (0, _turfPoint2['default'])([from.lng, from.lat]);
+  to = (0, _turfPoint2['default'])([to.lng, to.lat]);
 
-  return Math.sqrt(Math.pow(toLng - fromLng, 2) + Math.pow(toLat - fromLat, 2));
+  return (0, _turfDistance2['default'])(from, to, 'degrees');
 }
 
 function beelineConnections(connections, places) {
@@ -3891,7 +3897,7 @@ var boundedConnectionsSelector = (0, _reselect.createSelector)([positionedConnec
 exports.boundedConnectionsSelector = boundedConnectionsSelector;
 exports['default'] = connectionsSelector;
 
-},{"../models/views":38,"./places":49,"./scales":50,"./ui":52,"./vis":54,"d3":60,"immutable":61,"lodash":64,"reselect":309}],48:[function(require,module,exports){
+},{"../models/views":38,"./places":49,"./scales":50,"./ui":52,"./vis":54,"d3":60,"immutable":61,"lodash":64,"reselect":309,"turf-distance":310,"turf-point":312}],48:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -4606,13 +4612,17 @@ function createLinkArray(nodes, connections) {
   }).toArray();
 }
 
-function computeLocations(places, connections, linkStrength, linkDistance, done) {
+function computeLocations(places, connections, /*, linkStrength*/linkDistance, done) {
   var nodes = createNodeArray(places),
       links = createLinkArray(nodes, connections);
 
-  var force = _d32['default'].layout.force().nodes(nodes).links(links).size([360, 180]).charge(-0.01).chargeDistance(1).gravity(0).linkStrength(function (link) {
+  var force = _d32['default'].layout.force().nodes(nodes).links(links).size([360, 180]).charge(0) //-0.01)
+  .chargeDistance(1) //1)
+  .gravity(0).linkStrength(1)
+  /*.linkStrength(function(link) {
     return linkStrength(connections.get(link.connection));
-  }).linkDistance(function (link) {
+  })*/
+  .linkDistance(function (link) {
     return linkDistance(connections.get(link.connection));
   }).start();
 
@@ -4641,19 +4651,22 @@ function computeLocations(places, connections, linkStrength, linkDistance, done)
 function geographicView(places, connections, distanceDomain, beelineRange, done) {
   console.log('geographicView');
 
-  var strengthScale = _d32['default'].scale.linear().domain(distanceDomain).range([1, 0.5]).clamp(true);
+  /*let strengthScale = d3.scale.linear()
+    .domain(distanceDomain)
+    .range([1, 0.5])
+    .clamp(true);*/
 
   var distanceScale = _d32['default'].scale.linear().domain(distanceDomain).range(beelineRange).clamp(true);
 
-  function linkStrength(connection) {
+  /*function linkStrength(connection) {
     return strengthScale(connection.distance);
-  }
+  }*/
 
   function linkDistance(connection) {
     return distanceScale(connection.distance);
   }
 
-  computeLocations(places, connections, linkStrength, linkDistance, function (error, locations) {
+  computeLocations(places, connections, /*, linkStrength*/linkDistance, function (error, locations) {
     done(null, locations);
   });
 }
@@ -4661,19 +4674,22 @@ function geographicView(places, connections, distanceDomain, beelineRange, done)
 function durationView(places, connections, durationDomain, beelineRange, done) {
   console.log('durationView');
 
-  var strengthScale = _d32['default'].scale.linear().domain(durationDomain).range([1, 0.5]).clamp(true);
+  /*let strengthScale = d3.scale.linear()
+    .domain(durationDomain)
+    .range([1, 0.5])
+    .clamp(true);*/
 
   var distanceScale = _d32['default'].scale.linear().domain(durationDomain).range(beelineRange).clamp(true);
 
-  function linkStrength(connection) {
+  /*function linkStrength(connection) {
     return strengthScale(connection.duration);
-  }
+  }*/
 
   function linkDistance(connection) {
     return distanceScale(connection.duration);
   }
 
-  computeLocations(places, connections, linkStrength, linkDistance, function (error, locations) {
+  computeLocations(places, connections, /*, linkStrength*/linkDistance, function (error, locations) {
     done(null, locations);
   });
 }
@@ -4681,19 +4697,22 @@ function durationView(places, connections, durationDomain, beelineRange, done) {
 function frequencyView(places, connections, frequencyDomain, beelineRange, done) {
   console.log('frequencyView');
 
-  var strengthScale = _d32['default'].scale.linear().domain(frequencyDomain).range([0.1, 1]).clamp(true);
+  /*let strengthScale = d3.scale.linear()
+    .domain(frequencyDomain)
+    .range([0.1, 1])
+    .clamp(true);*/
 
   var distanceScale = _d32['default'].scale.linear().domain([].concat(_toConsumableArray(frequencyDomain)).reverse()).range(beelineRange).clamp(true);
 
-  function linkStrength(connection) {
+  /*function linkStrength(connection) {
     return strengthScale(connection.frequency);
-  }
+  }*/
 
   function linkDistance(connection) {
     return distanceScale(connection.frequency);
   }
 
-  computeLocations(places, connections, linkStrength, linkDistance, function (error, locations) {
+  computeLocations(places, connections, /*, linkStrength*/linkDistance, function (error, locations) {
     done(null, locations);
   });
 }
@@ -69730,6 +69749,197 @@ function createStructuredSelector(selectors) {
     });
 }
 },{}],310:[function(require,module,exports){
+var invariant = require('turf-invariant');
+//http://en.wikipedia.org/wiki/Haversine_formula
+//http://www.movable-type.co.uk/scripts/latlong.html
+
+/**
+ * Takes two {@link Point} features and calculates
+ * the distance between them in degress, radians,
+ * miles, or kilometers. This uses the
+ * [Haversine formula](http://en.wikipedia.org/wiki/Haversine_formula)
+ * to account for global curvature.
+ *
+ * @module turf/distance
+ * @category measurement
+ * @param {Feature} from origin point
+ * @param {Feature} to destination point
+ * @param {String} [units=kilometers] can be degrees, radians, miles, or kilometers
+ * @return {Number} distance between the two points
+ * @example
+ * var point1 = {
+ *   "type": "Feature",
+ *   "properties": {},
+ *   "geometry": {
+ *     "type": "Point",
+ *     "coordinates": [-75.343, 39.984]
+ *   }
+ * };
+ * var point2 = {
+ *   "type": "Feature",
+ *   "properties": {},
+ *   "geometry": {
+ *     "type": "Point",
+ *     "coordinates": [-75.534, 39.123]
+ *   }
+ * };
+ * var units = "miles";
+ *
+ * var points = {
+ *   "type": "FeatureCollection",
+ *   "features": [point1, point2]
+ * };
+ *
+ * //=points
+ *
+ * var distance = turf.distance(point1, point2, units);
+ *
+ * //=distance
+ */
+module.exports = function(point1, point2, units){
+  invariant.featureOf(point1, 'Point', 'distance');
+  invariant.featureOf(point2, 'Point', 'distance');
+  var coordinates1 = point1.geometry.coordinates;
+  var coordinates2 = point2.geometry.coordinates;
+
+  var dLat = toRad(coordinates2[1] - coordinates1[1]);
+  var dLon = toRad(coordinates2[0] - coordinates1[0]);
+  var lat1 = toRad(coordinates1[1]);
+  var lat2 = toRad(coordinates2[1]);
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  var R;
+  switch(units){
+    case 'miles':
+      R = 3960;
+      break;
+    case 'kilometers':
+      R = 6373;
+      break;
+    case 'degrees':
+      R = 57.2957795;
+      break;
+    case 'radians':
+      R = 1;
+      break;
+    case undefined:
+      R = 6373;
+      break;
+    default:
+      throw new Error('unknown option given to "units"');
+  }
+
+  var distance = R * c;
+  return distance;
+};
+
+function toRad(degree) {
+  return degree * Math.PI / 180;
+}
+
+},{"turf-invariant":311}],311:[function(require,module,exports){
+module.exports.geojsonType = geojsonType;
+module.exports.collectionOf = collectionOf;
+module.exports.featureOf = featureOf;
+
+/**
+ * Enforce expectations about types of GeoJSON objects for Turf.
+ *
+ * @alias geojsonType
+ * @param {GeoJSON} value any GeoJSON object
+ * @param {string} type expected GeoJSON type
+ * @param {String} name name of calling function
+ * @throws Error if value is not the expected type.
+ */
+function geojsonType(value, type, name) {
+    if (!type || !name) throw new Error('type and name required');
+
+    if (!value || value.type !== type) {
+        throw new Error('Invalid input to ' + name + ': must be a ' + type + ', given ' + value.type);
+    }
+}
+
+/**
+ * Enforce expectations about types of {@link Feature} inputs for Turf.
+ * Internally this uses {@link geojsonType} to judge geometry types.
+ *
+ * @alias featureOf
+ * @param {Feature} feature a feature with an expected geometry type
+ * @param {string} type expected GeoJSON type
+ * @param {String} name name of calling function
+ * @throws Error if value is not the expected type.
+ */
+function featureOf(value, type, name) {
+    if (!name) throw new Error('.featureOf() requires a name');
+    if (!value || value.type !== 'Feature' || !value.geometry) {
+        throw new Error('Invalid input to ' + name + ', Feature with geometry required');
+    }
+    if (!value.geometry || value.geometry.type !== type) {
+        throw new Error('Invalid input to ' + name + ': must be a ' + type + ', given ' + value.geometry.type);
+    }
+}
+
+/**
+ * Enforce expectations about types of {@link FeatureCollection} inputs for Turf.
+ * Internally this uses {@link geojsonType} to judge geometry types.
+ *
+ * @alias collectionOf
+ * @param {FeatureCollection} featurecollection a featurecollection for which features will be judged
+ * @param {string} type expected GeoJSON type
+ * @param {String} name name of calling function
+ * @throws Error if value is not the expected type.
+ */
+function collectionOf(value, type, name) {
+    if (!name) throw new Error('.collectionOf() requires a name');
+    if (!value || value.type !== 'FeatureCollection') {
+        throw new Error('Invalid input to ' + name + ', FeatureCollection required');
+    }
+    for (var i = 0; i < value.features.length; i++) {
+        var feature = value.features[i];
+        if (!feature || feature.type !== 'Feature' || !feature.geometry) {
+            throw new Error('Invalid input to ' + name + ', Feature with geometry required');
+        }
+        if (!feature.geometry || feature.geometry.type !== type) {
+            throw new Error('Invalid input to ' + name + ': must be a ' + type + ', given ' + feature.geometry.type);
+        }
+    }
+}
+
+},{}],312:[function(require,module,exports){
+/**
+ * Takes coordinates and properties (optional) and returns a new {@link Point} feature.
+ *
+ * @module turf/point
+ * @category helper
+ * @param {number} longitude position west to east in decimal degrees
+ * @param {number} latitude position south to north in decimal degrees
+ * @param {Object} properties an Object that is used as the {@link Feature}'s
+ * properties
+ * @return {Point} a Point feature
+ * @example
+ * var pt1 = turf.point([-75.343, 39.984]);
+ *
+ * //=pt1
+ */
+var isArray = Array.isArray || function(arg) {
+  return Object.prototype.toString.call(arg) === '[object Array]';
+};
+module.exports = function(coordinates, properties) {
+  if (!isArray(coordinates)) throw new Error('Coordinates must be an array');
+  if (coordinates.length < 2) throw new Error('Coordinates must be at least 2 numbers long');
+  return {
+    type: "Feature",
+    geometry: {
+      type: "Point",
+      coordinates: coordinates
+    },
+    properties: properties || {}
+  };
+};
+
+},{}],313:[function(require,module,exports){
 // Shim to avoid requiring Velocity in Node environments, since it
 // requires window. Note that this just no-ops the components so
 // that they'll render, rather than doing something clever like
@@ -69748,7 +69958,7 @@ if (typeof window !== 'undefined') {
   module.exports = Velocity;
 }
 
-},{"velocity-animate":311}],311:[function(require,module,exports){
+},{"velocity-animate":314}],314:[function(require,module,exports){
 /*! VelocityJS.org (1.2.3). (C) 2014 Julian Shapiro. MIT @license: en.wikipedia.org/wiki/MIT_License */
 
 /*************************
@@ -73635,7 +73845,7 @@ return function (global, window, document, undefined) {
 /* The CSS spec mandates that the translateX/Y/Z transforms are %-relative to the element itself -- not its parent.
 Velocity, however, doesn't make this distinction. Thus, converting to or from the % unit with these subproperties
 will produce an inaccurate conversion value. The same issue exists with the cx/cy attributes of SVG circles and ellipses. */
-},{}],312:[function(require,module,exports){
+},{}],315:[function(require,module,exports){
 /*
 Copyright (c) 2015 Twitter, Inc. and other contributors
 
@@ -73791,6 +74001,6 @@ var VelocityComponent = React.createClass({
 
 module.exports = VelocityComponent;
 
-},{"./lib/velocity-animate-shim":310,"lodash/lang/isEqual":98,"lodash/object/keys":103,"lodash/object/omit":105,"react":295,"react-dom":124}]},{},[33]);
+},{"./lib/velocity-animate-shim":313,"lodash/lang/isEqual":98,"lodash/object/keys":103,"lodash/object/omit":105,"react":295,"react-dom":124}]},{},[33]);
 
 //# sourceMappingURL=index.js.map
