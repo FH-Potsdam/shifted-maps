@@ -664,7 +664,7 @@ var ConnectionLabel = (function (_Component) {
       var visible = _props.visible;
       var nextEdge = nextProps.edge;
 
-      return visible !== nextProps.visible || edge.label !== nextEdge.label || edge.fromPoint !== nextEdge.fromPoint || edge.toPoint !== nextEdge.toPoint;
+      return visible !== nextProps.visible || edge.visible !== nextEdge.visible || edge.label !== nextEdge.label || edge.fromPoint !== nextEdge.fromPoint || edge.toPoint !== nextEdge.toPoint;
     }
   }, {
     key: 'render',
