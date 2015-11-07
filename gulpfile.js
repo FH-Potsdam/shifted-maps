@@ -30,8 +30,7 @@ gulp.task('browserify', function() {
     .pipe(buffer())
     .pipe(sourcemaps.init({loadMaps: true}))
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('public/scripts'))
-    .pipe(server.notify());
+    .pipe(gulp.dest('public/scripts'));
 });
 
 gulp.task('compass', function() {
@@ -43,11 +42,10 @@ gulp.task('compass', function() {
       sass: path.join(__dirname, 'app/client/styles/')
     }))
     .on('error', swallowError)
-    .pipe(gulp.dest('public/styles'))
-    .pipe(server.notify());
+    .pipe(gulp.dest('public/styles'));
 });
 
-gulp.task('compress', function() {
+gulp.task('compress', ['browserify'], function() {
   return gulp.src(['public/scripts/*.js', '!public/scripts/*.min.js'])
     .pipe(uglify())
     .pipe(rename(function(path) {

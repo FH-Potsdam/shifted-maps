@@ -7,7 +7,17 @@ node_modules
 # Senstive configuration files
 server.json
 client.json
-architecture.md
+
+# Generated assets
+scripts
+styles
+
+# Bower assets
 public/components
 app/client/styles/components
+
+# Minifed versions
 public/scripts/*.min.js
+
+# Other
+npm-debug.log
