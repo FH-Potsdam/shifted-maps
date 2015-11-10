@@ -43,8 +43,8 @@ function computeLocations(places, connections/*, linkStrength*/, linkDistance, d
     .nodes(nodes)
     .links(links)
     .size([360, 180])
-    .charge(0)//-0.01)
-    .chargeDistance(1)//1)
+    .charge(-0.01)
+    .chargeDistance(1)
     .gravity(0)
     .linkStrength(1)
     /*.linkStrength(function(link) {
