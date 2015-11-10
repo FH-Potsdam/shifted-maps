@@ -8,7 +8,7 @@ var router = express.Router();
 router.get('/:lng,:lat,:radius.png:retina?', function(req, res) {
   var lng = parseFloat(req.params.lng),
     lat = parseFloat(req.params.lat),
-    radius = parseInt(req.params.radius, 10);
+    radius = Math.ceil(parseFloat(req.params.radius));
 
   var lngLat = [lng, lat],
     retina = req.params.retina === '@2x';

@@ -1,12 +1,12 @@
 // Settings
-@import "components/inuit-defaults/settings.defaults";
-@import "components/inuit-responsive-settings/settings.responsive";
+@import "inuit-defaults/settings.defaults";
+@import "inuit-responsive-settings/settings.responsive";
 @import "settings";
 
 // Tools
-@import "components/inuit-functions/tools.functions";
-@import "components/inuit-tools-widths/tools.widths";
-@import "components/inuit-responsive-tools/tools.responsive";
+@import "inuit-functions/tools.functions";
+@import "inuit-tools-widths/tools.widths";
+@import "inuit-responsive-tools/tools.responsive";
 @import "compass/css3/transition";
 @import "compass/css3/transform";
 @import "compass/css3/animation";
@@ -24,7 +24,7 @@
 @import "base.paragraphs";
 
 // Objects
-@import "components/inuit-layout/objects.layout";
+@import "inuit-layout/objects.layout";
 @import "objects.icons";
 
 // Components
@@ -37,4 +37,4 @@
 @import "component.interaction-overlay";
 
 // Trumps
-@import "components/inuit-widths/trumps.widths";
+@import "inuit-widths/trumps.widths";

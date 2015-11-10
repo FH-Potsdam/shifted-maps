@@ -1,13 +1,13 @@
 {
   "name": "shifted-maps-web",
   "license": "GPL-3.0",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "Shifted Maps visualizes personal movement data as a network of map extracts showing visited places.",
   "repository": "FH-Potsdam/shifted-maps",
   "bugs": { "url": "https://github.com/FH-Potsdam/shifted-maps/issues" },
   "scripts": {
     "start": "node app.js",
-    "postinstall": "node_modules/.bin/gulp browserify compass compress"
+    "postinstall": "bower install && node_modules/.bin/gulp browserify compass compress"
   },
   "dependencies": {
     "cacheman": "^1.1.0",
