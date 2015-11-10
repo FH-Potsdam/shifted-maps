@@ -70,7 +70,7 @@ class PlaceMap extends Component {
       return null;
 
     let src = image.src,
-      size = image.width,
+      size = image.width / (L.Browser.retina ? 2 : 1),
       radius = size / 2;
 
     return <image key={src} x={-radius} y={-radius} width={size} height={size} xlinkHref={src} />;
