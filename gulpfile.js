@@ -3,7 +3,6 @@ var gulp = require('gulp'),
   browserify = require('browserify'),
   buffer = require('vinyl-buffer'),
   source = require('vinyl-source-stream'),
-  sourcemaps = require('gulp-sourcemaps'),
   babelify = require('babelify'),
   compass = require('gulp-compass'),
   uglify = require('gulp-uglify'),
@@ -22,14 +21,12 @@ gulp.task('browserify', function() {
   var b = browserify({
     entries: 'app/client/index.js',
     transform: [babelify]
+    debug: true,
   });
 
   return b.bundle()
     .on('error', swallowError)
     .pipe(source('index.js', 'app/client'))
-    .pipe(buffer())
-    .pipe(sourcemaps.init({loadMaps: true}))
-    .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('public/scripts'));
 });
 
