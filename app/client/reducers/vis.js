@@ -31,8 +31,7 @@ function zoomVis(map, bounds, event) {
     translate = map._getCenterOffset(event.center)._multiplyBy(-scale)._add(boundsMin);
 
   return {
-    transform: { translate, scale },
-    animate: false
+    transform: { translate, scale }
   };
 }
 
@@ -56,9 +55,6 @@ export default function vis(state = Map(), action) {
     case MOVE_VIS:
     case RESIZE_VIS:
       return state.merge(moveVis(action.map));
-
-    case CHANGE_VIEW:
-      return state.merge({ animate: true });
 
     default:
       return state
