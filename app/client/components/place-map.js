@@ -64,16 +64,22 @@ class PlaceMap extends Component {
   }
 
   renderImage() {
-    let { image } = this.state;
+    let { image } = this.state,
+      { node } = this.props;
 
     if (image == null)
       return null;
 
-    let src = image.src,
-      size = image.width / (L.Browser.retina ? 2 : 1),
-      radius = size / 2;
+    let imageSize = image.width / (L.Browser.retina ? 2 : 1),
+      nodeSize = Math.ceil(node.radius * 2);
 
-    return <image key={src} x={-radius} y={-radius} width={size} height={size} xlinkHref={src} />;
+    if (imageSize < nodeSize)
+      imageSize = nodeSize;
+
+    let src = image.src,
+      radius = imageSize / 2;
+
+    return <image key={src} x={-radius} y={-radius} width={imageSize} height={imageSize} xlinkHref={src} />;
   }
 
   render() {
