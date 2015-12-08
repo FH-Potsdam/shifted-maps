@@ -17,19 +17,18 @@ class Place extends Component {
 
   render() {
     let { node, onHover } = this.props,
-      { point, hover, rank, visible } = node,
-      transform;
+      { point, hover, rank, visible } = node;
 
-    if (point != null)
-      transform = `translate(${point.x}, ${point.y})`;
+    let className = classNames('place', {active: visible, hover});
 
-    let className = classNames('place', { active: visible, hover });
-
+    // Data attributes for x and y to get handled by d3.
     return (
-      <g transform={transform} data-rank={rank} className={className} onMouseEnter={onHover.bind(this, true)} onMouseLeave={onHover.bind(this, false)}>
-        <PlaceMap node={node} />
-        <PlaceDeco node={node} />
-        <PlaceLabel node={node} />
+      <g data-x={point.x} data-y={point.y} data-rank={rank} className={className}
+         onMouseEnter={onHover.bind(this, true)}
+         onMouseLeave={onHover.bind(this, false)}>
+        <PlaceMap node={node}/>
+        <PlaceDeco node={node}/>
+        <PlaceLabel node={node}/>
       </g>
     );
   }

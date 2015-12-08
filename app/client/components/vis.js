@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import ReactDom from 'react-dom';
 import range from 'lodash/utility/range';
 import { connect } from 'react-redux';
+import d3 from 'd3';
 import { vis } from '../selector';
 import { hoverPlace } from '../actions/ui';
 import PlaceCircleList from './place-circle-list';
@@ -19,6 +21,41 @@ class Vis extends Component {
     let { dispatch } = this.props;
 
     dispatch(hoverPlace(placeId, hover));
+  }
+
+  componentDidMount() {
+    this.update();
+  }
+
+  componentDidUpdate() {
+    this.update();
+  }
+
+  update() {
+    let element = d3.select(ReactDom.findDOMNode(this));
+
+    element.selectAll('.place')
+      .attr('transform', function() {
+        let place = d3.select(this),
+          x = place.attr('data-x'),
+          y = place.attr('data-y');
+
+        return `translate(${x}, ${y})`;
+      });
+
+    element.selectAll('.connection-line')
+      .attr('x1', function() {
+        return d3.select(this).attr('data-x1');
+      })
+      .attr('x2', function() {
+        return d3.select(this).attr('data-x2');
+      })
+      .attr('y1', function() {
+        return d3.select(this).attr('data-y1');
+      })
+      .attr('y2', function() {
+        return d3.select(this).attr('data-y2');
+      });
   }
 
   render() {

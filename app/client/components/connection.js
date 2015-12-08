@@ -18,10 +18,10 @@ class Connection extends Component {
       { visible, fromPoint, toPoint, strokeWidth, rank } = edge;
 
     let coordinates = {
-      x1: fromPoint.get('x'),
-      y1: fromPoint.get('y'),
-      x2: toPoint.get('x'),
-      y2: toPoint.get('y')
+      'data-x1': fromPoint.get('x'),
+      'data-y1': fromPoint.get('y'),
+      'data-x2': toPoint.get('x'),
+      'data-y2': toPoint.get('y')
     };
 
     let className = classNames('connection', { active: visible });
