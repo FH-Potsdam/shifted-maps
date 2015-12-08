@@ -4,7 +4,9 @@
   "version": "0.0.7",
   "description": "Shifted Maps visualizes personal movement data as a network of map extracts showing visited places.",
   "repository": "FH-Potsdam/shifted-maps",
-  "bugs": { "url": "https://github.com/FH-Potsdam/shifted-maps/issues" },
+  "bugs": {
+    "url": "https://github.com/FH-Potsdam/shifted-maps/issues"
+  },
   "scripts": {
     "start": "node app.js",
     "postinstall": "bower install && node_modules/.bin/gulp browserify compass compress"
@@ -36,6 +38,7 @@
     "sphericalmercator": "^1.0.4"
   },
   "devDependencies": {
+    "babel-runtime": "^6.3.13",
     "babelify": "^6.1.3",
     "browserify": "^10.2.3",
     "classnames": "^2.2.0",

@@ -1,7 +1,6 @@
 var gulp = require('gulp'),
   path = require('path'),
   browserify = require('browserify'),
-  buffer = require('vinyl-buffer'),
   source = require('vinyl-source-stream'),
   babelify = require('babelify'),
   compass = require('gulp-compass'),
@@ -19,9 +18,10 @@ gulp.task('serve', function() {
 
 gulp.task('browserify', function() {
   var b = browserify({
-    entries: 'app/client/index.js',
-    transform: [babelify]
     debug: true,
+    entries: 'app/client/index.js'
+  }).transform(babelify, {
+    optional: ['runtime']
   });
 
   return b.bundle()
