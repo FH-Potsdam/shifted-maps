@@ -1,6 +1,7 @@
 var gulp = require('gulp'),
   path = require('path'),
   browserify = require('browserify'),
+  watchify = require('watchify'),
   source = require('vinyl-source-stream'),
   babelify = require('babelify'),
   compass = require('gulp-compass'),
@@ -12,19 +13,19 @@ var gulp = require('gulp'),
 
 var server = gls.new('app.js');
 
+var bundler = watchify(browserify({
+  debug: true,
+  entries: 'app/client/index.js'
+}).transform(babelify, {
+  optional: ['runtime']
+}));
+
 gulp.task('serve', function() {
   server.start();
 });
 
 gulp.task('browserify', function() {
-  var b = browserify({
-    debug: true,
-    entries: 'app/client/index.js'
-  }).transform(babelify, {
-    optional: ['runtime']
-  });
-
-  return b.bundle()
+  return bundler.bundle()
     .on('error', swallowError)
     .pipe(source('index.js', 'app/client'))
     .pipe(gulp.dest('public/scripts'));
