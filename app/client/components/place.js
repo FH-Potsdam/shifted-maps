@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import d3 from 'd3';
+import ReactDom from 'react-dom';
 import classNames from 'classnames';
 import PlaceMap from './place-map';
 import PlaceDeco from './place-deco';
@@ -6,24 +8,30 @@ import PlaceLabel from './place-label';
 
 class Place extends Component {
   shouldComponentUpdate(nextProps) {
-    let { node } = this.props,
-      nextNode = nextProps.node;
+    return this.props.node !== nextProps.node;
+  }
 
-    return node.visible !== nextNode.visible ||
-      node.point !== nextNode.point ||
-      node.hover !== nextNode.hover ||
-      node.rank !== nextNode.rank;
+  componentDidMount() {
+    this.appendData();
+  }
+
+  componentDidUpdate() {
+    this.appendData();
+  }
+
+  appendData() {
+    d3.select(ReactDom.findDOMNode(this))
+      .datum(this.props.node.toJS());
   }
 
   render() {
     let { node, onHover } = this.props,
-      { point, hover, rank, visible } = node;
+      { hover, rank, visible } = node;
 
     let className = classNames('place', {active: visible, hover});
 
-    // Data attributes for x and y to get handled by d3.
     return (
-      <g data-x={point.x} data-y={point.y} data-rank={rank} className={className}
+      <g data-rank={rank} className={className}
          onMouseEnter={onHover.bind(this, true)}
          onMouseLeave={onHover.bind(this, false)}>
         <PlaceMap node={node}/>

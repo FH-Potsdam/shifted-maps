@@ -1,34 +1,36 @@
 import React, { Component } from 'react';
+import d3 from 'd3';
+import ReactDom from 'react-dom';
 import classNames from 'classnames';
 import ConnectionLabel from './connection-label';
 
 class Connection extends Component {
   shouldComponentUpdate(nextProps) {
-    let { edge } = this.props,
-      nextEdge = nextProps.edge;
+    return this.props.edge !== nextProps.edge;
+  }
 
-    return edge.visible !== nextEdge.visible ||
-      edge.fromPoint !== nextEdge.fromPoint ||
-      edge.toPoint !== nextEdge.toPoint ||
-      edge.strokeWidth !== nextEdge.strokeWidth;
+  componentDidMount() {
+    this.appendData();
+  }
+
+  componentDidUpdate() {
+    this.appendData();
+  }
+
+  appendData() {
+    d3.select(ReactDom.findDOMNode(this))
+      .datum(this.props.edge.toJS());
   }
 
   render() {
     let { edge } = this.props,
-      { visible, fromPoint, toPoint, strokeWidth, rank } = edge;
-
-    let coordinates = {
-      'data-x1': fromPoint.get('x'),
-      'data-y1': fromPoint.get('y'),
-      'data-x2': toPoint.get('x'),
-      'data-y2': toPoint.get('y')
-    };
+      { id, visible, strokeWidth, rank } = edge;
 
     let className = classNames('connection', { active: visible });
 
     return (
-      <g className={className} data-rank={rank}>
-        <line strokeWidth={strokeWidth} className="connection-line" {...coordinates} />
+      <g data-connection={id} className={className} data-rank={rank}>
+        <line strokeWidth={strokeWidth} className="connection-line" />
         <ConnectionLabel edge={edge} />
       </g>
     );

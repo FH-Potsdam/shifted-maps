@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Provider, connect } from 'react-redux';
 import store from '../store';
-import { app } from '../selector';
+import { app as appSelector } from '../selector';
 import { requestStoryline } from '../actions/storyline';
 import { initVis, moveVis, resizeVis, zoomVis } from '../actions/vis';
 import { updateScales } from '../actions/scales';
 import { updateMapState } from '../actions/map';
-import { changeTimeSpan, changeView, updateViews, closeInteractionOverlay } from '../actions/ui';
-import { GEOGRAPHIC_VIEW } from '../models/views';
+import { changeTimeSpan, changeView, closeInteractionOverlay } from '../actions/ui';
 import LoadingScreen from './loading-screen';
 import InteractionOverlay from './interaction-overlay';
 import Map from './map';
@@ -32,18 +31,10 @@ class App extends Component {
   }
 
   componentDidMount() {
-    let { dispatch } = this.props;
-
-    dispatch(requestStoryline());
+    this.props.onMount();
   }
 
-  onMapViewReset(event) {
-    let { dispatch } = this.props;
-
-    dispatch(updateMapState(event.target));
-    dispatch(initVis(event.target, event));
-  }
-
+  // Prevent to fire map move event when map was dragged
   onMapDragStart() {
     this._dragging = true;
   }
@@ -52,47 +43,8 @@ class App extends Component {
     if (!this._dragging)
       return;
 
-    let { dispatch } = this.props;
-
     this._dragging = false;
-    dispatch(moveVis(event.target, event));
-  }
-
-  onMapResize(event) {
-    let { dispatch } = this.props;
-
-    dispatch(resizeVis(event.target, event));
-  }
-
-  onMapZoomAnim(event) {
-    this.props.dispatch(zoomVis(event.target, event));
-  }
-
-  onTimeSpanChange(timeSpan) {
-    let { dispatch } = this.props;
-
-    dispatch(changeTimeSpan(timeSpan));
-    //dispatch(requestTiles());
-    dispatch(updateViews());
-  }
-
-  onViewChange(view) {
-    let { dispatch } = this.props;
-
-    dispatch(changeView(view));
-  }
-
-  onScaleUpdate(scaleElements, sizerElements) {
-    let { dispatch } = this.props;
-
-    dispatch(updateScales(scaleElements, sizerElements));
-    //dispatch(requestTiles());
-  }
-
-  onInteractionOverlayClose() {
-    let { dispatch } = this.props;
-
-    dispatch(closeInteractionOverlay());
+    this.props.onMapMoveEnd(event);
   }
 
   render() {
@@ -101,8 +53,7 @@ class App extends Component {
 
     if (ui.get('interactionOverlay') && ENV.exhibition) {
       children.push(
-        <InteractionOverlay key="interaction-overlay"
-                            onClose={this.onInteractionOverlayClose.bind(this)}/>
+        <InteractionOverlay key="interaction-overlay" onClose={this.props.onInteractionOverlayClose}/>
       );
     }
 
@@ -118,27 +69,21 @@ class App extends Component {
       );
 
       children.push(
-        <Map key="map" id={map.get('id')}
-             zoom={map.get('zoom')}
-             center={map.get('center')}
-             bounds={map.get('bounds')}
-             className="app__map"
-             active={ui.get('activeView') == null}
-             onViewReset={this.onMapViewReset.bind(this)}
+        <Map key="map" id={map.get('id')} zoom={map.get('zoom')} center={map.get('center')} bounds={map.get('bounds')}
+             className="app__map" active={ui.get('activeView') == null}
+             onViewReset={this.props.onMapViewReset}
              onDragStart={this.onMapDragStart.bind(this)}
              onMoveEnd={this.onMapMoveEnd.bind(this)}
-             onResize={this.onMapResize.bind(this)}
-             onZoomAnim={this.onMapZoomAnim.bind(this)}>
+             onResize={this.props.onMapResize}
+             onZoomAnim={this.props.onMapZoomAnim}>
           <Provider store={store}>
             <Vis className="leaflet-zoom-animated"/>
           </Provider>
         </Map>,
-        <UI key="ui"
-            ui={ui}
-            stats={stats}
-            onTimeSpanChange={this.onTimeSpanChange.bind(this)}
-            onViewChange={this.onViewChange.bind(this)} />,
-        <Scales key="scales" onUpdate={this.onScaleUpdate.bind(this)} />
+        <UI key="ui" ui={ui} stats={stats}
+            onTimeSpanChange={this.props.onTimeSpanChange}
+            onViewChange={this.props.onViewChange} />,
+        <Scales key="scales" onUpdate={this.props.onScaleUpdate} />
       );
     }
 
@@ -153,4 +98,21 @@ class App extends Component {
   }
 }
 
-export default connect(app)(App);
+function mapDispatchToProps(dispatch) {
+  return {
+    onMount: () => dispatch(requestStoryline()),
+    onMapViewReset: event => {
+      dispatch(updateMapState(event.target));
+      dispatch(initVis(event.target, event));
+    },
+    onMapMoveEnd: event => dispatch(moveVis(event.target, event)),
+    onMapResize: event => dispatch(resizeVis(event.target, event)),
+    onMapZoomAnim: event => dispatch(zoomVis(event.target, event)),
+    onTimeSpanChange: timeSpan => dispatch(changeTimeSpan(timeSpan)),
+    onViewChange: view => dispatch(changeView(view)),
+    onScaleUpdate: (scaleElements, sizerElements) => dispatch(updateScales(scaleElements, sizerElements)),
+    onInteractionOverlayClose: () => dispatch(closeInteractionOverlay())
+  }
+}
+
+export default connect(appSelector, mapDispatchToProps)(App);

@@ -2,31 +2,13 @@ import d3 from 'd3';
 import _ from 'lodash';
 import point from 'turf-point';
 import distance from 'turf-distance';
-import { Seq } from 'immutable';
+import { Map } from 'immutable';
 import { createSelector } from 'reselect';
 import placesSelector, { filteredPlacesSelector, positionedPlacesSelector } from './places';
 import { connectionStrokeWidthRangeScaleSelector } from './scales';
 import { visBoundsSelector, visScaleSelector } from './vis';
 import { uiTimeSpanSelector, uiActiveViewSelector } from './ui';
-import { CONNECTION_LABEL_SERVICES } from '../models/views';
-
-function computeBeeline(from, to) {
-  from = point([from.lng, from.lat]);
-  to = point([to.lng, to.lat]);
-
-  return distance(from, to, 'degrees');
-}
-
-function beelineConnections(connections, places) {
-  return connections.map(function(connection) {
-    let from = places.get(connection.from),
-      to = places.get(connection.to);
-
-    let beeline = computeBeeline(from.location, to.location);
-
-    return connection.set('beeline', beeline);
-  });
-}
+import { GEOGRAPHIC_VIEW, DURATION_VIEW, FREQUENCY_VIEW, geographicLabel, durationLabel, frequencyLabel } from '../services/views';
 
 function filterConnections(connections, places, uiTimeSpan) {
   if (connections.size === 0)
@@ -34,30 +16,28 @@ function filterConnections(connections, places, uiTimeSpan) {
 
   let [ start, end ] = uiTimeSpan;
 
-  return Seq(connections)
-    .map(function(connection) {
-      if (!places.get(connection.from).visible || !places.get(connection.to).visible)
-        return connection;
+  return connections.map(function(connection) {
+    if (!places.get(connection.from).visible || !places.get(connection.to).visible)
+      return connection;
 
-      let trips = connection.trips.filter(function(trip) {
-        return trip.startAt >= start && trip.endAt <= end;
-      });
+    let trips = connection.trips.filter(function(trip) {
+      return trip.startAt >= start && trip.endAt <= end;
+    });
 
-      let duration = trips.reduce((duration, trip) => duration + trip.duration, 0) / trips.size,
-        distance = trips.reduce((distance, trip) => distance + trip.distance, 0) / trips.size;
+    let duration = trips.reduce((duration, trip) => duration + trip.duration, 0) / trips.size,
+      distance = trips.reduce((distance, trip) => distance + trip.distance, 0) / trips.size;
 
-      duration = Math.round(duration);
-      distance = Math.round(distance);
+    duration = Math.round(duration);
+    distance = Math.round(distance);
 
-      return connection.merge({
-        trips: trips,
-        duration: duration,
-        distance: distance,
-        frequency: trips.size,
-        visible: duration > 0
-      });
-    })
-    .toMap();
+    return connection.merge({
+      trips: trips,
+      duration: duration,
+      distance: distance,
+      frequency: trips.size,
+      visible: duration > 0
+    });
+  });
 }
 
 function computeConnectionDomains(connections) {
@@ -117,15 +97,15 @@ function scaleConnections(connections, strokeWidthScale) {
   });
 }
 
-function labelConnection(connections, uiActiveView) {
-  if (uiActiveView == null)
+function labelConnection(connections, viewLabelService) {
+  if (viewLabelService == null)
     return connections;
 
   return connections.map(function(connection) {
     if (!connection.visible)
       return connection;
 
-    return connection.set('label', CONNECTION_LABEL_SERVICES[uiActiveView](connection));
+    return connection.set('label', viewLabelService(connection));
   });
 }
 
@@ -141,6 +121,50 @@ function positionConnections(connections, places) {
       fromPoint: from.point,
       toPoint: to.point
     });
+  });
+}
+
+function beelineConnections(connections) {
+  return connections.map(function(connection) {
+    if (!connection.visible)
+      return connection;
+
+    let { fromPoint, toPoint } = connection,
+      from = L.point(fromPoint.get('x'), fromPoint.get('y')),
+      to = L.point(toPoint.get('x'), toPoint.get('y'));
+
+    return connection.set('beeline', from.distanceTo(to));
+  });
+}
+
+function computeBeelineRange(connections) {
+  let minBeeline = Infinity,
+    maxBeeline = -Infinity;
+
+  connections.forEach(function(connection) {
+    let { beeline, visible } = connection;
+
+    if (!visible)
+      return;
+
+    minBeeline = Math.min(minBeeline, beeline);
+    maxBeeline = Math.max(maxBeeline, beeline);
+  });
+
+  return [minBeeline, maxBeeline];
+}
+
+function viewBeelineConnections(connections, viewScale) {
+  if (viewScale == null)
+    return connections;
+
+  return connections.map(function(connection) {
+    let { beeline, visible } = connection;
+
+    if (!visible)
+      return connection;
+
+    return connection.set('beeline', viewScale(beeline));
   });
 }
 
@@ -162,17 +186,9 @@ function boundConnections(connections, visBounds) {
 
 const connectionsSelector = state => state.connections;
 
-export const beelinedConnectionsSelector = createSelector(
-  [
-    connectionsSelector,
-    placesSelector
-  ],
-  beelineConnections
-);
-
 export const filteredConnectionsSelector = createSelector(
   [
-    beelinedConnectionsSelector, //connectionsSelector,
+    connectionsSelector,
     filteredPlacesSelector,
     uiTimeSpanSelector
   ],
@@ -207,6 +223,24 @@ export const connectionDistanceDomainSelector = createSelector(
   domains => domains.distanceDomain
 );
 
+export const CONNECTION_LABEL_SERVICES = {
+  [GEOGRAPHIC_VIEW]: geographicLabel,
+  [DURATION_VIEW]: durationLabel,
+  [FREQUENCY_VIEW]: frequencyLabel
+};
+
+export const connectionLabelServiceSelector = createSelector(
+  [
+    uiActiveViewSelector
+  ],
+  function(activeView) {
+    if (activeView == null)
+      return null;
+
+    return CONNECTION_LABEL_SERVICES[activeView];
+  }
+);
+
 export const connectionStrokeWidthScaleSelector = createSelector(
   [
     connectionStrokeWidthRangeScaleSelector,
@@ -227,7 +261,7 @@ export const scaledConnectionsSelector = createSelector(
 export const labeledConnectionsSelector = createSelector(
   [
     scaledConnectionsSelector,
-    uiActiveViewSelector
+    connectionLabelServiceSelector
   ],
   labelConnection
 );
@@ -240,9 +274,86 @@ export const positionedConnectionSelector = createSelector(
   positionConnections
 );
 
-export const boundedConnectionsSelector = createSelector(
+export const beelinedConnectionSelector = createSelector(
   [
     positionedConnectionSelector,
+    uiActiveViewSelector
+  ],
+  beelineConnections
+);
+
+export const beelineRangeSelector = createSelector(
+  [
+    beelinedConnectionSelector
+  ],
+  computeBeelineRange
+);
+
+const geographicScaleSelector = createSelector(
+  [
+    connectionDistanceDomainSelector,
+    beelineRangeSelector
+  ],
+  function(connectionDistanceDomain, beelineRange) {
+    return d3.scale.linear()
+      .domain(connectionDistanceDomain)
+      .range(beelineRange)
+      .clamp(true);
+  }
+);
+
+const durationScaleSelector = createSelector(
+  [
+    connectionDurationDomainSelector,
+    beelineRangeSelector
+  ],
+  function(connectionDurationDomain, beelineRange) {
+    return d3.scale.linear()
+      .domain(connectionDurationDomain)
+      .range(beelineRange)
+      .clamp(true);
+  }
+);
+
+const frequencyScaleSelector = createSelector(
+  [
+    connectionFrequencyDomainSelector,
+    beelineRangeSelector
+  ],
+  function(connectionFrequencyDomain, beelineRange) {
+    return d3.scale.linear()
+      .domain([...connectionFrequencyDomain].reverse())
+      .range(beelineRange)
+      .clamp(true);
+  }
+);
+
+const CONNECTION_BEELINE_SCALE_SELECTOR = {
+  [GEOGRAPHIC_VIEW]: geographicScaleSelector,
+  [DURATION_VIEW]: durationScaleSelector,
+  [FREQUENCY_VIEW]: frequencyScaleSelector
+};
+
+export const connectionBeelineScaleSelector = state => {
+  let activeView = uiActiveViewSelector(state);
+
+  if (activeView == null)
+    return null;
+
+  return CONNECTION_BEELINE_SCALE_SELECTOR[activeView](state);
+};
+
+export const viewBeelinedConnectionSelector = createSelector(
+  [
+    beelinedConnectionSelector,
+    connectionBeelineScaleSelector
+  ],
+  viewBeelineConnections
+);
+
+export const boundedConnectionsSelector = createSelector(
+  [
+    viewBeelinedConnectionSelector,
     visBoundsSelector
   ],
   boundConnections

@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import { is } from 'immutable';
 import PlaceClip from './place-clip';
 
 class PlaceClipList extends Component {
   shouldComponentUpdate(nextProps) {
-    return this.props.nodes !== nextProps.nodes;
+    return !is(this.props.nodes, nextProps.nodes);
   }
 
   render() {

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { GEOGRAPHIC_VIEW, DURATION_VIEW, FREQUENCY_VIEW } from '../models/views';
-import { formatDistance, formatDuration, formatFrequency } from '../services/views';
+import { GEOGRAPHIC_VIEW, DURATION_VIEW, FREQUENCY_VIEW, formatDistance, formatDuration, formatFrequency } from '../services/views';
 
 class Stats extends Component {
   shouldComponentUpdate(nextProps) {

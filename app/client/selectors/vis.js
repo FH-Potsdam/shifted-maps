@@ -1,4 +1,5 @@
-import { createStructuredSelector } from 'reselect';
+import { createSelector, createStructuredSelector } from 'reselect';
+import { uiActiveViewSelector } from './ui';
 
 function toBounds(bounds) {
   let min = bounds.get('min'),
@@ -7,17 +8,42 @@ function toBounds(bounds) {
   return L.bounds([[min.get('x'), min.get('y')], [max.get('x'), max.get('y')]])
 }
 
-export const visScaleSelector = state => state.vis.get('scale');
+function visSelector(state) {
+  return state.vis;
+}
 
-export const visBoundsSelector = state => toBounds(state.vis.get('bounds'));
+export const visScaleSelector = createSelector(
+  [
+    visSelector
+  ],
+  (vis) => vis.get('scale')
+);
 
-export const visTransformSelector = state => state.vis.get('transform');
+export const visBoundsSelector = createSelector(
+  [
+    visSelector
+  ],
+  (vis) => toBounds(vis.get('bounds'))
+);
 
-export const visZoomSelector = state => state.vis.get('zoom');
+export const visTransformSelector = createSelector(
+  [
+    visSelector
+  ],
+  (vis) => vis.get('transform')
+);
+
+export const visZoomSelector = createSelector(
+  [
+    visSelector
+  ],
+  (vis) => vis.get('zoom')
+);
 
 export default createStructuredSelector({
   scale: visScaleSelector,
   bounds: visBoundsSelector,
   transform: visTransformSelector,
-  zoom: visZoomSelector
+  zoom: visZoomSelector,
+  activeView: uiActiveViewSelector
 });

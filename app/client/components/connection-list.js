@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import { is } from 'immutable';
 import Connection from './connection';
 
 class ConnectionList extends Component {
   shouldComponentUpdate(nextProps) {
-    return this.props.edges !== nextProps.edges;
+    return !is(this.props.edges, nextProps.edges);
   }
 
   render() {

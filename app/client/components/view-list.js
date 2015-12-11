@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import map from 'lodash/collection/map';
 import classNames from 'classnames';
-import { GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW } from '../models/views';
+import { GEOGRAPHIC_VIEW, FREQUENCY_VIEW, DURATION_VIEW } from '../services/views';
 
 const VIEWS = {
   [GEOGRAPHIC_VIEW]: 'geographic',

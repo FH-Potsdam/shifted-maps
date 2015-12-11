@@ -1,7 +1,7 @@
 import { Map } from 'immutable';
 import { DONE_STORYLINE_REQUEST, ADD_STAYS, } from '../actions/storyline';
 import { CHANGE_TIME_SPAN, CHANGE_VIEW, SET_LOCATIONS, HOVER_PLACE, CLOSE_INTERACTION_OVERLAY } from '../actions/ui';
-import { GEOGRAPHIC_VIEW } from '../models/views';
+import { GEOGRAPHIC_VIEW } from '../services/views';
 
 const DAY = 1000 * 60 * 60 * 24;
 
