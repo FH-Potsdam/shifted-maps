@@ -21,7 +21,7 @@ class Place extends Component {
 
   appendData() {
     d3.select(ReactDom.findDOMNode(this))
-      .datum(this.props.node.toJS());
+      .datum(this.props.node);
   }
 
   render() {

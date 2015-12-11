@@ -4,7 +4,7 @@ import point from 'turf-point';
 import distance from 'turf-distance';
 import { Map } from 'immutable';
 import { createSelector } from 'reselect';
-import placesSelector, { filteredPlacesSelector, positionedPlacesSelector } from './places';
+import placesSelector, { filteredPlacesSelector/*, positionedPlacesSelector*/ } from './places';
 import { connectionStrokeWidthRangeScaleSelector } from './scales';
 import { visBoundsSelector, visScaleSelector } from './vis';
 import { uiTimeSpanSelector, uiActiveViewSelector } from './ui';
@@ -109,7 +109,7 @@ function labelConnection(connections, viewLabelService) {
   });
 }
 
-function positionConnections(connections, places) {
+/*function positionConnections(connections, places) {
   return connections.map(function(connection) {
     if (!connection.visible)
       return connection;
@@ -182,7 +182,7 @@ function boundConnections(connections, visBounds) {
 
     return connection.set('visible', visBounds.intersects(bounds));
   });
-}
+}*/
 
 const connectionsSelector = state => state.connections;
 
@@ -266,7 +266,7 @@ export const labeledConnectionsSelector = createSelector(
   labelConnection
 );
 
-export const positionedConnectionSelector = createSelector(
+/*export const positionedConnectionSelector = createSelector(
   [
     labeledConnectionsSelector,
     positionedPlacesSelector
@@ -357,6 +357,6 @@ export const boundedConnectionsSelector = createSelector(
     visBoundsSelector
   ],
   boundConnections
-);
+);*/
 
 export default connectionsSelector;

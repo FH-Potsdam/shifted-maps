@@ -3,7 +3,6 @@ import moment from 'moment';
 import trackEvent from '../services/track-event';
 
 export const CHANGE_VIEW = 'CHANGE_VIEW';
-export const SET_LOCATIONS = 'SET_LOCATIONS';
 export const CHANGE_TIME_SPAN = 'CHANGE_TIME_SPAN';
 export const HOVER_PLACE = 'HOVER_PLACE';
 export const CLOSE_INTERACTION_OVERLAY = 'CLOSE_INTERACTION_OVERLAY';

@@ -1,23 +1,28 @@
 import React, { Component } from 'react';
 import d3 from 'd3';
 import ReactDom from 'react-dom';
-import { is } from 'immutable';
 import find from 'lodash/collection/find';
+import ConnectionList from './connection-list';
+import PlaceList from './place-list';
 
 class Graph extends Component {
   constructor(props) {
     super(props);
 
+    this.forceRunning = false;
+
     this.force = d3.layout.force()
       .linkDistance(link => link.beeline)
       .gravity(0)
-      .on('tick', this.onTick.bind(this));
+      .on('tick', this.onTick.bind(this))
+      .on('end', this.onEnd.bind(this));
   }
 
   shouldComponentUpdate(nextProps) {
-    let { activeView, nodes, edges } = this.props;
+    let { activeView, nodes, edges, points } = this.props;
 
-    return activeView !== nextProps.activeView || !is(nodes, nextProps.nodes) || !is(edges, nextProps.edges);
+    return activeView !== nextProps.activeView || nodes !== nextProps.nodes || edges !== nextProps.edges ||
+      points !== nextProps.points;
   }
 
   componentDidMount() {
@@ -27,11 +32,16 @@ class Graph extends Component {
   componentDidUpdate() {
     if (this.props.activeView != null)
       this.resume();
+    else
+      this.stop();
 
     this.transformElements();
   }
 
   resume() {
+    if (this.forceRunning)
+      return;
+
     let nodes = this.computeGraphNodes(),
       links = this.computeGraphLinks(nodes);
 
@@ -40,7 +50,8 @@ class Graph extends Component {
       .links(links)
       .start();
 
-    // @TODO Call onTick if not done by d3 on resume.
+    console.log('resume');
+    this.forceRunning = true;
   }
 
   stop() {
@@ -48,27 +59,28 @@ class Graph extends Component {
   }
 
   computeGraphNodes() {
-    let places = this.places()
-      .data();
+    let points = this.props.points.toJS(),
+      places = this.places().data();
 
     return places.map(function(place) {
+      let point = points[place.id];
+
       return {
         place: place.id,
-        x: place.point.x,
-        y: place.point.y
+        x: point.x,
+        y: point.y
       };
     });
   }
 
   computeGraphLinks(nodes) {
-    let connections = this.connections()
-      .data();
+    let connections = this.connections().data();
 
     return connections.map(function(connection) {
       return {
         source: find(nodes, { place: connection.from }),
         target: find(nodes, { place: connection.to }),
-        beeline: connection.beeline
+        beeline: 0
       };
     });
   }
@@ -82,39 +94,31 @@ class Graph extends Component {
   }
 
   onTick() {
-    let links = this.force.links(),
+    let { activeView, onTick } = this.props,
       nodes = this.force.nodes();
 
-    this.places()
-      .datum(function(node) {
-        node.point = find(nodes, { place: node.id });
+    onTick(activeView, nodes);
+  }
 
-        return node;
-      });
-
-    this.connections()
-      .datum(function(edge, i) {
-        let { source, target } = links[i];
-
-        edge.fromPoint = source;
-        edge.toPoint = target;
-
-        return edge;
-      });
-
-    this.transformElements();
+  onEnd() {
+    this.forceRunning = false;
   }
 
   transformElements() {
+    let points = this.props.points.toJS();
+
     this.places()
       .attr('transform', function(node) {
-        return `translate(${node.point.x}, ${node.point.y})`;
+        let point = points[node.id];
+
+        return `translate(${point.x}, ${point.y})`;
       });
 
     this.connections()
       .each(function(edge) {
         let connection = d3.select(this),
-          { fromPoint, toPoint } = edge;
+          fromPoint = points[edge.from],
+          toPoint = points[edge.to];
 
         connection.select('.connection-line')
           .attr({
@@ -143,9 +147,12 @@ class Graph extends Component {
   }
 
   render() {
+    let { nodes, edges, onHoverPlace } = this.props;
+
     return (
       <g className="graph" ref={ref => this.root = ref}>
-        {this.props.children}
+        <ConnectionList edges={edges}/>
+        <PlaceList nodes={nodes} onHover={onHoverPlace}/>
       </g>
     )
   }

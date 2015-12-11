@@ -19,7 +19,7 @@ class Connection extends Component {
 
   appendData() {
     d3.select(ReactDom.findDOMNode(this))
-      .datum(this.props.edge.toJS());
+      .datum(this.props.edge);
   }
 
   render() {

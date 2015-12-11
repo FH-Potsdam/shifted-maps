@@ -1,7 +1,6 @@
 import { Map } from 'immutable';
 import { DONE_STORYLINE_REQUEST, ADD_STAYS, } from '../actions/storyline';
-import { CHANGE_TIME_SPAN, CHANGE_VIEW, SET_LOCATIONS, HOVER_PLACE, CLOSE_INTERACTION_OVERLAY } from '../actions/ui';
-import { GEOGRAPHIC_VIEW } from '../services/views';
+import { CHANGE_TIME_SPAN, CHANGE_VIEW, HOVER_PLACE, CLOSE_INTERACTION_OVERLAY } from '../actions/ui';
 
 const DAY = 1000 * 60 * 60 * 24;
 
@@ -36,7 +35,7 @@ function addStays(state, action) {
   });
 }
 
-function doneStorylineRequest(state, action) {
+function doneStorylineRequest(state) {
   return state.set('storylineLoaded', true);
 }
 
@@ -52,12 +51,6 @@ function changeView(state, action) {
   return state.set('activeView', view);
 }
 
-function setLocations(state, action) {
-  let { view, locations } = action;
-
-  return state.mergeIn(['locations', view], locations);
-}
-
 function setHoveredPlace(state, action) {
   let { placeId, hover } = action;
 
@@ -67,7 +60,7 @@ function setHoveredPlace(state, action) {
   });
 }
 
-function closeInteractionOverlay(state, action) {
+function closeInteractionOverlay(state) {
   return state.set('interactionOverlay', false);
 }
 
@@ -84,9 +77,6 @@ export default function ui(state = DEFAULT_STATE, action) {
 
     case CHANGE_VIEW:
       return changeView(state, action);
-
-    case SET_LOCATIONS:
-      return setLocations(state, action);
 
     case HOVER_PLACE:
       return setHoveredPlace(state, action);

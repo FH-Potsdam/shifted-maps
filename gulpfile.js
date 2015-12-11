@@ -1,4 +1,5 @@
 var gulp = require('gulp'),
+  gulpUtil = require('gulp-util'),
   path = require('path'),
   browserify = require('browserify'),
   watchify = require('watchify'),
@@ -7,28 +8,45 @@ var gulp = require('gulp'),
   compass = require('gulp-compass'),
   uglify = require('gulp-uglify'),
   rename = require('gulp-rename'),
-  chalk = require('chalk'),
-  notifier = require('node-notifier'),
   gls = require('gulp-live-server');
 
 var server = gls.new('app.js');
 
-var bundler = watchify(browserify({
-  debug: true,
-  entries: 'app/client/index.js'
-}).transform(babelify, {
-  optional: ['runtime']
-}));
+function bundler(watch) {
+  var bundler = browserify({
+    debug: true,
+    entries: ['app/client/index.js'],
+    transform: [
+      babelify.configure({
+        optional: ['runtime', 'es7.classProperties']
+      })
+    ]
+  });
+
+  if (watch) {
+    bundler = watchify(bundler)
+      .on('update', function() {
+        bundle(bundler);
+      })
+      .on('log', gulpUtil.log);
+  }
+
+  return bundle(bundler);
+}
+
+function bundle(bundler) {
+  return bundler.bundle()
+    .on('error', (error) => gulpUtil.log(error.message))
+    .pipe(source('index.js'))
+    .pipe(gulp.dest('public/scripts'));
+}
 
 gulp.task('serve', function() {
   server.start();
 });
 
 gulp.task('browserify', function() {
-  return bundler.bundle()
-    .on('error', swallowError)
-    .pipe(source('index.js', 'app/client'))
-    .pipe(gulp.dest('public/scripts'));
+  return bundler(false);
 });
 
 gulp.task('compass', function() {
@@ -39,7 +57,7 @@ gulp.task('compass', function() {
       css: path.join(__dirname, 'public/styles'),
       sass: path.join(__dirname, 'app/client/styles/')
     }))
-    .on('error', swallowError)
+    .on('error', gulpUtil.log)
     .pipe(gulp.dest('public/styles'));
 });
 
@@ -54,24 +72,9 @@ gulp.task('compress', ['browserify'], function() {
 
 gulp.task('watch', function() {
   gulp.watch(['app/client/styles/**/*.scss'], ['compass']);
-  gulp.watch(['app/client/**/*.js', 'config/client.json', 'app/shared/**/*.js'], ['browserify']);
   gulp.watch(['app/server/**/*.js', 'app/server/**/*.nunj'], ['serve']);
+
+  bundler(true);
 });
-
-function swallowError(error) {
-  notifier.notify({
-    title: error.name,
-    message: error.message
-  });
-
-  var message = chalk.magenta(error.message);
-
-  if (error.plugin)
-    message = 'Error in plugin \'' + chalk.cyan(error.plugin) + '\': ' + message;
-
-  console.log(message);
-
-  this.emit('end');
-}
 
 gulp.task('default', ['serve', 'compass', 'browserify', 'watch']);

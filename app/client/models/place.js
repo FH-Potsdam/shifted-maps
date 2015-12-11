@@ -10,7 +10,7 @@ export default Record({
   stays: new List(),
   radius: 0,
   strokeWidth: 0,
-  point: null,
+  //point: null,
   visible: false,
   tileURL: null,
   hover: false,

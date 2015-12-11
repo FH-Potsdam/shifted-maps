@@ -2,9 +2,10 @@ import d3 from 'd3';
 import { Seq } from 'immutable';
 import { createSelector } from 'reselect';
 import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector, placeMinimizeRadiusSelector } from './scales';
-import { visBoundsSelector, visScaleSelector } from './vis';
-import { mapMapSelector } from './map';
-import { uiTimeSpanSelector, uiLocationsSelector, uiHoveredPlaceIdSelector, uiHoverSelector } from './ui';
+import { /*visBoundsSelector, */visScaleSelector } from './vis';
+//import { mapMapSelector } from './map';
+import { uiTimeSpanSelector, uiHoveredPlaceIdSelector, uiHoverSelector } from './ui';
+//import { activeViewSelector } from './views';
 
 function filterPlaces(places, uiTimeSpan) {
   if (places.size === 0)
@@ -87,23 +88,25 @@ function scalePlaces(places, strokeWidthScale, radiusScale) {
     });
 }
 
-function positionPlaces(places, mapMap, uiLocations) {
+/*function positionPlaces(places, mapMap, activeView) {
   return places.map(function(place) {
-    let { location, visible } = place;
+    let { location, visible } = place,
+      point;
 
     if (!visible)
       return place;
 
-    if (uiLocations != null && uiLocations.has(place.id))
-      location = uiLocations.get(place.id);
-
-    let point = mapMap.latLngToLayerPoint(location);
+    if (activeView != null && activeView.has(place.id)) {
+      point = activeView.get(place.id);
+    } else {
+      point = mapMap.latLngToLayerPoint(location);
+    }
 
     return place.set('point', point);
   });
-}
+}*/
 
-function computeDistance(nodeOne, nodeTwo) {
+/*function computeDistance(nodeOne, nodeTwo) {
   let nodeOnePoint = nodeOne.point,
     nodeTwoPoint = nodeTwo.point;
 
@@ -150,7 +153,7 @@ function boundPlaces(places, visBounds) {
 
     return place.set('visible', visBounds.contains(point));
   });
-}
+}*/
 
 function tilePlaces(places) {
   return places.map(function(place) {
@@ -221,11 +224,11 @@ export const scaledPlacesSelector = createSelector(
   scalePlaces
 );
 
-export const positionedPlacesSelector = createSelector(
+/*export const positionedPlacesSelector = createSelector(
   [
     scaledPlacesSelector,
     mapMapSelector,
-    uiLocationsSelector
+    activeViewSelector
   ],
   positionPlaces
 );
@@ -243,11 +246,11 @@ export const boundedPlacesSelector = createSelector(
     visBoundsSelector
   ],
   boundPlaces
-);
+);*/
 
 export const tiledPlacesSelector = createSelector(
   [
-    boundedPlacesSelector
+    scaledPlacesSelector//boundedPlacesSelector
   ],
   tilePlaces
 );

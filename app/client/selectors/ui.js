@@ -16,14 +16,6 @@ export const uiActiveViewSelector = createSelector(
   ui => ui.get('activeView')
 );
 
-export const uiLocationsSelector = createSelector(
-  [
-    uiSelector,
-    uiActiveViewSelector
-  ],
-  (ui, view) => ui.getIn(['locations', view])
-);
-
 export const uiHoveredPlaceIdSelector = createSelector(
   [
     uiSelector

@@ -3,15 +3,14 @@ import range from 'lodash/utility/range';
 import { connect } from 'react-redux';
 import { vis as visSelector } from '../selector';
 import { hoverPlace } from '../actions/ui';
+import { updateView } from '../actions/views';
 import Graph from './graph';
 import PlaceCircleList from './place-circle-list';
 import PlaceClipList from './place-clip-list';
-import ConnectionList from './connection-list';
-import PlaceList from './place-list';
 
 class Vis extends Component {
   render() {
-    let { vis, nodes, edges } = this.props;
+    let { vis, nodes, edges, points, onHoverPlace, onGraphTick } = this.props;
 
     let { bounds, transform, zoom, activeView } = vis,
       boundSize = bounds.getSize();
@@ -37,10 +36,8 @@ class Vis extends Component {
           <PlaceClipList nodes={nodes}/>
         </defs>
 
-        <Graph activeView={activeView} nodes={nodes} edges={edges}>
-          <ConnectionList edges={edges}/>
-          <PlaceList nodes={nodes} onHover={this.props.onHoverPlace}/>
-        </Graph>
+        <Graph activeView={activeView} nodes={nodes} edges={edges} points={points}
+               onHoverPlace={onHoverPlace} onTick={onGraphTick}/>
       </svg>
     );
   }
@@ -48,7 +45,8 @@ class Vis extends Component {
 
 function mapDispatchToProps(dispatch) {
   return {
-    onHoverPlace: (placeId, hover) => dispatch(hoverPlace(placeId, hover))
+    onHoverPlace: (placeId, hover) => dispatch(hoverPlace(placeId, hover)),
+    onGraphTick: (activeView, nodes) => dispatch(updateView(activeView, nodes))
   }
 }
 
