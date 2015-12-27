@@ -162,6 +162,8 @@ function tilePlaces(places) {
     if (!visible)
       return place;
 
+    radius = Math.ceil(radius);
+
     return place.set('tileURL', `/tiles/${location.lng},${location.lat},${radius}.png${L.Browser.retina ? '@2x' : ''}`);
   });
 }
