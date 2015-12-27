@@ -18,6 +18,7 @@ app.set('views', __dirname + '/templates');
 app.set('view engine', 'jade');
 
 app.locals.debug = app.get('debug');
+app.locals.compileDebug = false;
 
 // Server middlewares
 app.use(helmet());
