@@ -154,20 +154,6 @@ function computeBeelineRange(connections) {
   return [minBeeline, maxBeeline];
 }
 
-function viewBeelineConnections(connections, viewScale) {
-  if (viewScale == null)
-    return connections;
-
-  return connections.map(function(connection) {
-    let { beeline, visible } = connection;
-
-    if (!visible)
-      return connection;
-
-    return connection.set('beeline', viewScale(beeline));
-  });
-}
-
 function boundConnections(connections, visBounds) {
   return connections.map(function(connection) {
     let { fromPoint, toPoint, visible } = connection;

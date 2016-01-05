@@ -3,7 +3,7 @@ import range from 'lodash/utility/range';
 import { connect } from 'react-redux';
 import { vis as visSelector } from '../selector';
 import { hoverPlace } from '../actions/ui';
-import { updateView } from '../actions/views';
+import { updateView } from '../actions/graph';
 import Graph from './graph';
 import PlaceCircleList from './place-circle-list';
 import PlaceClipList from './place-clip-list';
@@ -12,7 +12,7 @@ class Vis extends Component {
   render() {
     let { vis, nodes, edges, points, onHoverPlace, onGraphTick } = this.props;
 
-    let { bounds, transform, zoom, activeView } = vis,
+    let { bounds, transform, zoom } = vis,
       boundSize = bounds.getSize();
 
     let { translate, scale } = transform.toJS();
@@ -36,7 +36,7 @@ class Vis extends Component {
           <PlaceClipList nodes={nodes}/>
         </defs>
 
-        <Graph activeView={activeView} nodes={nodes} edges={edges} points={points}
+        <Graph nodes={nodes} edges={edges} points={points}
                onHoverPlace={onHoverPlace} onTick={onGraphTick}/>
       </svg>
     );

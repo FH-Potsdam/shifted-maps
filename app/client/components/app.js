@@ -61,9 +61,7 @@ class App extends Component {
       children.push(
         <LoadingScreen key="loading-screen" stats={stats}/>
       );
-    }
-
-    if (ui.get('storylineLoaded')) {
+    } else {
       children.push(
         ui.get('authorized') ? <Logout key="logout"/> : <TryOwnData key="try-own-data"/>
       );

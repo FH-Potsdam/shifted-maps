@@ -44,6 +44,5 @@ export default createStructuredSelector({
   scale: visScaleSelector,
   bounds: visBoundsSelector,
   transform: visTransformSelector,
-  zoom: visZoomSelector,
-  activeView: uiActiveViewSelector
+  zoom: visZoomSelector
 });

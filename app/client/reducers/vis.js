@@ -1,4 +1,5 @@
 import { Map } from 'immutable';
+import d3 from 'd3';
 import { INIT_VIS, ZOOM_VIS, MOVE_VIS, RESIZE_VIS } from '../actions/vis';
 import { CHANGE_VIEW } from '../actions/ui';
 

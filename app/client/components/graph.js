@@ -5,84 +5,38 @@ import find from 'lodash/collection/find';
 import ConnectionList from './connection-list';
 import PlaceList from './place-list';
 
+/*
+
+1. Vis component renders Graph component ✓
+2. Graph components renders Connection- and PlaceList components ✓
+3. Graph component transforms Elements on componentDidMount ✓
+4. User activates View <- Interaction ✓
+5. Do 1. and 2. ✓
+6. Graph component starts d3 force directed layout
+7. Do 3.
+8. Dispatch updateView action in the Graph component  on d3 force directed layout tick.
+9. Update points in active view of the Graph store
+10. Pass new store to Vis and Graph component
+11. Do 1. and 2.
+12. Start again at 8. till d3 force directed layout is finished
+13. User zooms Map <- Interaction
+(Stop the graph? Controlled by store?)
+14. Store current place locations computed from points in active view
+15. Zoom the map
+16. Compute new points from last locations and store them in store
+18. Do 1. and 2.
+18. Restart the graph
+19. Do 3. till d3 force directed layout is finished
+
+*/
+
 class Graph extends Component {
-  constructor(props) {
-    super(props);
-
-    this.forceRunning = false;
-
-    this.force = d3.layout.force()
-      .linkDistance(link => link.beeline)
-      .gravity(0)
-      .on('tick', this.onTick.bind(this))
-      .on('end', this.onEnd.bind(this));
-  }
-
-  shouldComponentUpdate(nextProps) {
-    let { activeView, nodes, edges, points } = this.props;
-
-    return activeView !== nextProps.activeView || nodes !== nextProps.nodes || edges !== nextProps.edges ||
-      points !== nextProps.points;
-  }
-
   componentDidMount() {
     this.transformElements();
   }
 
   componentDidUpdate() {
-    if (this.props.activeView != null)
-      this.resume();
-    else
-      this.stop();
-
     this.transformElements();
-  }
-
-  resume() {
-    if (this.forceRunning)
-      return;
-
-    let nodes = this.computeGraphNodes(),
-      links = this.computeGraphLinks(nodes);
-
-    this.force
-      .nodes(nodes)
-      .links(links)
-      .start();
-
-    console.log('resume');
-    this.forceRunning = true;
-  }
-
-  stop() {
-    this.force.stop();
-  }
-
-  computeGraphNodes() {
-    let points = this.props.points.toJS(),
-      places = this.places().data();
-
-    return places.map(function(place) {
-      let point = points[place.id];
-
-      return {
-        place: place.id,
-        x: point.x,
-        y: point.y
-      };
-    });
-  }
-
-  computeGraphLinks(nodes) {
-    let connections = this.connections().data();
-
-    return connections.map(function(connection) {
-      return {
-        source: find(nodes, { place: connection.from }),
-        target: find(nodes, { place: connection.to }),
-        beeline: 0
-      };
-    });
   }
 
   places() {
@@ -93,19 +47,8 @@ class Graph extends Component {
     return d3.select(this.root).selectAll('.connection')
   }
 
-  onTick() {
-    let { activeView, onTick } = this.props,
-      nodes = this.force.nodes();
-
-    onTick(activeView, nodes);
-  }
-
-  onEnd() {
-    this.forceRunning = false;
-  }
-
   transformElements() {
-    let points = this.props.points.toJS();
+    let { points } = this.props;
 
     this.places()
       .attr('transform', function(node) {
@@ -155,6 +98,28 @@ class Graph extends Component {
         <PlaceList nodes={nodes} onHover={onHoverPlace}/>
       </g>
     )
+  }
+
+  static computeNodes(places, points) {
+    return places.map(function(place) {
+      let point = points[place.id];
+
+      return {
+        place: place.id,
+        x: point.x,
+        y: point.y
+      };
+    });
+  }
+
+  static computeLinks(nodes, connections, beelines) {
+    return connections.map(function(connection) {
+      return {
+        source: find(nodes, { place: connection.from }),
+        target: find(nodes, { place: connection.to }),
+        beeline: beelines[connection.id]
+      };
+    });
   }
 }
 

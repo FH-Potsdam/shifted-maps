@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 import placesSelector from './places';
+import { filteredConnectionsSelector } from './connections';
 
 const mapSelector = state => state.map;
 
@@ -17,16 +18,54 @@ export const mapMapSelector = createSelector(
   map => map.get('map')
 );
 
-export const mapPointsSelector = createSelector(
+/*export const mapPointsSelector = createSelector(
   [
     mapMapSelector,
-    placesSelector
+    placesSelector,
+    mapZoomSelector // Only for caching
   ],
   function(map, places) {
-    return places.map(function(place) {
-      return map.latLngToLayerPoint(place.location);
+    let points = {};
+
+    places.forEach(function(place, id) {
+      points[id] = map.latLngToLayerPoint(place.location);
     });
+
+    return points;
   }
 );
+
+export const mapBeelinesSelector = createSelector(
+  [
+    mapPointsSelector,
+    filteredConnectionsSelector
+  ],
+  function(points, connections) {
+    let beelines = {};
+
+    connections.forEach(function(connection, id) {
+      let from = points[connection.from],
+        to = points[connection.to];
+
+      beelines[id] = from.distanceTo(to);
+    });
+
+    return beelines;
+  }
+);
+
+export const mapBeelinesRangeSelector = createSelector(
+  [
+    mapBeelinesSelector
+  ],
+  function(beelines) {
+    return reduce(beelines, function(range, beeline) {
+      if (beeline < range[0]) range[0] = beeline;
+      if (beeline > range[1]) range[1] = beeline;
+
+      return range;
+    }, [Infinity, -Infinity]);
+  }
+);*/
 
 export default mapSelector;

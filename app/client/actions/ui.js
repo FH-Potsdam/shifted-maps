@@ -1,6 +1,7 @@
 import without from 'lodash/array/without';
 import moment from 'moment';
 import trackEvent from '../services/track-event';
+import { initPoints, startGraph } from './graph';
 
 export const CHANGE_VIEW = 'CHANGE_VIEW';
 export const CHANGE_TIME_SPAN = 'CHANGE_TIME_SPAN';
@@ -8,9 +9,12 @@ export const HOVER_PLACE = 'HOVER_PLACE';
 export const CLOSE_INTERACTION_OVERLAY = 'CLOSE_INTERACTION_OVERLAY';
 
 export function changeView(view) {
-  trackEvent('ui', 'change', 'view', view);
+  return function(dispatch) {
+    trackEvent('ui', 'change', 'view', view);
 
-  return { type: CHANGE_VIEW, view };
+    dispatch({ type: CHANGE_VIEW, view });
+    dispatch(startGraph());
+  };
 }
 
 export function changeTimeSpan(timeSpan) {

@@ -9,7 +9,7 @@ export default Record({
   duration: 0,
   frequency: 0,
   distance: 0,
-  beeline: 0,
+  //beeline: 0,
   trips: new List(),
   strokeWidth: 0,
   connection: null,
