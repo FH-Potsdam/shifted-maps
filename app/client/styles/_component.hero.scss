@@ -72,6 +72,10 @@
   &__bottom {
     margin-top: $inuit-base-spacing-unit * 8;
 
+    .badget + & {
+      margin-top: $inuit-base-spacing-unit * 4;
+    }
+
     @include media-query(tablet) {
       margin-top: 0;
       position: absolute;
