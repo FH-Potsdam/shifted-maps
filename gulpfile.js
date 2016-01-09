@@ -2,56 +2,39 @@ var gulp = require('gulp'),
   gulpUtil = require('gulp-util'),
   path = require('path'),
   browserify = require('browserify'),
-  watchify = require('watchify'),
   source = require('vinyl-source-stream'),
+  buffer = require('vinyl-buffer'),
   babelify = require('babelify'),
   compass = require('gulp-compass'),
   uglify = require('gulp-uglify'),
-  rename = require('gulp-rename'),
-  gls = require('gulp-live-server');
+  gls = require('gulp-live-server'),
+  sourcemaps = require('gulp-sourcemaps');
 
 var server = gls.new('app.js');
-
-function bundler(watch) {
-  var bundler = browserify({
-    debug: true,
-    entries: ['app/client/index.js'],
-    transform: [
-      babelify.configure({
-        optional: ['runtime', 'es7.classProperties']
-      })
-    ]
-  });
-
-  if (watch) {
-    bundler = watchify(bundler)
-      .on('update', function() {
-        bundle(bundler);
-      })
-      .on('log', gulpUtil.log);
-  }
-
-  return bundle(bundler);
-}
-
-function bundle(bundler) {
-  return bundler.bundle()
-    .on('error', (error) => gulpUtil.log(error.message))
-    .pipe(source('index.js'))
-    .pipe(gulp.dest('public/scripts'));
-}
 
 gulp.task('serve', function() {
   server.start();
 });
 
 gulp.task('browserify', function() {
-  return bundler(false);
+  var bundler = browserify({
+    debug: true,
+    entries: ['app/client/index.js'],
+    transform: [
+      babelify.configure()
+    ]
+  });
+
+  return bundler.bundle()
+    .pipe(source('index.js'))
+    .pipe(gulp.dest('public/scripts'))
+    .on('error', (error) => gulpUtil.log(error.message));
 });
 
 gulp.task('compass', function() {
   return gulp.src(['app/client/styles/**/*.scss', '!app/client/styles/**/_*.scss'])
     .pipe(compass({
+      sourcemap: true,
       style: 'compressed',
       project: path.join(__dirname, 'app/client/styles/'),
       css: path.join(__dirname, 'public/styles'),
@@ -62,19 +45,21 @@ gulp.task('compass', function() {
 });
 
 gulp.task('compress', ['browserify'], function() {
-  return gulp.src(['public/scripts/*.js', '!public/scripts/*.min.js'])
+  return gulp.src('public/scripts/index.js')
+    .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(uglify())
-    .pipe(rename(function(path) {
-      path.extname = '.min' + path.extname;
-    }))
+    .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('public/scripts'));
 });
 
 gulp.task('watch', function() {
-  gulp.watch(['app/client/styles/**/*.scss'], ['compass']);
   gulp.watch(['app/server/**/*.js', 'app/server/**/*.nunj'], ['serve']);
-
-  bundler(true);
+  gulp.watch(['app/client/styles/**/*.scss'], ['compass']);
+  gulp.watch(['app/client/**/*.js'], ['browserify']);
+  gulp.watch(['public/scripts/**/*.js', 'public/styles/**/*.css'], function (event) {
+    server.notify(event);
+    gulpUtil.log(gulpUtil.colors.gray('Notified server.'));
+  });
 });
 
 gulp.task('default', ['serve', 'compass', 'browserify', 'watch']);
