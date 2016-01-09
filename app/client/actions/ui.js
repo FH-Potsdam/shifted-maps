@@ -1,7 +1,7 @@
 import without from 'lodash/array/without';
 import moment from 'moment';
 import trackEvent from '../services/track-event';
-import { initPoints, startGraph } from './graph';
+import { startGraph, stopGraph } from './graph';
 
 export const CHANGE_VIEW = 'CHANGE_VIEW';
 export const CHANGE_TIME_SPAN = 'CHANGE_TIME_SPAN';
@@ -13,6 +13,7 @@ export function changeView(view) {
     trackEvent('ui', 'change', 'view', view);
 
     dispatch({ type: CHANGE_VIEW, view });
+    dispatch(stopGraph());
     dispatch(startGraph());
   };
 }

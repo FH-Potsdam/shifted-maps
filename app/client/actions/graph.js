@@ -1,38 +1,20 @@
 import d3 from 'd3';
-import { graphForceSelector, graphPointsSelector, scaledGraphBeelinesSelector } from '../selectors/graph';
+import { graphForceSelector, graphPointsSelector, graphBeelinesSelector } from '../selectors/graph';
 import { mapMapSelector } from '../selectors/map';
 import { filteredPlacesSelector } from '../selectors/places';
 import { filteredConnectionsSelector } from '../selectors/connections';
 import { uiActiveViewSelector } from '../selectors/ui';
 import Graph from '../components/graph';
 
-export const INIT_POINTS = 'INIT_POINTS';
-export const INIT_BEELINES = 'INIT_BEELINES';
+export const STORE_POINTS = 'STORE_POINTS';
+export const RESTORE_POINTS = 'RESTORE_POINTS';
 export const START_GRAPH = 'START_GRAPH';
 export const STOP_GRAPH = 'STOP_GRAPH';
 export const RESUME_GRAPH = 'RESUME_GRAPH';
 export const TICK_GRAPH = 'TICK_GRAPH';
 export const END_GRAPH = 'END_GRAPH';
-
-export function initPoints() {
-  return function(dispatch, getState) {
-    let state = getState(),
-      map = mapMapSelector(state),
-      places = filteredPlacesSelector(state);
-
-    dispatch({ type: INIT_POINTS, map, places });
-  };
-}
-
-export function initBeelines() {
-  return function(dispatch, getState) {
-    let state = getState(),
-      points = graphPointsSelector(state),
-      connections = filteredConnectionsSelector(state);
-
-    dispatch({ type: INIT_BEELINES, points, connections });
-  };
-}
+export const MOVE_POINTS = 'MOVE_POINTS';
+export const PUT_POINTS = 'PUT_POINTS';
 
 export function startGraph() {
   return function(dispatch, getState) {
@@ -42,14 +24,10 @@ export function startGraph() {
     if (activeView == null)
       return;
 
-    dispatch(stopGraph());
-
     let places = filteredPlacesSelector(state),
       points = graphPointsSelector(state),
       connections = filteredConnectionsSelector(state),
-      beelines = scaledGraphBeelinesSelector(state);
-
-    console.log(beelines);
+      beelines = graphBeelinesSelector(state);
 
     let nodes = Graph.computeNodes(places.toArray(), points),
       links = Graph.computeLinks(nodes, connections.toArray(), beelines);
@@ -60,10 +38,23 @@ export function startGraph() {
       .nodes(nodes)
       .links(links)
       .gravity(0)
+      .friction(0.2)
       .linkDistance(link => link.beeline)
-      .chargeDistance(200)
-      .on('tick', () => dispatch(tickGraph(force)))
       .on('end', () => dispatch(endGraph(force)));
+
+    force.on('tick', (/*event*/) => {
+      /*let { alpha } = event;
+
+      nodes.forEach(function(node) {
+        let x = node.start.x - node.x,
+          y = node.start.y - node.y;
+
+        node.x += x * alpha * .01;
+        node.y += y * alpha * .01;
+      });*/
+
+      dispatch(tickGraph(force));
+    });
 
     force.start();
 
@@ -80,8 +71,9 @@ export function stopGraph() {
       return;
 
     force.stop();
+    dispatch({ type: STOP_GRAPH });
 
-    dispatch({ type: STOP_GRAPH, force });
+    dispatch(movePoints());
   };
 }
 
@@ -91,4 +83,31 @@ export function tickGraph(force) {
 
 export function endGraph(force) {
   return { type: END_GRAPH, force };
+}
+
+export function movePoints() {
+  return { type: MOVE_POINTS };
+}
+
+export function putPoints() {
+  return { type: PUT_POINTS };
+}
+
+export function storePoints() {
+  return function(dispatch, getState) {
+    let state = getState(),
+      force = graphForceSelector(state),
+      map = mapMapSelector(state);
+
+    dispatch({ type: STORE_POINTS, force, map });
+  };
+}
+
+export function restorePoints() {
+  return function(dispatch, getState) {
+    let state = getState(),
+      map = mapMapSelector(state);
+
+    dispatch({ type: RESTORE_POINTS, map });
+  };
 }

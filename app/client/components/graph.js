@@ -48,9 +48,14 @@ class Graph extends Component {
   }
 
   transformElements() {
-    let { points } = this.props;
+    let { points, transition } = this.props,
+      places = this.places();
 
-    this.places()
+    if (transition)
+      places = places.transition()
+        .duration(400);
+
+    places
       .attr('transform', function(node) {
         let point = points[node.id];
 
@@ -61,9 +66,18 @@ class Graph extends Component {
       .each(function(edge) {
         let connection = d3.select(this),
           fromPoint = points[edge.from],
-          toPoint = points[edge.to];
+          toPoint = points[edge.to],
+          line = connection.select('.connection-line'),
+          label = connection.select('.connection-label');
 
-        connection.select('.connection-line')
+        if (transition) {
+          line = line.transition()
+            .duration(400);
+          label = label.transition()
+            .duration(400);
+        }
+
+        line
           .attr({
             x1: fromPoint.x,
             y1: fromPoint.y,
@@ -71,7 +85,7 @@ class Graph extends Component {
             y2: toPoint.y
           });
 
-        connection.select('.connection-label')
+        label
           .attr('transform', function() {
             let from = L.point(fromPoint.x, fromPoint.y),
               to = L.point(toPoint.x, toPoint.y);
@@ -107,7 +121,8 @@ class Graph extends Component {
       return {
         place: place.id,
         x: point.x,
-        y: point.y
+        y: point.y,
+        start: point
       };
     });
   }

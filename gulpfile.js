@@ -21,7 +21,7 @@ gulp.task('browserify', function() {
     debug: true,
     entries: ['app/client/index.js'],
     transform: [
-      babelify.configure()
+      babelify.configure({ sourceMaps: false })
     ]
   });
 

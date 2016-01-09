@@ -1,4 +1,4 @@
-import { initPoints, initBeelines, startGraph } from './graph';
+import { startGraph, stopGraph, putPoints, storePoints, restorePoints } from './graph';
 
 export const INIT_VIS = 'INIT_VIS';
 export const MOVE_VIS = 'MOVE_VIS';
@@ -8,9 +8,7 @@ export const ZOOM_VIS = 'ZOOM_VIS';
 export function initVis(map, event) {
   return function(dispatch) {
     dispatch({ type: INIT_VIS, map, event });
-
-    dispatch(initPoints());
-    dispatch(initBeelines());
+    dispatch(restorePoints());
     dispatch(startGraph());
   };
 }
@@ -24,5 +22,10 @@ export function resizeVis(map, event) {
 }
 
 export function zoomVis(map, event) {
-  return { type: ZOOM_VIS, map, event };
+  return function(dispatch) {
+    dispatch(storePoints());
+    dispatch(stopGraph());
+    dispatch(putPoints());
+    dispatch({ type: ZOOM_VIS, map, event })
+  };
 }

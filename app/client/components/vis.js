@@ -10,7 +10,7 @@ import PlaceClipList from './place-clip-list';
 
 class Vis extends Component {
   render() {
-    let { vis, nodes, edges, points, onHoverPlace, onGraphTick } = this.props;
+    let { vis, nodes, edges, points, transition, onHoverPlace, onGraphTick } = this.props;
 
     let { bounds, transform, zoom } = vis,
       boundSize = bounds.getSize();
@@ -36,7 +36,7 @@ class Vis extends Component {
           <PlaceClipList nodes={nodes}/>
         </defs>
 
-        <Graph nodes={nodes} edges={edges} points={points}
+        <Graph nodes={nodes} edges={edges} points={points} transition={transition}
                onHoverPlace={onHoverPlace} onTick={onGraphTick}/>
       </svg>
     );

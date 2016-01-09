@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
-import placesSelector from './places';
+import reduce from 'lodash/collection/reduce';
+import { filteredPlacesSelector } from './places';
 import { filteredConnectionsSelector } from './connections';
 
 const mapSelector = state => state.map;
@@ -18,10 +19,10 @@ export const mapMapSelector = createSelector(
   map => map.get('map')
 );
 
-/*export const mapPointsSelector = createSelector(
+export const mapPointsSelector = createSelector(
   [
     mapMapSelector,
-    placesSelector,
+    filteredPlacesSelector,
     mapZoomSelector // Only for caching
   ],
   function(map, places) {
@@ -66,6 +67,6 @@ export const mapBeelinesRangeSelector = createSelector(
       return range;
     }, [Infinity, -Infinity]);
   }
-);*/
+);
 
 export default mapSelector;

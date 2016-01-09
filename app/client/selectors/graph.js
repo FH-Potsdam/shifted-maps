@@ -1,8 +1,8 @@
 import { createSelector, createStructuredSelector } from 'reselect';
 import d3 from 'd3';
 import map from 'lodash/object/mapValues';
-import reduce from 'lodash/collection/reduce';
 import { uiActiveViewSelector } from './ui';
+import { mapBeelinesSelector, mapBeelinesRangeSelector, mapPointsSelector } from './map';
 import { connectionDistanceDomainSelector, connectionDurationDomainSelector, connectionFrequencyDomainSelector } from './connections';
 import { GEOGRAPHIC_VIEW, DURATION_VIEW, FREQUENCY_VIEW } from '../services/views';
 
@@ -24,38 +24,31 @@ export const graphForceSelector = createSelector(
   graph => graph.get('force')
 );
 
-export const graphPointsSelector = createSelector(
-  [
-    graphSelector
-  ],
-  graph => graph.get('points')
-);
+export function graphPointsSelector(state) {
+  let activeView = uiActiveViewSelector(state);
 
-export const graphBeelinesSelector = createSelector(
-  [
-    graphSelector
-  ],
-  graph => graph.get('beelines')
-);
+  if (activeView != null) {
+    let graph = graphSelector(state),
+      graphPoints = graph.get('points');
 
-export const graphBeelinesRangeSelector = createSelector(
-  [
-    graphBeelinesSelector
-  ],
-  function(beelines) {
-    return reduce(beelines, function(range, beeline) {
-      if (beeline < range[0]) range[0] = beeline;
-      if (beeline > range[1]) range[1] = beeline;
-
-      return range;
-    }, [Infinity, -Infinity]);
+    if (graphPoints != null)
+      return graphPoints;
   }
+
+  return mapPointsSelector(state);
+}
+
+export const graphTransitionSelector = createSelector(
+  [
+    graphSelector
+  ],
+  graph => graph.get('transition')
 );
 
 const geographicScaleSelector = createSelector(
   [
     connectionDistanceDomainSelector,
-    graphBeelinesRangeSelector
+    mapBeelinesRangeSelector
   ],
   function(connectionDistanceDomain, beelineRange) {
     return d3.scale.linear()
@@ -68,7 +61,7 @@ const geographicScaleSelector = createSelector(
 const durationScaleSelector = createSelector(
   [
     connectionDurationDomainSelector,
-    graphBeelinesRangeSelector
+    mapBeelinesRangeSelector
   ],
   function(connectionDurationDomain, beelineRange) {
     return d3.scale.linear()
@@ -81,7 +74,7 @@ const durationScaleSelector = createSelector(
 const frequencyScaleSelector = createSelector(
   [
     connectionFrequencyDomainSelector,
-    graphBeelinesRangeSelector
+    mapBeelinesRangeSelector
   ],
   function(connectionFrequencyDomain, beelineRange) {
     return d3.scale.linear()
@@ -106,10 +99,10 @@ const graphActiveViewBeelinesScaleSelector = state => {
   return BEELINE_SCALE_SELECTOR[activeView](state);
 };
 
-export const scaledGraphBeelinesSelector = createSelector(
+export const graphBeelinesSelector = createSelector(
   [
     graphActiveViewBeelinesScaleSelector,
-    graphBeelinesSelector
+    mapBeelinesSelector
   ],
   function(beelineScale, beelines) {
     return map(beelines, (beeline) => beelineScale(beeline));

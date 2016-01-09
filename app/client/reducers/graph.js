@@ -1,42 +1,54 @@
 import { Map } from 'immutable';
 import forEach from 'lodash/collection/forEach';
-import { INIT_POINTS, INIT_BEELINES, START_GRAPH, TICK_GRAPH } from '../actions/graph';
+import { RESTORE_POINTS, STORE_POINTS, START_GRAPH, STOP_GRAPH, TICK_GRAPH, MOVE_POINTS, PUT_POINTS, STORE_POINT } from '../actions/graph';
 import { ZOOM_VIS, INIT_VIS } from '../actions/vis';
 
-const DEFAULT_STATE = Map({ views: Map() });
+const DEFAULT_STATE = Map({
+  points: null,
+  beelines: null,
+  lastLocations: null,
+  lastActiveView: null,
+  transition: false
+});
 
-function initPoints(state, action) {
-  let { map, places } = action,
-    points = {};
+function storePoints(state, action) {
+  let { map, force } = action,
+    nodes = force.nodes(),
+    locations = {};
 
-  places.forEach(function(place, id) {
-    points[id] = map.latLngToLayerPoint(place.location);
+  nodes.forEach(function(node) {
+    let point = L.point(node.x, node.y);
+
+    locations[node.place] = map.layerPointToLatLng(point);
+  });
+
+  return state.set('lastLocations', Map(locations));
+}
+
+function restorePoints(state, action) {
+  let { map } = action,
+    lastLocations = state.get('lastLocations');
+
+  if (lastLocations == null)
+    return state;
+
+  let points = {};
+
+  lastLocations.forEach(function(location, id) {
+    points[id] = map.latLngToLayerPoint(location);
   });
 
   return state.set('points', points);
-}
-
-function initBeelines(state, action) {
-  if (state.has('beelines'))
-    return state;
-
-  let { points, connections } = action,
-    beelines = {};
-
-  connections.forEach(function(connection, id) {
-    let from = points[connection.from],
-      to = points[connection.to];
-
-    beelines[id] = from.distanceTo(to);
-  });
-
-  return state.set('beelines', beelines);
 }
 
 function startGraph(state, action) {
   let { force } = action;
 
   return state.set('force', force);
+}
+
+function stopGraph(state) {
+  return state.set('force', null);
 }
 
 function tickGraph(state, action) {
@@ -47,7 +59,15 @@ function tickGraph(state, action) {
     points[node.place] = L.point(node.x, node.y);
   });
 
-  return state.setIn(['points'], points);
+  return state.set('points', points);
+}
+
+function putPoints(state) {
+  return state.set('transition', false);
+}
+
+function movePoints(state) {
+  return state.set('transition', true);
 }
 
 /*function storeLocations(state, action) {
@@ -91,14 +111,23 @@ export default function views(state = DEFAULT_STATE, action) {
     case START_GRAPH:
       return startGraph(state, action);
 
+    case STOP_GRAPH:
+      return stopGraph(state, action);
+
     case TICK_GRAPH:
       return tickGraph(state, action);
 
-    case INIT_POINTS:
-      return initPoints(state, action);
+    case STORE_POINTS:
+      return storePoints(state, action);
 
-    case INIT_BEELINES:
-      return initBeelines(state, action);
+    case RESTORE_POINTS:
+      return restorePoints(state, action);
+
+    case PUT_POINTS:
+      return putPoints(state, action);
+
+    case MOVE_POINTS:
+      return movePoints(state, action);
 
     /*case ZOOM_VIS:
       return storeLocations(state, action);
