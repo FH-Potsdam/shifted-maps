@@ -29,6 +29,12 @@ function filterPlaces(places, uiTimeSpan) {
 }
 
 function computePlaceScales(places, strokeWidthRangeScale, radiusRangeScale, visScale) {
+  let strokeWidthScale = d3.scale.pow().exponent(.5),
+    radiusScale = d3.scale.pow().exponent(.5);
+
+  if (places.size === 0)
+    return { strokeWidthScale, radiusScale };
+
   let strokeWidthRange = strokeWidthRangeScale(visScale),
     radiusRange = radiusRangeScale(visScale);
 
@@ -52,11 +58,11 @@ function computePlaceScales(places, strokeWidthRangeScale, radiusRangeScale, vis
   let strokeWidthDomain = [minFrequency, maxFrequency],
     radiusDomain = [minDuration, maxDuration];
 
-  let strokeWidthScale = d3.scale.pow().exponent(.5)
+  strokeWidthScale
     .range(strokeWidthRange)
     .domain(strokeWidthDomain);
 
-  let radiusScale = d3.scale.pow().exponent(.5)
+  radiusScale
     .range(radiusRange)
     .domain(radiusDomain);
 
