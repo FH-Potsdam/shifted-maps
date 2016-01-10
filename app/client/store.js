@@ -8,7 +8,7 @@ import { HOVER_PLACE } from './actions/ui';
 
 const loggerMiddleware = createLogger({
   collapsed: true,
-  predicate: (getState, action) => action.type != TICK_GRAPH && action.type != HOVER_PLACE,
+  //predicate: (getState, action) => action.type != TICK_GRAPH && action.type != HOVER_PLACE,
   stateTransformer: (state) => {
     let newState = {};
 

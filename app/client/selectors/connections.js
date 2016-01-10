@@ -176,7 +176,7 @@ const connectionsSelector = state => state.connections;
 export const filteredConnectionsSelector = createSelector(
   [
     connectionsSelector,
-    filteredPlacesSelector,
+    clusteredPlacesSelector,
     uiTimeSpanSelector
   ],
   filterConnections

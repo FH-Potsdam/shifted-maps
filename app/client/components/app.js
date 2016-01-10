@@ -49,24 +49,8 @@ class App extends Component {
 
   render() {
     let { map, ui, stats } = this.props,
-      children = [];
-
-    if (ui.get('interactionOverlay') && ENV.exhibition) {
-      children.push(
-        <InteractionOverlay key="interaction-overlay" onClose={this.props.onInteractionOverlayClose}/>
-      );
-    }
-
-    if (!ui.get('storylineLoaded')) {
-      children.push(
-        <LoadingScreen key="loading-screen" stats={stats}/>
-      );
-    } else {
-      children.push(
-        ui.get('authorized') ? <Logout key="logout"/> : <TryOwnData key="try-own-data"/>
-      );
-
-      children.push(
+      children = [
+        ui.get('authorized') ? <Logout key="logout"/> : <TryOwnData key="try-own-data"/>,
         <Map key="map" id={map.get('id')} zoom={map.get('zoom')} center={map.get('center')} bounds={map.get('bounds')}
              className="app__map" active={ui.get('activeView') == null}
              onViewReset={this.props.onMapViewReset}
@@ -82,6 +66,17 @@ class App extends Component {
             onTimeSpanChange={this.props.onTimeSpanChange}
             onViewChange={this.props.onViewChange} />,
         <Scales key="scales" onUpdate={this.props.onScaleUpdate} />
+      ];
+
+    if (ui.get('interactionOverlay') && ENV.exhibition) {
+      children.push(
+        <InteractionOverlay key="interaction-overlay" onClose={this.props.onInteractionOverlayClose}/>
+      );
+    }
+
+    if (!ui.get('storylineLoaded')) {
+      children.push(
+        <LoadingScreen key="loading-screen" stats={stats}/>
       );
     }
 
