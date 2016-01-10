@@ -98,8 +98,12 @@ export function putPoints() {
 export function storePoints() {
   return function(dispatch, getState) {
     let state = getState(),
-      force = graphForceSelector(state),
-      map = mapMapSelector(state);
+      force = graphForceSelector(state);
+
+    if (force == null)
+      return;
+
+    let map = mapMapSelector(state);
 
     dispatch({ type: STORE_POINTS, force, map });
   };
