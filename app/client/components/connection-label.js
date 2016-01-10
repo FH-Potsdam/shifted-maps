@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classNames from 'classnames';
 
 class ConnectionLabel extends Component {
   shouldComponentUpdate(nextProps) {
@@ -6,13 +7,11 @@ class ConnectionLabel extends Component {
   }
 
   render() {
-    let { edge } = this.props;
-
-    if (edge.label == null)
-      return null;
+    let { edge } = this.props,
+      className = classNames('connection-label', { active: edge.label != null });
 
     return (
-      <g className="connection-label">
+      <g className={className}>
         <text className="connection-label-stroke">{edge.label}</text>
         <text>{edge.label}</text>
       </g>

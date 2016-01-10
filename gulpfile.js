@@ -27,11 +27,11 @@ gulp.task('browserify', function() {
 
   return bundler.bundle()
     .pipe(source('index.js'))
-    .pipe(gulp.dest('public/scripts'))
     .on('error', (error) => {
       gulpUtil.log(error.message);
       this.emit('end');
-    });
+    })
+    .pipe(gulp.dest('public/scripts'));
 });
 
 gulp.task('compass', function() {
