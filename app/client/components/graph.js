@@ -73,8 +73,6 @@ class Graph extends Component {
         if (transition) {
           line = line.transition()
             .duration(400);
-          label = label.transition()
-            .duration(400);
         }
 
         line
@@ -85,21 +83,28 @@ class Graph extends Component {
             y2: toPoint.y
           });
 
-        label
-          .attr('transform', function() {
-            let from = L.point(fromPoint.x, fromPoint.y),
-              to = L.point(toPoint.x, toPoint.y);
+        if (label.classed('active')) {
+          if (transition) {
+            label = label.transition()
+              .duration(400);
+          }
 
-            let vector = to.subtract(from),
-              center = from.add(vector.divideBy(2));
+          label
+            .attr('transform', function() {
+              let from = L.point(fromPoint.x, fromPoint.y),
+                to = L.point(toPoint.x, toPoint.y);
 
-            let rotate = Math.atan2(vector.y, vector.x) * 180 / Math.PI;
+              let vector = to.subtract(from),
+                center = from.add(vector.divideBy(2));
 
-            if (rotate > 90) rotate -= 180;
-            else if (rotate < -90) rotate += 180;
+              let rotate = Math.atan2(vector.y, vector.x) * 180 / Math.PI;
 
-            return `translate(${center.x}, ${center.y}) rotate(${rotate})`
-          });
+              if (rotate > 90) rotate -= 180;
+              else if (rotate < -90) rotate += 180;
+
+              return `translate(${center.x}, ${center.y}) rotate(${rotate})`
+            });
+        }
       });
   }
 
