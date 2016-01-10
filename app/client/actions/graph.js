@@ -39,6 +39,8 @@ export function startGraph() {
       .links(links)
       .gravity(0)
       .friction(0.2)
+      .charge(0)
+      .chargeDistance(0)
       .linkDistance(link => link.beeline)
       .on('end', () => dispatch(endGraph(force)));
 
