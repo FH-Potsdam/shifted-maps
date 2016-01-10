@@ -19,11 +19,16 @@ export function changeView(view) {
 }
 
 export function changeTimeSpan(timeSpan) {
-  let [ start, end ] = timeSpan;
+  return function(dispatch) {
+    let [ start, end ] = timeSpan;
 
-  trackEvent('ui', 'filter', 'time span', moment(start).format('YYYY-MM-DD') + '-' + moment(end).format('YYYY-MM-DD'));
+    dispatch(stopGraph());
+    dispatch(startGraph());
 
-  return { type: CHANGE_TIME_SPAN, timeSpan };
+    trackEvent('ui', 'filter', 'time span', moment(start).format('YYYY-MM-DD') + '-' + moment(end).format('YYYY-MM-DD'));
+
+    dispatch({ type: CHANGE_TIME_SPAN, timeSpan });
+  }
 }
 
 export function hoverPlace(placeId, hover) {
