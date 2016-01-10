@@ -30,4 +30,11 @@ export const uiHoverSelector = createSelector(
   ui => ui.get('hover')
 );
 
+export const uiClusterStrength = createSelector(
+  [
+    uiSelector
+  ],
+  ui => ui.get('clusterStrength')
+);
+
 export default uiSelector;

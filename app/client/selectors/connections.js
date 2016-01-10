@@ -4,7 +4,8 @@ import point from 'turf-point';
 import distance from 'turf-distance';
 import { Map } from 'immutable';
 import { createSelector } from 'reselect';
-import placesSelector, { filteredPlacesSelector/*, positionedPlacesSelector*/ } from './places';
+import reduce from 'lodash/collection/reduce';
+import placesSelector, { filteredPlacesSelector, clusteredPlacesSelector, placePointsSelector } from './places';
 import { connectionStrokeWidthRangeScaleSelector } from './scales';
 import { visBoundsSelector, visScaleSelector } from './vis';
 import { uiTimeSpanSelector, uiActiveViewSelector } from './ui';
@@ -179,6 +180,39 @@ export const filteredConnectionsSelector = createSelector(
     uiTimeSpanSelector
   ],
   filterConnections
+);
+
+export const connectionBeelinesSelector = createSelector(
+  [
+    placePointsSelector,
+    filteredConnectionsSelector
+  ],
+  function(points, connections) {
+    let beelines = {};
+
+    connections.forEach(function(connection, id) {
+      let from = points[connection.from],
+        to = points[connection.to];
+
+      beelines[id] = from.distanceTo(to);
+    });
+
+    return beelines;
+  }
+);
+
+export const connectionBeelinesRangeSelector = createSelector(
+  [
+    connectionBeelinesSelector
+  ],
+  function(beelines) {
+    return reduce(beelines, function(range, beeline) {
+      if (beeline < range[0]) range[0] = beeline;
+      if (beeline > range[1]) range[1] = beeline;
+
+      return range;
+    }, [Infinity, -Infinity]);
+  }
 );
 
 export const connectionDomainSelector = createSelector(

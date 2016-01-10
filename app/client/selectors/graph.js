@@ -2,8 +2,8 @@ import { createSelector, createStructuredSelector } from 'reselect';
 import d3 from 'd3';
 import map from 'lodash/object/mapValues';
 import { uiActiveViewSelector } from './ui';
-import { mapBeelinesSelector, mapBeelinesRangeSelector, mapPointsSelector } from './map';
-import { connectionDistanceDomainSelector, connectionDurationDomainSelector, connectionFrequencyDomainSelector } from './connections';
+import { placePointsSelector } from './places';
+import { connectionDistanceDomainSelector, connectionDurationDomainSelector, connectionFrequencyDomainSelector, connectionBeelinesSelector, connectionBeelinesRangeSelector } from './connections';
 import { GEOGRAPHIC_VIEW, DURATION_VIEW, FREQUENCY_VIEW } from '../services/views';
 
 export default function graphSelector(state) {
@@ -35,7 +35,7 @@ export function graphPointsSelector(state) {
       return graphPoints;
   }
 
-  return mapPointsSelector(state);
+  return placePointsSelector(state);
 }
 
 export const graphTransitionSelector = createSelector(
@@ -48,7 +48,7 @@ export const graphTransitionSelector = createSelector(
 const geographicScaleSelector = createSelector(
   [
     connectionDistanceDomainSelector,
-    mapBeelinesRangeSelector
+    connectionBeelinesRangeSelector
   ],
   function(connectionDistanceDomain, beelineRange) {
     return d3.scale.linear()
@@ -61,7 +61,7 @@ const geographicScaleSelector = createSelector(
 const durationScaleSelector = createSelector(
   [
     connectionDurationDomainSelector,
-    mapBeelinesRangeSelector
+    connectionBeelinesRangeSelector
   ],
   function(connectionDurationDomain, beelineRange) {
     return d3.scale.linear()
@@ -74,7 +74,7 @@ const durationScaleSelector = createSelector(
 const frequencyScaleSelector = createSelector(
   [
     connectionFrequencyDomainSelector,
-    mapBeelinesRangeSelector
+    connectionBeelinesRangeSelector
   ],
   function(connectionFrequencyDomain, beelineRange) {
     return d3.scale.linear()
@@ -102,7 +102,7 @@ const graphActiveViewBeelinesScaleSelector = state => {
 export const graphBeelinesSelector = createSelector(
   [
     graphActiveViewBeelinesScaleSelector,
-    mapBeelinesSelector
+    connectionBeelinesSelector
   ],
   function(beelineScale, beelines) {
     return map(beelines, (beeline) => beelineScale(beeline));

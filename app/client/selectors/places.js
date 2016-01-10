@@ -2,10 +2,9 @@ import d3 from 'd3';
 import { Seq } from 'immutable';
 import { createSelector } from 'reselect';
 import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector, placeMinimizeRadiusSelector } from './scales';
-import { /*visBoundsSelector, */visScaleSelector } from './vis';
-//import { mapMapSelector } from './map';
-import { uiTimeSpanSelector, uiHoveredPlaceIdSelector, uiHoverSelector } from './ui';
-//import { activeViewSelector } from './views';
+import { visScaleSelector } from './vis';
+import { mapMapSelector, mapZoomSelector } from './map';
+import { uiTimeSpanSelector, uiHoveredPlaceIdSelector, uiHoverSelector, uiClusterStrength } from './ui';
 
 function filterPlaces(places, uiTimeSpan) {
   if (places.size === 0)
@@ -88,32 +87,11 @@ function scalePlaces(places, strokeWidthScale, radiusScale) {
     });
 }
 
-/*function positionPlaces(places, mapMap, activeView) {
-  return places.map(function(place) {
-    let { location, visible } = place,
-      point;
-
-    if (!visible)
-      return place;
-
-    if (activeView != null && activeView.has(place.id)) {
-      point = activeView.get(place.id);
-    } else {
-      point = mapMap.latLngToLayerPoint(location);
-    }
-
-    return place.set('point', point);
-  });
-}*/
-
-/*function computeDistance(nodeOne, nodeTwo) {
-  let nodeOnePoint = nodeOne.point,
-    nodeTwoPoint = nodeTwo.point;
-
-  return Math.sqrt(Math.pow(nodeTwoPoint.x - nodeOnePoint.x, 2) + Math.pow(nodeTwoPoint.y - nodeOnePoint.y, 2));
+function computeDistance(pointOne, pointTwo) {
+  return Math.sqrt(Math.pow(pointTwo.x - pointOne.x, 2) + Math.pow(pointTwo.y - pointOne.y, 2));
 }
 
-function clusterPlaces(places) {
+function clusterPlaces(places, points, clusterStrength) {
   // Check for top most nodes, all others will be hidden.
   return places.withMutations(function(places) {
     let placesArray = places.toList().toJS();
@@ -132,7 +110,13 @@ function clusterPlaces(places) {
         if (!placeTwo.visible || placeTwo.calculated)
           continue;
 
-        if (computeDistance(placeOne, placeTwo) < (placeOne.radius - placeTwo.radius)) {
+        let pointOne = points[placeOne.id],
+          pointTwo = points[placeTwo.id];
+
+        let distance = computeDistance(pointOne, pointTwo),
+          overlap = placeOne.radius + placeTwo.radius - distance; // Place One Radius always larger than of Place Two
+
+        if (overlap / (placeTwo.radius * 2) >= clusterStrength) {
           placeTwo.calculated = true;
 
           places.setIn([placeTwo.id, 'visible'], false);
@@ -143,17 +127,6 @@ function clusterPlaces(places) {
     }
   });
 }
-
-function boundPlaces(places, visBounds) {
-  return places.map(function(place) {
-    let { visible, point } = place;
-
-    if (!visible)
-      return place;
-
-    return place.set('visible', visBounds.contains(point));
-  });
-}*/
 
 function tilePlaces(places) {
   return places.map(function(place) {
@@ -226,33 +199,35 @@ export const scaledPlacesSelector = createSelector(
   scalePlaces
 );
 
-/*export const positionedPlacesSelector = createSelector(
+export const placePointsSelector = createSelector(
   [
-    scaledPlacesSelector,
     mapMapSelector,
-    activeViewSelector
+    placesSelector,
+    mapZoomSelector // Only for caching (new zoom = new points)
   ],
-  positionPlaces
+  function(map, places) {
+    let points = {};
+
+    places.forEach(function(place, id) {
+      points[id] = map.latLngToLayerPoint(place.location);
+    });
+
+    return points;
+  }
 );
 
 export const clusteredPlacesSelector = createSelector(
   [
-    positionedPlacesSelector
+    scaledPlacesSelector,
+    placePointsSelector,
+    uiClusterStrength
   ],
   clusterPlaces
 );
 
-export const boundedPlacesSelector = createSelector(
-  [
-    clusteredPlacesSelector,
-    visBoundsSelector
-  ],
-  boundPlaces
-);*/
-
 export const tiledPlacesSelector = createSelector(
   [
-    scaledPlacesSelector//boundedPlacesSelector
+    clusteredPlacesSelector
   ],
   tilePlaces
 );

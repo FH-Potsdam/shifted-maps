@@ -10,7 +10,8 @@ const DEFAULT_STATE = Map({
   timeSpanStep: DAY, // TODO Model or global const
   timeSpanRange: [Infinity, -Infinity],
   timeSpan: [],
-  interactionOverlay: true
+  interactionOverlay: true,
+  clusterStrength: .5
 });
 
 function addStays(state, action) {
