@@ -1,7 +1,7 @@
 import d3 from 'd3';
 import { graphForceSelector, graphPointsSelector, graphBeelinesSelector } from '../selectors/graph';
 import { mapMapSelector } from '../selectors/map';
-import { filteredPlacesSelector } from '../selectors/places';
+import { clusteredPlacesSelector } from '../selectors/places';
 import { filteredConnectionsSelector } from '../selectors/connections';
 import { uiActiveViewSelector } from '../selectors/ui';
 import Graph from '../components/graph';
@@ -24,7 +24,7 @@ export function startGraph() {
     if (activeView == null)
       return;
 
-    let places = filteredPlacesSelector(state),
+    let places = clusteredPlacesSelector(state),
       points = graphPointsSelector(state),
       connections = filteredConnectionsSelector(state),
       beelines = graphBeelinesSelector(state);

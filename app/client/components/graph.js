@@ -56,6 +56,7 @@ class Graph extends Component {
         .duration(400);
 
     places
+      .filter((node) => node.visible)
       .attr('transform', function(node) {
         let point = points[node.id];
 
@@ -63,6 +64,7 @@ class Graph extends Component {
       });
 
     this.connections()
+      .filter((edge) => edge.visible)
       .each(function(edge) {
         let connection = d3.select(this),
           fromPoint = points[edge.from],
@@ -120,26 +122,41 @@ class Graph extends Component {
   }
 
   static computeNodes(places, points) {
-    return places.map(function(place) {
-      let point = points[place.id];
+    let nodes = [];
 
-      return {
-        place: place.id,
+    places.forEach((place) => {
+      if (!place.visible)
+        return;
+
+      let { id } = place,
+        point = points[id];
+
+      nodes.push({
+        place: id,
         x: point.x,
         y: point.y,
         start: point
-      };
+      });
     });
+
+    return nodes;
   }
 
   static computeLinks(nodes, connections, beelines) {
-    return connections.map(function(connection) {
-      return {
+    let links = [];
+
+    connections.forEach((connection) => {
+      if (!connection.visible)
+        return;
+
+      links.push({
         source: find(nodes, { place: connection.from }),
         target: find(nodes, { place: connection.to }),
         beeline: beelines[connection.id]
-      };
+      });
     });
+
+    return links;
   }
 }
 
