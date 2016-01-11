@@ -19,7 +19,7 @@ const Connection = Record({
 });
 
 function uniqueId(idOne, idTwo) {
-  return idOne + idTwo * idTwo;
+  return idOne + '-' + idTwo;
 }
 
 Connection.getId = function(from, to) {
