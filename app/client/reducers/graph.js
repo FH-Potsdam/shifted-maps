@@ -32,7 +32,7 @@ function restorePoints(state, action) {
   if (lastLocations == null)
     return state;
 
-  let points = {};
+  let points = Object.assign({}, state.get('points'));
 
   lastLocations.forEach(function(location, id) {
     points[id] = map.latLngToLayerPoint(location);
@@ -42,9 +42,12 @@ function restorePoints(state, action) {
 }
 
 function startGraph(state, action) {
-  let { force } = action;
+  let { force, points } = action;
 
-  return state.set('force', force);
+  return state.withMutations(state => {
+    state.set('force', force);
+    state.set('points', points);
+  });
 }
 
 function stopGraph(state) {
@@ -53,7 +56,7 @@ function stopGraph(state) {
 
 function tickGraph(state, action) {
   let { force } = action,
-    points = {};
+    points = Object.assign({}, state.get('points'));
 
   force.nodes().forEach(function(node) {
     points[node.place] = L.point(node.x, node.y);

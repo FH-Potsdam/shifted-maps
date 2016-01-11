@@ -1,7 +1,7 @@
 import d3 from 'd3';
 import { graphForceSelector, graphPointsSelector, graphBeelinesSelector } from '../selectors/graph';
 import { mapMapSelector } from '../selectors/map';
-import { clusteredPlacesSelector } from '../selectors/places';
+import { clusteredPlacesSelector, placePointsSelector } from '../selectors/places';
 import { filteredConnectionsSelector } from '../selectors/connections';
 import { uiActiveViewSelector } from '../selectors/ui';
 import Graph from '../components/graph';
@@ -60,7 +60,8 @@ export function startGraph() {
 
     force.start();
 
-    dispatch({ type: START_GRAPH, force });
+    dispatch(putPoints());
+    dispatch({ type: START_GRAPH, force, points });
   };
 }
 
@@ -112,8 +113,9 @@ export function storePoints() {
 export function restorePoints() {
   return function(dispatch, getState) {
     let state = getState(),
-      map = mapMapSelector(state);
+      map = mapMapSelector(state),
+      points = placePointsSelector(state);
 
-    dispatch({ type: RESTORE_POINTS, map });
+    dispatch({ type: RESTORE_POINTS, map, points });
   };
 }
