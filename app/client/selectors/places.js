@@ -126,24 +126,34 @@ function clusterPlaces(places, points, clusterStrength) {
           placeTwo.calculated = true;
 
           places.setIn([placeTwo.id, 'visible'], false);
+          placeOne.cluster.push(placeTwo.id);
         }
       }
 
-      places.setIn([placeOne.id, 'visible'], true);
+      places.mergeDeepIn([placeOne.id], {
+        visible: true,
+        cluster: placeOne.cluster
+      });
     }
   });
 }
 
 function tilePlaces(places) {
   return places.map(function(place) {
-    let { location, radius, visible } = place;
-
-    if (!visible)
+    if (!place.visible)
       return place;
+
+    let { cluster, id, radius } = place;
 
     radius = Math.ceil(radius);
 
-    return place.set('tileURL', `/tiles/${location.lng},${location.lat},${radius}.png${L.Browser.retina ? '@2x' : ''}`);
+    let locations = cluster.push(id).toArray().map(function(id) {
+      let { location } = places.get(id);
+
+      return `${location.lng},${location.lat}`;
+    });
+
+    return place.set('tileURL', `/tiles/${locations.join(';')}/${radius}.png${L.Browser.retina ? '@2x' : ''}`);
   });
 }
 

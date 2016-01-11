@@ -1,4 +1,5 @@
-var SphericalMercator = require('sphericalmercator');
+var reduce = require('lodash/collection/reduce'),
+  SphericalMercator = require('sphericalmercator');
 
 var MAP_URL_PREFIX = function(options) {
   return options.mapboxUrl + '/' + options.mapboxId + '/';
@@ -8,15 +9,19 @@ var MAP_URL_SUFFIX = function(options) {
   return (options.retina ? '@2x' : '')  + '.png?access_token=' + options.mapboxToken;
 };
 
-// Compute maximum zoom at given location for given pixel size.
-function computeZoom(lngLat, size, options) {
-  var bounds = toBounds(lngLat, options.placeToBoundsMeters);
+function computeBounds(locations, options) {
+  return reduce(locations, function(bounds, location) {
+    var nextBounds = toBounds(location, options.placeToBoundsMeters);
 
-  return getBoundsZoom(bounds, size);
+    if (bounds == null)
+      return nextBounds;
+
+    return extendBounds(bounds, nextBounds);
+  }, null);
 }
 
 // Calculate bounding box with given size in meters and the given location at it's center.
-// Copied from Leaflet.
+// Copied from Leafvar.
 function toBounds(lngLat, sizeInMeters) {
   var latAccuracy = 180 * sizeInMeters / 40075017,
     lngAccuracy = latAccuracy / Math.cos((Math.PI / 180) * lngLat[1]);
@@ -27,12 +32,25 @@ function toBounds(lngLat, sizeInMeters) {
   ];
 }
 
+function extendBounds(bounds, nextBounds) {
+  return [
+    [
+      Math.min(bounds[0][0], nextBounds[0][0]),
+      Math.min(bounds[0][1], nextBounds[0][1])
+    ],
+    [
+      Math.max(bounds[1][0], nextBounds[1][0]),
+      Math.max(bounds[1][1], nextBounds[1][1])
+    ]
+  ];
+}
+
 var projection = new SphericalMercator();
 
 // Get maximum zoom for showing given bounding box in the given pixel size.
-// Taken from Leaflet libraries Map object but added own size parameter.
-// Copied from Leaflet (with own size parameter).
-function getBoundsZoom(bounds, size) {
+// Taken from Leafvar libraries Map object but added own size parameter.
+// Copied from Leafvar (with own size parameter).
+function computeBoundsZoom(bounds, size) {
   var zoom = 0,
     maxZoom = 19, // TODO config
     nw = bounds[1],
@@ -55,17 +73,25 @@ function getBoundsZoom(bounds, size) {
 }
 
 // Compute tile URL
-function computeTileUrl(lngLat, zoom, size, options) {
+function computeTileUrl(bounds, zoom, size, options) {
   var prefix = MAP_URL_PREFIX(options),
     suffix = MAP_URL_SUFFIX(options);
 
-  return prefix + lngLat.join(',') + ',' + zoom + '/' + size + 'x' + size + suffix;
+  console.log(bounds[1][0] + bounds[1][1]);
+
+  var center = [
+    (bounds[0][0] + bounds[1][0]) / 2,
+    (bounds[0][1] + bounds[1][1]) / 2
+  ];
+
+  return prefix + center.join(',') + ',' + zoom + '/' + size + 'x' + size + suffix;
 }
 
-module.exports = function(lngLat, radius, options) {
+module.exports = function(locations, radius, options) {
   var size = radius * 2,
-    zoom = computeZoom(lngLat, radius, options),
-    url = computeTileUrl(lngLat, zoom, size, options);
+    bounds = computeBounds(locations, options),
+    zoom = computeBoundsZoom(bounds, size),
+    url = computeTileUrl(bounds, zoom, size, options);
 
   return url;
 };

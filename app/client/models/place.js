@@ -7,12 +7,13 @@ export default Record({
   placeType: null,
   duration: 0,
   frequency: 0,
-  stays: new List(),
+  stays: List(),
   radius: 0,
   strokeWidth: 0,
   //point: null,
   visible: false,
   tileURL: null,
   hover: false,
-  rank: 0
+  rank: 0,
+  cluster: List()
 });
