@@ -1,6 +1,6 @@
 import { Record, List } from 'immutable';
 
-export default Record({
+const Connection = Record({
   id: null,
   from: null,
   to: null,
@@ -17,3 +17,13 @@ export default Record({
   rank: 0,
   label: null
 });
+
+function uniqueId(idOne, idTwo) {
+  return idOne + idTwo * idTwo;
+}
+
+Connection.getId = function(from, to) {
+  return from < to ? uniqueId(from, to) : uniqueId(to, from);
+};
+
+export default Connection;

@@ -1,5 +1,5 @@
 import d3 from 'd3';
-import { Seq } from 'immutable';
+import { Map, List, Seq } from 'immutable';
 import { createSelector } from 'reselect';
 import { placeStrokeWidthRangeScaleSelector, placeRadiusRangeScaleSelector, placeMinimizeRadiusSelector } from './scales';
 import { visScaleSelector } from './vis';
@@ -97,9 +97,8 @@ function computeDistance(pointOne, pointTwo) {
   return Math.sqrt(Math.pow(pointTwo.x - pointOne.x, 2) + Math.pow(pointTwo.y - pointOne.y, 2));
 }
 
-function clusterPlaces(places, points, clusterStrength) {
-  // Check for top most nodes, all others will be hidden.
-  return places.withMutations(function(places) {
+function placeClusters(places, points, clusterStrength) {
+  return Map().withMutations(function(clusters) {
     let placesArray = places.toList().toJS();
 
     for (var i = placesArray.length - 1; i >= 0; i--) {
@@ -110,40 +109,48 @@ function clusterPlaces(places, points, clusterStrength) {
 
       placeOne.calculated = true;
 
-      for (var i = 0; i < placesArray.length; i++) {
-        var placeTwo = placesArray[i];
+      let cluster = List().withMutations(function(cluster) {
+        for (var i = 0; i < placesArray.length; i++) {
+          var placeTwo = placesArray[i];
 
-        if (!placeTwo.visible || placeTwo.calculated)
-          continue;
+          if (!placeTwo.visible || placeTwo.calculated)
+            continue;
 
-        let pointOne = points[placeOne.id],
-          pointTwo = points[placeTwo.id];
+          let pointOne = points[placeOne.id],
+            pointTwo = points[placeTwo.id];
 
-        let distance = computeDistance(pointOne, pointTwo),
-          overlap = placeOne.radius + placeTwo.radius - distance; // Place One Radius always larger than of Place Two
+          let distance = computeDistance(pointOne, pointTwo),
+            overlap = placeOne.radius + placeTwo.radius - distance; // Place One Radius always larger than of Place Two
 
-        if (overlap / (placeTwo.radius * 2) >= clusterStrength) {
-          placeTwo.calculated = true;
+          if (overlap / (placeTwo.radius * 2) >= clusterStrength) {
+            placeTwo.calculated = true;
 
-          places.setIn([placeTwo.id, 'visible'], false);
-          placeOne.cluster.push(placeTwo.id);
+            cluster.push(placeTwo.id);
+          }
         }
-      }
-
-      places.mergeDeepIn([placeOne.id], {
-        visible: true,
-        cluster: placeOne.cluster
       });
+
+      clusters.set(placeOne.id, cluster);
     }
   });
 }
 
-function tilePlaces(places) {
+function clusterPlaces(places, clusters) {
   return places.map(function(place) {
     if (!place.visible)
       return place;
 
-    let { cluster, id, radius } = place;
+    return place.set('visible', clusters.has(place.id));
+  });
+}
+
+function tilePlaces(places, clusters) {
+  return places.map(function(place) {
+    if (!place.visible)
+      return place;
+
+    let { id, radius } = place,
+      cluster = clusters.get(id);
 
     radius = Math.ceil(radius);
 
@@ -232,18 +239,27 @@ export const placePointsSelector = createSelector(
   }
 );
 
-export const clusteredPlacesSelector = createSelector(
+export const placeClustersSelector = createSelector(
   [
     scaledPlacesSelector,
     placePointsSelector,
     uiClusterStrength
+  ],
+  placeClusters
+);
+
+export const clusteredPlacesSelector = createSelector(
+  [
+    scaledPlacesSelector,
+    placeClustersSelector
   ],
   clusterPlaces
 );
 
 export const tiledPlacesSelector = createSelector(
   [
-    clusteredPlacesSelector
+    clusteredPlacesSelector,
+    placeClustersSelector
   ],
   tilePlaces
 );

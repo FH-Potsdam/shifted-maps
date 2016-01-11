@@ -5,22 +5,17 @@ import distance from 'turf-distance';
 import { Map } from 'immutable';
 import { createSelector } from 'reselect';
 import reduce from 'lodash/collection/reduce';
-import placesSelector, { filteredPlacesSelector, clusteredPlacesSelector, placePointsSelector } from './places';
+import placesSelector, { placePointsSelector, placeClustersSelector } from './places';
 import { connectionStrokeWidthRangeScaleSelector } from './scales';
 import { visBoundsSelector, visScaleSelector } from './vis';
 import { uiTimeSpanSelector, uiActiveViewSelector } from './ui';
 import { GEOGRAPHIC_VIEW, DURATION_VIEW, FREQUENCY_VIEW, geographicLabel, durationLabel, frequencyLabel } from '../services/views';
+import Connection from '../models/connection';
 
-function filterConnections(connections, places, uiTimeSpan) {
-  if (connections.size === 0)
-    return connections;
-
+function filterConnections(connections, uiTimeSpan) {
   let [ start, end ] = uiTimeSpan;
 
   return connections.map(function(connection) {
-    if (!places.get(connection.from).visible || !places.get(connection.to).visible)
-      return connection;
-
     let trips = connection.trips.filter(function(trip) {
       return trip.startAt >= start && trip.endAt <= end;
     });
@@ -37,6 +32,55 @@ function filterConnections(connections, places, uiTimeSpan) {
       distance: distance,
       frequency: trips.size,
       visible: duration > 0
+    });
+  });
+}
+
+function clusterConnections(connections, clusters) {
+  return connections.withMutations(function(connections) {
+    connections.forEach(function(connection, id) {
+      if (!connection.visible)
+        return;
+
+      let { from, to } = connection,
+        fromCluster = clusters.get(from),
+        toCluster = clusters.get(to);
+
+      if (fromCluster != null && toCluster != null) {
+        // Main connection
+        return;
+      }
+
+      if (fromCluster == null) {
+        [from, fromCluster] = clusters.findEntry(function(cluster) {
+          return cluster.includes(from);
+        });
+      }
+
+      if (toCluster == null) {
+        [to, toCluster] = clusters.findEntry(function(cluster) {
+          return cluster.includes(to);
+        });
+      }
+
+      connections.setIn([id, 'visible'], false);
+
+      if (fromCluster !== toCluster) {
+        let mainConnectionId = Connection.getId(from, to),
+          mainConnection = connections.get(mainConnectionId);
+
+        if (mainConnection == null) {
+          mainConnection = new Connection({ id: mainConnectionId, from, to });
+          connections.set(mainConnectionId, mainConnection);
+        }
+
+        connections.mergeIn([mainConnectionId], {
+          duration: mainConnection.duration + connection.duration,
+          distance: mainConnection.distance + connection.distance,
+          frequency: mainConnection.frequency + connection.frequency,
+          visible: true
+        });
+      }
     });
   });
 }
@@ -176,16 +220,23 @@ const connectionsSelector = state => state.connections;
 export const filteredConnectionsSelector = createSelector(
   [
     connectionsSelector,
-    clusteredPlacesSelector,
     uiTimeSpanSelector
   ],
   filterConnections
 );
 
+export const clusteredConnectionsSelector = createSelector(
+  [
+    filteredConnectionsSelector,
+    placeClustersSelector
+  ],
+  clusterConnections
+);
+
 export const connectionBeelinesSelector = createSelector(
   [
     placePointsSelector,
-    filteredConnectionsSelector
+    clusteredConnectionsSelector
   ],
   function(points, connections) {
     let beelines = {};
@@ -217,7 +268,7 @@ export const connectionBeelinesRangeSelector = createSelector(
 
 export const connectionDomainSelector = createSelector(
   [
-    filteredConnectionsSelector
+    clusteredConnectionsSelector
   ],
   computeConnectionDomains
 );
@@ -272,7 +323,7 @@ export const connectionStrokeWidthScaleSelector = createSelector(
 
 export const scaledConnectionsSelector = createSelector(
   [
-    filteredConnectionsSelector,
+    clusteredConnectionsSelector,
     connectionStrokeWidthScaleSelector
   ],
   scaleConnections

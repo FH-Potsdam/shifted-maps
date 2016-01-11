@@ -2,7 +2,7 @@ import d3 from 'd3';
 import { graphForceSelector, graphPointsSelector, graphBeelinesSelector } from '../selectors/graph';
 import { mapMapSelector } from '../selectors/map';
 import { clusteredPlacesSelector, placePointsSelector } from '../selectors/places';
-import { filteredConnectionsSelector } from '../selectors/connections';
+import { clusteredConnectionsSelector } from '../selectors/connections';
 import { uiActiveViewSelector } from '../selectors/ui';
 import Graph from '../components/graph';
 
@@ -26,7 +26,7 @@ export function startGraph() {
 
     let places = clusteredPlacesSelector(state),
       points = graphPointsSelector(state),
-      connections = filteredConnectionsSelector(state),
+      connections = clusteredConnectionsSelector(state),
       beelines = graphBeelinesSelector(state);
 
     let nodes = Graph.computeNodes(places.toArray(), points),

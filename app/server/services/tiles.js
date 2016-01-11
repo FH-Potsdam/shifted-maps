@@ -77,8 +77,6 @@ function computeTileUrl(bounds, zoom, size, options) {
   var prefix = MAP_URL_PREFIX(options),
     suffix = MAP_URL_SUFFIX(options);
 
-  console.log(bounds[1][0] + bounds[1][1]);
-
   var center = [
     (bounds[0][0] + bounds[1][0]) / 2,
     (bounds[0][1] + bounds[1][1]) / 2
