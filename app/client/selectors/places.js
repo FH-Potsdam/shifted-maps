@@ -144,7 +144,15 @@ function clusterPlaces(places, clusters) {
     if (!place.visible)
       return place;
 
-    return place.set('visible', clusters.has(place.id));
+    let cluster = clusters.get(place.id),
+      visible = cluster != null,
+      isCluster = visible && cluster.size > 0;
+
+    return place.merge({
+      visible: visible,
+      cluster: isCluster,
+      name: isCluster ? `${place.name}\n+ ${cluster.size} other place${cluster.size > 1 ? 's' : ''}` : place.name
+    });
   });
 }
 

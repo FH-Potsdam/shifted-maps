@@ -6,12 +6,17 @@ class PlaceLabel extends Component {
   }
 
   render() {
-    let { node } = this.props;
+    let { node } = this.props,
+      label = [];
+
+    node.name.split("\n").forEach(function(part, index) {
+      label.push(<tspan key={index} x="0" dy={index > 0 ? '1.3em' : null} className={index > 0 ? 'place-label-more' : null}>{part}</tspan>)
+    });
 
     return (
       <g className="place-label">
-        <text x="0" y={node.radius} className="place-label-stroke">{node.name}</text>
-        <text x="0" y={node.radius}>{node.name}</text>
+        <text x="0" y={node.radius} className="place-label-stroke">{label}</text>
+        <text x="0" y={node.radius}>{label}</text>
       </g>
     );
   }

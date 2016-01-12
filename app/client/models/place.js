@@ -15,5 +15,5 @@ export default Record({
   tileURL: null,
   hover: false,
   rank: 0,
-  cluster: List()
+  cluster: false
 });

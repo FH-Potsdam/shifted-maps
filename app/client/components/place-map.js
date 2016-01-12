@@ -89,6 +89,11 @@ class PlaceMap extends Component {
       size = radius * 2,
       image = this.renderImage();
 
+    let dot = null;
+
+    if (!node.cluster)
+      dot = <circle className="place-map-dot" r="3" cx="0" cy="0" />;
+
     return (
       <g className="place-map" clipPath={clipPath}>
         <rect className="place-map-background" x={-radius} y={-radius} width={size} height={size} />
@@ -96,7 +101,7 @@ class PlaceMap extends Component {
                                  transitionEnterTimeout={400} transitionLeaveTimeout={400}>
           {image}
         </ReactCSSTransitionGroup>
-        <circle className="place-map-dot" r="3" cx="0" cy="0" />
+        {dot}
       </g>
     );
   }
