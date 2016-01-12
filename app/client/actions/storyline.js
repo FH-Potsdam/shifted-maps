@@ -44,7 +44,7 @@ export function requestStoryline() {
       }
     }
 
-    oboe('/api')
+    oboe('/api?' + Date.now())
       .node('startAt', function(startAt) {
         return new Date(startAt * 1000);
       })
