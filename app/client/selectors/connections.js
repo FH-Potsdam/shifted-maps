@@ -44,7 +44,8 @@ function clusterConnections(connections, clusters) {
 
       let { from, to } = connection,
         fromCluster = clusters.get(from),
-        toCluster = clusters.get(to);
+        toCluster = clusters.get(to),
+        entry;
 
       if (fromCluster != null && toCluster != null) {
         // Main connection
@@ -52,18 +53,29 @@ function clusterConnections(connections, clusters) {
       }
 
       if (fromCluster == null) {
-        [from, fromCluster] = clusters.findEntry(function(cluster) {
+        entry = clusters.findEntry(function(cluster) {
           return cluster.includes(from);
         });
+
+        if (entry != null)
+          [from, fromCluster] = entry;
       }
 
       if (toCluster == null) {
-        [to, toCluster] = clusters.findEntry(function(cluster) {
+        entry = clusters.findEntry(function(cluster) {
           return cluster.includes(to);
         });
+
+        if (entry != null)
+          [to, toCluster] = entry;
       }
 
       connections.setIn([id, 'visible'], false);
+
+      if (fromCluster == null || toCluster == null) {
+        console.error('Invalid connection', from, to);
+        return;
+      }
 
       if (fromCluster !== toCluster) {
         let mainConnectionId = Connection.getId(from, to),
