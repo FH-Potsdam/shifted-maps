@@ -2,6 +2,7 @@ import { createSelector, createStructuredSelector } from 'reselect';
 import d3 from 'd3';
 import map from 'lodash/object/mapValues';
 import { uiActiveViewSelector } from './ui';
+import { mapZoomSelector } from './map';
 import { placePointsSelector } from './places';
 import { connectionDistanceDomainSelector, connectionDurationDomainSelector, connectionFrequencyDomainSelector, connectionBeelinesSelector, connectionBeelinesRangeSelector, clusteredConnectionsSelector } from './connections';
 import { GEOGRAPHIC_VIEW, DURATION_VIEW, FREQUENCY_VIEW } from '../services/views';
@@ -74,12 +75,13 @@ const durationScaleSelector = createSelector(
 const frequencyScaleSelector = createSelector(
   [
     connectionFrequencyDomainSelector,
-    connectionBeelinesRangeSelector
+    connectionBeelinesRangeSelector,
+    mapZoomSelector
   ],
-  function(connectionFrequencyDomain, beelineRange) {
+  function(connectionFrequencyDomain, beelineRange, mapZoom) {
     return d3.scale.linear()
       .domain([...connectionFrequencyDomain].reverse())
-      .range(beelineRange)
+      .range([beelineRange[0] / (mapZoom * 1.5), beelineRange[1] / (mapZoom * 1.5)])
       .clamp(true);
   }
 );
