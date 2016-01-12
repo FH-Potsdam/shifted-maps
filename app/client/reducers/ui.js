@@ -8,7 +8,7 @@ const DEFAULT_STATE = Map({
   authorized: ENV.authorized,
   storylineLoaded: false,
   timeSpanStep: DAY, // TODO Model or global const
-  timeSpanRange: [Infinity, -Infinity],
+  timeSpanRange: null,
   timeSpan: [],
   interactionOverlay: true,
   clusterStrength: .5
@@ -16,7 +16,7 @@ const DEFAULT_STATE = Map({
 
 function addStays(state, action) {
   let { stays } = action,
-    [ start, end ] = state.get('timeSpanRange');
+    [ start, end ] = state.get('timeSpanRange') || [Infinity, -Infinity];
 
   let day = state.get('timeSpanStep');
 

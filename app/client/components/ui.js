@@ -13,11 +13,11 @@ class UI extends Component {
   render() {
     let { ui, stats } = this.props,
       timeSlider = null,
-      timeRange = null;
+      timeRange = null,
+      timeSpanRange = ui.get('timeSpanRange');
 
-    if (ui.has('timeSpanRange')) {
+    if (timeSpanRange != null) {
       let onTimeSliderChange = debounce(this.props.onTimeSpanChange, 200),
-        timeSpanRange = ui.get('timeSpanRange'),
         step = ui.get('timeSpanStep');
 
       // @TODO define default prop values and add disabled, active and focused states.
