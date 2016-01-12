@@ -3,12 +3,11 @@ import createLogger from 'redux-logger';
 import { Iterable } from 'immutable';
 import { createStore, applyMiddleware } from 'redux';
 import app from './reducer';
-import { TICK_GRAPH } from './actions/graph';
-import { HOVER_PLACE } from './actions/ui';
+import { START_GRAPH } from './actions/graph';
 
 const loggerMiddleware = createLogger({
   collapsed: true,
-  //predicate: (getState, action) => action.type != TICK_GRAPH && action.type != HOVER_PLACE,
+  predicate: (getState, action) => action.type == START_GRAPH,
   stateTransformer: (state) => {
     let newState = {};
 

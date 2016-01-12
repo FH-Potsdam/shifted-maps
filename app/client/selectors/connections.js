@@ -2,7 +2,7 @@ import d3 from 'd3';
 import _ from 'lodash';
 import point from 'turf-point';
 import distance from 'turf-distance';
-import { Map } from 'immutable';
+import { List, Map } from 'immutable';
 import { createSelector } from 'reselect';
 import reduce from 'lodash/collection/reduce';
 import placesSelector, { placePointsSelector, placeClustersSelector } from './places';
@@ -38,6 +38,8 @@ function filterConnections(connections, uiTimeSpan) {
 
 function clusterConnections(connections, clusters) {
   return connections.withMutations(function(connections) {
+    let mainConnections = [];
+
     connections.forEach(function(connection, id) {
       if (!connection.visible)
         return;
@@ -82,17 +84,36 @@ function clusterConnections(connections, clusters) {
           mainConnection = connections.get(mainConnectionId);
 
         if (mainConnection == null) {
-          mainConnection = new Connection({ id: mainConnectionId, from, to });
-          connections.set(mainConnectionId, mainConnection);
+          mainConnection = new Connection({
+            id: mainConnectionId,
+            from, to,
+            duration: List(),
+            distance: List(),
+            visible: true
+          });
+        } else {
+          mainConnection = mainConnection.merge({
+            duration: List([mainConnection.duration]),
+            distance: List([mainConnection.distance]),
+            visible: true
+          });
         }
 
-        connections.mergeIn([mainConnectionId], {
-          duration: mainConnection.duration + connection.duration,
-          distance: mainConnection.distance + connection.distance,
-          frequency: mainConnection.frequency + connection.frequency,
-          visible: true
+        mainConnection = mainConnection.merge({
+          duration: mainConnection.duration.push(connection.duration),
+          distance: mainConnection.distance.push(connection.distance),
+          frequency: mainConnection.frequency + connection.frequency
         });
+
+        mainConnections.push(mainConnection);
       }
+    });
+
+    mainConnections.forEach(function(connection) {
+      connections.set(connection.id, connection.merge({
+        duration: connection.duration.reduce((durationSum, duration) => durationSum + duration, 0) / connection.duration.size,
+        distance: connection.distance.reduce((distanceSum, distance) => distanceSum + distance, 0) / connection.distance.size
+      }));
     });
   });
 }
@@ -166,67 +187,6 @@ function labelConnection(connections, viewLabelService) {
   });
 }
 
-/*function positionConnections(connections, places) {
-  return connections.map(function(connection) {
-    if (!connection.visible)
-      return connection;
-
-    let from = places.get(connection.from),
-      to = places.get(connection.to);
-
-    return connection.merge({
-      fromPoint: from.point,
-      toPoint: to.point
-    });
-  });
-}
-
-function beelineConnections(connections) {
-  return connections.map(function(connection) {
-    if (!connection.visible)
-      return connection;
-
-    let { fromPoint, toPoint } = connection,
-      from = L.point(fromPoint.get('x'), fromPoint.get('y')),
-      to = L.point(toPoint.get('x'), toPoint.get('y'));
-
-    return connection.set('beeline', from.distanceTo(to));
-  });
-}
-
-function computeBeelineRange(connections) {
-  let minBeeline = Infinity,
-    maxBeeline = -Infinity;
-
-  connections.forEach(function(connection) {
-    let { beeline, visible } = connection;
-
-    if (!visible)
-      return;
-
-    minBeeline = Math.min(minBeeline, beeline);
-    maxBeeline = Math.max(maxBeeline, beeline);
-  });
-
-  return [minBeeline, maxBeeline];
-}
-
-function boundConnections(connections, visBounds) {
-  return connections.map(function(connection) {
-    let { fromPoint, toPoint, visible } = connection;
-
-    if (!visible)
-      return connection;
-
-    let bounds = L.bounds([
-      [fromPoint.get('x'), fromPoint.get('y')],
-      [toPoint.get('x'), toPoint.get('y')]
-    ]);
-
-    return connection.set('visible', visBounds.intersects(bounds));
-  });
-}*/
-
 const connectionsSelector = state => state.connections;
 
 export const filteredConnectionsSelector = createSelector(
@@ -254,6 +214,10 @@ export const connectionBeelinesSelector = createSelector(
     let beelines = {};
 
     connections.forEach(function(connection, id) {
+      // Important for having a valid beeline range
+      if (!connection.visible)
+        return;
+
       let from = points[connection.from],
         to = points[connection.to];
 
@@ -269,18 +233,20 @@ export const connectionBeelinesRangeSelector = createSelector(
     connectionBeelinesSelector
   ],
   function(beelines) {
-    return reduce(beelines, function(range, beeline) {
+    let range = reduce(beelines, function(range, beeline) {
       if (beeline < range[0]) range[0] = beeline;
       if (beeline > range[1]) range[1] = beeline;
 
       return range;
     }, [Infinity, -Infinity]);
+
+    return range;
   }
 );
 
 export const connectionDomainSelector = createSelector(
   [
-    clusteredConnectionsSelector
+    filteredConnectionsSelector
   ],
   computeConnectionDomains
 );
@@ -289,21 +255,27 @@ export const connectionFrequencyDomainSelector = createSelector(
   [
     connectionDomainSelector
   ],
-  domains => domains.frequencyDomain
+  domains => {
+    return domains.frequencyDomain
+  }
 );
 
 export const connectionDurationDomainSelector = createSelector(
   [
     connectionDomainSelector
   ],
-  domains => domains.durationDomain
+  domains => {
+    return domains.durationDomain
+  }
 );
 
 export const connectionDistanceDomainSelector = createSelector(
   [
     connectionDomainSelector
   ],
-  domains => domains.distanceDomain
+  domains => {
+    return domains.distanceDomain
+  }
 );
 
 export const CONNECTION_LABEL_SERVICES = {
@@ -348,98 +320,5 @@ export const labeledConnectionsSelector = createSelector(
   ],
   labelConnection
 );
-
-/*export const positionedConnectionSelector = createSelector(
-  [
-    labeledConnectionsSelector,
-    positionedPlacesSelector
-  ],
-  positionConnections
-);
-
-export const beelinedConnectionSelector = createSelector(
-  [
-    positionedConnectionSelector,
-    uiActiveViewSelector
-  ],
-  beelineConnections
-);
-
-export const beelineRangeSelector = createSelector(
-  [
-    beelinedConnectionSelector
-  ],
-  computeBeelineRange
-);
-
-const geographicScaleSelector = createSelector(
-  [
-    connectionDistanceDomainSelector,
-    beelineRangeSelector
-  ],
-  function(connectionDistanceDomain, beelineRange) {
-    return d3.scale.linear()
-      .domain(connectionDistanceDomain)
-      .range(beelineRange)
-      .clamp(true);
-  }
-);
-
-const durationScaleSelector = createSelector(
-  [
-    connectionDurationDomainSelector,
-    beelineRangeSelector
-  ],
-  function(connectionDurationDomain, beelineRange) {
-    return d3.scale.linear()
-      .domain(connectionDurationDomain)
-      .range(beelineRange)
-      .clamp(true);
-  }
-);
-
-const frequencyScaleSelector = createSelector(
-  [
-    connectionFrequencyDomainSelector,
-    beelineRangeSelector
-  ],
-  function(connectionFrequencyDomain, beelineRange) {
-    return d3.scale.linear()
-      .domain([...connectionFrequencyDomain].reverse())
-      .range(beelineRange)
-      .clamp(true);
-  }
-);
-
-const CONNECTION_BEELINE_SCALE_SELECTOR = {
-  [GEOGRAPHIC_VIEW]: geographicScaleSelector,
-  [DURATION_VIEW]: durationScaleSelector,
-  [FREQUENCY_VIEW]: frequencyScaleSelector
-};
-
-export const connectionBeelineScaleSelector = state => {
-  let activeView = uiActiveViewSelector(state);
-
-  if (activeView == null)
-    return null;
-
-  return CONNECTION_BEELINE_SCALE_SELECTOR[activeView](state);
-};
-
-export const viewBeelinedConnectionSelector = createSelector(
-  [
-    beelinedConnectionSelector,
-    connectionBeelineScaleSelector
-  ],
-  viewBeelineConnections
-);
-
-export const boundedConnectionsSelector = createSelector(
-  [
-    viewBeelinedConnectionSelector,
-    visBoundsSelector
-  ],
-  boundConnections
-);*/
 
 export default connectionsSelector;

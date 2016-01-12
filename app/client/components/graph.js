@@ -122,9 +122,10 @@ class Graph extends Component {
   }
 
   static computeNodes(places, points) {
-    let nodes = [];
+    let nodes = [],
+      fixed = true;
 
-    places.forEach((place) => {
+    places.reverse().forEach((place) => {
       if (!place.visible)
         return;
 
@@ -135,8 +136,11 @@ class Graph extends Component {
         place: id,
         x: point.x,
         y: point.y,
-        start: point
+        start: point,
+        fixed: fixed
       });
+
+      fixed = false;
     });
 
     return nodes;

@@ -7,6 +7,9 @@ function addTrips(state, action) {
 
   return state.withMutations(function(state) {
     trips.forEach(function(trip) {
+      if (trip.from === trip.to)
+        return;
+
       let connectionId = Connection.getId(trip.from, trip.to),
         connection = state.get(connectionId);
 

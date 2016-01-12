@@ -98,6 +98,10 @@ function computeDistance(pointOne, pointTwo) {
 }
 
 function placeClusters(places, points, clusterStrength) {
+  /*return places.map(function() {
+    return List();
+  });*/
+
   return Map().withMutations(function(clusters) {
     let placesArray = places.toList().toJS();
 

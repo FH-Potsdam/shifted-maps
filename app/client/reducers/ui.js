@@ -11,7 +11,7 @@ const DEFAULT_STATE = Map({
   timeSpanRange: null,
   timeSpan: [],
   interactionOverlay: true,
-  clusterStrength: .5
+  clusterStrength: .4
 });
 
 function addStays(state, action) {

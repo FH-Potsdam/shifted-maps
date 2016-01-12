@@ -3,7 +3,7 @@ import d3 from 'd3';
 import map from 'lodash/object/mapValues';
 import { uiActiveViewSelector } from './ui';
 import { placePointsSelector } from './places';
-import { connectionDistanceDomainSelector, connectionDurationDomainSelector, connectionFrequencyDomainSelector, connectionBeelinesSelector, connectionBeelinesRangeSelector } from './connections';
+import { connectionDistanceDomainSelector, connectionDurationDomainSelector, connectionFrequencyDomainSelector, connectionBeelinesSelector, connectionBeelinesRangeSelector, clusteredConnectionsSelector } from './connections';
 import { GEOGRAPHIC_VIEW, DURATION_VIEW, FREQUENCY_VIEW } from '../services/views';
 
 export default function graphSelector(state) {
@@ -102,9 +102,22 @@ const graphActiveViewBeelinesScaleSelector = state => {
 export const graphBeelinesSelector = createSelector(
   [
     graphActiveViewBeelinesScaleSelector,
-    connectionBeelinesSelector
+    clusteredConnectionsSelector,
+    connectionBeelinesSelector,
+    uiActiveViewSelector
   ],
-  function(beelineScale, beelines) {
-    return map(beelines, (beeline) => beelineScale(beeline));
+  function(beelineScale, connections, beelines, activeView) {
+    let field = 'distance';
+
+    if (activeView === DURATION_VIEW)
+      field = 'duration';
+    else if (activeView === FREQUENCY_VIEW)
+      field = 'frequency';
+
+    return map(beelines, (beeline, id) => {
+      let connection = connections.get(id);
+
+      return beelineScale(connection[field]);
+    });
   }
 );
