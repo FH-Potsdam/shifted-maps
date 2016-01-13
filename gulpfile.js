@@ -47,12 +47,28 @@ gulp.task('compass', function() {
     .pipe(gulp.dest('public/styles'));
 });
 
-gulp.task('compress', ['browserify'], function() {
+gulp.task('compress', ['compress:js', 'compress:css']);
+
+gulp.task('compress:js', ['browserify'], function() {
   return gulp.src('public/scripts/index.js')
     .pipe(sourcemaps.init({ loadMaps: true }))
-    .pipe(uglify())
+    .pipe(uglify(/*{
+      compress: {
+        global_defs: {
+          DEBUG: true
+        },
+        dead_code: true
+      }
+    }*/))
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('public/scripts'));
+});
+
+gulp.task('compress:css', ['compass'], function() {
+  return gulp.src('public/styles/**/*.scss')
+    .pipe(sourcemaps.init({ loadMaps: true }))
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('public/styles'));
 });
 
 gulp.task('watch', function() {
