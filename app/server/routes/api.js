@@ -1,6 +1,7 @@
 var express = require('express'),
   path = require('path'),
   moment = require('moment'),
+  crypto = require('crypto'),
   JSONStream = require('../services/api/json-stream'),
   Normalizer = require('../services/api/normalizer'),
   Limiter = require('../services/api/limiter'),
@@ -19,8 +20,12 @@ router.get('/', function(req, res, next) {
   if (req.user == null)
     return next();
 
-  res.setHeader('cache-control', 'public, max-age=0');
-  res.setHeader('last-modified', req.user.lastUpdateAt.toString());
+  var etag = crypto.createHash('sha256')
+    .update(req.user.id + req.user.lastUpdateAt.toString())
+    .digest('hex');
+
+  res.setHeader('cache-control', 'private');
+  res.setHeader('etag', etag);
 
   if (req.fresh)
     return res.sendStatus(304);
