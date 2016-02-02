@@ -75,13 +75,12 @@ const durationScaleSelector = createSelector(
 const frequencyScaleSelector = createSelector(
   [
     connectionFrequencyDomainSelector,
-    connectionBeelinesRangeSelector,
-    mapZoomSelector
+    connectionBeelinesRangeSelector
   ],
-  function(connectionFrequencyDomain, beelineRange, mapZoom) {
+  function(connectionFrequencyDomain, beelineRange) {
     return d3.scale.linear()
       .domain([...connectionFrequencyDomain].reverse())
-      .range([beelineRange[0] / (mapZoom * 1.5), beelineRange[1] / (mapZoom * 1.5)])
+      .range([beelineRange[0], beelineRange[1]])
       .clamp(true);
   }
 );
