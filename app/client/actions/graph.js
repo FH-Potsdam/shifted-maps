@@ -46,7 +46,7 @@ export function startGraph() {
 
     force.on('tick', (event) => {
       let { alpha } = event,
-        k = alpha;
+        k = alpha * 0.5;
 
       nodes.forEach(function(node) {
         let x = node.start.x - node.x,
