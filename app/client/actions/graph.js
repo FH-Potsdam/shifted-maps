@@ -41,7 +41,7 @@ export function startGraph() {
       .friction(0.2)
       .charge(-1000)
       .linkDistance(link => link.beeline)
-      .linkStrength(.4)
+      .linkStrength(1)
       .on('end', () => dispatch(endGraph(force)));
 
     force.on('tick', (event) => {
