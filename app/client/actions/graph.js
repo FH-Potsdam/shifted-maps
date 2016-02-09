@@ -44,16 +44,17 @@ export function startGraph() {
       .linkStrength(.4)
       .on('end', () => dispatch(endGraph(force)));
 
-    force.on('tick', (/*event*/) => {
-      /*let { alpha } = event;
+    force.on('tick', (event) => {
+      let { alpha } = event,
+        k = alpha;
 
       nodes.forEach(function(node) {
         let x = node.start.x - node.x,
           y = node.start.y - node.y;
 
-        node.x += x * alpha * .01;
-        node.y += y * alpha * .01;
-      });*/
+        node.x += x * k;
+        node.y += y * k;
+      });
 
       dispatch(tickGraph(force));
     });

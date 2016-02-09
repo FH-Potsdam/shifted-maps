@@ -129,14 +129,12 @@ class Graph extends Component {
       if (!place.visible)
         return;
 
-      let { id } = place,
-        point = points[id];
+      const { id } = place,
+        { x, y, start } = points[id];
 
       nodes.push({
         place: id,
-        x: point.x,
-        y: point.y,
-        start: point,
+        x, y, start,
         fixed: fixed
       });
 

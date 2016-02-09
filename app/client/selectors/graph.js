@@ -25,19 +25,31 @@ export const graphForceSelector = createSelector(
   graph => graph.get('force')
 );
 
-export function graphPointsSelector(state) {
-  let activeView = uiActiveViewSelector(state);
+export const graphPointsSelector = createSelector(
+  [
+    uiActiveViewSelector,
+    placePointsSelector,
+    graphSelector
+  ],
+  (activeView, placePoints, graph) => {
+    const graphPoints = graph.get('points');
 
-  if (activeView != null) {
-    let graph = graphSelector(state),
-      graphPoints = graph.get('points');
+    // If no view is active or graph has no points yet, use place points.
+    if (activeView == null || graphPoints == null) {
+      // Simple add start property to place points (simple reference)
+      return map(placePoints, point => {
+        point.start = point;
+        return point;
+      });
+    }
 
-    if (graphPoints != null)
-      return graphPoints;
+    // Add start property from place points
+    return map(graphPoints, (point, id) => {
+      point.start = placePoints[id];
+      return point;
+    });
   }
-
-  return placePointsSelector(state);
-}
+);
 
 export const graphTransitionSelector = createSelector(
   [
