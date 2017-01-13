@@ -43,16 +43,22 @@ block content
             .layout.hero__section
                 .layout__item.u-1-of-5
                     if exhibition
-                        img.hero__logo(src="/images/fhp-logo.png")
+                        img.hero__logo(src="/images/fhp-logo.png", alt="Logo of the University of Applied Science Potsdam")
                     else
                         a(href="http://www.fh-potsdam.de")
-                            img.hero__logo(src="/images/fhp-logo.png")
+                            img.hero__logo(src="/images/fhp-logo.png", alt="Logo of the University of Applied Science Potsdam")
                 .layout__item.u-1-of-2
                     if exhibition
-                        img.hero__logo(src="/images/uclab-logo.png")
+                        img.hero__logo(src="/images/uclab-logo.png", alt="Logo of the Urban Complexity Lab")
                     else
                         a(href="http://uclab.fh-potsdam.de")
-                            img.hero__logo(src="/images/uclab-logo.png")
+                            img.hero__logo(src="/images/uclab-logo.png", alt="Logo of the Urban Complexity Lab")
+                .layout__item.u-1-of-4
+                    if exhibition
+                        img.hero__logo(src="/images/here-logo.png", alt="Logo of the HERE")
+                    else
+                        a(href="http://here.com")
+                            img.hero__logo(src="/images/here-logo.png", alt="Logo of the HERE")
 
 prepend styles
     link(href="/components/video.js/dist/video-js.min.css" rel="stylesheet")
