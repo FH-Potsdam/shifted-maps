@@ -1,24 +1,23 @@
 # JetBrains project directory
-.idea
+/.idea
 
 # Node dependencies
-node_modules
+/node_modules
 
 # Senstive configuration files
-server.json
-client.json
+/config/server.json
+/config/client.json
 
 # Generated assets
-scripts
-styles
+/public/scripts
+/public/styles
 
 # Bower assets
-public/components
-app/client/styles/components
+/public/components
 
 # Minifed versions
-public/scripts/*.min.js
+/public/scripts/*.min.js
 
 # Other
-npm-debug.log
-notes.txt
+/npm-debug.log
+/notes.txt
