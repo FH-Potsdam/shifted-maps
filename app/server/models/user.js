@@ -4,21 +4,12 @@ var mongoose = require('../services/mongoose'),
 
 var UserSchema = new mongoose.Schema({
   _id: Number,
-  accessToken: {type: String, select: false, required: true},
-  tokenExpiresAt: {type: Date, select: false, required: true},
-  refreshToken: {type: String, select: false, required: true},
-  lastVisitAt: {type: Date, 'default': Date.now, required: true},
+  accessToken: { type: String, select: false, required: true },
+  refreshToken: { type: String, select: false, required: true },
+  lastVisitAt: { type: Date, default: Date.now, required: true },
   lastUpdateAt: Date,
-  fetched: {type: Boolean, 'default': false},
-  firstDate: {type: Date, required: true}
-});
-
-UserSchema.virtual('tokenExpiresIn').get(function() {
-  return moment().diff(this.tokenExpiresAt, 's');
-});
-
-UserSchema.virtual('tokenExpiresIn').set(function(expiresIn) {
-  this.tokenExpiresAt = moment().add(expiresIn, 's').toDate();
+  fetched: { type: Boolean, default: false },
+  firstDate: { type: Date, required: true },
 });
 
 module.exports = mongoose.model('User', UserSchema);

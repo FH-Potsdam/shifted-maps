@@ -29,15 +29,19 @@ MovesStrategy.prototype.userProfile = function(accessToken, done) {
         done(null, data.profile);
       })
       .fail(function(error) {
-        done(new OAuth2Strategy.InternalOAuthError('Failed to fetch user profile', error));
+        done(
+          new OAuth2Strategy.InternalOAuthError(
+            'Failed to fetch user profile',
+            error
+          )
+        );
       });
   });
 };
 
 MovesStrategy.prototype.validate = function(accessToken, done) {
   this._oauth2.get(config.moves.token_info_url, accessToken, function(error) {
-    if (!error)
-      return done(null, true);
+    if (!error) return done(null, true);
 
     // No internet connection (app is running locally without internet)
     if (error.code === 'ENOTFOUND')
@@ -49,8 +53,7 @@ MovesStrategy.prototype.validate = function(accessToken, done) {
     var data = JSON.parse(error.data);
 
     // User gives no authorization.
-    if (data.error === 'invalid_token')
-      return done(null, false);
+    if (data.error === 'invalid_token') return done(null, false);
 
     done(new Error('Invalid moves request ("' + data.error + '").'));
   });

@@ -28,7 +28,7 @@
     "limiter": "^1.0.5",
     "lodash": "^3.10.1",
     "moment": "^2.10.2",
-    "mongoose": "^4.0.1",
+    "mongoose": "^4.13.11",
     "mongoose-autopopulate": "^0.1.0",
     "mout": "^0.11.0",
     "oboe": "^2.1.2",

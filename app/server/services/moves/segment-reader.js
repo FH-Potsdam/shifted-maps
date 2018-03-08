@@ -2,7 +2,8 @@ var Readable = require('stream').Readable,
   util = require('util'),
   MovesAPI = require('./api'),
   moment = require('moment'),
-  _ = require('lodash');
+  _ = require('lodash'),
+  oboe = require('oboe');
 
 function MovesSegmentReader(api, firstDate) {
   Readable.call(this, { objectMode: true });
@@ -16,8 +17,7 @@ function MovesSegmentReader(api, firstDate) {
 util.inherits(MovesSegmentReader, Readable);
 
 MovesSegmentReader.prototype._init = function() {
-  if (this._inited || this._destroyed)
-    return;
+  if (this._inited || this._destroyed) return;
 
   this._inited = true;
   this._months = moment().diff(this._firstDate, 'month');
@@ -27,19 +27,25 @@ MovesSegmentReader.prototype._init = function() {
 };
 
 MovesSegmentReader.prototype._initRequest = function(months) {
-  if (this._destroyed || months < 0)
-    return this.push(null);
+  if (this._destroyed || months < 0) return this.push(null);
 
   var reader = this,
     month = moment(this._firstDate).add(months, 'month');
 
-  this._api.daily('/user/storyline', month.format('YYYY-MM'), this._query, function(request) {
-    reader._handleRequest(months, request)
-  });
+  this._api.daily(
+    '/user/storyline',
+    month.format('YYYY-MM'),
+    this._query,
+    function(request) {
+      reader._handleRequest(months, request);
+    }
+  );
 };
 
 MovesSegmentReader.prototype._handleRequest = function(months, request) {
   var reader = this;
+
+  console.log(months);
 
   request
     .node('startTime', function(startTime) {
@@ -50,6 +56,8 @@ MovesSegmentReader.prototype._handleRequest = function(months, request) {
     })
     .node('segments.*', function(segment) {
       reader.push(segment);
+
+      return oboe.drop;
     })
     .done(function() {
       reader._initRequest(months - 1);
