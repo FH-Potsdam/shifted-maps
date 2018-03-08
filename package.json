@@ -2,10 +2,11 @@
   "name": "shifted-maps-web",
   "license": "GPL-3.0",
   "version": "0.0.7",
-  "description": "Shifted Maps visualizes personal movement data as a network of map extracts showing visited places.",
-  "repository": "FH-Potsdam/shifted-maps",
+  "description":
+    "Shifted Maps visualizes personal movement data as a network of map extracts showing visited places.",
+  "repository": "lennerd/shifted-maps",
   "bugs": {
-    "url": "https://github.com/FH-Potsdam/shifted-maps/issues"
+    "url": "https://github.com/lennerd/shifted-maps/issues"
   },
   "scripts": {
     "start": "gulp"
@@ -20,6 +21,7 @@
     "express-session": "^1.11.1",
     "forcedomain": "^0.8.1",
     "geolib": "^2.0.14",
+    "gulp": "^3.9.1",
     "helmet": "^0.7.1",
     "immutable": "^3.7.3",
     "jade": "^1.11.0",
