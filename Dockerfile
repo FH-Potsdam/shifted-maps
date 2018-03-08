@@ -30,5 +30,7 @@ RUN gulp browserify compass compress
 # Expose used port
 EXPOSE 3000
 
+ENV NODE_ENV=production
+
 # Start server
 CMD [ "forever", "app.js"]
