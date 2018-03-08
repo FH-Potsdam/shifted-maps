@@ -4,10 +4,6 @@
 # Node dependencies
 /node_modules
 
-# Senstive configuration files
-/config/server.json
-/config/client.json
-
 # Generated assets
 /public/scripts
 /public/styles
