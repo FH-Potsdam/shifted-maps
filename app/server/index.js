@@ -9,7 +9,8 @@ var express = require('express'),
   home = require('./routes/home'),
   config = require('./config'),
   passport = require('./services/passport'),
-  mongoStore = require('./services/mongo-store');
+  mongoStore = require('./services/mongo-store'),
+  forceDomain = require('forcedomain');
 
 var app = express();
 
@@ -17,25 +18,38 @@ app.set('debug', 'development' == app.get('env'));
 app.set('views', __dirname + '/templates');
 app.set('view engine', 'jade');
 
+// Domain middleware
+if (process.env.NODE_ENV === 'production') {
+  app.use(
+    forceDomain({
+      hostname: 'shifted-maps.com',
+    })
+  );
+}
+
 // Server middlewares
 app.use(helmet());
 app.use(cookieParser());
-app.use(session({
-  secret: config.session.secret,
-  resave: false,
-  saveUninitialized: false,
-  store: mongoStore
-}));
+app.use(
+  session({
+    secret: config.session.secret,
+    resave: false,
+    saveUninitialized: false,
+    store: mongoStore,
+  })
+);
 
 // Auth middlewares
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Static route middleware
-app.use(express.static(__dirname + '/../../public', {
-  lastModified: app.get('debug'),
-  etag: app.get('debug')
-}));
+app.use(
+  express.static(__dirname + '/../../public', {
+    lastModified: app.get('debug'),
+    etag: app.get('debug'),
+  })
+);
 
 app.use('/map', map);
 app.use('/api', api);
