@@ -2,14 +2,13 @@ version: '3'
 services:
   web:
     build: .
+    command: node_modules/.bin/gulp
     ports:
-      - "80:3000"
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
     volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/public/components
-      - /app/public/scripts
-      - /app/public/styles
+      - ./:/app
     links:
       - database
     depends_on:

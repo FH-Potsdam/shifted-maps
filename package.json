@@ -2,14 +2,14 @@
   "name": "shifted-maps-web",
   "license": "GPL-3.0",
   "version": "0.0.7",
-  "description":
-    "Shifted Maps visualizes personal movement data as a network of map extracts showing visited places.",
+  "description": "Shifted Maps visualizes personal movement data as a network of map extracts showing visited places.",
   "repository": "lennerd/shifted-maps",
   "bugs": {
     "url": "https://github.com/lennerd/shifted-maps/issues"
   },
   "scripts": {
-    "start": "gulp"
+    "start": "docker-compose up",
+    "start:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d"
   },
   "dependencies": {
     "cacheman": "^1.1.0",
@@ -20,6 +20,7 @@
     "express": "^4.12.3",
     "express-session": "^1.11.1",
     "forcedomain": "^0.8.1",
+    "forever": "^0.15.3",
     "geolib": "^2.0.14",
     "gulp": "^3.9.1",
     "helmet": "^0.7.1",
