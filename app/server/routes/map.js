@@ -8,8 +8,8 @@ router.get('*', function(req, res) {
     env: {
       authorized: !!req.user,
       place_limit: config.api.place_limit,
-      exhibition: req.query.exhibition != null
-    }
+      exhibition: req.query.exhibition != null,
+    },
   });
 });
 

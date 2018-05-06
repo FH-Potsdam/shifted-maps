@@ -7,7 +7,11 @@ import { requestStoryline } from '../actions/storyline';
 import { initVis, moveVis, resizeVis, zoomVis } from '../actions/vis';
 import { updateScales } from '../actions/scales';
 import { updateMapState } from '../actions/map';
-import { changeTimeSpan, changeView, closeInteractionOverlay } from '../actions/ui';
+import {
+  changeTimeSpan,
+  changeView,
+  closeInteractionOverlay,
+} from '../actions/ui';
 import LoadingScreen from './loading-screen';
 import InteractionOverlay from './interaction-overlay';
 import Map from './map';
@@ -27,7 +31,9 @@ class App extends Component {
   shouldComponentUpdate(nextProps) {
     let { map, ui, stats } = this.props;
 
-    return map !== nextProps.map || ui !== nextProps.ui || stats !== nextProps.stats;
+    return (
+      map !== nextProps.map || ui !== nextProps.ui || stats !== nextProps.stats
+    );
   }
 
   componentDidMount() {
@@ -40,8 +46,7 @@ class App extends Component {
   }
 
   onMapMoveEnd(event) {
-    if (!this._dragging)
-      return;
+    if (!this._dragging) return;
 
     this._dragging = false;
     this.props.onMapMoveEnd(event);
@@ -53,38 +58,59 @@ class App extends Component {
 
     if (ui.get('interactionOverlay') && ENV.exhibition) {
       children.push(
-        <InteractionOverlay key="interaction-overlay" onClose={this.props.onInteractionOverlayClose}/>
+        <InteractionOverlay
+          key="interaction-overlay"
+          onClose={this.props.onInteractionOverlayClose}
+        />
       );
     }
 
     if (!ui.get('storylineLoaded')) {
-      children.push(
-        <LoadingScreen key="loading-screen" stats={stats}/>
-      );
+      children.push(<LoadingScreen key="loading-screen" stats={stats} />);
     } else {
-      children.push(ui.get('authorized') ? <Logout key="logout"/> : <TryOwnData key="try-own-data"/>,
-        <Map key="map" id={map.get('id')} zoom={map.get('zoom')} center={map.get('center')} bounds={map.get('bounds')}
-             className="app__map" active={ui.get('activeView') == null}
-             onViewReset={this.props.onMapViewReset}
-             onDragStart={this.onMapDragStart.bind(this)}
-             onMoveEnd={this.onMapMoveEnd.bind(this)}
-             onResize={this.props.onMapResize}
-             onZoomAnim={this.props.onMapZoomAnim}>
+      children.push(
+        ui.get('authorized') ? (
+          <Logout key="logout" />
+        ) : (
+          <TryOwnData key="try-own-data" />
+        ),
+        <Map
+          key="map"
+          id={map.get('id')}
+          zoom={map.get('zoom')}
+          center={map.get('center')}
+          bounds={map.get('bounds')}
+          className="app__map"
+          active={ui.get('activeView') == null}
+          onViewReset={this.props.onMapViewReset}
+          onDragStart={this.onMapDragStart.bind(this)}
+          onMoveEnd={this.onMapMoveEnd.bind(this)}
+          onResize={this.props.onMapResize}
+          onZoomAnim={this.props.onMapZoomAnim}
+        >
           <Provider store={store}>
-            <Vis className="leaflet-zoom-animated"/>
+            <Vis className="leaflet-zoom-animated" />
           </Provider>
         </Map>,
-        <UI key="ui" ui={ui} stats={stats}
-            onTimeSpanChange={this.props.onTimeSpanChange}
-            onViewChange={this.props.onViewChange} />,
+        <UI
+          key="ui"
+          ui={ui}
+          stats={stats}
+          onTimeSpanChange={this.props.onTimeSpanChange}
+          onViewChange={this.props.onViewChange}
+        />,
         <Scales key="scales" onUpdate={this.props.onScaleUpdate} />
       );
     }
 
     return (
       <div className="app">
-        <ReactCSSTransitionGroup key="overlays" transitionName="fade"
-                                 transitionEnterTimeout={400} transitionLeaveTimeout={400}>
+        <ReactCSSTransitionGroup
+          key="overlays"
+          transitionName="fade"
+          transitionEnterTimeout={400}
+          transitionLeaveTimeout={400}
+        >
           {children}
         </ReactCSSTransitionGroup>
       </div>
@@ -104,9 +130,10 @@ function mapDispatchToProps(dispatch) {
     onMapZoomAnim: event => dispatch(zoomVis(event.target, event)),
     onTimeSpanChange: timeSpan => dispatch(changeTimeSpan(timeSpan)),
     onViewChange: view => dispatch(changeView(view)),
-    onScaleUpdate: (scaleElements, sizerElements) => dispatch(updateScales(scaleElements, sizerElements)),
-    onInteractionOverlayClose: () => dispatch(closeInteractionOverlay())
-  }
+    onScaleUpdate: (scaleElements, sizerElements) =>
+      dispatch(updateScales(scaleElements, sizerElements)),
+    onInteractionOverlayClose: () => dispatch(closeInteractionOverlay()),
+  };
 }
 
 export default connect(appSelector, mapDispatchToProps)(App);
