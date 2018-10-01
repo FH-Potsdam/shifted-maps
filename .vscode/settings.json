@@ -1,0 +1,13 @@
+{
+  "editor.formatOnSave": true,
+  "eslint.autoFixOnSave": false,
+  "prettier.requireConfig": true,
+  "tslint.enable": true,
+  "editor.wordWrapColumn": 100,
+  "javascript.validate.enable": false,
+  "javascript.format.enable": false,
+  "typescript.format.enable": false,
+  "files.exclude": {
+    "**/.next": true
+  }
+}

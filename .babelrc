@@ -1,4 +1,7 @@
 {
-  "presets": ["es2015", "react"],
-  "plugins": ["transform-runtime", "transform-class-properties"]
+  "presets": [
+    "next/babel",
+    "@zeit/next-typescript/babel"
+  ],
+  "plugins": [["babel-plugin-styled-components", { "fileName": false }]]
 }
