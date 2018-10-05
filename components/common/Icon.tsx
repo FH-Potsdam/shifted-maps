@@ -6,7 +6,6 @@ type Props = {
 
 const Icon = styled.i<Props>`
   font-family: 'icomoon';
-  speak: none;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;

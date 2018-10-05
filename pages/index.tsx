@@ -1,8 +1,8 @@
-import { Component } from 'react';
+import { PureComponent } from 'react';
 
 import Home from '../components/Home/Home';
 
-class Index extends Component {
+class Index extends PureComponent {
   render() {
     return <Home />;
   }

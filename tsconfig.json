@@ -4,7 +4,6 @@
     "module": "esnext",
     "jsx": "preserve",
     "lib": ["dom", "es2017"],
-    "baseUrl": ".",
     "moduleResolution": "node",
     "allowJs": true,
     "noEmit": true,
@@ -19,6 +18,11 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "strict": true,
+    "experimentalDecorators": true,
+    "types": [
+      "types"
+    ]
   }
 }

@@ -1,7 +1,7 @@
-import { Component } from 'react';
+import { PureComponent } from 'react';
 import WebFontLoader from 'webfontloader';
 
-class WebFont extends Component {
+class WebFont extends PureComponent {
   componentDidMount() {
     WebFontLoader.load({
       typekit: {
