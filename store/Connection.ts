@@ -1,10 +1,8 @@
 import { computed } from 'mobx';
-import moment from 'moment';
 
 import Place from './Place';
 import Trip from './Trip';
 import DataStore from './DataStore';
-import { VIEW } from './UIStore';
 
 class Connection {
   readonly store: DataStore;
@@ -22,6 +20,10 @@ class Connection {
   }
 
   static createId(from: Place, to: Place): string {
+    if (from === to) {
+      throw new Error('Cannot create id with same places.');
+    }
+
     if (from.id < to.id) {
       return `${from.id}-${to.id}`;
     }
@@ -82,31 +84,8 @@ class Connection {
   }
 
   @computed
-  get beeline() {
+  get beelineDistance() {
     return this.from.latLng.distanceTo(this.to.latLng);
-  }
-
-  @computed
-  get label() {
-    const { activeView } = this.store.ui;
-
-    if (activeView === VIEW.GEOGRAPHIC) {
-      if (this.visibleDistance >= 1000) {
-        return `${Math.round(this.visibleDistance / 1000).toLocaleString()} km`;
-      }
-
-      return `${Math.round(this.visibleDistance).toLocaleString()} m`;
-    }
-
-    if (activeView === VIEW.FREQUENCY) {
-      return `${this.visibleFrequency} ×`;
-    }
-
-    if (activeView === VIEW.DURATION) {
-      return moment.duration(this.visibleDuration, 'seconds').humanize();
-    }
-
-    return null;
   }
 }
 

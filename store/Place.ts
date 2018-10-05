@@ -1,8 +1,8 @@
 import { latLng } from 'leaflet';
 import { computed } from 'mobx';
-import sortBy from 'lodash/fp/sortBy';
 
 import DataStore from './DataStore';
+import extent from './utils/extent';
 
 export type PlaceData = {
   readonly id: number;
@@ -19,7 +19,8 @@ export function isPlaceData(value: any): value is PlaceData {
   return value.id != null && value.location != null && value.name != null;
 }
 
-export const sortByHover = sortBy<Place>('hover');
+export const visibleFrequencyExtent = extent<Place>('visibleFrequency');
+export const visibleDurationExtent = extent<Place>('visibleDuration');
 
 class Place {
   readonly store: DataStore;

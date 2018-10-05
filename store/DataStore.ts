@@ -7,14 +7,19 @@ import Trip, { isTripData } from './Trip';
 import Connection from './Connection';
 import UIStore from './UIStore';
 
+const DAY_IN_MS = 1000 * 60 * 60 * 24;
+
 class DataStore {
   readonly places: Place[] = [];
   readonly stays: Stay[] = [];
   readonly trips: Trip[] = [];
-
+  readonly connections: Connection[];
+  readonly timeSpan: [number, number];
   readonly ui: UIStore;
 
-  constructor(data: DiaryData) {
+  constructor(ui: UIStore, data: DiaryData) {
+    this.ui = ui;
+
     data.forEach(item => {
       if (item.place != null && isPlaceData(item.place)) {
         this.places.push(new Place(this, item.place));
@@ -27,11 +32,6 @@ class DataStore {
       }
     });
 
-    this.ui = new UIStore(this);
-  }
-
-  @computed
-  get connections() {
     const connections: { [id: string]: Connection } = {};
 
     this.trips.forEach(trip => {
@@ -56,7 +56,22 @@ class DataStore {
       connection.trips.push(trip);
     });
 
-    return Object.values(connections);
+    this.connections = Object.values(connections);
+
+    this.timeSpan = this.stays.reduce<[number, number]>(
+      ([start, end], stay: Stay) => {
+        if (stay.startAt < start) {
+          start = Math.floor(stay.startAt / DAY_IN_MS) * DAY_IN_MS;
+        }
+
+        if (stay.endAt > end) {
+          end = Math.ceil(stay.endAt / DAY_IN_MS) * DAY_IN_MS;
+        }
+
+        return [start, end];
+      },
+      [Infinity, -Infinity]
+    );
   }
 
   @computed
@@ -68,48 +83,6 @@ class DataStore {
   get visibleConnections() {
     return this.connections.filter(connection => connection.visible);
   }
-
-  /*@computed
-  get placeClusters() {
-    const places: Place[] = this.sortedPlaces;
-    const clusteredPlaces: { [id: string]: boolean } = {};
-    const clusters: PlaceCluster[] = [];
-
-    for (let placeA of places) {
-      if (clusteredPlaces[placeA.id]) {
-        continue;
-      }
-
-      const cluster = new PlaceCluster(this);
-
-      cluster.places.push(placeA);
-      clusteredPlaces[placeA.id] = true;
-
-      for (let placeB of places) {
-        if (clusteredPlaces[placeB.id]) {
-          continue;
-        }
-
-        const distance = placeA.layerPoint.distanceTo(placeB.layerPoint);
-        const maxDistance = placeA.radius + placeB.radius;
-
-        if (distance > maxDistance) {
-          continue;
-        }
-
-        const overlap = maxDistance - distance;
-
-        if (overlap / (placeB.radius * 2) >= 0.6) {
-          cluster.places.push(placeB);
-          clusteredPlaces[placeB.id] = true;
-        }
-      }
-
-      clusters.push(cluster);
-    }
-
-    return clusters;
-  }*/
 }
 
 export default DataStore;

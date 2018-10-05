@@ -4,6 +4,8 @@ const { publicRuntimeConfig } = getConfig();
 
 type Config = {
   url: string;
+  mapboxAccessToken: string;
+  mapboxStyleId: string;
 };
 
 const config: Config = publicRuntimeConfig;

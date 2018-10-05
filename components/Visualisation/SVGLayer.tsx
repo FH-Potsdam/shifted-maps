@@ -9,11 +9,8 @@ import {
   ZoomAnimEvent,
 } from 'leaflet';
 import { createPortal } from 'react-dom';
-import { observable, action } from 'mobx';
-import { observer } from 'mobx-react';
 
 class LeafletSVGLayer extends LeafletLayer {
-  @observable.ref
   svg?: SVGSVGElement;
 
   private _center?: LatLng;
@@ -21,7 +18,6 @@ class LeafletSVGLayer extends LeafletLayer {
   private _position: Point = point(0, 0);
   private _size?: Point;
 
-  @action
   onAdd() {
     if (this.svg == null) {
       this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -141,10 +137,17 @@ class LeafletSVGLayer extends LeafletLayer {
   }
 }
 
-@observer
 class SVGLayer extends MapLayer<MapLayerProps & WrappedProps, LeafletSVGLayer> {
   createLeafletElement() {
     return new LeafletSVGLayer();
+  }
+
+  componentDidMount() {
+    if (super.componentDidMount) {
+      super.componentDidMount();
+    }
+
+    this.forceUpdate();
   }
 
   render() {

@@ -1,13 +1,14 @@
 import { Component, SyntheticEvent, createRef, RefObject } from 'react';
-import { observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 import { action } from 'mobx';
 import styler, { Styler } from 'stylefire';
-import { value, ValueReaction } from 'popmotion';
+import { value, ValueReaction, spring } from 'popmotion';
 import { HotSubscription } from 'popmotion/lib/reactions/types';
 
 import styled from '../styled';
 import PlaceCircleMap from './PlaceCircleMap';
 import PlaceCircleModel from '../../store/PlaceCircle';
+import { Stores } from './Visualisation';
 
 const PlaceCircleBackground = styled.circle`
   fill: ${props => props.theme.backgroundColor};
@@ -23,43 +24,67 @@ const PlaceCircleStroke = styled.circle<{ hover: boolean }>`
 type Props = {
   placeCircle: PlaceCircleModel;
   className?: string;
+  animate?: boolean;
 };
 
+@inject(
+  ({ vis }: Stores): Partial<Props> => ({
+    animate: vis && vis.animate,
+  })
+)
 @observer
 class PlaceCircle extends Component<Props> {
-  group: RefObject<SVGGElement>;
-  groupStyler?: Styler;
+  ref: RefObject<SVGGElement>;
+  styler?: Styler;
   pointValue: ValueReaction;
   pointSubscription?: HotSubscription;
+
+  static defaultProps = {
+    animate: false,
+  };
 
   constructor(props: Props) {
     super(props);
 
-    const { layerPoint } = props.placeCircle;
+    const { mapPoint } = props.placeCircle;
 
-    this.group = createRef();
-    this.pointValue = value({ x: layerPoint.x, y: layerPoint.y });
+    this.ref = createRef();
+    this.pointValue = value({ x: mapPoint.x, y: mapPoint.y });
+  }
+
+  createStyler() {
+    if (this.ref.current == null) {
+      return;
+    }
+
+    this.styler = styler(this.ref.current, {});
+    this.pointSubscription = this.pointValue.subscribe(this.styler.set);
   }
 
   componentDidMount() {
-    if (this.group.current == null) {
-      return;
-    }
-
-    this.groupStyler = styler(this.group.current, {});
-
-    this.pointSubscription = this.pointValue.subscribe(this.groupStyler.set);
+    this.createStyler();
   }
 
   componentDidUpdate() {
-    if (this.groupStyler == null) {
+    this.createStyler();
+
+    if (this.styler == null) {
       return;
     }
 
-    const { layerPoint } = this.props.placeCircle;
+    const { animate, placeCircle } = this.props;
+    const { mapPoint } = placeCircle;
 
-    this.pointValue.update({ x: layerPoint.x, y: layerPoint.y });
-    this.groupStyler.render();
+    if (animate) {
+      spring({
+        from: this.pointValue.get(),
+        velocity: this.pointValue.getVelocity(),
+        to: { x: mapPoint.x, y: mapPoint.y },
+      }).start(this.pointValue);
+    } else {
+      this.pointValue.update({ x: mapPoint.x, y: mapPoint.y });
+      this.styler.render();
+    }
   }
 
   componentWillUnmount() {
@@ -83,18 +108,22 @@ class PlaceCircle extends Component<Props> {
   }
 
   render() {
-    const { placeCircle, ...props } = this.props;
-    const { radius, strokeWidth, layerPoint, hover } = placeCircle;
+    const { placeCircle, className } = this.props;
+    const { radius, strokeWidth, hover, visible } = placeCircle;
+
+    if (!visible) {
+      return null;
+    }
 
     return (
       <g
-        ref={this.group}
+        ref={this.ref}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
-        {...props}
+        className={className}
       >
         <PlaceCircleBackground r={radius} />
-        <PlaceCircleMap size={radius * 2} />
+        <PlaceCircleMap placeCircle={placeCircle} />
         <PlaceCircleStroke r={radius} style={{ strokeWidth: `${strokeWidth}px` }} hover={hover} />
       </g>
     );
@@ -103,4 +132,9 @@ class PlaceCircle extends Component<Props> {
 
 export default styled(PlaceCircle)`
   pointer-events: auto;
+
+  .leaflet-dragging & {
+    cursor: move;
+    cursor: grabbing;
+  }
 `;

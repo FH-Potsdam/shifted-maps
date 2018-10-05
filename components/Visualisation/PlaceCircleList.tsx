@@ -1,8 +1,5 @@
 import { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-/*import flow from 'lodash/fp/flow';
-import flatten from 'lodash/fp/flatten';
-import reverse from 'lodash/fp/reverse';*/
 
 import PlaceCircle from './PlaceCircle';
 import { Stores } from './Visualisation';
@@ -23,7 +20,7 @@ class PlaceCircleList extends Component<Props> {
     const { placeCircles } = this.props;
 
     if (placeCircles == null) {
-      return null;
+      throw new Error('Missing place circles.');
     }
 
     return (

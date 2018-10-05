@@ -1,8 +1,4 @@
-import DataStore from './DataStore';
-import { computed, action } from 'mobx';
-import Stay from './Stay';
-
-const DAY_IN_MS = 1000 * 60 * 60 * 24;
+import { action, observable } from 'mobx';
 
 export enum VIEW {
   GEOGRAPHIC,
@@ -11,31 +7,11 @@ export enum VIEW {
 }
 
 class UIStore {
-  readonly store: DataStore;
+  @observable
   activeTimeSpan?: [number, number];
-  activeView?: VIEW;
 
-  constructor(store: DataStore) {
-    this.store = store;
-  }
-
-  @computed
-  get overallTimeSpan() {
-    return this.store.stays.reduce(
-      ([start, end], stay: Stay) => {
-        if (stay.startAt < start) {
-          start = Math.floor(stay.startAt / DAY_IN_MS) * DAY_IN_MS;
-        }
-
-        if (stay.endAt > end) {
-          end = Math.ceil(stay.endAt / DAY_IN_MS) * DAY_IN_MS;
-        }
-
-        return [start, end];
-      },
-      [Infinity, -Infinity]
-    );
-  }
+  @observable
+  activeView: VIEW | null = null;
 
   @action
   changeTimeSpan(activeTimeSpan: [number, number]) {
@@ -43,8 +19,12 @@ class UIStore {
   }
 
   @action
-  changeView(view: VIEW) {
-    this.activeView = view;
+  toggleView(view: VIEW) {
+    if (this.activeView === view) {
+      this.activeView = null;
+    } else {
+      this.activeView = view;
+    }
   }
 }
 

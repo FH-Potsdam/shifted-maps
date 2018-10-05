@@ -1,74 +1,82 @@
-import { observable, computed, action, autorun } from 'mobx';
-import { Map as LeafletMap, latLngBounds, LatLngBounds } from 'leaflet';
-import { scaleLinear, ScaleLinear, scalePow, ScalePower } from 'd3';
-import orderBy from 'lodash/fp/orderBy';
+import { observable, computed, action } from 'mobx';
+import { Map as LeafletMap, latLngBounds, LatLngBounds, CRS as LeafletCRS } from 'leaflet';
+import { scaleLinear, scalePow } from 'd3';
+import reverse from 'lodash/fp/reverse';
 
 import DataStore from './DataStore';
-import PlaceCircle from './PlaceCircle';
+import PlaceCircle, { sortByHoverRadius } from './PlaceCircle';
+import ConnectionLine, {
+  sortByHoverStrokeWidth,
+  visibleDistanceExtent as visibleConnectionLineDistanceExtent,
+  visibleDurationExtent as visibleConnectionLineDurationExtent,
+  visibleFrequencyExtent as visibleConnectionLineFrequencyExtent,
+  lengthExtent as connectionLineLengthExtent,
+} from './ConnectionLine';
+import Connection from './Connection';
+import UIStore from './UIStore';
+import {
+  visibleFrequencyExtent as visiblePlaceFrequencyExtent,
+  visibleDurationExtent as visiblePlaceDurationExtent,
+} from './Place';
 
-export const sortByHoverRadius = orderBy<PlaceCircle>(['hover', 'radius'], ['asc', 'asc']);
+export const MAX_ZOOM = 18;
+export const CRS = LeafletCRS.EPSG3857;
+
+const PLACE_STROKE_WIDTH_RANGE_SCALE = scalePow<[number, number]>()
+  .exponent(2)
+  .range([[1, 5], [4, 20]]);
+
+const PLACE_RADIUS_RANGE_SCALE = scalePow<[number, number]>()
+  .exponent(2)
+  .range([[10, 50], [50, 300]]);
+
+const CONNECTION_STROKE_WIDTH_RANGE_SCALE = scalePow<[number, number]>()
+  .exponent(2)
+  .range([[0.5, 5], [1, 10]]);
 
 class VisualisationStore {
-  readonly dataStore: DataStore;
-  readonly zoomScale: ScaleLinear<number, number>;
+  readonly data: DataStore;
+  readonly ui: UIStore;
   readonly placeCircles: PlaceCircle[];
   readonly initialBounds: LatLngBounds;
-
-  private readonly _placeStrokeWidthScale: ScalePower<number, number>;
-  private readonly _placeRadiusScale: ScalePower<number, number>;
-  private readonly _connectionStrokeWidthScale: ScalePower<number, number>;
-  private readonly _placeStrokeWidthRangeScale: ScalePower<[number, number], [number, number]>;
-  private readonly _placeRadiusRangeScale: ScalePower<[number, number], [number, number]>;
-  private readonly _connectionStrokeWidthRangeScale: ScalePower<[number, number], [number, number]>;
 
   @observable
   scale?: number;
 
-  constructor(dataStore: DataStore) {
-    this.dataStore = dataStore;
+  @observable
+  animate: boolean = false;
 
-    this.zoomScale = scaleLinear();
+  constructor(ui: UIStore, data: DataStore) {
+    this.ui = ui;
+    this.data = data;
 
-    this._placeStrokeWidthScale = scalePow().exponent(0.5);
-    this._placeRadiusScale = scalePow().exponent(0.5);
-    this._connectionStrokeWidthScale = scalePow().exponent(0.25);
-
-    this._placeStrokeWidthRangeScale = scalePow<[number, number]>()
-      .exponent(2)
-      .range([[1, 5], [4, 20]]);
-    this._placeRadiusRangeScale = scalePow<[number, number]>()
-      .exponent(2)
-      .range([[10, 50], [50, 300]]);
-    this._connectionStrokeWidthRangeScale = scalePow<[number, number]>()
-      .exponent(2)
-      .range([[0.5, 5], [1, 10]]);
-
-    this.placeCircles = this.dataStore.places.map(place => new PlaceCircle(this, place));
-    this.initialBounds = this.dataStore.places
+    this.placeCircles = this.data.places.map(place => new PlaceCircle(this, place));
+    this.initialBounds = this.data.places
       .reduce((bounds, place) => {
         bounds.extend(place.latLng);
 
         return bounds;
       }, latLngBounds([]))
       .pad(0.1);
-
-    autorun(() => {});
   }
 
   @action
   update(map: LeafletMap) {
-    let maxZoom = map.getMaxZoom();
+    const maxZoom = Math.min(MAX_ZOOM, map.getMaxZoom());
+    const zoomScale = scaleLinear().domain([map.getMinZoom(), maxZoom]);
 
-    if (maxZoom === Infinity) {
-      maxZoom = 18;
-    }
-
-    this.zoomScale.domain([map.getMinZoom(), maxZoom]);
-    this.scale = this.zoomScale(map.getZoom());
+    this.scale = zoomScale(map.getZoom());
 
     this.placeCircles.forEach(placeCircle => {
       placeCircle.update(map);
     });
+
+    this.toggleAnimate(false);
+  }
+
+  @action
+  toggleAnimate(animate: boolean = !this.animate) {
+    this.animate = animate;
   }
 
   @computed
@@ -77,63 +85,143 @@ class VisualisationStore {
   }
 
   @computed
-  get placeStrokeWidthScale() {
-    const domain = this.dataStore.visiblePlaces.reduce(
-      ([min, max], { frequency }) => {
-        return [Math.min(min, frequency), Math.max(max, frequency)];
-      },
-      [Infinity, -Infinity]
-    );
+  get sortedConnectionLines() {
+    return sortByHoverStrokeWidth(this.connectionLines);
+  }
 
-    this._placeStrokeWidthScale.domain(domain);
+  @computed
+  get visibleConnectionLines() {
+    return this.connectionLines.filter(connectionLines => connectionLines.visible);
+  }
+
+  @computed
+  get placeStrokeWidthScale() {
+    const domain = visiblePlaceFrequencyExtent(this.data.visiblePlaces);
+
+    const scale = scalePow()
+      .exponent(0.5)
+      .domain(domain);
 
     if (this.scale != null) {
-      const range = this._placeStrokeWidthRangeScale(this.scale);
+      const range = PLACE_STROKE_WIDTH_RANGE_SCALE(this.scale);
 
-      this._placeStrokeWidthScale.range(range);
+      scale.rangeRound(range);
     }
 
-    return this._placeStrokeWidthScale.copy();
+    return scale;
   }
 
   @computed
   get placeRadiusScale() {
-    const domain = this.dataStore.visiblePlaces.reduce(
-      ([min, max], { duration }) => {
-        return [Math.min(min, duration), Math.max(max, duration)];
-      },
-      [Infinity, -Infinity]
-    );
+    const domain = visiblePlaceDurationExtent(this.data.visiblePlaces);
 
-    this._placeRadiusScale.domain(domain);
+    const scale = scalePow()
+      .exponent(0.5)
+      .domain(domain);
 
     if (this.scale != null) {
-      const range = this._placeRadiusRangeScale(this.scale);
+      const range = PLACE_RADIUS_RANGE_SCALE(this.scale);
 
-      this._placeRadiusScale.range(range);
+      scale.rangeRound(range);
     }
 
-    return this._placeRadiusScale.copy();
+    return scale;
+  }
+
+  @computed
+  get connectionDistanceDomain() {
+    return visibleConnectionLineDistanceExtent(this.visibleConnectionLines);
+  }
+
+  @computed
+  get connectionDurationDomain() {
+    return visibleConnectionLineDurationExtent(this.visibleConnectionLines);
+  }
+
+  @computed.struct
+  get connectionFrequencyDomain() {
+    return visibleConnectionLineFrequencyExtent(this.visibleConnectionLines);
   }
 
   @computed
   get connectionStrokeWidthScale() {
-    const domain = this.dataStore.visibleConnections.reduce(
-      ([min, max], { frequency }) => {
-        return [Math.min(min, frequency), Math.max(max, frequency)];
-      },
-      [Infinity, -Infinity]
-    );
+    const domain = this.connectionFrequencyDomain;
 
-    this._connectionStrokeWidthScale.domain(domain);
+    const scale = scalePow()
+      .exponent(0.25)
+      .domain(domain);
 
     if (this.scale != null) {
-      const range = this._connectionStrokeWidthRangeScale(this.scale);
+      let range = CONNECTION_STROKE_WIDTH_RANGE_SCALE(this.scale);
 
-      this._connectionStrokeWidthScale.range(range);
+      // In case there is only one connection line, make the higher range the default stroke width.
+      if (domain[0] === domain[1]) {
+        range = [range[1], range[1]];
+      }
+
+      scale.range(range);
     }
 
-    return this._connectionStrokeWidthScale.copy();
+    return scale;
+  }
+
+  @computed
+  get connectionLengthScale() {
+    return scaleLinear().range(connectionLineLengthExtent(this.visibleConnectionLines));
+  }
+
+  @computed
+  get connectionDistanceLengthScale() {
+    return this.connectionLengthScale.copy().domain(this.connectionDistanceDomain);
+  }
+
+  @computed
+  get connectionDurationLengthScale() {
+    return this.connectionLengthScale.copy().domain(this.connectionDurationDomain);
+  }
+
+  @computed
+  get connectionFrequencyLengthScale() {
+    return this.connectionLengthScale.copy().domain(reverse(this.connectionFrequencyDomain));
+  }
+
+  @computed
+  get connectionLines() {
+    const connectionLines: { [id: string]: ConnectionLine } = {};
+
+    this.data.connections.forEach(connection => {
+      let from = this.placeCircles.find(placeCircle => placeCircle.place === connection.from);
+      let to = this.placeCircles.find(placeCircle => placeCircle.place === connection.to);
+
+      if (from == null || to == null) {
+        throw new Error('Missing place circle');
+      }
+
+      if (from.parent != null) {
+        from = from.parent;
+      }
+
+      if (to.parent != null) {
+        to = to.parent;
+      }
+
+      // Link inside a place cluster
+      if (from.place === to.place) {
+        return;
+      }
+
+      const id = Connection.createId(from.place, to.place);
+      let connectionLine = connectionLines[id];
+
+      if (connectionLine == null) {
+        connectionLine = new ConnectionLine(this, id, from, to);
+        connectionLines[id] = connectionLine;
+      }
+
+      connectionLine.connections.push(connection);
+    });
+
+    return Object.values(connectionLines);
   }
 }
 
