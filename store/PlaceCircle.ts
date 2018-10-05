@@ -101,10 +101,12 @@ class PlaceCircle {
     const bounds = latLngBounds([this.place.latLng]);
 
     this.children.forEach(placeCircle => {
-      bounds.extend(placeCircle.place.latLng.toBounds(1000));
+      bounds.extend(placeCircle.place.latLng);
     });
 
-    return bounds;
+    // The have the full bounds inside the circle, we need to expand it by a factor of 1.4.
+    // 1.4 ≈ sqrt(pow(r, 2) + pow(r, 2)) / r
+    return bounds.pad(1.41);
   }
 
   @computed
