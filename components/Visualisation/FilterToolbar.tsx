@@ -11,6 +11,7 @@ type Props = {
   className?: string;
   data?: DataStore;
   ui?: UIStore;
+  onViewChange: (view: VIEW) => void;
 };
 
 @inject('data', 'ui')
@@ -22,13 +23,7 @@ class FilterToolbar extends Component<Props> {
   };
 
   handleViewButtonClick(view: VIEW) {
-    const { ui } = this.props;
-
-    if (ui == null) {
-      throw new Error('Missing ui store.');
-    }
-
-    ui.toggleView(view);
+    this.props.onViewChange(view);
   }
 
   render() {
@@ -49,20 +44,20 @@ class FilterToolbar extends Component<Props> {
         </FilterBarStats>
         <FilterBarViewList>
           <FilterBarViewButton
-            onClick={() => this.handleViewButtonClick(VIEW.GEOGRAPHIC)}
-            active={ui.activeView === VIEW.GEOGRAPHIC}
+            onClick={() => this.props.onViewChange(VIEW.GEOGRAPHIC)}
+            active={ui.view === VIEW.GEOGRAPHIC}
           >
             <Icon name="geographic" title="Geographic View" />
           </FilterBarViewButton>
           <FilterBarViewButton
-            onClick={() => this.handleViewButtonClick(VIEW.DURATION)}
-            active={ui.activeView === VIEW.DURATION}
+            onClick={() => this.props.onViewChange(VIEW.DURATION)}
+            active={ui.view === VIEW.DURATION}
           >
             <Icon name="duration" title="Temporal View" />
           </FilterBarViewButton>
           <FilterBarViewButton
-            onClick={() => this.handleViewButtonClick(VIEW.FREQUENCY)}
-            active={ui.activeView === VIEW.FREQUENCY}
+            onClick={() => this.props.onViewChange(VIEW.FREQUENCY)}
+            active={ui.view === VIEW.FREQUENCY}
           >
             <Icon name="frequency" title="Frequency View" />
           </FilterBarViewButton>

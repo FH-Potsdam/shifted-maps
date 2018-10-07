@@ -18,7 +18,7 @@ class App extends BaseApp {
   static async getInitialProps({ Component, ctx }: AppComponentContext) {
     let pageProps = {};
 
-    if (ctx.req) {
+    if (ctx.req != null) {
       useStaticRendering(true);
     }
 

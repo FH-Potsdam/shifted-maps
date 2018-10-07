@@ -1,7 +1,8 @@
-import { observable, computed, action } from 'mobx';
-import { Map as LeafletMap, latLngBounds, LatLngBounds, CRS as LeafletCRS } from 'leaflet';
+import { observable, computed, action, autorun } from 'mobx';
+import { Map as LeafletMap, latLngBounds, CRS as LeafletCRS } from 'leaflet';
 import { scaleLinear, scalePow } from 'd3';
 import reverse from 'lodash/fp/reverse';
+import { keepAlive } from 'mobx-utils';
 
 import DataStore from './DataStore';
 import PlaceCircle, { sortByHoverRadius } from './PlaceCircle';
@@ -18,6 +19,7 @@ import {
   visibleFrequencyExtent as visiblePlaceFrequencyExtent,
   visibleDurationExtent as visiblePlaceDurationExtent,
 } from './Place';
+import GraphStore from './GraphStore';
 
 export const MAX_ZOOM = 18;
 export const CRS = LeafletCRS.EPSG3857;
@@ -37,8 +39,7 @@ const CONNECTION_STROKE_WIDTH_RANGE_SCALE = scalePow<[number, number]>()
 class VisualisationStore {
   readonly data: DataStore;
   readonly ui: UIStore;
-  readonly placeCircles: PlaceCircle[];
-  readonly initialBounds: LatLngBounds;
+  readonly graph: GraphStore;
 
   @observable
   scale?: number;
@@ -49,15 +50,9 @@ class VisualisationStore {
   constructor(ui: UIStore, data: DataStore) {
     this.ui = ui;
     this.data = data;
+    this.graph = new GraphStore(this);
 
-    this.placeCircles = this.data.places.map(place => new PlaceCircle(this, place));
-    this.initialBounds = this.data.places
-      .reduce((bounds, place) => {
-        bounds.extend(place.latLng);
-
-        return bounds;
-      }, latLngBounds([]))
-      .pad(0.1);
+    keepAlive(this, 'placeCircles');
   }
 
   @action
@@ -74,6 +69,28 @@ class VisualisationStore {
     this.toggleAnimate(false);
   }
 
+  @computed
+  get placeCircles() {
+    return this.data.places.map(place => new PlaceCircle(this, place));
+  }
+
+  @computed
+  get initialBounds() {
+    const emptyBounds = latLngBounds([]);
+
+    if (this.data.places.length === 0) {
+      return emptyBounds;
+    }
+
+    return this.data.places
+      .reduce((bounds, place) => {
+        bounds.extend(place.latLng);
+
+        return bounds;
+      }, emptyBounds)
+      .pad(0.1);
+  }
+
   @action
   toggleAnimate(animate: boolean = !this.animate) {
     this.animate = animate;
@@ -87,6 +104,11 @@ class VisualisationStore {
   @computed
   get sortedConnectionLines() {
     return sortByHoverStrokeWidth(this.connectionLines);
+  }
+
+  @computed
+  get visiblePlaceCircles() {
+    return this.placeCircles.filter(placeCircle => placeCircle.visible);
   }
 
   @computed

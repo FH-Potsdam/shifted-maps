@@ -17,9 +17,6 @@ class PlaceCircle {
   @observable.struct
   mapPoint: Point = point(0, 0);
 
-  @observable
-  maxZoom: number = MAX_ZOOM;
-
   constructor(vis: VisualisationStore, place: Place) {
     this.vis = vis;
     this.place = place;
@@ -28,7 +25,6 @@ class PlaceCircle {
   @action
   update(map: LeafletMap) {
     this.mapPoint = map.latLngToLayerPoint(this.place.latLng);
-    this.maxZoom = Math.min(MAX_ZOOM, map.getMaxZoom());
   }
 
   @computed
@@ -53,7 +49,7 @@ class PlaceCircle {
 
   @computed
   get parent(): PlaceCircle | undefined {
-    const parent = this.vis.placeCircles.find(placeCircle => {
+    let parent = this.vis.placeCircles.find(placeCircle => {
       if (placeCircle === this) {
         return false;
       }
@@ -77,7 +73,7 @@ class PlaceCircle {
     });
 
     if (parent && parent.parent) {
-      return parent.parent;
+      parent = parent.parent;
     }
 
     return parent;
@@ -104,8 +100,8 @@ class PlaceCircle {
       bounds.extend(placeCircle.place.latLng);
     });
 
-    // The have the full bounds inside the circle, we need to expand it by a factor of 1.4.
-    // 1.4 ≈ sqrt(pow(r, 2) + pow(r, 2)) / r
+    // The have the full bounds inside the place circle, we need to expand it by a factor of around 1.41.
+    // 1.41 ≈ sqrt(pow(r, 2) + pow(r, 2)) / r
     return bounds.pad(1.41);
   }
 

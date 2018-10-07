@@ -1,7 +1,7 @@
 import { Component, Fragment } from 'react';
 import { configure, action } from 'mobx';
 import { Provider, observer } from 'mobx-react';
-import { LeafletEvent } from 'leaflet';
+import { LeafletEvent, Map as LeafletMap } from 'leaflet';
 
 import { DiaryData } from '../../store/Diary';
 import DataStore from '../../store/DataStore';
@@ -12,11 +12,7 @@ import VisualisationStore from '../../store/VisualisationStore';
 import ConnectionLineList from './ConnectionLineList';
 import CustomControl from './CustomControl';
 import FilterToolbar from './FilterToolbar';
-import UIStore from '../../store/UIStore';
-
-type Props = {
-  data: DiaryData;
-};
+import UIStore, { VIEW } from '../../store/UIStore';
 
 configure({
   enforceActions: 'observed',
@@ -28,29 +24,50 @@ export type Stores = {
   ui?: UIStore;
 };
 
+type Props = {
+  data: DiaryData;
+  view?: VIEW;
+  timeSpan?: [number, number];
+  onFilterBarViewChange: (view: VIEW) => void;
+};
+
 @observer
 class Visualisation extends Component<Props> {
   dataStore: DataStore;
   visStore: VisualisationStore;
   uiStore: UIStore;
 
+  map?: LeafletMap;
+
   constructor(props: Props) {
     super(props);
 
     this.uiStore = new UIStore();
-    this.dataStore = new DataStore(this.uiStore, props.data);
+    this.dataStore = new DataStore(this.uiStore);
     this.visStore = new VisualisationStore(this.uiStore, this.dataStore);
+
+    this.dataStore.update(props.data);
   }
 
-  @action.bound
-  handleViewChange(event: LeafletEvent) {
-    this.visStore.update(event.target);
+  componentDidUpdate() {
+    const { view, data, timeSpan } = this.props;
+
+    this.uiStore.update({ view, timeSpan });
+    this.dataStore.update(data);
+
+    if (this.map != null) {
+      this.visStore.update(this.map);
+    }
   }
 
-  @action.bound
-  handleFilterToolbarUpdate() {
-    this.visStore.toggleAnimate(true);
-  }
+  @action
+  handleMapViewChange = (event: LeafletEvent) => {
+    this.map = event.target;
+
+    if (this.map != null) {
+      this.visStore.update(this.map);
+    }
+  };
 
   render() {
     return (
@@ -58,10 +75,10 @@ class Visualisation extends Component<Props> {
         <Fragment>
           <Map
             // @ts-ignore outdated types
-            whenReady={this.handleViewChange}
-            onMoveEnd={this.handleViewChange}
-            onZoomEnd={this.handleViewChange}
-            onResize={this.handleViewChange}
+            whenReady={this.handleMapViewChange}
+            onMoveEnd={this.handleMapViewChange}
+            onZoomEnd={this.handleMapViewChange}
+            onResize={this.handleMapViewChange}
           >
             <SVGLayer>
               <defs>
@@ -72,7 +89,7 @@ class Visualisation extends Component<Props> {
               <ConnectionLineList />
               <PlaceCircleList />
               <CustomControl position="topleft">
-                <FilterToolbar />
+                <FilterToolbar onViewChange={this.props.onFilterBarViewChange} />
               </CustomControl>
             </SVGLayer>
           </Map>

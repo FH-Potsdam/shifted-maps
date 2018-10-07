@@ -1,4 +1,4 @@
-import { computed } from 'mobx';
+import { computed, action, observable } from 'mobx';
 
 import { DiaryData } from './Diary';
 import Place, { isPlaceData } from './Place';
@@ -10,28 +10,73 @@ import UIStore from './UIStore';
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 class DataStore {
-  readonly places: Place[] = [];
-  readonly stays: Stay[] = [];
-  readonly trips: Trip[] = [];
-  readonly connections: Connection[];
-  readonly timeSpan: [number, number];
   readonly ui: UIStore;
 
-  constructor(ui: UIStore, data: DiaryData) {
-    this.ui = ui;
+  @observable
+  data?: DiaryData;
 
-    data.forEach(item => {
+  constructor(ui: UIStore) {
+    this.ui = ui;
+  }
+
+  @action
+  update(data: DiaryData) {
+    this.data = data;
+  }
+
+  @computed
+  get places() {
+    const places: Place[] = [];
+
+    if (this.data == null) {
+      return places;
+    }
+
+    this.data.forEach(item => {
       if (item.place != null && isPlaceData(item.place)) {
-        this.places.push(new Place(this, item.place));
-      } else if (item.stay != null && isStayData(item.stay)) {
-        this.stays.push(new Stay(this, item.stay));
-      } else if (item.trip != null && isTripData(item.trip)) {
-        this.trips.push(new Trip(this, item.trip));
-      } else {
-        throw new Error('Unknown data item.');
+        places.push(new Place(this, item.place));
       }
     });
 
+    return places;
+  }
+
+  @computed
+  get stays() {
+    const stays: Stay[] = [];
+
+    if (this.data == null) {
+      return stays;
+    }
+
+    this.data.forEach(item => {
+      if (item.stay != null && isStayData(item.stay)) {
+        stays.push(new Stay(this, item.stay));
+      }
+    });
+
+    return stays;
+  }
+
+  @computed
+  get trips() {
+    const trips: Trip[] = [];
+
+    if (this.data == null) {
+      return trips;
+    }
+
+    this.data.forEach(item => {
+      if (item.trip != null && isTripData(item.trip)) {
+        trips.push(new Trip(this, item.trip));
+      }
+    });
+
+    return trips;
+  }
+
+  @computed
+  get connections() {
     const connections: { [id: string]: Connection } = {};
 
     this.trips.forEach(trip => {
@@ -56,9 +101,12 @@ class DataStore {
       connection.trips.push(trip);
     });
 
-    this.connections = Object.values(connections);
+    return Object.values(connections);
+  }
 
-    this.timeSpan = this.stays.reduce<[number, number]>(
+  @computed
+  get timeSpan() {
+    return this.stays.reduce<[number, number]>(
       ([start, end], stay: Stay) => {
         if (stay.startAt < start) {
           start = Math.floor(stay.startAt / DAY_IN_MS) * DAY_IN_MS;

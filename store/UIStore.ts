@@ -1,4 +1,5 @@
 import { action, observable } from 'mobx';
+import { LatLngBounds } from 'leaflet';
 
 export enum VIEW {
   GEOGRAPHIC,
@@ -8,23 +9,15 @@ export enum VIEW {
 
 class UIStore {
   @observable
-  activeTimeSpan?: [number, number];
+  timeSpan?: [number, number];
 
   @observable
-  activeView: VIEW | null = null;
+  view?: VIEW;
 
   @action
-  changeTimeSpan(activeTimeSpan: [number, number]) {
-    this.activeTimeSpan = activeTimeSpan;
-  }
-
-  @action
-  toggleView(view: VIEW) {
-    if (this.activeView === view) {
-      this.activeView = null;
-    } else {
-      this.activeView = view;
-    }
+  update({ view, timeSpan }: { timeSpan?: [number, number]; view?: VIEW }) {
+    this.view = view;
+    this.timeSpan = timeSpan;
   }
 }
 

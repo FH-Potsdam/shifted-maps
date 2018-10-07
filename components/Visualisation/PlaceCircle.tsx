@@ -34,8 +34,8 @@ type Props = {
 )
 @observer
 class PlaceCircle extends Component<Props> {
-  ref: RefObject<SVGGElement>;
   styler?: Styler;
+  ref: RefObject<SVGGElement>;
   pointValue: ValueReaction;
   pointSubscription?: HotSubscription;
 
@@ -61,13 +61,7 @@ class PlaceCircle extends Component<Props> {
     this.pointSubscription = this.pointValue.subscribe(this.styler.set);
   }
 
-  componentDidMount() {
-    this.createStyler();
-  }
-
-  componentDidUpdate() {
-    this.createStyler();
-
+  updatePosition() {
     if (this.styler == null) {
       return;
     }
@@ -85,6 +79,16 @@ class PlaceCircle extends Component<Props> {
       this.pointValue.update({ x: mapPoint.x, y: mapPoint.y });
       this.styler.render();
     }
+  }
+
+  componentDidMount() {
+    this.createStyler();
+    this.updatePosition();
+  }
+
+  componentDidUpdate() {
+    this.createStyler();
+    this.updatePosition();
   }
 
   componentWillUnmount() {
