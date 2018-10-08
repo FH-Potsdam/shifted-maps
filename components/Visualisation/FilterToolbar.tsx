@@ -1,4 +1,4 @@
-import { Component, SyntheticEvent } from 'react';
+import { Component, createRef, RefObject } from 'react';
 
 import styled, { css } from '../styled';
 import Heading from '../common/Heading';
@@ -16,24 +16,32 @@ type Props = {
 
 @observer
 class FilterToolbar extends Component<Props> {
-  handleMouseDown = (event: SyntheticEvent) => {
+  ref: RefObject<HTMLDivElement>;
+
+  constructor(props: Props) {
+    super(props);
+
+    this.ref = createRef();
+  }
+
+  componentDidMount() {
+    this.ref.current!.addEventListener('dblclick', this.stopPropagation);
+  }
+
+  componentWillUnmount() {
+    this.ref.current!.removeEventListener('dblclick', this.stopPropagation);
+  }
+
+  stopPropagation = (event: MouseEvent) => {
     // Prevent map from dragging when mouse was clicked on filter toolbar.
     event.stopPropagation();
   };
 
-  handleViewButtonClick(view: VIEW) {
-    this.props.onViewChange(view);
-  }
-
   render() {
     const { className, data, ui } = this.props;
 
-    if (data == null || ui == null) {
-      throw new Error('Missing stores.');
-    }
-
     return (
-      <div className={className} onMouseDown={this.handleMouseDown}>
+      <div ref={this.ref} className={className}>
         <Heading use="h1">Shifted Maps</Heading>
         <FilterBarStats>
           <dt>Places:</dt>
