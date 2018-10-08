@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import { observer } from 'mobx-react';
+import reverse from 'lodash/fp/reverse';
 
 import PlaceCircle from './PlaceCircle';
 import PlaceCircleModel from '../../store/PlaceCircle';
@@ -16,7 +17,7 @@ class PlaceCircleList extends Component<Props> {
 
     return (
       <g>
-        {placeCircles.map(placeCircle => (
+        {reverse(placeCircles).map(placeCircle => (
           <PlaceCircle key={placeCircle.key} placeCircle={placeCircle} animate={animate} />
         ))}
       </g>
