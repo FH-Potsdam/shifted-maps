@@ -39,11 +39,11 @@ class PlaceCircle extends Component<Props> {
   }
 
   componentDidMount() {
-    this.startUpdatePosition();
+    this.startStyler();
   }
 
   componentDidUpdate() {
-    this.startUpdatePosition();
+    this.startStyler();
   }
 
   componentWillUnmount() {
@@ -52,8 +52,8 @@ class PlaceCircle extends Component<Props> {
     }
   }
 
-  private startUpdatePosition() {
-    if (this.ref.current == null || this.updateSubscription != null) {
+  private startStyler() {
+    if (this.ref.current == null) {
       return;
     }
 
@@ -62,10 +62,14 @@ class PlaceCircle extends Component<Props> {
     this.pointValue = value({ x: 0, y: 0 });
     this.pointValue.subscribe(this.styler.set);
 
-    this.updateSubscription = autorun(this.updatePosition);
+    if (this.updateSubscription != null) {
+      this.updateSubscription();
+    }
+
+    this.updateSubscription = autorun(this.style);
   }
 
-  private updatePosition = () => {
+  private style = () => {
     const { point } = this.props.placeCircle;
 
     this.pointValue!.update({ x: point.x, y: point.y });

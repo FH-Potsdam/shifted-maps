@@ -25,11 +25,11 @@ class ConnectionLine extends Component<Props> {
   }
 
   componentDidMount() {
-    this.startUpdatePosition();
+    this.runStyler();
   }
 
   componentDidUpdate() {
-    this.startUpdatePosition();
+    this.runStyler();
   }
 
   componentWillUnmount() {
@@ -38,33 +38,40 @@ class ConnectionLine extends Component<Props> {
     }
   }
 
-  private startUpdatePosition() {
-    if (this.ref.current == null || this.updateSubscription != null) {
+  private runStyler() {
+    if (this.ref.current == null) {
       return;
     }
 
     this.styler = styler(this.ref.current, {});
 
-    this.lineValue = value({ x1: 0, y1: 0, x2: 0, y2: 0 });
+    this.lineValue = value({ x1: 0, y1: 0, x2: 0, y2: 0, strokeWidth: 0 });
     this.lineValue.subscribe(this.styler.set);
 
-    this.updateSubscription = autorun(this.updatePosition);
+    if (this.updateSubscription != null) {
+      this.updateSubscription();
+    }
+
+    this.updateSubscription = autorun(this.style);
   }
 
-  private updatePosition = () => {
-    const { from, to } = this.props.connectionLine;
+  private style = () => {
+    const { from, to, strokeWidth } = this.props.connectionLine;
 
-    this.lineValue!.update({ x1: from.point.x, y1: from.point.y, x2: to.point.x, y2: to.point.y });
+    this.lineValue!.update({
+      x1: from.point.x,
+      y1: from.point.y,
+      x2: to.point.x,
+      y2: to.point.y,
+      strokeWidth,
+    });
     this.styler!.render();
   };
 
   render() {
-    const { connectionLine } = this.props;
-    const { strokeWidth } = connectionLine;
-
     return (
       <g>
-        <ConnectionLineLine innerRef={this.ref} style={{ strokeWidth: `${strokeWidth}px` }} />
+        <ConnectionLineLine innerRef={this.ref} />
       </g>
     );
   }
