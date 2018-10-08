@@ -60,11 +60,11 @@ class VisualisationStore {
 
     this._scale = zoomScale(map.getZoom());
 
+    this.graph.update(map);
+
     this.placeCircles.forEach(placeCircle => {
       placeCircle.update(map);
     });
-
-    this.graph.update(map);
   }
 
   @action

@@ -1,95 +1,114 @@
-import { computed, action, reaction } from 'mobx';
+import { computed, autorun, action } from 'mobx';
 import {
   forceSimulation,
-  Simulation,
-  SimulationNodeDatum,
-  SimulationLinkDatum,
   forceLink,
   forceX,
   forceY,
+  forceManyBody,
+  Simulation,
+  SimulationNodeDatum,
+  SimulationLinkDatum,
+  ForceLink,
+  ForceX,
+  ForceY,
+  ForceManyBody,
 } from 'd3';
 import { Map as LeafletMap, Point } from 'leaflet';
 
 import VisualisationStore from './VisualisationStore';
 import PlaceCircle from './PlaceCircle';
 import ConnectionLine from './ConnectionLine';
-import { VIEW } from './UIStore';
 
 type TickCallback = (nodes: PlaceCircleNode[]) => void;
 
 class GraphStore {
-  readonly vis: VisualisationStore;
-  readonly onTick: TickCallback;
+  private readonly _vis: VisualisationStore;
+  private readonly _onTick: TickCallback;
 
-  private _simulation?: Simulation<PlaceCircleNode, ConnectionLineLink>;
   private _nodes: PlaceCircleNode[] = [];
   private _links: ConnectionLineLink[] = [];
+
+  private _simulation: Simulation<PlaceCircleNode, ConnectionLineLink>;
+  private _linkForce: ForceLink<PlaceCircleNode, ConnectionLineLink>;
+  private _xForce: ForceX<PlaceCircleNode>;
+  private _yForce: ForceY<PlaceCircleNode>;
+  private _manyBodyForce: ForceManyBody<PlaceCircleNode>;
+
   private _zoom?: number;
+  private _pixelOrigin?: Point;
 
   constructor(vis: VisualisationStore, onTick: TickCallback) {
-    this.vis = vis;
-    this.onTick = onTick;
+    this._vis = vis;
+    this._onTick = onTick;
 
-    reaction(
-      () => ({ view: this.vis.ui.view, links: this.links, nodes: this.nodes }),
-      ({ view, links, nodes }) => {
-        if (view == null) {
-          return;
-        }
+    this._linkForce = forceLink<PlaceCircleNode, ConnectionLineLink>()
+      .id(node => node.key)
+      .strength(1);
 
-        if (this._simulation != null) {
-          this._simulation.stop();
-        }
+    this._xForce = forceX<PlaceCircleNode>().strength(0.05);
+    this._yForce = forceY<PlaceCircleNode>().strength(0.05);
 
-        const linkForce = forceLink<PlaceCircleNode, ConnectionLineLink>(links)
-          .id(node => node.key)
-          .strength(1)
-          .distance(link => link.connectionLine.viewLength);
+    this._manyBodyForce = forceManyBody<PlaceCircleNode>();
 
-        const xForce = forceX<PlaceCircleNode>()
-          .x(node => node.placeCircle.mapPoint.x)
-          .strength(0.05);
-        const yForce = forceY<PlaceCircleNode>()
-          .y(node => node.placeCircle.mapPoint.y)
-          .strength(0.05);
+    this._simulation = forceSimulation<PlaceCircleNode, ConnectionLineLink>()
+      .force('link', this._linkForce)
+      .force('x', this._xForce)
+      .force('y', this._yForce)
+      .force('many-body', this._manyBodyForce)
+      .on('tick', () => this._onTick(this.nodes))
+      .stop();
 
-        this._simulation = forceSimulation<PlaceCircleNode, ConnectionLineLink>(nodes)
-          .force('link', linkForce)
-          .force('x', xForce)
-          .force('y', yForce)
-          .on('tick', this.handleTick);
-      }
-    );
+    autorun(this.toggleSimulation);
+    autorun(this.updateSimulation);
   }
+
+  private toggleSimulation = () => {
+    const { view } = this._vis.ui;
+
+    if (view == null) {
+      this._simulation.stop();
+    } else {
+      this._simulation.alpha(1);
+      this._simulation.restart();
+    }
+  };
+
+  private updateSimulation = () => {
+    this._simulation.nodes(this.nodes);
+    this._linkForce.links(this.links).distance(link => link.connectionLine.viewLength);
+    this._xForce.x(node => node.placeCircle.mapPoint.x);
+    this._yForce.y(node => node.placeCircle.mapPoint.y);
+  };
 
   @action
   update(map: LeafletMap) {
-    /*const prevZoom = this._zoom;
+    const prevZoom = this._zoom;
     const nextZoom = map.getZoom();
+    const prevPixelOrigin = this._pixelOrigin;
+    const nextPixelOrigin = map.getPixelOrigin();
 
-    if (prevZoom != null && prevZoom !== nextZoom) {
+    if (prevZoom != null && prevPixelOrigin != null && nextZoom !== prevZoom) {
       this.nodes.forEach(node => {
-        const prevLatLng = map.unproject(node, prevZoom);
-        const { x, y } = map.latLngToLayerPoint(prevLatLng);
+        // latLngToLayerPoint for custom zoom
+        const prevLatLng = map.unproject(node.add(prevPixelOrigin), prevZoom);
+        const nextPoint = map.latLngToLayerPoint(prevLatLng);
 
-        node.x = x;
-        node.y = y;
+        node.x = nextPoint.x;
+        node.y = nextPoint.y;
       });
+
+      this.toggleSimulation();
     }
 
-    this._zoom = nextZoom;*/
+    this._zoom = nextZoom;
+    this._pixelOrigin = nextPixelOrigin;
   }
-
-  @action
-  handleTick = () => {
-    this.onTick(this.nodes);
-  };
 
   @computed
   get nodes() {
     const nodes: PlaceCircleNode[] = [];
 
-    this.vis.visiblePlaceCircles.forEach(placeCircle => {
+    this._vis.visiblePlaceCircles.forEach(placeCircle => {
       let node = this._nodes.find(node => node.placeCircle === placeCircle);
 
       if (node == null) {
@@ -106,7 +125,7 @@ class GraphStore {
   get links() {
     const links: ConnectionLineLink[] = [];
 
-    this.vis.visibleConnectionLines.forEach(connectionLine => {
+    this._vis.visibleConnectionLines.forEach(connectionLine => {
       let link = this._links.find(link => link.connectionLine === connectionLine);
 
       if (link == null) {
