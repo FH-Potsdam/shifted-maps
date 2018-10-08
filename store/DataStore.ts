@@ -1,4 +1,4 @@
-import { computed, action, observable } from 'mobx';
+import { computed } from 'mobx';
 
 import { DiaryData } from './Diary';
 import Place, { isPlaceData } from './Place';
@@ -11,26 +11,16 @@ const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 class DataStore {
   readonly ui: UIStore;
+  readonly data: DiaryData;
 
-  @observable
-  data?: DiaryData;
-
-  constructor(ui: UIStore) {
+  constructor(ui: UIStore, data: DiaryData) {
     this.ui = ui;
-  }
-
-  @action
-  update(data: DiaryData) {
     this.data = data;
   }
 
   @computed
   get places() {
     const places: Place[] = [];
-
-    if (this.data == null) {
-      return places;
-    }
 
     this.data.forEach(item => {
       if (item.place != null && isPlaceData(item.place)) {
@@ -45,10 +35,6 @@ class DataStore {
   get stays() {
     const stays: Stay[] = [];
 
-    if (this.data == null) {
-      return stays;
-    }
-
     this.data.forEach(item => {
       if (item.stay != null && isStayData(item.stay)) {
         stays.push(new Stay(this, item.stay));
@@ -61,10 +47,6 @@ class DataStore {
   @computed
   get trips() {
     const trips: Trip[] = [];
-
-    if (this.data == null) {
-      return trips;
-    }
 
     this.data.forEach(item => {
       if (item.trip != null && isTripData(item.trip)) {

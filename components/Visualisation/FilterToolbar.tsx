@@ -2,19 +2,18 @@ import { Component, SyntheticEvent } from 'react';
 
 import styled, { css } from '../styled';
 import Heading from '../common/Heading';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import DataStore from '../../store/DataStore';
 import UIStore, { VIEW } from '../../store/UIStore';
 import Icon from '../common/Icon';
 
 type Props = {
   className?: string;
-  data?: DataStore;
-  ui?: UIStore;
+  data: DataStore;
+  ui: UIStore;
   onViewChange: (view: VIEW) => void;
 };
 
-@inject('data', 'ui')
 @observer
 class FilterToolbar extends Component<Props> {
   handleMouseDown = (event: SyntheticEvent) => {

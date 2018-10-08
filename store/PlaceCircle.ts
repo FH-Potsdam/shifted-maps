@@ -1,5 +1,5 @@
 import { computed, observable, action } from 'mobx';
-import { Map as LeafletMap, Point, point, bounds, latLngBounds } from 'leaflet';
+import { Map as LeafletMap, bounds, latLngBounds, point, Point } from 'leaflet';
 import orderBy from 'lodash/fp/orderBy';
 
 import Place from './Place';
@@ -14,8 +14,11 @@ class PlaceCircle {
   @observable
   hover: boolean = false;
 
-  @observable.struct
+  @observable.ref
   mapPoint: Point = point(0, 0);
+
+  @observable.ref
+  graphPoint?: Point;
 
   constructor(vis: VisualisationStore, place: Place) {
     this.vis = vis;
@@ -125,6 +128,15 @@ class PlaceCircle {
   @computed
   get visible() {
     return this.parent == null && this.place.visible;
+  }
+
+  @computed
+  get point() {
+    if (this.vis.ui.view == null || this.graphPoint == null) {
+      return this.mapPoint;
+    }
+
+    return this.graphPoint;
   }
 }
 

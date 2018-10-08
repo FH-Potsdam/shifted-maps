@@ -59,6 +59,25 @@ class ConnectionLine {
   }
 
   @computed
+  get viewLength() {
+    const { view } = this.vis.ui;
+
+    if (view === VIEW.GEOGRAPHIC) {
+      return this.vis.connectionDistanceLengthScale(this.visibleDistance);
+    }
+
+    if (view === VIEW.DURATION) {
+      return this.vis.connectionDurationLengthScale(this.visibleDuration);
+    }
+
+    if (view === VIEW.FREQUENCY) {
+      return this.vis.connectionFrequencyLengthScale(this.visibleFrequency);
+    }
+
+    return this.length;
+  }
+
+  @computed
   get visible() {
     return this.connections.some(connection => connection.visible);
   }
@@ -70,9 +89,9 @@ class ConnectionLine {
 
   @computed
   get label() {
-    const { activeView } = this.vis.ui;
+    const { view } = this.vis.ui;
 
-    if (activeView === VIEW.GEOGRAPHIC) {
+    if (view === VIEW.GEOGRAPHIC) {
       if (this.visibleDistance >= 1000) {
         return `${Math.round(this.visibleDistance / 1000).toLocaleString()} km`;
       }
@@ -80,11 +99,11 @@ class ConnectionLine {
       return `${Math.round(this.visibleDistance).toLocaleString()} m`;
     }
 
-    if (activeView === VIEW.FREQUENCY) {
+    if (view === VIEW.FREQUENCY) {
       return `${this.visibleFrequency} ×`;
     }
 
-    if (activeView === VIEW.DURATION) {
+    if (view === VIEW.DURATION) {
       return moment.duration(this.visibleDuration, 'seconds').humanize();
     }
 

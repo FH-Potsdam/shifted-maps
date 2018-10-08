@@ -1,8 +1,7 @@
-import { observable, computed, action, autorun } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { Map as LeafletMap, latLngBounds, CRS as LeafletCRS } from 'leaflet';
 import { scaleLinear, scalePow } from 'd3';
 import reverse from 'lodash/fp/reverse';
-import { keepAlive } from 'mobx-utils';
 
 import DataStore from './DataStore';
 import PlaceCircle, { sortByHoverRadius } from './PlaceCircle';
@@ -19,7 +18,7 @@ import {
   visibleFrequencyExtent as visiblePlaceFrequencyExtent,
   visibleDurationExtent as visiblePlaceDurationExtent,
 } from './Place';
-import GraphStore from './GraphStore';
+import GraphStore, { PlaceCircleNode } from './GraphStore';
 
 export const MAX_ZOOM = 18;
 export const CRS = LeafletCRS.EPSG3857;
@@ -41,18 +40,17 @@ class VisualisationStore {
   readonly ui: UIStore;
   readonly graph: GraphStore;
 
-  @observable
-  scale?: number;
+  private _placeCircles: PlaceCircle[] = [];
+  private _connectionLines: ConnectionLine[] = [];
 
   @observable
-  animate: boolean = false;
+  private _scale?: number;
 
   constructor(ui: UIStore, data: DataStore) {
     this.ui = ui;
     this.data = data;
-    this.graph = new GraphStore(this);
 
-    keepAlive(this, 'placeCircles');
+    this.graph = new GraphStore(this, this.handleGraphTick);
   }
 
   @action
@@ -60,18 +58,91 @@ class VisualisationStore {
     const maxZoom = Math.min(MAX_ZOOM, map.getMaxZoom());
     const zoomScale = scaleLinear().domain([map.getMinZoom(), maxZoom]);
 
-    this.scale = zoomScale(map.getZoom());
+    this._scale = zoomScale(map.getZoom());
 
     this.placeCircles.forEach(placeCircle => {
       placeCircle.update(map);
     });
 
-    this.toggleAnimate(false);
+    this.graph.update(map);
   }
+
+  @action
+  handleGraphTick = (nodes: PlaceCircleNode[]) => {
+    nodes.forEach(node => {
+      node.placeCircle.graphPoint = node.clone();
+    });
+  };
 
   @computed
   get placeCircles() {
-    return this.data.places.map(place => new PlaceCircle(this, place));
+    const placeCircles: PlaceCircle[] = [];
+
+    this.data.places.forEach(place => {
+      let placeCircle = this._placeCircles.find(placeCircle => placeCircle.place === place);
+
+      if (placeCircle == null) {
+        placeCircle = new PlaceCircle(this, place);
+      }
+
+      placeCircles.push(placeCircle);
+    });
+
+    return (this._placeCircles = placeCircles);
+  }
+
+  @computed
+  get connectionLines() {
+    const connectionLines: ConnectionLine[] = [];
+
+    // Clear all connections to start with empty connection lines if reused.
+    this._connectionLines.forEach(connectionLine => {
+      connectionLine.connections.length = 0;
+    });
+
+    this.data.connections.forEach(connection => {
+      let from = this.placeCircles.find(placeCircle => placeCircle.place === connection.from);
+      let to = this.placeCircles.find(placeCircle => placeCircle.place === connection.to);
+
+      if (from == null || to == null) {
+        throw new Error('Missing place circle');
+      }
+
+      if (from.parent != null) {
+        from = from.parent;
+      }
+
+      if (to.parent != null) {
+        to = to.parent;
+      }
+
+      // Link inside a place cluster
+      if (from.place === to.place) {
+        return;
+      }
+
+      const key = Connection.createId(from.place, to.place);
+      let connectionLine = connectionLines.find(connectionLine => connectionLine.key === key);
+      let newConnectionLine = false;
+
+      if (connectionLine == null) {
+        connectionLine = this._connectionLines.find(connectionLine => connectionLine.key === key);
+        newConnectionLine = true;
+      }
+
+      if (connectionLine == null) {
+        connectionLine = new ConnectionLine(this, key, from, to);
+        newConnectionLine = true;
+      }
+
+      if (newConnectionLine) {
+        connectionLines.push(connectionLine);
+      }
+
+      connectionLine.connections.push(connection);
+    });
+
+    return (this._connectionLines = connectionLines);
   }
 
   @computed
@@ -89,11 +160,6 @@ class VisualisationStore {
         return bounds;
       }, emptyBounds)
       .pad(0.1);
-  }
-
-  @action
-  toggleAnimate(animate: boolean = !this.animate) {
-    this.animate = animate;
   }
 
   @computed
@@ -124,8 +190,8 @@ class VisualisationStore {
       .exponent(0.5)
       .domain(domain);
 
-    if (this.scale != null) {
-      const range = PLACE_STROKE_WIDTH_RANGE_SCALE(this.scale);
+    if (this._scale != null) {
+      const range = PLACE_STROKE_WIDTH_RANGE_SCALE(this._scale);
 
       scale.rangeRound(range);
     }
@@ -141,8 +207,8 @@ class VisualisationStore {
       .exponent(0.5)
       .domain(domain);
 
-    if (this.scale != null) {
-      const range = PLACE_RADIUS_RANGE_SCALE(this.scale);
+    if (this._scale != null) {
+      const range = PLACE_RADIUS_RANGE_SCALE(this._scale);
 
       scale.rangeRound(range);
     }
@@ -173,8 +239,8 @@ class VisualisationStore {
       .exponent(0.25)
       .domain(domain);
 
-    if (this.scale != null) {
-      let range = CONNECTION_STROKE_WIDTH_RANGE_SCALE(this.scale);
+    if (this._scale != null) {
+      let range = CONNECTION_STROKE_WIDTH_RANGE_SCALE(this._scale);
 
       // In case there is only one connection line, make the higher range the default stroke width.
       if (domain[0] === domain[1]) {
@@ -205,45 +271,6 @@ class VisualisationStore {
   @computed
   get connectionFrequencyLengthScale() {
     return this.connectionLengthScale.copy().domain(reverse(this.connectionFrequencyDomain));
-  }
-
-  @computed
-  get connectionLines() {
-    const connectionLines: { [id: string]: ConnectionLine } = {};
-
-    this.data.connections.forEach(connection => {
-      let from = this.placeCircles.find(placeCircle => placeCircle.place === connection.from);
-      let to = this.placeCircles.find(placeCircle => placeCircle.place === connection.to);
-
-      if (from == null || to == null) {
-        throw new Error('Missing place circle');
-      }
-
-      if (from.parent != null) {
-        from = from.parent;
-      }
-
-      if (to.parent != null) {
-        to = to.parent;
-      }
-
-      // Link inside a place cluster
-      if (from.place === to.place) {
-        return;
-      }
-
-      const id = Connection.createId(from.place, to.place);
-      let connectionLine = connectionLines[id];
-
-      if (connectionLine == null) {
-        connectionLine = new ConnectionLine(this, id, from, to);
-        connectionLines[id] = connectionLine;
-      }
-
-      connectionLine.connections.push(connection);
-    });
-
-    return Object.values(connectionLines);
   }
 }
 

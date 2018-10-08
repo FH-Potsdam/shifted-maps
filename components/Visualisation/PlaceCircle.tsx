@@ -1,14 +1,12 @@
-import { Component, SyntheticEvent, createRef, RefObject } from 'react';
-import { observer, inject } from 'mobx-react';
-import { action } from 'mobx';
+import { Component, SyntheticEvent, RefObject, createRef } from 'react';
+import { observer } from 'mobx-react';
+import { action, IReactionDisposer, autorun } from 'mobx';
+import { ValueReaction, value } from 'popmotion';
 import styler, { Styler } from 'stylefire';
-import { value, ValueReaction, spring } from 'popmotion';
-import { HotSubscription } from 'popmotion/lib/reactions/types';
 
 import styled from '../styled';
 import PlaceCircleMap from './PlaceCircleMap';
 import PlaceCircleModel from '../../store/PlaceCircle';
-import { Stores } from './Visualisation';
 
 const PlaceCircleBackground = styled.circle`
   fill: ${props => props.theme.backgroundColor};
@@ -24,88 +22,65 @@ const PlaceCircleStroke = styled.circle<{ hover: boolean }>`
 type Props = {
   placeCircle: PlaceCircleModel;
   className?: string;
-  animate?: boolean;
+  animate: boolean;
 };
 
-@inject(
-  ({ vis }: Stores): Partial<Props> => ({
-    animate: vis && vis.animate,
-  })
-)
 @observer
 class PlaceCircle extends Component<Props> {
-  styler?: Styler;
-  ref: RefObject<SVGGElement>;
-  pointValue: ValueReaction;
-  pointSubscription?: HotSubscription;
-
-  static defaultProps = {
-    animate: false,
-  };
+  private ref: RefObject<SVGGElement>;
+  private pointValue?: ValueReaction;
+  private styler?: Styler;
+  private updateSubscription?: IReactionDisposer;
 
   constructor(props: Props) {
     super(props);
 
-    const { mapPoint } = props.placeCircle;
-
     this.ref = createRef();
-    this.pointValue = value({ x: mapPoint.x, y: mapPoint.y });
   }
 
-  createStyler() {
-    if (this.ref.current == null) {
+  componentDidMount() {
+    this.startUpdatePosition();
+  }
+
+  componentDidUpdate() {
+    this.startUpdatePosition();
+  }
+
+  componentWillUnmount() {
+    if (this.updateSubscription != null) {
+      this.updateSubscription();
+    }
+  }
+
+  private startUpdatePosition() {
+    if (this.ref.current == null || this.updateSubscription != null) {
       return;
     }
 
     this.styler = styler(this.ref.current, {});
-    this.pointSubscription = this.pointValue.subscribe(this.styler.set);
+
+    this.pointValue = value({ x: 0, y: 0 });
+    this.pointValue.subscribe(this.styler.set);
+
+    this.updateSubscription = autorun(this.updatePosition);
   }
 
-  updatePosition() {
-    if (this.styler == null) {
-      return;
-    }
+  private updatePosition = () => {
+    const { point } = this.props.placeCircle;
 
-    const { animate, placeCircle } = this.props;
-    const { mapPoint } = placeCircle;
-
-    if (animate) {
-      spring({
-        from: this.pointValue.get(),
-        velocity: this.pointValue.getVelocity(),
-        to: { x: mapPoint.x, y: mapPoint.y },
-      }).start(this.pointValue);
-    } else {
-      this.pointValue.update({ x: mapPoint.x, y: mapPoint.y });
-      this.styler.render();
-    }
-  }
-
-  componentDidMount() {
-    this.createStyler();
-    this.updatePosition();
-  }
-
-  componentDidUpdate() {
-    this.createStyler();
-    this.updatePosition();
-  }
-
-  componentWillUnmount() {
-    if (this.pointSubscription != null) {
-      this.pointSubscription.unsubscribe();
-    }
-  }
+    this.pointValue!.update({ x: point.x, y: point.y });
+    this.styler!.render();
+  };
 
   @action.bound
-  handleMouseEnter(event: SyntheticEvent) {
+  private handleMouseEnter(event: SyntheticEvent) {
     event.stopPropagation();
 
     this.props.placeCircle.hover = true;
   }
 
   @action.bound
-  handleMouseLeave(event: SyntheticEvent) {
+  private handleMouseLeave(event: SyntheticEvent) {
     event.stopPropagation();
 
     this.props.placeCircle.hover = false;

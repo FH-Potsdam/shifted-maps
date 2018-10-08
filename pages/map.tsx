@@ -29,8 +29,18 @@ class Map extends PureComponent<Props> {
     return { data: await fetchDemoDiary({ isServer: req != null }), view };
   }
 
-  handleFilterBarViewChange = (view: VIEW) => {
-    Router.push({ pathname: '/map', query: { ...Router.query, view: VIEW[view].toLowerCase() } });
+  handleFilterBarViewChange = (view?: VIEW) => {
+    const query: { view?: string } = {
+      ...Router.query,
+    };
+
+    if (view != null) {
+      query.view = VIEW[view].toLowerCase();
+    } else {
+      delete query.view;
+    }
+
+    Router.push({ pathname: '/map', query });
   };
 
   render() {

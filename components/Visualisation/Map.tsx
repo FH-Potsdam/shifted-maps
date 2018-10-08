@@ -1,28 +1,27 @@
 import { Component } from 'react';
 import { Map as ReactLeafletMap, TileLayer, MapProps } from 'react-leaflet';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
+import { LatLngBounds } from 'leaflet';
 
 import styled from '../styled';
-import VisualisationStore from '../../store/VisualisationStore';
 import config from '../../config';
 
 type Props = {
   className?: string;
   children?: any;
-  vis?: VisualisationStore;
+  bounds: LatLngBounds;
+  showTiles: boolean;
 };
 
-@inject('vis')
 @observer
 class Map extends Component<Props & MapProps> {
   render() {
-    const { className, children, vis, ...props } = this.props;
-    const bounds = vis && vis.initialBounds;
+    const { className, children, showTiles, ...props } = this.props;
 
     return (
-      <ReactLeafletMap {...props} bounds={bounds} className={className} zoomControl={false}>
+      <ReactLeafletMap {...props} className={className} zoomControl={false}>
         <TileLayer
-          opacity={0.5}
+          opacity={showTiles ? 0.25 : 0}
           url="https://api.tiles.mapbox.com/v4/{styleId}/{z}/{x}/{y}{r}.png?access_token={accessToken}"
           attribution={
             '<a href="https://www.mapbox.com/about/maps/" target="_blank">&copy; Mapbox</a> <a href="http://www.openstreetmap.org/about/" target="_blank">&copy; OpenStreetMap</a>'
@@ -44,8 +43,11 @@ export default styled(Map)`
   top: 0;
   bottom: 0;
   width: 100%;
-  background-color: ${props => props.theme.backgroundColor};
   transform: translate(0px);
+
+  &.leaflet-container {
+    background-color: ${props => props.theme.backgroundColor};
+  }
 
   .leaflet-left .leaflet-control {
     margin-left: ${props => props.theme.spacingUnit}px;
@@ -53,5 +55,9 @@ export default styled(Map)`
 
   .leaflet-top .leaflet-control {
     margin-top: ${props => props.theme.spacingUnit}px;
+  }
+
+  .leaflet-layer {
+    transition: opacity ${props => props.theme.shortTransitionDuration};
   }
 `;

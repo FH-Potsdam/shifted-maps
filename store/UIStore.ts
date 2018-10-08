@@ -1,10 +1,9 @@
 import { action, observable } from 'mobx';
-import { LatLngBounds } from 'leaflet';
 
 export enum VIEW {
   GEOGRAPHIC,
-  FREQUENCY,
   DURATION,
+  FREQUENCY,
 }
 
 class UIStore {
