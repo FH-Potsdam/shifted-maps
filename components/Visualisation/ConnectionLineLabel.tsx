@@ -1,12 +1,14 @@
-import { PureComponent, createRef, RefObject } from 'react';
+import { PureComponent, createRef, RefObject, forwardRef, Ref } from 'react';
 import { DomUtil } from 'leaflet';
 
-import { withTheme } from '../styled';
+import styled, { withTheme } from '../styled';
 import { Theme } from '../theme';
 
 type Props = {
   label: string | null;
   theme?: Theme;
+  innerRef?: Ref<SVGForeignObjectElement>;
+  className?: string;
 };
 
 class ConnectionLineLabel extends PureComponent<Props> {
@@ -67,8 +69,22 @@ class ConnectionLineLabel extends PureComponent<Props> {
   };
 
   render() {
-    return <canvas ref={this.ref} />;
+    const { innerRef, className } = this.props;
+
+    return (
+      <foreignObject ref={innerRef} className={className}>
+        <canvas ref={this.ref} />
+      </foreignObject>
+    );
   }
 }
 
-export default withTheme<Props>(ConnectionLineLabel);
+export default styled(
+  withTheme<Props>(
+    forwardRef<SVGForeignObjectElement, Props>((props, ref) => (
+      <ConnectionLineLabel {...props} innerRef={ref} />
+    ))
+  )
+)`
+  display: ${props => (props.label != null ? 'block' : 'none')};
+`;

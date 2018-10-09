@@ -92,7 +92,12 @@ class ConnectionLine extends Component<Props> {
     });
 
     const vector = to.point.subtract(from.point);
-    const center = from.point.add(vector.divideBy(2));
+    const distance = to.point.distanceTo(from.point);
+    const fromPart = from.point.add(vector.multiplyBy(from.radius / distance));
+    const toPart = to.point.subtract(vector.multiplyBy(to.radius / distance));
+    const vectorPart = toPart.subtract(fromPart);
+
+    const center = fromPart.add(vectorPart.divideBy(2));
     let rotate = (Math.atan2(vector.y, vector.x) * 180) / Math.PI;
 
     if (rotate > 90) {
@@ -118,9 +123,7 @@ class ConnectionLine extends Component<Props> {
     return (
       <g className={className}>
         <ConnectionLineLine innerRef={this.lineRef} />
-        <foreignObject ref={this.labelRef}>
-          <ConnectionLineLabel label={label} />
-        </foreignObject>
+        <ConnectionLineLabel innerRef={this.labelRef} label={label} />
       </g>
     );
   }
