@@ -1,7 +1,7 @@
 import { Component, SyntheticEvent, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { action, IReactionDisposer, autorun } from 'mobx';
-import { ValueReaction, value, spring, ColdSubscription } from 'popmotion';
+import { ValueReaction, value, spring } from 'popmotion';
 import styler, { Styler } from 'stylefire';
 
 import styled from '../styled';
