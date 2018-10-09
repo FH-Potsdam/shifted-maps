@@ -8,9 +8,10 @@ const {
   injectGlobal,
   keyframes,
   ThemeProvider,
+  withTheme,
 } = styledComponents as styledComponents.ThemedStyledComponentsModule<Theme>;
 
-export { css, injectGlobal, keyframes, ThemeProvider };
+export { css, injectGlobal, keyframes, ThemeProvider, withTheme };
 export default styled;
 
 export function theme(key: keyof Theme) {

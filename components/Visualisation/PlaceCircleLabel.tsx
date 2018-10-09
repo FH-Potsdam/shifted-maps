@@ -1,6 +1,8 @@
 import { PureComponent, createRef, RefObject } from 'react';
 import { DomUtil } from 'leaflet';
-import styled from '../styled';
+
+import styled, { withTheme } from '../styled';
+import { Theme } from '../theme';
 
 type Props = {
   label: string;
@@ -8,6 +10,7 @@ type Props = {
   className?: string;
   offset: number;
   hover: boolean;
+  theme?: Theme;
 };
 
 class PlaceCircleLabel extends PureComponent<Props> {
@@ -33,15 +36,15 @@ class PlaceCircleLabel extends PureComponent<Props> {
   }
 
   private drawLabel() {
-    const { label, clusterSize } = this.props;
+    const { label, clusterSize, theme } = this.props;
 
-    if (this.ctx == null || this.labelCanvas == null) {
+    if (this.ctx == null || this.labelCanvas == null || theme == null) {
       return;
     }
 
-    const labelFontSize = 16;
-    const clusterLabelFontSize = 12;
-    const spacing = 16;
+    const labelFontSize = theme.fontSize;
+    const clusterLabelFontSize = theme.fontSizeSmall;
+    const spacing = theme.spacingUnit;
 
     const clusterLabel =
       clusterSize > 0 ? `+${clusterSize} other ${clusterSize === 1 ? 'place' : 'places'}` : null;
@@ -73,8 +76,8 @@ class PlaceCircleLabel extends PureComponent<Props> {
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
     this.ctx.lineWidth = spacing / 2;
-    this.ctx.fillStyle = '#333333';
-    this.ctx.strokeStyle = '#FFFFFF';
+    this.ctx.fillStyle = theme.highlightColor;
+    this.ctx.strokeStyle = theme.backgroundColor;
 
     this.ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
     this.ctx.strokeText(label, width / 2, 0);
@@ -98,7 +101,7 @@ class PlaceCircleLabel extends PureComponent<Props> {
   }
 }
 
-export default styled(PlaceCircleLabel)`
+export default styled(withTheme<Props>(PlaceCircleLabel))`
   transition: opacity ${props => props.theme.shortTransitionDuration};
   pointer-events: none;
   opacity: ${props => (props.hover ? 1 : 0)};

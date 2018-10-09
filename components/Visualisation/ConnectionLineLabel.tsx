@@ -1,8 +1,12 @@
 import { PureComponent, createRef, RefObject } from 'react';
 import { DomUtil } from 'leaflet';
 
+import { withTheme } from '../styled';
+import { Theme } from '../theme';
+
 type Props = {
   label: string | null;
+  theme?: Theme;
 };
 
 class ConnectionLineLabel extends PureComponent<Props> {
@@ -28,18 +32,18 @@ class ConnectionLineLabel extends PureComponent<Props> {
   }
 
   private drawLabel = () => {
-    const { label } = this.props;
+    const { label, theme } = this.props;
 
-    if (label == null || this.ctx == null || this.labelCanvas == null) {
+    if (label == null || theme == null || this.ctx == null || this.labelCanvas == null) {
       return;
     }
 
-    const fontSize = 12;
+    const fontSize = theme.fontSizeSmall;
 
     this.ctx.font = `italic ${fontSize * 2}px "soleil"`;
     const metrics = this.ctx.measureText(label);
 
-    const padding = 16;
+    const padding = theme.spacingUnit;
     const width = Math.round(metrics.width) + padding * 2;
     const height = fontSize * 2;
 
@@ -51,13 +55,13 @@ class ConnectionLineLabel extends PureComponent<Props> {
       width * -0.25
     )}px, ${Math.round(height * -0.5)}px)`;
 
-    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillStyle = theme.backgroundColor;
     this.ctx.rect(0, 0, width, height);
     this.ctx.fill();
 
     this.ctx.textBaseline = 'hanging';
     this.ctx.font = `italic ${fontSize * 2}px "soleil"`;
-    this.ctx.fillStyle = '#333333';
+    this.ctx.fillStyle = theme.foregroundColor;
 
     this.ctx.fillText(label, padding, 0);
   };
@@ -67,4 +71,4 @@ class ConnectionLineLabel extends PureComponent<Props> {
   }
 }
 
-export default ConnectionLineLabel;
+export default withTheme<Props>(ConnectionLineLabel);
