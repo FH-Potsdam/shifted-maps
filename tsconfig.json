@@ -21,8 +21,8 @@
     "sourceMap": true,
     "strict": true,
     "experimentalDecorators": true,
-    "types": [
-      "types"
-    ]
-  }
+  },
+  "types": [
+    "types"
+  ]
 }
