@@ -8,6 +8,7 @@ import { HotSubscription } from 'popmotion/lib/reactions/types';
 import styled from '../styled';
 import PlaceCircleMap from './PlaceCircleMap';
 import PlaceCircleModel from '../../store/PlaceCircle';
+import PlaceCircleLabel from './PlaceCircleLabel';
 
 const PlaceCircleBackground = styled.circle`
   fill: ${props => props.theme.backgroundColor};
@@ -102,7 +103,7 @@ class PlaceCircle extends Component<Props> {
 
   render() {
     const { placeCircle, className } = this.props;
-    const { radius, strokeWidth, hover, visible } = placeCircle;
+    const { radius, strokeWidth, hover, visible, place, children } = placeCircle;
 
     if (!visible) {
       return null;
@@ -118,6 +119,9 @@ class PlaceCircle extends Component<Props> {
         <PlaceCircleBackground r={radius} />
         <PlaceCircleMap placeCircle={placeCircle} />
         <PlaceCircleStroke r={radius} style={{ strokeWidth: `${strokeWidth}px` }} hover={hover} />
+        <foreignObject transform={`translate(0, ${Math.round(radius + strokeWidth * 0.5 + 4)})`}>
+          <PlaceCircleLabel label={place.name} clusterSize={children.length} />
+        </foreignObject>
       </g>
     );
   }

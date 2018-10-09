@@ -7,7 +7,7 @@ import { HotSubscription } from 'popmotion/lib/reactions/types';
 
 import ConnectionLineModel from '../../store/ConnectionLine';
 import styled from '../styled';
-import { DomUtil } from 'leaflet';
+import ConnectionLineLabel from './ConnectionLineLabel';
 
 type Props = {
   connectionLine: ConnectionLineModel;
@@ -18,7 +18,6 @@ type Props = {
 class ConnectionLine extends Component<Props> {
   private lineRef: RefObject<SVGLineElement>;
   private labelRef: RefObject<SVGForeignObjectElement>;
-  private labelCanvasRef: RefObject<HTMLCanvasElement>;
   private lineValue: ValueReaction;
   private labelValue: ValueReaction;
   private lineStyler?: Styler;
@@ -26,14 +25,12 @@ class ConnectionLine extends Component<Props> {
   private lineValueSubscribtion?: HotSubscription;
   private labelValueSubscribtion?: HotSubscription;
   private styleSubscription?: IReactionDisposer;
-  private drawLabelSubscribtion?: IReactionDisposer;
 
   constructor(props: Props) {
     super(props);
 
     this.lineRef = createRef();
     this.labelRef = createRef();
-    this.labelCanvasRef = createRef();
 
     this.lineValue = value({ x1: 0, y1: 0, x2: 0, y2: 0, strokeWidth: 0 });
     this.labelValue = value({ x: 0, y: 0, rotate: 0 });
@@ -41,8 +38,6 @@ class ConnectionLine extends Component<Props> {
 
   componentDidMount() {
     this.runStylers();
-
-    this.drawLabelSubscribtion = autorun(this.drawLabel);
   }
 
   componentDidUpdate() {
@@ -52,10 +47,6 @@ class ConnectionLine extends Component<Props> {
   componentWillUnmount() {
     if (this.styleSubscription != null) {
       this.styleSubscription();
-    }
-
-    if (this.drawLabelSubscribtion != null) {
-      this.drawLabelSubscribtion();
     }
 
     if (this.lineValueSubscribtion != null) {
@@ -120,50 +111,15 @@ class ConnectionLine extends Component<Props> {
     this.labelStyler!.render();
   };
 
-  private drawLabel = () => {
-    const { label } = this.props.connectionLine;
-
-    if (label == null) {
-      return;
-    }
-
-    const labelCanvas = this.labelCanvasRef.current!;
-    const context = labelCanvas.getContext('2d')!;
-
-    context.font = 'italic 24px "soleil"';
-    const metrics = context.measureText(label);
-
-    const padding = 16;
-    const width = Math.round(metrics.width) + padding * 2;
-    const height = 24;
-
-    labelCanvas.setAttribute('width', String(width));
-    labelCanvas.setAttribute('height', String(height));
-    labelCanvas.style.width = `${Math.round(width * 0.5)}px`;
-    labelCanvas.style.height = `${Math.round(height * 0.5)}px`;
-    labelCanvas.style[DomUtil.TRANSFORM] = `translate(${Math.round(width * -0.25)}px, ${Math.round(
-      height * -0.5
-    )}px)`;
-
-    context.fillStyle = '#ffffff';
-    context.rect(0, 0, width, height);
-    context.fill();
-
-    context.textBaseline = 'hanging';
-    context.font = 'italic 24px "soleil"';
-    context.fillStyle = '#333333';
-
-    context.fillText(label, padding, 0);
-  };
-
   render() {
-    const { className } = this.props;
+    const { className, connectionLine } = this.props;
+    const { label } = connectionLine;
 
     return (
       <g className={className}>
         <ConnectionLineLine innerRef={this.lineRef} />
         <foreignObject ref={this.labelRef}>
-          <canvas ref={this.labelCanvasRef} />
+          <ConnectionLineLabel label={label} />
         </foreignObject>
       </g>
     );
