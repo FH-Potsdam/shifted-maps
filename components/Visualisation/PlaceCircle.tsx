@@ -1,8 +1,9 @@
 import { Component, SyntheticEvent, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { action, IReactionDisposer, autorun } from 'mobx';
-import { ValueReaction, value, spring } from 'popmotion';
+import { ValueReaction, value } from 'popmotion';
 import styler, { Styler } from 'stylefire';
+import { HotSubscription } from 'popmotion/lib/reactions/types';
 
 import styled from '../styled';
 import PlaceCircleMap from './PlaceCircleMap';
@@ -30,6 +31,7 @@ class PlaceCircle extends Component<Props> {
   private pointValue: ValueReaction;
   private styler?: Styler;
   private updateSubscription?: IReactionDisposer;
+  private valueSubscribtion?: HotSubscription;
 
   constructor(props: Props) {
     super(props);
@@ -52,6 +54,10 @@ class PlaceCircle extends Component<Props> {
     if (this.updateSubscription != null) {
       this.updateSubscription();
     }
+
+    if (this.valueSubscribtion != null) {
+      this.valueSubscribtion.unsubscribe();
+    }
   }
 
   private startStyler() {
@@ -59,8 +65,12 @@ class PlaceCircle extends Component<Props> {
       return;
     }
 
+    if (this.valueSubscribtion != null) {
+      this.valueSubscribtion.unsubscribe();
+    }
+
     this.styler = styler(this.ref.current, {});
-    this.pointValue.subscribe(this.styler.set);
+    this.valueSubscribtion = this.pointValue.subscribe(this.styler.set);
 
     if (this.updateSubscription != null) {
       this.updateSubscription();
@@ -70,20 +80,10 @@ class PlaceCircle extends Component<Props> {
   }
 
   private style = () => {
-    const { point, animate } = this.props.placeCircle;
+    const { point } = this.props.placeCircle;
 
-    if (animate) {
-      spring({
-        from: this.pointValue.get(),
-        to: { x: point.x, y: point.y },
-        velocity: this.pointValue.getVelocity(),
-        stiffness: 3000,
-        damping: 1000,
-      }).start(this.pointValue);
-    } else {
-      this.pointValue!.update({ x: point.x, y: point.y });
-      this.styler!.render();
-    }
+    this.pointValue!.update({ x: point.x, y: point.y });
+    this.styler!.render();
   };
 
   @action.bound
