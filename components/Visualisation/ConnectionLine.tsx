@@ -139,9 +139,11 @@ class ConnectionLine extends Component<Props> {
 
     labelCanvas.setAttribute('width', String(width));
     labelCanvas.setAttribute('height', String(height));
-    labelCanvas.style.width = `${width * 0.5}px`;
-    labelCanvas.style.height = `${height * 0.5}px`;
-    labelCanvas.style[DomUtil.TRANSFORM] = `translate(${width * -0.25}px, ${height * -0.5}px)`;
+    labelCanvas.style.width = `${Math.round(width * 0.5)}px`;
+    labelCanvas.style.height = `${Math.round(height * 0.5)}px`;
+    labelCanvas.style[DomUtil.TRANSFORM] = `translate(${Math.round(width * -0.25)}px, ${Math.round(
+      height * -0.5
+    )}px)`;
 
     context.fillStyle = '#ffffff';
     context.rect(0, 0, width, height);
