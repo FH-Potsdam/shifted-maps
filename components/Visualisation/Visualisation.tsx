@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { configure, action } from 'mobx';
 import { observer } from 'mobx-react';
-import { LeafletEvent } from 'leaflet';
+import { LeafletEvent, Map as LeafletMap } from 'leaflet';
 
 import { DiaryData } from '../../store/Diary';
 import DataStore from '../../store/DataStore';
@@ -27,54 +27,59 @@ type Props = {
 
 @observer
 class Visualisation extends Component<Props> {
-  dataStore: DataStore;
-  visStore: VisualisationStore;
-  uiStore: UIStore;
+  private _dataStore: DataStore;
+  private _visStore: VisualisationStore;
+  private _uiStore: UIStore;
+  private _map?: LeafletMap;
 
   constructor(props: Props) {
     super(props);
 
     const { view, data, timeSpan } = props;
 
-    this.uiStore = new UIStore();
-    this.dataStore = new DataStore(this.uiStore, data);
-    this.visStore = new VisualisationStore(this.uiStore, this.dataStore);
+    this._uiStore = new UIStore();
+    this._dataStore = new DataStore(this._uiStore, data);
+    this._visStore = new VisualisationStore(this._uiStore, this._dataStore);
 
-    this.uiStore.update({ view, timeSpan });
+    this._uiStore.update({ view, timeSpan });
   }
 
   componentDidUpdate() {
     const { view, timeSpan } = this.props;
 
-    this.uiStore.update({ view, timeSpan });
+    this._uiStore.update({ view, timeSpan });
+
+    if (this._map != null) {
+      this._visStore.update(this._map);
+    }
   }
 
   @action
-  handleMapViewChange = (event: LeafletEvent) => {
-    this.visStore.update(event.target);
+  handleMapViewDidChange = (event: LeafletEvent) => {
+    this._map = event.target;
+
+    if (this._map != null) {
+      this._visStore.update(this._map);
+    }
   };
 
   handleFilterBarViewChange = (view?: VIEW) => {
-    if (view === this.uiStore.view) {
-      view = undefined;
-    }
-
     this.props.onFilterBarViewChange(view);
   };
 
   render() {
-    const { placeCircles, connectionLines, initialBounds } = this.visStore;
-    const { view } = this.uiStore;
+    const { sortedPlaceCircles, sortedConnectionLines, initialBounds } = this._visStore;
+    const { view } = this._uiStore;
 
     return (
       <Map
         bounds={initialBounds}
         showTiles={view == null}
         // @ts-ignore outdated types
-        whenReady={this.handleMapViewChange}
-        onMoveEnd={this.handleMapViewChange}
-        onZoomEnd={this.handleMapViewChange}
-        onResize={this.handleMapViewChange}
+        whenReady={this.handleMapViewDidChange}
+        onMoveEnd={this.handleMapViewDidChange}
+        onZoomEnd={this.handleMapViewDidChange}
+        onResize={this.handleMapViewDidChange}
       >
         <SVGLayer>
           <defs>
@@ -82,12 +87,12 @@ class Visualisation extends Component<Props> {
               <circle r="0.5" cx="0.5" cy="0.5" />
             </clipPath>
           </defs>
-          <ConnectionLineList connectionLines={connectionLines} />
-          <PlaceCircleList placeCircles={placeCircles} animate={false} />
+          <ConnectionLineList connectionLines={sortedConnectionLines} />
+          <PlaceCircleList placeCircles={sortedPlaceCircles} />
           <CustomControl position="topleft">
             <FilterToolbar
-              ui={this.uiStore}
-              data={this.dataStore}
+              ui={this._uiStore}
+              data={this._dataStore}
               onViewChange={this.handleFilterBarViewChange}
             />
           </CustomControl>

@@ -38,8 +38,8 @@ const CONNECTION_STROKE_WIDTH_RANGE_SCALE = scalePow<[number, number]>()
 class VisualisationStore {
   readonly data: DataStore;
   readonly ui: UIStore;
-  readonly graph: GraphStore;
 
+  private _graph?: GraphStore;
   private _placeCircles: PlaceCircle[] = [];
   private _connectionLines: ConnectionLine[] = [];
 
@@ -49,8 +49,6 @@ class VisualisationStore {
   constructor(ui: UIStore, data: DataStore) {
     this.ui = ui;
     this.data = data;
-
-    this.graph = new GraphStore(this, this.handleGraphTick);
   }
 
   @action
@@ -60,17 +58,21 @@ class VisualisationStore {
 
     this._scale = zoomScale(map.getZoom());
 
-    this.graph.update(map);
+    if (this._graph == null) {
+      this._graph = new GraphStore(this, this.handleGraphTick);
+    }
+
+    this._graph.update(map);
 
     this.placeCircles.forEach(placeCircle => {
-      placeCircle.update(map);
+      placeCircle.updateByMap(map);
     });
   }
 
   @action
   handleGraphTick = (nodes: PlaceCircleNode[]) => {
     nodes.forEach(node => {
-      node.placeCircle.graphPoint = node.clone();
+      node.placeCircle.updateByGraphNode(node);
     });
   };
 

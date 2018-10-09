@@ -1,7 +1,7 @@
 import { Component, SyntheticEvent, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { action, IReactionDisposer, autorun } from 'mobx';
-import { ValueReaction, value } from 'popmotion';
+import { ValueReaction, value, spring, ColdSubscription } from 'popmotion';
 import styler, { Styler } from 'stylefire';
 
 import styled from '../styled';
@@ -22,20 +22,22 @@ const PlaceCircleStroke = styled.circle<{ hover: boolean }>`
 type Props = {
   placeCircle: PlaceCircleModel;
   className?: string;
-  animate: boolean;
 };
 
 @observer
 class PlaceCircle extends Component<Props> {
   private ref: RefObject<SVGGElement>;
-  private pointValue?: ValueReaction;
+  private pointValue: ValueReaction;
   private styler?: Styler;
   private updateSubscription?: IReactionDisposer;
 
   constructor(props: Props) {
     super(props);
 
+    const { point } = props.placeCircle;
+
     this.ref = createRef();
+    this.pointValue = value({ x: point.x, y: point.y });
   }
 
   componentDidMount() {
@@ -58,8 +60,6 @@ class PlaceCircle extends Component<Props> {
     }
 
     this.styler = styler(this.ref.current, {});
-
-    this.pointValue = value({ x: 0, y: 0 });
     this.pointValue.subscribe(this.styler.set);
 
     if (this.updateSubscription != null) {
@@ -70,10 +70,20 @@ class PlaceCircle extends Component<Props> {
   }
 
   private style = () => {
-    const { point } = this.props.placeCircle;
+    const { point, animate } = this.props.placeCircle;
 
-    this.pointValue!.update({ x: point.x, y: point.y });
-    this.styler!.render();
+    if (animate) {
+      spring({
+        from: this.pointValue.get(),
+        to: { x: point.x, y: point.y },
+        velocity: this.pointValue.getVelocity(),
+        stiffness: 3000,
+        damping: 1000,
+      }).start(this.pointValue);
+    } else {
+      this.pointValue!.update({ x: point.x, y: point.y });
+      this.styler!.render();
+    }
   };
 
   @action.bound

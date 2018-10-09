@@ -43,10 +43,10 @@ class GraphStore {
 
     this._linkForce = forceLink<PlaceCircleNode, ConnectionLineLink>()
       .id(node => node.key)
-      .strength(1);
+      .strength(0.9);
 
-    this._xForce = forceX<PlaceCircleNode>().strength(0.05);
-    this._yForce = forceY<PlaceCircleNode>().strength(0.05);
+    this._xForce = forceX<PlaceCircleNode>().strength(1);
+    this._yForce = forceY<PlaceCircleNode>().strength(1);
 
     this._manyBodyForce = forceManyBody<PlaceCircleNode>();
 
@@ -56,6 +56,7 @@ class GraphStore {
       .force('y', this._yForce)
       .force('many-body', this._manyBodyForce)
       .on('tick', () => this._onTick(this.nodes))
+      .velocityDecay(0.9)
       .stop();
 
     autorun(this.toggleSimulation);
@@ -97,6 +98,8 @@ class GraphStore {
         node.y = nextPoint.y;
       });
 
+      // Run tick to update place circles as soon as possible.
+      this._onTick(this.nodes);
       this.toggleSimulation();
     }
 
@@ -108,7 +111,7 @@ class GraphStore {
   get nodes() {
     const nodes: PlaceCircleNode[] = [];
 
-    this._vis.visiblePlaceCircles.forEach(placeCircle => {
+    this._vis.placeCircles.forEach(placeCircle => {
       let node = this._nodes.find(node => node.placeCircle === placeCircle);
 
       if (node == null) {
@@ -125,7 +128,7 @@ class GraphStore {
   get links() {
     const links: ConnectionLineLink[] = [];
 
-    this._vis.visibleConnectionLines.forEach(connectionLine => {
+    this._vis.connectionLines.forEach(connectionLine => {
       let link = this._links.find(link => link.connectionLine === connectionLine);
 
       if (link == null) {

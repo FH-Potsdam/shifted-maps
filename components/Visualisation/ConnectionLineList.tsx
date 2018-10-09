@@ -5,17 +5,13 @@ import ConnectionLineModel from '../../store/ConnectionLine';
 import ConnectionLine from './ConnectionLine';
 
 type Props = {
-  connectionLines?: ConnectionLineModel[];
+  connectionLines: ConnectionLineModel[];
 };
 
 @observer
 class ConnectionLineList extends Component<Props> {
   render() {
     const { connectionLines } = this.props;
-
-    if (connectionLines == null) {
-      throw new Error('Missing connection lines.');
-    }
 
     return (
       <g>

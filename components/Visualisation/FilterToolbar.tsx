@@ -11,7 +11,7 @@ type Props = {
   className?: string;
   data: DataStore;
   ui: UIStore;
-  onViewChange: (view: VIEW) => void;
+  onViewChange: (view?: VIEW) => void;
 };
 
 @observer
@@ -37,6 +37,10 @@ class FilterToolbar extends Component<Props> {
     event.stopPropagation();
   };
 
+  handleToggleView(view: VIEW) {
+    this.props.onViewChange(view !== this.props.ui.view ? view : undefined);
+  }
+
   render() {
     const { className, data, ui } = this.props;
 
@@ -51,19 +55,19 @@ class FilterToolbar extends Component<Props> {
         </FilterBarStats>
         <FilterBarViewList>
           <FilterBarViewButton
-            onClick={() => this.props.onViewChange(VIEW.GEOGRAPHIC)}
+            onClick={() => this.handleToggleView(VIEW.GEOGRAPHIC)}
             active={ui.view === VIEW.GEOGRAPHIC}
           >
             <Icon name="geographic" title="Geographic View" />
           </FilterBarViewButton>
           <FilterBarViewButton
-            onClick={() => this.props.onViewChange(VIEW.DURATION)}
+            onClick={() => this.handleToggleView(VIEW.DURATION)}
             active={ui.view === VIEW.DURATION}
           >
             <Icon name="duration" title="Temporal View" />
           </FilterBarViewButton>
           <FilterBarViewButton
-            onClick={() => this.props.onViewChange(VIEW.FREQUENCY)}
+            onClick={() => this.handleToggleView(VIEW.FREQUENCY)}
             active={ui.view === VIEW.FREQUENCY}
           >
             <Icon name="frequency" title="Frequency View" />

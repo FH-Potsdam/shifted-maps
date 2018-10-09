@@ -18,7 +18,10 @@ class PlaceCircle {
   mapPoint: Point = point(0, 0);
 
   @observable.ref
-  graphPoint?: Point;
+  point: Point = point(0, 0);
+
+  @observable
+  animate: boolean = false;
 
   constructor(vis: VisualisationStore, place: Place) {
     this.vis = vis;
@@ -26,8 +29,22 @@ class PlaceCircle {
   }
 
   @action
-  update(map: LeafletMap) {
-    this.mapPoint = map.latLngToLayerPoint(this.place.latLng);
+  updateByMap(map: LeafletMap) {
+    const { view } = this.vis.ui;
+    //const prevMapPoint = this.mapPoint;
+    const nextMapPoint = map.latLngToLayerPoint(this.place.latLng);
+
+    this.mapPoint = nextMapPoint;
+    //this.animate = prevMapPoint.equals(nextMapPoint);
+
+    if (view == null) {
+      this.point = this.mapPoint;
+    }
+  }
+
+  @action
+  updateByGraphNode(node: Point) {
+    this.point = node.clone();
   }
 
   @computed
@@ -128,15 +145,6 @@ class PlaceCircle {
   @computed
   get visible() {
     return this.parent == null && this.place.visible;
-  }
-
-  @computed
-  get point() {
-    if (this.vis.ui.view == null || this.graphPoint == null) {
-      return this.mapPoint;
-    }
-
-    return this.graphPoint;
   }
 }
 
