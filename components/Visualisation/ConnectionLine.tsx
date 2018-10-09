@@ -134,7 +134,7 @@ class ConnectionLine extends Component<Props> {
     const metrics = context.measureText(label);
 
     const padding = 16;
-    const width = metrics.width + padding * 2;
+    const width = Math.round(metrics.width) + padding * 2;
     const height = 24;
 
     labelCanvas.setAttribute('width', String(width));
