@@ -41,12 +41,10 @@ class GraphStore {
     this._vis = vis;
     this._onTick = onTick;
 
-    this._linkForce = forceLink<PlaceCircleNode, ConnectionLineLink>()
-      .id(node => node.key)
-      .strength(0.9);
+    this._linkForce = forceLink<PlaceCircleNode, ConnectionLineLink>().id(node => node.key);
 
-    this._xForce = forceX<PlaceCircleNode>().strength(1);
-    this._yForce = forceY<PlaceCircleNode>().strength(1);
+    this._xForce = forceX<PlaceCircleNode>().strength(0.3);
+    this._yForce = forceY<PlaceCircleNode>().strength(0.3);
 
     this._manyBodyForce = forceManyBody<PlaceCircleNode>();
 
@@ -75,6 +73,12 @@ class GraphStore {
   };
 
   private updateSimulation = () => {
+    const { view } = this._vis.ui;
+
+    if (view == null) {
+      return;
+    }
+
     this._simulation.nodes(this.nodes);
     this._linkForce.links(this.links).distance(link => link.connectionLine.viewLength);
     this._xForce.x(node => node.placeCircle.mapPoint.x);

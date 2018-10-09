@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { configure, action } from 'mobx';
 import { observer } from 'mobx-react';
-import { LeafletEvent, Map as LeafletMap } from 'leaflet';
+import { LeafletEvent, Map as LeafletMap, LatLng } from 'leaflet';
 
 import { DiaryData } from '../../store/Diary';
 import DataStore from '../../store/DataStore';
@@ -31,6 +31,8 @@ class Visualisation extends Component<Props> {
   private _visStore: VisualisationStore;
   private _uiStore: UIStore;
   private _map?: LeafletMap;
+  private _zoom?: number;
+  private _center?: LatLng;
 
   constructor(props: Props) {
     super(props);
@@ -58,9 +60,19 @@ class Visualisation extends Component<Props> {
   handleMapViewDidChange = (event: LeafletEvent) => {
     this._map = event.target;
 
-    if (this._map != null) {
+    if (this._map == null) {
+      return;
+    }
+
+    const nextZoom = this._map.getZoom();
+    const nextCenter = this._map.getCenter();
+
+    if (this._zoom !== nextZoom || this._center == null || !this._center.equals(nextCenter)) {
       this._visStore.update(this._map);
     }
+
+    this._zoom = this._map.getZoom();
+    this._center = this._map.getCenter();
   };
 
   handleFilterBarViewChange = (view?: VIEW) => {
