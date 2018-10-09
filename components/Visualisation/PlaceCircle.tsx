@@ -119,9 +119,12 @@ class PlaceCircle extends Component<Props> {
         <PlaceCircleBackground r={radius} />
         <PlaceCircleMap placeCircle={placeCircle} />
         <PlaceCircleStroke r={radius} style={{ strokeWidth: `${strokeWidth}px` }} hover={hover} />
-        <foreignObject transform={`translate(0, ${Math.round(radius + strokeWidth * 0.5 + 4)})`}>
-          <PlaceCircleLabel label={place.name} clusterSize={children.length} />
-        </foreignObject>
+        <PlaceCircleLabel
+          label={place.name}
+          clusterSize={children.length}
+          offset={strokeWidth * 0.5 + 4 + radius}
+          hover={hover}
+        />
       </g>
     );
   }
