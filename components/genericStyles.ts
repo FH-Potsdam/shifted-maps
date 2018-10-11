@@ -13,6 +13,7 @@ injectGlobal`
   html,
   #__next {
     height: 100%;
+    overflow: hidden;
   }
 
   html {

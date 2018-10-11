@@ -45,7 +45,7 @@ class ConnectionLineLabel extends PureComponent<Props> {
     this.ctx.font = `italic ${fontSize * 2}px "soleil"`;
     const metrics = this.ctx.measureText(label);
 
-    const padding = theme.spacingUnit;
+    const padding = theme.spacingUnit / 2;
     const width = Math.round(metrics.width) + padding * 2;
     const height = fontSize * 2;
 
