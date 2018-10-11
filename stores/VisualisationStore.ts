@@ -59,7 +59,7 @@ class VisualisationStore {
     this._scale = zoomScale(map.getZoom());
 
     if (this._graph == null) {
-      this._graph = new GraphStore(this, this.handleGraphTick);
+      this._graph = new GraphStore(this, this.handleGraphTick, this.handleGraphEnd);
     }
 
     this._graph.update(map);
@@ -73,6 +73,13 @@ class VisualisationStore {
   handleGraphTick = (nodes: PlaceCircleNode[]) => {
     nodes.forEach(node => {
       node.placeCircle.updateByGraphNode(node);
+    });
+  };
+
+  @action
+  handleGraphEnd = (nodes: PlaceCircleNode[]) => {
+    nodes.forEach(node => {
+      node.placeCircle.roundPoint();
     });
   };
 

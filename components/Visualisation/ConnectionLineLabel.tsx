@@ -45,17 +45,15 @@ class ConnectionLineLabel extends PureComponent<Props> {
     this.ctx.font = `italic ${fontSize * 2}px "soleil"`;
     const metrics = this.ctx.measureText(label);
 
-    const padding = theme.spacingUnit / 2;
+    const padding = theme.spacingUnit * 0.5;
     const width = Math.round(metrics.width) + padding * 2;
     const height = fontSize * 2;
 
     this.labelCanvas.setAttribute('width', String(width));
     this.labelCanvas.setAttribute('height', String(height));
-    this.labelCanvas.style.width = `${Math.round(width * 0.5)}px`;
-    this.labelCanvas.style.height = `${Math.round(height * 0.5)}px`;
-    this.labelCanvas.style[DomUtil.TRANSFORM] = `translate(${Math.round(
-      width * -0.25
-    )}px, ${Math.round(height * -0.5)}px)`;
+    this.labelCanvas.style.width = `${width * 0.5}px`;
+    this.labelCanvas.style.height = `${height * 0.5}px`;
+    this.labelCanvas.style[DomUtil.TRANSFORM] = `translate(${width * -0.25}px, ${height * -0.5}px)`;
 
     this.ctx.fillStyle = theme.backgroundColor;
     this.ctx.rect(0, 0, width, height);

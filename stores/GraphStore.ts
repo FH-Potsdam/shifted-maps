@@ -20,10 +20,12 @@ import PlaceCircle from './PlaceCircle';
 import ConnectionLine from './ConnectionLine';
 
 type TickCallback = (nodes: PlaceCircleNode[]) => void;
+type EndCallback = (nodes: PlaceCircleNode[]) => void;
 
 class GraphStore {
   private readonly _vis: VisualisationStore;
   private readonly _onTick: TickCallback;
+  private readonly _onEnd: EndCallback;
 
   private _nodes: PlaceCircleNode[] = [];
   private _links: ConnectionLineLink[] = [];
@@ -40,9 +42,10 @@ class GraphStore {
   private _zoom?: number;
   private _pixelOrigin?: Point;
 
-  constructor(vis: VisualisationStore, onTick: TickCallback) {
+  constructor(vis: VisualisationStore, onTick: TickCallback, onEnd: EndCallback) {
     this._vis = vis;
     this._onTick = onTick;
+    this._onEnd = onEnd;
 
     this._linkForce = forceLink<PlaceCircleNode, ConnectionLineLink>().id(node => node.key);
 
@@ -57,6 +60,7 @@ class GraphStore {
       .force('y', this._yForce)
       .force('many-body', this._manyBodyForce)
       .on('tick', () => this._onTick(this.nodes))
+      .on('end', () => this._onEnd(this.nodes))
       .velocityDecay(0.9)
       .stop();
 

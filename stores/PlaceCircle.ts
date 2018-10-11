@@ -47,6 +47,11 @@ class PlaceCircle {
     this.point = node.clone();
   }
 
+  @action
+  roundPoint() {
+    this.point = this.point.round();
+  }
+
   @computed
   get key() {
     return this.place.id;
