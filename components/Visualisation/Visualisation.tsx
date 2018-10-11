@@ -56,6 +56,10 @@ class Visualisation extends Component<Props> {
     }
   }
 
+  componentWillUnmount() {
+    this._visStore.dispose();
+  }
+
   @action
   handleMapViewDidChange = (event: LeafletEvent) => {
     this._map = event.target;

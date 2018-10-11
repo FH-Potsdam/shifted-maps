@@ -13,32 +13,32 @@ type Props = {
 
 @observer
 class ConnectionLine extends Component<Props> {
-  private lineRef: RefObject<SVGLineElement>;
-  private labelRef: RefObject<SVGForeignObjectElement>;
-  private styleSubscription?: IReactionDisposer;
+  private _lineRef: RefObject<SVGLineElement>;
+  private _labelRef: RefObject<SVGForeignObjectElement>;
+  private _styleDisposer?: IReactionDisposer;
 
   constructor(props: Props) {
     super(props);
 
-    this.lineRef = createRef();
-    this.labelRef = createRef();
+    this._lineRef = createRef();
+    this._labelRef = createRef();
   }
 
   componentDidMount() {
-    this.styleSubscription = autorun(this.style);
+    this._styleDisposer = autorun(this.style);
   }
 
   componentWillUnmount() {
-    if (this.styleSubscription != null) {
-      this.styleSubscription();
+    if (this._styleDisposer != null) {
+      this._styleDisposer();
     }
   }
 
   private style = () => {
     const { from, to, strokeWidth } = this.props.connectionLine;
 
-    const line = this.lineRef.current!;
-    const label = this.labelRef.current!;
+    const line = this._lineRef.current!;
+    const label = this._labelRef.current!;
 
     line.setAttribute('stroke-width', String(strokeWidth));
     line.setAttribute('x1', String(from.point.x));
@@ -70,8 +70,8 @@ class ConnectionLine extends Component<Props> {
 
     return (
       <g className={className}>
-        <ConnectionLineLine innerRef={this.lineRef} />
-        <ConnectionLineLabel innerRef={this.labelRef} label={label} />
+        <ConnectionLineLine innerRef={this._lineRef} />
+        <ConnectionLineLabel innerRef={this._labelRef} label={label} />
       </g>
     );
   }

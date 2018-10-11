@@ -32,8 +32,7 @@
     "react-leaflet": "^2.0.1",
     "react-pose": "^3.3.6",
     "reuse": "^1.0.4",
-    "styled-components": "^3.4.9",
-    "webfontloader": "^1.6.28"
+    "styled-components": "^3.4.9"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.1.0",
@@ -49,7 +48,6 @@
     "@types/react-dom": "^16.0.8",
     "@types/react-leaflet": "^1.1.6",
     "@types/styled-components": "^3.0.1",
-    "@types/webfontloader": "^1.6.29",
     "babel-plugin-styled-components": "^1.8.0",
     "mobx-react-devtools": "^6.0.3"
   }

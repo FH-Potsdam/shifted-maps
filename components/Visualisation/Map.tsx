@@ -36,6 +36,8 @@ class Map extends Component<Props & MapProps> {
 }
 
 export default styled(Map)`
+  @import url('//unpkg.com/leaflet/dist/leaflet.css');
+
   font: inherit;
   color: ${props => props.theme.foregroundColor};
   z-index: 0;

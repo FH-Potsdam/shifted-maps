@@ -1,4 +1,4 @@
-import { Component, createRef, RefObject } from 'react';
+import { Component } from 'react';
 
 import styled, { css } from '../styled';
 import Heading from '../common/Heading';
@@ -6,6 +6,7 @@ import { observer } from 'mobx-react';
 import DataStore from '../../store/DataStore';
 import UIStore, { VIEW } from '../../store/UIStore';
 import Icon from '../common/Icon';
+import RangeSlider from '../common/RangeSlider/RangeSlider';
 
 type Props = {
   className?: string;
@@ -16,27 +17,6 @@ type Props = {
 
 @observer
 class FilterToolbar extends Component<Props> {
-  ref: RefObject<HTMLDivElement>;
-
-  constructor(props: Props) {
-    super(props);
-
-    this.ref = createRef();
-  }
-
-  componentDidMount() {
-    this.ref.current!.addEventListener('dblclick', this.stopPropagation);
-  }
-
-  componentWillUnmount() {
-    this.ref.current!.removeEventListener('dblclick', this.stopPropagation);
-  }
-
-  stopPropagation = (event: MouseEvent) => {
-    // Prevent map from dragging when mouse was clicked on filter toolbar.
-    event.stopPropagation();
-  };
-
   handleToggleView(view: VIEW) {
     this.props.onViewChange(view !== this.props.ui.view ? view : undefined);
   }
@@ -45,7 +25,7 @@ class FilterToolbar extends Component<Props> {
     const { className, data, ui } = this.props;
 
     return (
-      <div ref={this.ref} className={className}>
+      <div className={className}>
         <Heading use="h1">Shifted Maps</Heading>
         <FilterBarStats>
           <dt>Places:</dt>
@@ -73,6 +53,7 @@ class FilterToolbar extends Component<Props> {
             <Icon name="frequency" title="Frequency View" />
           </FilterBarViewButton>
         </FilterBarViewList>
+        <FilterToolbarRangeSlider values={[1, 10]} min={1} max={10} />
       </div>
     );
   }
@@ -140,4 +121,9 @@ const FilterBarViewButton = styled.button<{ active: boolean }>`
     css`
       color: ${props => props.theme.highlightColor};
     `};
+`;
+
+const FilterToolbarRangeSlider = styled(RangeSlider)`
+  background-color: black;
+  margin-top: ${props => props.theme.spacingUnit * 2}px;
 `;

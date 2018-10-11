@@ -25,28 +25,28 @@ type Props = {
 
 @observer
 class PlaceCircle extends Component<Props> {
-  private ref: RefObject<SVGGElement>;
-  private styleSubscription?: IReactionDisposer;
+  private _ref: RefObject<SVGGElement>;
+  private _styleDisposer?: IReactionDisposer;
 
   constructor(props: Props) {
     super(props);
 
-    this.ref = createRef();
+    this._ref = createRef();
   }
 
   componentDidMount() {
-    this.styleSubscription = autorun(this.style);
+    this._styleDisposer = autorun(this.style);
   }
 
   componentWillUnmount() {
-    if (this.styleSubscription != null) {
-      this.styleSubscription();
+    if (this._styleDisposer != null) {
+      this._styleDisposer();
     }
   }
 
   private style = () => {
     const { point } = this.props.placeCircle;
-    const group = this.ref.current!;
+    const group = this._ref.current!;
 
     group.setAttribute('transform', `translate(${point.x}, ${point.y})`);
   };
@@ -71,7 +71,7 @@ class PlaceCircle extends Component<Props> {
 
     return (
       <g
-        ref={this.ref}
+        ref={this._ref}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
         className={className}

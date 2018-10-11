@@ -1,4 +1,4 @@
-import { computed, autorun, action } from 'mobx';
+import { computed, autorun, action, IReactionDisposer } from 'mobx';
 import {
   forceSimulation,
   forceLink,
@@ -34,6 +34,9 @@ class GraphStore {
   private _yForce: ForceY<PlaceCircleNode>;
   private _manyBodyForce: ForceManyBody<PlaceCircleNode>;
 
+  private _toggleDisposer: IReactionDisposer;
+  private _updateDisposer: IReactionDisposer;
+
   private _zoom?: number;
   private _pixelOrigin?: Point;
 
@@ -57,11 +60,11 @@ class GraphStore {
       .velocityDecay(0.9)
       .stop();
 
-    autorun(this.toggleSimulation);
-    autorun(this.updateSimulation);
+    this._toggleDisposer = autorun(this._toggleSimulation);
+    this._updateDisposer = autorun(this._updateSimulation);
   }
 
-  private toggleSimulation = () => {
+  private _toggleSimulation = () => {
     const { view } = this._vis.ui;
 
     if (view == null) {
@@ -72,7 +75,7 @@ class GraphStore {
     }
   };
 
-  private updateSimulation = () => {
+  private _updateSimulation = () => {
     const { view } = this._vis.ui;
 
     if (view == null) {
@@ -104,11 +107,16 @@ class GraphStore {
 
       // Run tick to update place circles as soon as possible.
       this._onTick(this.nodes);
-      this.toggleSimulation();
+      this._toggleSimulation();
     }
 
     this._zoom = nextZoom;
     this._pixelOrigin = nextPixelOrigin;
+  }
+
+  dispose() {
+    this._toggleDisposer();
+    this._updateDisposer();
   }
 
   @computed

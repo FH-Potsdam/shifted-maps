@@ -1,7 +1,6 @@
 import { PureComponent, Fragment } from 'react';
 import { NextContext } from 'next';
 import dynamic from 'next/dynamic';
-import Head from 'next/head';
 import Router from 'next/router';
 
 import { DiaryData, fetchDemoDiary } from '../store/Diary';
@@ -48,9 +47,6 @@ class Map extends PureComponent<Props> {
 
     return (
       <Fragment>
-        <Head>
-          <link rel="stylesheet" href="//unpkg.com/leaflet/dist/leaflet.css" />
-        </Head>
         <DynamicVisualisation
           data={data}
           view={view}

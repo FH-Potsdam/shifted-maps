@@ -76,6 +76,12 @@ class VisualisationStore {
     });
   };
 
+  dispose() {
+    if (this._graph != null) {
+      this._graph.dispose();
+    }
+  }
+
   @computed
   get placeCircles() {
     const placeCircles: PlaceCircle[] = [];

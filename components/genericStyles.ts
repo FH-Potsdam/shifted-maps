@@ -5,6 +5,8 @@ import theme from './theme';
 
 // @TODO Use styled components v4 global component to be able to use theme props (foreground, background colors).
 injectGlobal`
+  @import url("https://use.typekit.net/hil0jky.css");
+
   * {
     box-sizing: border-box;
   }
