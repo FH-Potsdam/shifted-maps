@@ -48,6 +48,11 @@ class ConnectionLine extends Component<Props> {
 
     const vector = to.point.subtract(from.point);
     const distance = to.point.distanceTo(from.point);
+
+    if (distance === 0) {
+      return;
+    }
+
     const fromPart = from.point.add(vector.multiplyBy(from.radius / distance));
     const toPart = to.point.subtract(vector.multiplyBy(to.radius / distance));
     const vectorPart = toPart.subtract(fromPart);
