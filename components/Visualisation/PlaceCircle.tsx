@@ -4,7 +4,7 @@ import { action, IReactionDisposer, autorun } from 'mobx';
 
 import styled from '../styled';
 import PlaceCircleMap from './PlaceCircleMap';
-import PlaceCircleModel from '../../store/PlaceCircle';
+import PlaceCircleModel from '../../stores/PlaceCircle';
 import PlaceCircleLabel from './PlaceCircleLabel';
 
 const PlaceCircleBackground = styled.circle`

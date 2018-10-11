@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { observer } from 'mobx-react';
 
 import PlaceCircle from './PlaceCircle';
-import PlaceCircleModel from '../../store/PlaceCircle';
+import PlaceCircleModel from '../../stores/PlaceCircle';
 
 type Props = {
   placeCircles: PlaceCircleModel[];

@@ -3,16 +3,16 @@ import { configure, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { LeafletEvent, Map as LeafletMap, LatLng } from 'leaflet';
 
-import { DiaryData } from '../../store/Diary';
-import DataStore from '../../store/DataStore';
+import { DiaryData } from '../../stores/Diary';
+import DataStore from '../../stores/DataStore';
 import Map from './Map';
 import SVGLayer from './SVGLayer';
 import PlaceCircleList from './PlaceCircleList';
-import VisualisationStore from '../../store/VisualisationStore';
+import VisualisationStore from '../../stores/VisualisationStore';
 import ConnectionLineList from './ConnectionLineList';
 import CustomControl from './CustomControl';
 import FilterToolbar from './FilterToolbar';
-import UIStore, { VIEW } from '../../store/UIStore';
+import UIStore, { VIEW } from '../../stores/UIStore';
 
 configure({
   enforceActions: 'observed',

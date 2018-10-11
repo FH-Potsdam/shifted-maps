@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Browser } from 'leaflet';
 
-import PlaceCircle from '../../store/PlaceCircle';
+import PlaceCircle from '../../stores/PlaceCircle';
 import config from '../../config';
 import styled from '../styled';
 

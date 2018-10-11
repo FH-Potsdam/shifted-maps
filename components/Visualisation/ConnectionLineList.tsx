@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { observer } from 'mobx-react';
 
-import ConnectionLineModel from '../../store/ConnectionLine';
+import ConnectionLineModel from '../../stores/ConnectionLine';
 import ConnectionLine from './ConnectionLine';
 
 type Props = {

@@ -3,8 +3,8 @@ import { Component } from 'react';
 import styled, { css } from '../styled';
 import Heading from '../common/Heading';
 import { observer } from 'mobx-react';
-import DataStore from '../../store/DataStore';
-import UIStore, { VIEW } from '../../store/UIStore';
+import DataStore from '../../stores/DataStore';
+import UIStore, { VIEW } from '../../stores/UIStore';
 import Icon from '../common/Icon';
 import RangeSlider from '../common/RangeSlider/RangeSlider';
 

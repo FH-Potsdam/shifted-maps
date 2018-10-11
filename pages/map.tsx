@@ -3,8 +3,8 @@ import { NextContext } from 'next';
 import dynamic from 'next/dynamic';
 import Router from 'next/router';
 
-import { DiaryData, fetchDemoDiary } from '../store/Diary';
-import { VIEW } from '../store/UIStore';
+import { DiaryData, fetchDemoDiary } from '../stores/Diary';
+import { VIEW } from '../stores/UIStore';
 
 const DynamicVisualisation = dynamic({
   loader: () => import('../components/Visualisation/Visualisation').then(module => module.default),

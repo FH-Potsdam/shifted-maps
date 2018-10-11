@@ -2,7 +2,7 @@ import { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { autorun, IReactionDisposer } from 'mobx';
 
-import ConnectionLineModel from '../../store/ConnectionLine';
+import ConnectionLineModel from '../../stores/ConnectionLine';
 import styled from '../styled';
 import ConnectionLineLabel from './ConnectionLineLabel';
 
