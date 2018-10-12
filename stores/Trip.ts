@@ -23,13 +23,13 @@ export function isTripData(value: any): value is ITripData {
 }
 
 class Trip {
-  public readonly store: DataStore;
-  public readonly fromPlaceId: number;
-  public readonly toPlaceId: number;
-  public readonly startAt: number;
-  public readonly endAt: number;
-  public readonly distance: number;
-  public readonly duration: number;
+  readonly store: DataStore;
+  readonly fromPlaceId: number;
+  readonly toPlaceId: number;
+  readonly startAt: number;
+  readonly endAt: number;
+  readonly distance: number;
+  readonly duration: number;
 
   constructor(store: DataStore, data: ITripData) {
     this.store = store;

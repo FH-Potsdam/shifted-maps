@@ -8,7 +8,9 @@
     "rules": {
         "no-submodule-imports": [true, "lodash", "next"],
         "no-shadowed-variable": false,
-        "no-unused-expression": [true, "allow-tagged-template"]
+        "no-unused-expression": [true, "allow-tagged-template"],
+        "no-console": false,
+        "member-access": [true, "no-public"]
     },
     "rulesDirectory": []
 }

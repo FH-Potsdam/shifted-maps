@@ -63,7 +63,7 @@ class Connection {
     return this.from.latLng.distanceTo(this.to.latLng);
   }
 
-  public static createId(from: Place, to: Place): string {
+  static createId(from: Place, to: Place): string {
     if (from === to) {
       throw new Error('Cannot create id with same places.');
     }
@@ -74,11 +74,11 @@ class Connection {
 
     return this.createId(to, from);
   }
-  public readonly store: DataStore;
-  public readonly id: string;
-  public readonly from: Place;
-  public readonly to: Place;
-  public readonly trips: Trip[] = [];
+  readonly store: DataStore;
+  readonly id: string;
+  readonly from: Place;
+  readonly to: Place;
+  readonly trips: Trip[] = [];
 
   constructor(store: DataStore, id: string, from: Place, to: Place) {
     this.store = store;

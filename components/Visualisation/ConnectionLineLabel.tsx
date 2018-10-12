@@ -12,9 +12,9 @@ interface IProps {
 }
 
 class ConnectionLineLabel extends PureComponent<IProps> {
-  public ref: RefObject<HTMLCanvasElement>;
-  public labelCanvas?: HTMLCanvasElement;
-  public ctx: CanvasRenderingContext2D | null = null;
+  ref: RefObject<HTMLCanvasElement>;
+  labelCanvas?: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D | null = null;
 
   constructor(props: IProps) {
     super(props);
@@ -22,18 +22,18 @@ class ConnectionLineLabel extends PureComponent<IProps> {
     this.ref = createRef();
   }
 
-  public componentDidMount() {
+  componentDidMount() {
     this.labelCanvas = this.ref.current!;
     this.ctx = this.labelCanvas.getContext('2d');
 
     this.drawLabel();
   }
 
-  public componentDidUpdate() {
+  componentDidUpdate() {
     this.drawLabel();
   }
 
-  public render() {
+  render() {
     const { innerRef, className } = this.props;
 
     return (

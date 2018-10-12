@@ -47,7 +47,7 @@ class Visualisation extends Component<IProps> {
   }
 
   @action
-  public componentDidUpdate() {
+  componentDidUpdate(prevProps: IProps) {
     const { view, timeSpan } = this.props;
 
     this.uiStore.update({ view, timeSpan });
@@ -55,14 +55,18 @@ class Visualisation extends Component<IProps> {
     if (this.map != null) {
       this.visStore.update(this.map);
     }
+
+    if (prevProps.view !== view) {
+      this.visStore.animate();
+    }
   }
 
-  public componentWillUnmount() {
+  componentWillUnmount() {
     this.visStore.dispose();
   }
 
   @action
-  public handleMapViewDidChange = (event: LeafletEvent) => {
+  handleMapViewDidChange = (event: LeafletEvent) => {
     this.map = event.target;
 
     if (this.map == null) {
@@ -80,7 +84,7 @@ class Visualisation extends Component<IProps> {
     this.center = this.map.getCenter();
   };
 
-  public render() {
+  render() {
     const { sortedPlaceCircles, sortedConnectionLines, initialBounds } = this.visStore;
     const { view } = this.uiStore;
     const { onFilterBarViewChange } = this.props;

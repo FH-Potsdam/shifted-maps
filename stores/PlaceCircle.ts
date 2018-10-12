@@ -8,20 +8,20 @@ import VisualisationStore, { CRS, MAX_ZOOM } from './VisualisationStore';
 export const sortByHoverRadius = orderBy<PlaceCircle>(['hover', 'radius'], ['asc', 'asc']);
 
 class PlaceCircle {
-  public readonly vis: VisualisationStore;
-  public readonly place: Place;
+  readonly vis: VisualisationStore;
+  readonly place: Place;
 
   @observable
-  public hover: boolean = false;
+  hover: boolean = false;
 
   @observable.ref
-  public mapPoint: Point = point(0, 0);
+  mapPoint: Point = point(0, 0);
 
   @observable.ref
-  public point: Point = point(0, 0);
+  point: Point = point(0, 0);
 
   @observable
-  public animate: boolean = false;
+  animate: boolean = false;
 
   constructor(vis: VisualisationStore, place: Place) {
     this.vis = vis;
@@ -29,7 +29,7 @@ class PlaceCircle {
   }
 
   @action
-  public updateMapPoint(map: LeafletMap) {
+  updateMapPoint(map: LeafletMap) {
     const { view } = this.vis.ui;
     const nextMapPoint = map.latLngToLayerPoint(this.place.latLng);
 
@@ -41,12 +41,12 @@ class PlaceCircle {
   }
 
   @action
-  public updateAnimate(animate: boolean) {
+  updateAnimate(animate: boolean) {
     this.animate = animate;
   }
 
   @action
-  public updatePoint(point: Point, round: boolean = false) {
+  updatePoint(point: Point, round: boolean = false) {
     this.point = point[round ? 'round' : 'clone']();
   }
 

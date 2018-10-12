@@ -16,11 +16,11 @@ interface IProps {
 
 @observer
 class FilterToolbar extends Component<IProps> {
-  public handleToggleView(view: VIEW) {
+  handleToggleView(view: VIEW) {
     this.props.onViewChange(view !== this.props.ui.view ? view : undefined);
   }
 
-  public render() {
+  render() {
     const { className, data, ui } = this.props;
 
     return (

@@ -34,17 +34,17 @@ class PlaceCircle extends Component<IProps> {
     this.ref = createRef();
   }
 
-  public componentDidMount() {
+  componentDidMount() {
     this.styleDisposer = autorun(this.style);
   }
 
-  public componentWillUnmount() {
+  componentWillUnmount() {
     if (this.styleDisposer != null) {
       this.styleDisposer();
     }
   }
 
-  public render() {
+  render() {
     const { placeCircle, className } = this.props;
     const { radius, strokeWidth, hover, place, children } = placeCircle;
 

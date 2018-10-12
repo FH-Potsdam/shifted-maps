@@ -14,11 +14,11 @@ export function isStayData(value: any): value is IStayData {
 }
 
 class Stay {
-  public readonly store: DataStore;
-  public readonly atPlaceId: number;
-  public readonly duration: number;
-  public readonly endAt: number;
-  public readonly startAt: number;
+  readonly store: DataStore;
+  readonly atPlaceId: number;
+  readonly duration: number;
+  readonly endAt: number;
+  readonly startAt: number;
 
   constructor(store: DataStore, data: IStayData) {
     this.store = store;

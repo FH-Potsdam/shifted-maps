@@ -16,11 +16,11 @@ export const visibleFrequencyExtent = extent<ConnectionLine>('visibleFrequency')
 export const lengthExtent = extent<ConnectionLine>('length');
 
 class ConnectionLine {
-  public readonly vis: VisualisationStore;
-  public readonly from: PlaceCircle;
-  public readonly to: PlaceCircle;
-  public readonly connections: Connection[] = [];
-  public readonly key: string;
+  readonly vis: VisualisationStore;
+  readonly from: PlaceCircle;
+  readonly to: PlaceCircle;
+  readonly connections: Connection[] = [];
+  readonly key: string;
 
   constructor(vis: VisualisationStore, key: string, from: PlaceCircle, to: PlaceCircle) {
     this.vis = vis;

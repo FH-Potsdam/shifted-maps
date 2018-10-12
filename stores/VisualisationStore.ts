@@ -37,8 +37,8 @@ const CONNECTION_STROKE_WIDTH_RANGE_SCALE = scalePow<[number, number]>()
   .range([[0.5, 5], [1, 10]]);
 
 class VisualisationStore {
-  public readonly data: DataStore;
-  public readonly ui: UIStore;
+  readonly data: DataStore;
+  readonly ui: UIStore;
 
   private graph?: GraphStore;
   private placeCirclesCache: PlaceCircle[] = [];
@@ -53,7 +53,7 @@ class VisualisationStore {
   }
 
   @action
-  public update(map: LeafletMap) {
+  update(map: LeafletMap) {
     const maxZoom = Math.min(MAX_ZOOM, map.getMaxZoom());
     const zoomScale = scaleLinear().domain([map.getMinZoom(), maxZoom]);
 
@@ -71,20 +71,25 @@ class VisualisationStore {
   }
 
   @action
-  public handleGraphTick = (nodes: PlaceCircleNode[]) => {
+  animate() {
+    console.log('Test');
+  }
+
+  @action
+  handleGraphTick = (nodes: PlaceCircleNode[]) => {
     nodes.forEach(node => {
       node.placeCircle.updatePoint(node);
     });
   };
 
   @action
-  public handleGraphEnd = (nodes: PlaceCircleNode[]) => {
+  handleGraphEnd = (nodes: PlaceCircleNode[]) => {
     nodes.forEach(node => {
       node.placeCircle.updatePoint(node, true);
     });
   };
 
-  public dispose() {
+  dispose() {
     if (this.graph != null) {
       this.graph.dispose();
     }

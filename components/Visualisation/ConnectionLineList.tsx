@@ -10,7 +10,7 @@ interface IProps {
 
 @observer
 class ConnectionLineList extends Component<IProps> {
-  public render() {
+  render() {
     const { connectionLines } = this.props;
 
     return (

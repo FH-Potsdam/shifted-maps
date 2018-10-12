@@ -1,6 +1,6 @@
 import * as styledComponents from 'styled-components';
 
-import { Breakpoints, Theme } from './theme';
+import { Breakpoints, ITheme } from './theme';
 
 const {
   default: styled,
@@ -9,13 +9,13 @@ const {
   keyframes,
   ThemeProvider,
   withTheme,
-} = styledComponents as styledComponents.ThemedStyledComponentsModule<Theme>;
+} = styledComponents as styledComponents.ThemedStyledComponentsModule<ITheme>;
 
 export { css, injectGlobal, keyframes, ThemeProvider, withTheme };
 export default styled;
 
-export function theme(key: keyof Theme) {
-  return (props: { theme: Theme }) => props.theme[key];
+export function theme(key: keyof ITheme) {
+  return (props: { theme: ITheme }) => props.theme[key];
 }
 
 export function ifProp<P>(key: keyof P, then: any) {
@@ -32,9 +32,9 @@ export function switchProp<P>(
 export function mediaQuery<P>(name: Breakpoints) {
   return (
     strings: TemplateStringsArray,
-    ...interpolations: Array<styledComponents.Interpolation<
-      styledComponents.ThemedStyledProps<P, Theme>
-    >>
+    ...interpolations: Array<
+      styledComponents.Interpolation<styledComponents.ThemedStyledProps<P, ITheme>>
+    >
   ) => {
     return css<P>`
       @media (min-width: ${props => props.theme.breakpoints[name] / 16}em) {

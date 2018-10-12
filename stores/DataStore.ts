@@ -10,8 +10,8 @@ import UIStore from './UIStore';
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 class DataStore {
-  public readonly ui: UIStore;
-  public readonly data: DiaryData;
+  readonly ui: UIStore;
+  readonly data: DiaryData;
 
   constructor(ui: UIStore, data: DiaryData) {
     this.ui = ui;

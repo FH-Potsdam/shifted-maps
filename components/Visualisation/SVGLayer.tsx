@@ -4,11 +4,11 @@ import { MapLayer, MapLayerProps, withLeaflet, WrappedProps } from 'react-leafle
 import LeafletSVGLayer from './LeafletSvgLayer';
 
 class SVGLayer extends MapLayer<MapLayerProps & WrappedProps, LeafletSVGLayer> {
-  public createLeafletElement() {
+  createLeafletElement() {
     return new LeafletSVGLayer();
   }
 
-  public componentDidMount() {
+  componentDidMount() {
     if (super.componentDidMount) {
       super.componentDidMount();
     }
@@ -16,7 +16,7 @@ class SVGLayer extends MapLayer<MapLayerProps & WrappedProps, LeafletSVGLayer> {
     this.forceUpdate();
   }
 
-  public render() {
+  render() {
     if (this.leafletElement.svg != null) {
       return createPortal(this.props.children, this.leafletElement.svg);
     }

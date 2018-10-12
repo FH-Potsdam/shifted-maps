@@ -15,7 +15,7 @@ interface IProps {
 
 @observer
 class Map extends Component<IProps & MapProps> {
-  public render() {
+  render() {
     const { className, children, showTiles, ...props } = this.props;
 
     return (

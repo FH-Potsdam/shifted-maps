@@ -9,14 +9,14 @@ import {
 } from 'leaflet';
 
 class LeafletSVGLayer extends LeafletLayer {
-  public svg?: SVGSVGElement;
+  svg?: SVGSVGElement;
 
   private center?: LatLng;
   private zoom?: number;
   private position: Point = point(0, 0);
   private size?: Point;
 
-  public onAdd() {
+  onAdd() {
     if (this.svg == null) {
       this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       this.svg.style.pointerEvents = 'none';
@@ -35,7 +35,7 @@ class LeafletSVGLayer extends LeafletLayer {
     return this;
   }
 
-  public onRemove() {
+  onRemove() {
     if (this.svg != null) {
       const parent = this.svg.parentNode;
 
@@ -47,7 +47,7 @@ class LeafletSVGLayer extends LeafletLayer {
     return this;
   }
 
-  public getEvents() {
+  getEvents() {
     const events = {
       moveend: this._update,
       viewreset: this._reset,

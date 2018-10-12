@@ -24,17 +24,17 @@ class ConnectionLine extends Component<IProps> {
     this.labelRef = createRef();
   }
 
-  public componentDidMount() {
+  componentDidMount() {
     this.styleDisposer = autorun(this.style);
   }
 
-  public componentWillUnmount() {
+  componentWillUnmount() {
     if (this.styleDisposer != null) {
       this.styleDisposer();
     }
   }
 
-  public render() {
+  render() {
     const { className, connectionLine } = this.props;
     const { label } = connectionLine;
 

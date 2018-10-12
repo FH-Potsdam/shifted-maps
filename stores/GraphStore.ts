@@ -101,7 +101,7 @@ class GraphStore {
   }
 
   @action
-  public update(map: LeafletMap) {
+  update(map: LeafletMap) {
     const prevZoom = this.zoom;
     const nextZoom = map.getZoom();
     const prevPixelOrigin = this.pixelOrigin;
@@ -126,7 +126,7 @@ class GraphStore {
     this.pixelOrigin = nextPixelOrigin;
   }
 
-  public dispose() {
+  dispose() {
     this.toggleDisposer();
     this.updateDisposer();
   }

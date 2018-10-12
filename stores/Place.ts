@@ -23,10 +23,10 @@ export const visibleFrequencyExtent = extent<Place>('visibleFrequency');
 export const visibleDurationExtent = extent<Place>('visibleDuration');
 
 class Place {
-  public readonly store: DataStore;
-  public readonly id: number;
-  public readonly location: ILocation;
-  public readonly name: string;
+  readonly store: DataStore;
+  readonly id: number;
+  readonly location: ILocation;
+  readonly name: string;
 
   constructor(store: DataStore, data: IPlaceData) {
     this.store = store;

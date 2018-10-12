@@ -4,14 +4,14 @@ import { Point } from 'leaflet';
 import PlaceCircle from './PlaceCircle';
 
 class PlaceCircleNode extends Point implements SimulationNodeDatum {
-  public readonly placeCircle: PlaceCircle;
+  readonly placeCircle: PlaceCircle;
 
-  public key: string;
-  public index?: number;
-  public vx?: number;
-  public vy?: number;
-  public fx?: number | null;
-  public fy?: number | null;
+  key: string;
+  index?: number;
+  vx?: number;
+  vy?: number;
+  fx?: number | null;
+  fy?: number | null;
 
   constructor(placeCircle: PlaceCircle) {
     super(placeCircle.mapPoint.x, placeCircle.mapPoint.y);

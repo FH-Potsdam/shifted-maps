@@ -8,13 +8,13 @@ export enum VIEW {
 
 class UIStore {
   @observable
-  public timeSpan?: [number, number];
+  timeSpan?: [number, number];
 
   @observable
-  public view?: VIEW;
+  view?: VIEW;
 
   @action
-  public update({ view, timeSpan }: { timeSpan?: [number, number]; view?: VIEW }) {
+  update({ view, timeSpan }: { timeSpan?: [number, number]; view?: VIEW }) {
     this.view = view;
     this.timeSpan = timeSpan;
   }

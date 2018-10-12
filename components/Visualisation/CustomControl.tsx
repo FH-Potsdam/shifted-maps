@@ -6,11 +6,11 @@ import LeafletCustomControl from './LeafletCustomControl';
 type Props = MapControlProps & WrappedProps;
 
 class CustomControl extends MapControl<Props, LeafletCustomControl> {
-  public createLeafletElement(props: Props) {
+  createLeafletElement(props: Props) {
     return new LeafletCustomControl({ position: props.position });
   }
 
-  public componentDidMount() {
+  componentDidMount() {
     if (super.componentDidMount) {
       super.componentDidMount();
     }
@@ -18,7 +18,7 @@ class CustomControl extends MapControl<Props, LeafletCustomControl> {
     this.forceUpdate();
   }
 
-  public render() {
+  render() {
     if (this.leafletElement.container != null) {
       return createPortal(this.props.children, this.leafletElement.container);
     }

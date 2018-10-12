@@ -2,12 +2,12 @@ import BaseDocument, { Head, Main, NextDocumentContext, NextScript } from 'next/
 import { ReactElement } from 'react';
 import { ServerStyleSheet } from 'styled-components';
 
-interface Props {
+interface IProps {
   styleTags: Array<ReactElement<HTMLStyleElement>>;
 }
 
-class Document extends BaseDocument<Props> {
-  public static getInitialProps({ renderPage }: NextDocumentContext) {
+class Document extends BaseDocument<IProps> {
+  static getInitialProps({ renderPage }: NextDocumentContext) {
     const sheet = new ServerStyleSheet();
     const page = renderPage(App => props => sheet.collectStyles(<App {...props} />));
     const styleTags = sheet.getStyleElement();
@@ -15,7 +15,7 @@ class Document extends BaseDocument<Props> {
     return { ...page, styleTags };
   }
 
-  public render() {
+  render() {
     return (
       <html>
         <Head>

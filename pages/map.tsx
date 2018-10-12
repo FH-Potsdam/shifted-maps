@@ -8,17 +8,17 @@ import { VIEW } from '../stores/UIStore';
 
 const DynamicVisualisation = dynamic({
   loader: () => import('../components/Visualisation/Visualisation').then(module => module.default),
-  ssr: false,
   loading: () => null,
+  ssr: false,
 });
 
-interface Props {
+interface IProps {
   data: DiaryData;
   view?: VIEW;
 }
 
-class Map extends PureComponent<Props> {
-  public static async getInitialProps({ req, query }: NextContext): Promise<Props> {
+class Map extends PureComponent<IProps> {
+  static async getInitialProps({ req, query }: NextContext): Promise<IProps> {
     let view: VIEW | undefined;
 
     if (typeof query.view === 'string') {
@@ -31,7 +31,7 @@ class Map extends PureComponent<Props> {
     };
   }
 
-  public handleFilterBarViewChange = (view?: VIEW) => {
+  handleFilterBarViewChange = (view?: VIEW) => {
     const query: { view?: string } = {
       ...Router.query,
     };
@@ -45,7 +45,7 @@ class Map extends PureComponent<Props> {
     Router.push({ pathname: '/map', query });
   };
 
-  public render() {
+  render() {
     const { data, view } = this.props;
 
     return (

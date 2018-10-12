@@ -20,7 +20,7 @@ interface IProps {
 
 @observer
 class PlaceCircleMap extends Component<IProps> {
-  public render() {
+  render() {
     const { diameter, latLngBounds, zoom, children } = this.props.placeCircle;
     const center = latLngBounds.getCenter();
 

@@ -1,9 +1,9 @@
 import { Control, DomEvent } from 'leaflet';
 
 class LeafletCustomControl extends Control {
-  public container?: HTMLDivElement;
+  container?: HTMLDivElement;
 
-  public onAdd() {
+  onAdd() {
     this.container = document.createElement('div');
 
     // Disable propagation of events to the map when trigged inside the container.

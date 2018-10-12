@@ -10,7 +10,7 @@ interface IProps {
 
 @observer
 class PlaceCircleList extends Component<IProps> {
-  public render() {
+  render() {
     const { placeCircles } = this.props;
 
     return (

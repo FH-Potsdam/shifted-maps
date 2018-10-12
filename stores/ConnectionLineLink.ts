@@ -4,11 +4,11 @@ import ConnectionLine from './ConnectionLine';
 import PlaceCircleNode from './PlaceCircleNode';
 
 class ConnectionLineLink implements SimulationLinkDatum<PlaceCircleNode> {
-  public readonly connectionLine: ConnectionLine;
+  readonly connectionLine: ConnectionLine;
 
-  public source: PlaceCircleNode | string;
-  public target: PlaceCircleNode | string;
-  public index?: number;
+  source: PlaceCircleNode | string;
+  target: PlaceCircleNode | string;
+  index?: number;
 
   constructor(connectionLine: ConnectionLine) {
     this.connectionLine = connectionLine;

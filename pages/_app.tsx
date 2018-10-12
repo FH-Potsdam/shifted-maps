@@ -8,7 +8,7 @@ import { ThemeProvider } from '../components/styled';
 import theme from '../components/theme';
 
 class App extends BaseApp {
-  public static async getInitialProps({ Component, ctx }: AppComponentContext) {
+  static async getInitialProps({ Component, ctx }: AppComponentContext) {
     let pageProps = {};
 
     if (ctx.req != null) {
@@ -22,7 +22,7 @@ class App extends BaseApp {
     return { pageProps };
   }
 
-  public render() {
+  render() {
     const { Component, pageProps } = this.props;
 
     return (
