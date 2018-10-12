@@ -4,7 +4,7 @@ import { createRef, PureComponent, RefObject } from 'react';
 import styled, { withTheme } from '../styled';
 import { Theme } from '../theme';
 
-interface Props {
+interface IProps {
   label: string;
   clusterSize: number;
   className?: string;
@@ -13,12 +13,12 @@ interface Props {
   theme?: Theme;
 }
 
-class PlaceCircleLabel extends PureComponent<Props> {
+class PlaceCircleLabel extends PureComponent<IProps> {
   public ref: RefObject<HTMLCanvasElement>;
   public labelCanvas?: HTMLCanvasElement;
   public ctx: CanvasRenderingContext2D | null = null;
 
-  constructor(props: Props) {
+  constructor(props: IProps) {
     super(props);
 
     this.ref = createRef();
@@ -101,7 +101,7 @@ class PlaceCircleLabel extends PureComponent<Props> {
   }
 }
 
-export default styled(withTheme<Props>(PlaceCircleLabel))`
+export default styled(withTheme<IProps>(PlaceCircleLabel))`
   transition: opacity ${props => props.theme.shortTransitionDuration};
   pointer-events: none;
   opacity: ${props => (props.hover ? 1 : 0)};

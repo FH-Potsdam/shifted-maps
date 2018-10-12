@@ -9,27 +9,43 @@ import {
   forceY,
   ForceY,
   Simulation,
-  SimulationLinkDatum,
-  SimulationNodeDatum,
 } from 'd3';
 import { Map as LeafletMap, Point } from 'leaflet';
 import { action, autorun, computed, IReactionDisposer } from 'mobx';
 
-import ConnectionLine from './ConnectionLine';
-import PlaceCircle from './PlaceCircle';
+import ConnectionLineLink from './ConnectionLineLink';
+import PlaceCircleNode from './PlaceCircleNode';
 import VisualisationStore from './VisualisationStore';
 
 type TickCallback = (nodes: PlaceCircleNode[]) => void;
 type EndCallback = (nodes: PlaceCircleNode[]) => void;
 
 class GraphStore {
+  private readonly vis: VisualisationStore;
+  private readonly onTick: TickCallback;
+  private readonly onEnd: EndCallback;
+
+  private cachedNodes: PlaceCircleNode[] = [];
+  private cachedLinks: ConnectionLineLink[] = [];
+
+  private simulation: Simulation<PlaceCircleNode, ConnectionLineLink>;
+  private linkForce: ForceLink<PlaceCircleNode, ConnectionLineLink>;
+  private xForce: ForceX<PlaceCircleNode>;
+  private yForce: ForceY<PlaceCircleNode>;
+  private manyBodyForce: ForceManyBody<PlaceCircleNode>;
+
+  private toggleDisposer: IReactionDisposer;
+  private updateDisposer: IReactionDisposer;
+
+  private zoom?: number;
+  private pixelOrigin?: Point;
 
   @computed
   get nodes() {
     const nodes: PlaceCircleNode[] = [];
 
-    this._vis.placeCircles.forEach(placeCircle => {
-      let node = this._nodes.find(node => node.placeCircle === placeCircle);
+    this.vis.placeCircles.forEach(placeCircle => {
+      let node = this.cachedNodes.find(node => node.placeCircle === placeCircle);
 
       if (node == null) {
         node = new PlaceCircleNode(placeCircle);
@@ -38,15 +54,15 @@ class GraphStore {
       nodes.push(node);
     });
 
-    return (this._nodes = nodes);
+    return (this.cachedNodes = nodes);
   }
 
   @computed
   get links() {
     const links: ConnectionLineLink[] = [];
 
-    this._vis.connectionLines.forEach(connectionLine => {
-      let link = this._links.find(link => link.connectionLine === connectionLine);
+    this.vis.connectionLines.forEach(connectionLine => {
+      let link = this.cachedLinks.find(link => link.connectionLine === connectionLine);
 
       if (link == null) {
         link = new ConnectionLineLink(connectionLine);
@@ -55,58 +71,40 @@ class GraphStore {
       links.push(link);
     });
 
-    return (this._links = links);
+    return (this.cachedLinks = links);
   }
-  private readonly _vis: VisualisationStore;
-  private readonly _onTick: TickCallback;
-  private readonly _onEnd: EndCallback;
-
-  private _nodes: PlaceCircleNode[] = [];
-  private _links: ConnectionLineLink[] = [];
-
-  private _simulation: Simulation<PlaceCircleNode, ConnectionLineLink>;
-  private _linkForce: ForceLink<PlaceCircleNode, ConnectionLineLink>;
-  private _xForce: ForceX<PlaceCircleNode>;
-  private _yForce: ForceY<PlaceCircleNode>;
-  private _manyBodyForce: ForceManyBody<PlaceCircleNode>;
-
-  private _toggleDisposer: IReactionDisposer;
-  private _updateDisposer: IReactionDisposer;
-
-  private _zoom?: number;
-  private _pixelOrigin?: Point;
 
   constructor(vis: VisualisationStore, onTick: TickCallback, onEnd: EndCallback) {
-    this._vis = vis;
-    this._onTick = onTick;
-    this._onEnd = onEnd;
+    this.vis = vis;
+    this.onTick = onTick;
+    this.onEnd = onEnd;
 
-    this._linkForce = forceLink<PlaceCircleNode, ConnectionLineLink>().id(node => node.key);
+    this.linkForce = forceLink<PlaceCircleNode, ConnectionLineLink>().id(node => node.key);
 
-    this._xForce = forceX<PlaceCircleNode>().strength(0.3);
-    this._yForce = forceY<PlaceCircleNode>().strength(0.3);
+    this.xForce = forceX<PlaceCircleNode>().strength(0.3);
+    this.yForce = forceY<PlaceCircleNode>().strength(0.3);
 
-    this._manyBodyForce = forceManyBody<PlaceCircleNode>();
+    this.manyBodyForce = forceManyBody<PlaceCircleNode>();
 
-    this._simulation = forceSimulation<PlaceCircleNode, ConnectionLineLink>()
-      .force('link', this._linkForce)
-      .force('x', this._xForce)
-      .force('y', this._yForce)
-      .force('many-body', this._manyBodyForce)
-      .on('tick', () => this._onTick(this.nodes))
-      .on('end', () => this._onEnd(this.nodes))
+    this.simulation = forceSimulation<PlaceCircleNode, ConnectionLineLink>()
+      .force('link', this.linkForce)
+      .force('x', this.xForce)
+      .force('y', this.yForce)
+      .force('many-body', this.manyBodyForce)
+      .on('tick', () => this.onTick(this.nodes))
+      .on('end', () => this.onEnd(this.nodes))
       .velocityDecay(0.9)
       .stop();
 
-    this._toggleDisposer = autorun(this._toggleSimulation);
-    this._updateDisposer = autorun(this._updateSimulation);
+    this.toggleDisposer = autorun(this.toggleSimulation);
+    this.updateDisposer = autorun(this.updateSimulation);
   }
 
   @action
   public update(map: LeafletMap) {
-    const prevZoom = this._zoom;
+    const prevZoom = this.zoom;
     const nextZoom = map.getZoom();
-    const prevPixelOrigin = this._pixelOrigin;
+    const prevPixelOrigin = this.pixelOrigin;
     const nextPixelOrigin = map.getPixelOrigin();
 
     if (prevZoom != null && prevPixelOrigin != null && nextZoom !== prevZoom) {
@@ -120,75 +118,42 @@ class GraphStore {
       });
 
       // Run tick to update place circles as soon as possible.
-      this._onTick(this.nodes);
-      this._toggleSimulation();
+      this.onTick(this.nodes);
+      this.toggleSimulation();
     }
 
-    this._zoom = nextZoom;
-    this._pixelOrigin = nextPixelOrigin;
+    this.zoom = nextZoom;
+    this.pixelOrigin = nextPixelOrigin;
   }
 
   public dispose() {
-    this._toggleDisposer();
-    this._updateDisposer();
+    this.toggleDisposer();
+    this.updateDisposer();
   }
 
-  private _toggleSimulation = () => {
-    const { view } = this._vis.ui;
+  private toggleSimulation = () => {
+    const { view } = this.vis.ui;
 
     if (view == null) {
-      this._simulation.stop();
+      this.simulation.stop();
     } else {
-      this._simulation.alpha(1);
-      this._simulation.restart();
+      this.simulation.alpha(1);
+      this.simulation.restart();
     }
   };
 
-  private _updateSimulation = () => {
-    const { view } = this._vis.ui;
+  private updateSimulation = () => {
+    const { view } = this.vis.ui;
 
     if (view == null) {
       return;
     }
 
-    this._simulation.nodes(this.nodes);
-    this._linkForce.links(this.links).distance(link => link.connectionLine.viewLength);
-    this._xForce.x(node => node.placeCircle.mapPoint.x);
-    this._yForce.y(node => node.placeCircle.mapPoint.y);
+    this.simulation.nodes(this.nodes);
+    this.linkForce.links(this.links).distance(link => link.connectionLine.viewLength);
+    this.xForce.x(node => node.placeCircle.mapPoint.x);
+    this.yForce.y(node => node.placeCircle.mapPoint.y);
   };
-}
-
-export class PlaceCircleNode extends Point implements SimulationNodeDatum {
-  public readonly placeCircle: PlaceCircle;
-
-  public key: string;
-  public index?: number;
-  public vx?: number;
-  public vy?: number;
-  public fx?: number | null;
-  public fy?: number | null;
-
-  constructor(placeCircle: PlaceCircle) {
-    super(placeCircle.mapPoint.x, placeCircle.mapPoint.y);
-
-    this.placeCircle = placeCircle;
-    this.key = String(placeCircle.key);
-  }
-}
-
-export class ConnectionLineLink implements SimulationLinkDatum<PlaceCircleNode> {
-  public readonly connectionLine: ConnectionLine;
-
-  public source: PlaceCircleNode | string;
-  public target: PlaceCircleNode | string;
-  public index?: number;
-
-  constructor(connectionLine: ConnectionLine) {
-    this.connectionLine = connectionLine;
-
-    this.source = String(this.connectionLine.from.key);
-    this.target = String(this.connectionLine.to.key);
-  }
 }
 
 export default GraphStore;

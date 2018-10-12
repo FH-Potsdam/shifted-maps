@@ -1,12 +1,12 @@
 import fetch, { FetchOptions } from '../utils/fetch';
-import { PlaceData } from './Place';
-import { StayData } from './Stay';
-import { TripData } from './Trip';
+import { IPlaceData } from './Place';
+import { IStayData } from './Stay';
+import { ITripData } from './Trip';
 
 export type DiaryData = Array<{
-  place?: PlaceData;
-  stay?: StayData;
-  trip?: TripData;
+  place?: IPlaceData;
+  stay?: IStayData;
+  trip?: ITripData;
 }>;
 
 export function fetchDemoDiary(options?: RequestInit & FetchOptions): Promise<DiaryData> {

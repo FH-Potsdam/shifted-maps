@@ -1,10 +1,10 @@
 import styled, { injectGlobal, switchProp } from '../styled';
 
-interface Props {
+interface IProps {
   name: string;
 }
 
-const Icon = styled.i<Props>`
+const Icon = styled.i<IProps>`
   font-family: 'icomoon';
   font-style: normal;
   font-weight: normal;
@@ -15,17 +15,17 @@ const Icon = styled.i<Props>`
   -moz-osx-font-smoothing: grayscale;
 
   ${switchProp('name', {
-    go: `&:before {
-      content: '\\e800';
-    }`,
-    geographic: `&:before {
-      content: '\\e801';
-    }`,
     duration: `&:before {
       content: '\\e802';
     }`,
     frequency: `&:before {
       content: '\\e803';
+    }`,
+    geographic: `&:before {
+      content: '\\e801';
+    }`,
+    go: `&:before {
+      content: '\\e800';
     }`,
     info: `&:before {
       content: '\\e804';

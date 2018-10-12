@@ -2,14 +2,14 @@ import { computed } from 'mobx';
 
 import DataStore from './DataStore';
 
-export interface StayData {
+export interface IStayData {
   readonly at: number;
   readonly duration: number;
   readonly endAt: number;
   readonly startAt: number;
 }
 
-export function isStayData(value: any): value is StayData {
+export function isStayData(value: any): value is IStayData {
   return value.at != null && value.duration != null && value.endAt != null && value.startAt != null;
 }
 
@@ -20,7 +20,7 @@ class Stay {
   public readonly endAt: number;
   public readonly startAt: number;
 
-  constructor(store: DataStore, data: StayData) {
+  constructor(store: DataStore, data: IStayData) {
     this.store = store;
 
     this.atPlaceId = data.at;
@@ -31,13 +31,13 @@ class Stay {
 
   @computed
   get visible() {
-    const { activeTimeSpan } = this.store.ui;
+    const { timeSpan } = this.store.ui;
 
-    if (activeTimeSpan == null) {
+    if (timeSpan == null) {
       return true;
     }
 
-    const [start, end] = activeTimeSpan;
+    const [start, end] = timeSpan;
 
     return this.startAt >= start && this.endAt <= end;
   }

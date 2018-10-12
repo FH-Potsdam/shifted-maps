@@ -4,12 +4,12 @@ import { Component } from 'react';
 import ConnectionLineModel from '../../stores/ConnectionLine';
 import ConnectionLine from './ConnectionLine';
 
-interface Props {
+interface IProps {
   connectionLines: ConnectionLineModel[];
 }
 
 @observer
-class ConnectionLineList extends Component<Props> {
+class ConnectionLineList extends Component<IProps> {
   public render() {
     const { connectionLines } = this.props;
 

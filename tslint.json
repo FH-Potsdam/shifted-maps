@@ -5,6 +5,10 @@
         "tslint-config-prettier"
     ],
     "jsRules": {},
-    "rules": {},
+    "rules": {
+        "no-submodule-imports": [true, "lodash", "next"],
+        "no-shadowed-variable": false,
+        "no-unused-expression": [true, "allow-tagged-template"]
+    },
     "rulesDirectory": []
 }

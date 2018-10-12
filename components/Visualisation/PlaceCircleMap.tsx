@@ -14,12 +14,12 @@ const PlaceMapDot = styled.circle.attrs({
   stroke: white;
 `;
 
-interface Props {
+interface IProps {
   placeCircle: PlaceCircle;
 }
 
 @observer
-class PlaceCircleMap extends Component<Props> {
+class PlaceCircleMap extends Component<IProps> {
   public render() {
     const { diameter, latLngBounds, zoom, children } = this.props.placeCircle;
     const center = latLngBounds.getCenter();

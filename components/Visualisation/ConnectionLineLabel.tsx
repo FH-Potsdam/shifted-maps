@@ -4,19 +4,19 @@ import { createRef, forwardRef, PureComponent, Ref, RefObject } from 'react';
 import styled, { withTheme } from '../styled';
 import { Theme } from '../theme';
 
-interface Props {
+interface IProps {
   label: string | null;
   theme?: Theme;
   innerRef?: Ref<SVGForeignObjectElement>;
   className?: string;
 }
 
-class ConnectionLineLabel extends PureComponent<Props> {
+class ConnectionLineLabel extends PureComponent<IProps> {
   public ref: RefObject<HTMLCanvasElement>;
   public labelCanvas?: HTMLCanvasElement;
   public ctx: CanvasRenderingContext2D | null = null;
 
-  constructor(props: Props) {
+  constructor(props: IProps) {
     super(props);
 
     this.ref = createRef();
@@ -78,8 +78,8 @@ class ConnectionLineLabel extends PureComponent<Props> {
 }
 
 export default styled(
-  withTheme<Props>(
-    forwardRef<SVGForeignObjectElement, Props>((props, ref) => (
+  withTheme<IProps>(
+    forwardRef<SVGForeignObjectElement, IProps>((props, ref) => (
       <ConnectionLineLabel {...props} innerRef={ref} />
     ))
   )

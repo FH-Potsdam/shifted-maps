@@ -1,10 +1,10 @@
 import styled from '../styled';
 
-interface Props {
+interface IProps {
   className?: string;
 }
 
-function Screencast({ className }: Props) {
+function Screencast({ className }: IProps) {
   return (
     <div className={className}>
       <video autoPlay preload="auto" loop>

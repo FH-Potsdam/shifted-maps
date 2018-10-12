@@ -132,15 +132,17 @@ class PlaceCircle {
   get zoom() {
     const northWest = this.latLngBounds.getNorthWest();
     const southEast = this.latLngBounds.getSouthEast();
-    let zoom = 1;
+    let zoom = 0;
     let size;
 
     do {
+      zoom = zoom + 1;
+
       const topLeft = CRS.latLngToPoint(northWest, zoom);
       const bottomRight = CRS.latLngToPoint(southEast, zoom);
 
       size = bounds(topLeft, bottomRight).getSize();
-    } while ((this.diameter > size.x || this.diameter > size.y) && (zoom = zoom + 1) <= MAX_ZOOM);
+    } while ((this.diameter > size.x || this.diameter > size.y) && zoom < MAX_ZOOM);
 
     return zoom;
   }

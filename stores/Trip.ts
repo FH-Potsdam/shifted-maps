@@ -2,7 +2,7 @@ import { computed } from 'mobx';
 
 import DataStore from './DataStore';
 
-export interface TripData {
+export interface ITripData {
   readonly from: number;
   readonly to: number;
   readonly startAt: number;
@@ -10,7 +10,8 @@ export interface TripData {
   readonly distance: number;
   readonly duration: number;
 }
-export function isTripData(value: any): value is TripData {
+
+export function isTripData(value: any): value is ITripData {
   return (
     value.from != null &&
     value.to != null &&
@@ -30,7 +31,7 @@ class Trip {
   public readonly distance: number;
   public readonly duration: number;
 
-  constructor(store: DataStore, data: TripData) {
+  constructor(store: DataStore, data: ITripData) {
     this.store = store;
 
     this.fromPlaceId = data.from;
@@ -53,13 +54,13 @@ class Trip {
 
   @computed
   get visible() {
-    const { activeTimeSpan } = this.store.ui;
+    const { timeSpan } = this.store.ui;
 
-    if (activeTimeSpan == null) {
+    if (timeSpan == null) {
       return true;
     }
 
-    const [start, end] = activeTimeSpan;
+    const [start, end] = timeSpan;
 
     return this.startAt >= start && this.endAt <= end;
   }

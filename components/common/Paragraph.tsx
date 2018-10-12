@@ -1,10 +1,10 @@
 import styled, { css, ifProp, theme } from '../styled';
 
-interface Props {
+interface IProps {
   lead?: boolean;
 }
 
-export default styled.p<Props>`
+export default styled.p<IProps>`
   margin: 0;
 
   & + & {

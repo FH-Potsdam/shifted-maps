@@ -6,7 +6,7 @@ import { Map as ReactLeafletMap, MapProps, TileLayer } from 'react-leaflet';
 import config from '../../config';
 import styled from '../styled';
 
-interface Props {
+interface IProps {
   className?: string;
   children?: any;
   bounds: LatLngBounds;
@@ -14,7 +14,7 @@ interface Props {
 }
 
 @observer
-class Map extends Component<Props & MapProps> {
+class Map extends Component<IProps & MapProps> {
   public render() {
     const { className, children, showTiles, ...props } = this.props;
 

@@ -1,6 +1,6 @@
 import iteratee from 'lodash/fp/iteratee';
 
-function extent<T>(predicate: string | object | Function) {
+function extent<T>(predicate: string) {
   const func = iteratee(predicate);
 
   return (collection: T[]) =>

@@ -6,31 +6,31 @@ import ConnectionLineModel from '../../stores/ConnectionLine';
 import styled from '../styled';
 import ConnectionLineLabel from './ConnectionLineLabel';
 
-interface Props {
+interface IProps {
   connectionLine: ConnectionLineModel;
   className?: string;
 }
 
 @observer
-class ConnectionLine extends Component<Props> {
-  private _lineRef: RefObject<SVGLineElement>;
-  private _labelRef: RefObject<SVGForeignObjectElement>;
-  private _styleDisposer?: IReactionDisposer;
+class ConnectionLine extends Component<IProps> {
+  private lineRef: RefObject<SVGLineElement>;
+  private labelRef: RefObject<SVGForeignObjectElement>;
+  private styleDisposer?: IReactionDisposer;
 
-  constructor(props: Props) {
+  constructor(props: IProps) {
     super(props);
 
-    this._lineRef = createRef();
-    this._labelRef = createRef();
+    this.lineRef = createRef();
+    this.labelRef = createRef();
   }
 
   public componentDidMount() {
-    this._styleDisposer = autorun(this.style);
+    this.styleDisposer = autorun(this.style);
   }
 
   public componentWillUnmount() {
-    if (this._styleDisposer != null) {
-      this._styleDisposer();
+    if (this.styleDisposer != null) {
+      this.styleDisposer();
     }
   }
 
@@ -40,8 +40,8 @@ class ConnectionLine extends Component<Props> {
 
     return (
       <g className={className}>
-        <ConnectionLineLine innerRef={this._lineRef} />
-        <ConnectionLineLabel innerRef={this._labelRef} label={label} />
+        <ConnectionLineLine innerRef={this.lineRef} />
+        <ConnectionLineLabel innerRef={this.labelRef} label={label} />
       </g>
     );
   }
@@ -49,8 +49,8 @@ class ConnectionLine extends Component<Props> {
   private style = () => {
     const { from, to, strokeWidth } = this.props.connectionLine;
 
-    const line = this._lineRef.current!;
-    const label = this._labelRef.current!;
+    const line = this.lineRef.current!;
+    const label = this.labelRef.current!;
 
     line.setAttribute('stroke-width', String(strokeWidth));
     line.setAttribute('x1', String(from.point.x));

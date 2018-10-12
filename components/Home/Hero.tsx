@@ -10,11 +10,11 @@ import Link from '../common/Link';
 import Paragraph from '../common/Paragraph';
 import styled, { mediaQuery } from '../styled';
 
-interface Props {
+interface IProps {
   className?: string;
 }
 
-const Hero: StatelessComponent<Props> = props => {
+const Hero: StatelessComponent<IProps> = props => {
   const { className } = props;
 
   return (
@@ -80,7 +80,7 @@ export default styled(Hero)`
   padding: ${props => props.theme.spacingUnit * 2}px;
   padding-top: ${props => props.theme.spacingUnit * 3}px;
 
-  ${mediaQuery<Props>('tablet')` 
+  ${mediaQuery<IProps>('tablet')` 
     position: absolute;
     height: 100%;
     top: 0;
@@ -101,7 +101,7 @@ const HeroHighlight = styled(Paragraph)`
 const HeroBottom = styled.div`
   margin-top: ${props => props.theme.spacingUnit * 8}px;
 
-  ${mediaQuery<Props>('tablet')`
+  ${mediaQuery<IProps>('tablet')`
     margin-top: 0;
     position: absolute;
     bottom: 0;

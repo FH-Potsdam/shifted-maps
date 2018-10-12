@@ -4,18 +4,18 @@ import { computed } from 'mobx';
 import DataStore from './DataStore';
 import extent from './utils/extent';
 
-export interface PlaceData {
+export interface IPlaceData {
   readonly id: number;
-  readonly location: Location;
+  readonly location: ILocation;
   readonly name: string;
 }
 
-export interface Location {
+export interface ILocation {
   readonly lat: number;
   readonly lon: number;
 }
 
-export function isPlaceData(value: any): value is PlaceData {
+export function isPlaceData(value: any): value is IPlaceData {
   return value.id != null && value.location != null && value.name != null;
 }
 
@@ -25,10 +25,10 @@ export const visibleDurationExtent = extent<Place>('visibleDuration');
 class Place {
   public readonly store: DataStore;
   public readonly id: number;
-  public readonly location: Location;
+  public readonly location: ILocation;
   public readonly name: string;
 
-  constructor(store: DataStore, data: PlaceData) {
+  constructor(store: DataStore, data: IPlaceData) {
     this.store = store;
 
     this.id = data.id;

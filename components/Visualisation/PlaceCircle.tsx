@@ -18,29 +18,29 @@ const PlaceCircleStroke = styled.circle<{ hover: boolean }>`
   stroke: ${props => (props.hover ? props.theme.highlightColor : props.theme.foregroundColor)};
 `;
 
-interface Props {
+interface IProps {
   placeCircle: PlaceCircleModel;
   className?: string;
 }
 
 @observer
-class PlaceCircle extends Component<Props> {
-  private _ref: RefObject<SVGGElement>;
-  private _styleDisposer?: IReactionDisposer;
+class PlaceCircle extends Component<IProps> {
+  private ref: RefObject<SVGGElement>;
+  private styleDisposer?: IReactionDisposer;
 
-  constructor(props: Props) {
+  constructor(props: IProps) {
     super(props);
 
-    this._ref = createRef();
+    this.ref = createRef();
   }
 
   public componentDidMount() {
-    this._styleDisposer = autorun(this.style);
+    this.styleDisposer = autorun(this.style);
   }
 
   public componentWillUnmount() {
-    if (this._styleDisposer != null) {
-      this._styleDisposer();
+    if (this.styleDisposer != null) {
+      this.styleDisposer();
     }
   }
 
@@ -50,7 +50,7 @@ class PlaceCircle extends Component<Props> {
 
     return (
       <g
-        ref={this._ref}
+        ref={this.ref}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
         className={className}
@@ -70,7 +70,7 @@ class PlaceCircle extends Component<Props> {
 
   private style = () => {
     const { point } = this.props.placeCircle;
-    const group = this._ref.current!;
+    const group = this.ref.current!;
 
     group.setAttribute('transform', `translate(${point.x}, ${point.y})`);
   };
