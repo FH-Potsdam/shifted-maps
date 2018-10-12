@@ -1,5 +1,10 @@
 import { ReactElement } from 'react';
-import BaseDocument, { Head, Main, NextScript, NextDocumentContext } from 'next/document';
+import BaseDocument, {
+  Head,
+  Main,
+  NextScript,
+  NextDocumentContext,
+} from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 
 type Props = {
@@ -9,7 +14,9 @@ type Props = {
 class Document extends BaseDocument<Props> {
   static getInitialProps({ renderPage }: NextDocumentContext) {
     const sheet = new ServerStyleSheet();
-    const page = renderPage(App => props => sheet.collectStyles(<App {...props} />));
+    const page = renderPage(App => props =>
+      sheet.collectStyles(<App {...props} />)
+    );
     const styleTags = sheet.getStyleElement();
 
     return { ...page, styleTags };
@@ -26,7 +33,10 @@ class Document extends BaseDocument<Props> {
           />
           <meta name="viewport" content="width=device-width" />
           {this.props.styleTags}
-          <link href="/static/images/favicon.ico" rel="shortcut icon" />
+          <link
+            href="/static/images/favicon.ico"
+            rel="shortcut icon"
+          />
         </Head>
         <body>
           <Main />

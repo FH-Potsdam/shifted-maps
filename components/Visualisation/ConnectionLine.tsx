@@ -53,8 +53,12 @@ class ConnectionLine extends Component<Props> {
       return;
     }
 
-    const fromPart = from.point.add(vector.multiplyBy(from.radius / distance));
-    const toPart = to.point.subtract(vector.multiplyBy(to.radius / distance));
+    const fromPart = from.point.add(
+      vector.multiplyBy(from.radius / distance)
+    );
+    const toPart = to.point.subtract(
+      vector.multiplyBy(to.radius / distance)
+    );
     const vectorPart = toPart.subtract(fromPart);
 
     const center = fromPart.add(vectorPart.divideBy(2));
@@ -66,7 +70,10 @@ class ConnectionLine extends Component<Props> {
       rotate += 180;
     }
 
-    label.setAttribute('transform', `translate(${center.x}, ${center.y}) rotate(${rotate})`);
+    label.setAttribute(
+      'transform',
+      `translate(${center.x}, ${center.y}) rotate(${rotate})`
+    );
   };
 
   render() {
@@ -76,7 +83,10 @@ class ConnectionLine extends Component<Props> {
     return (
       <g className={className}>
         <ConnectionLineLine innerRef={this._lineRef} />
-        <ConnectionLineLabel innerRef={this._labelRef} label={label} />
+        <ConnectionLineLabel
+          innerRef={this._labelRef}
+          label={label}
+        />
       </g>
     );
   }

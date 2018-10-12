@@ -8,8 +8,14 @@ function Screencast({ className }: Props) {
   return (
     <div className={className}>
       <video autoPlay preload="auto" loop>
-        <source src="/static/videos/screencast-hd.mp4" type="video/mp4" />
-        <source src="/static/videos/screencast-hd.webm" type="video/webm" />
+        <source
+          src="/static/videos/screencast-hd.mp4"
+          type="video/mp4"
+        />
+        <source
+          src="/static/videos/screencast-hd.webm"
+          type="video/webm"
+        />
       </video>
     </div>
   );

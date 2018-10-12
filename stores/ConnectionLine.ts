@@ -8,11 +8,20 @@ import PlaceCircle from './PlaceCircle';
 import { VIEW } from './UIStore';
 import extent from './utils/extent';
 
-export const sortByHoverStrokeWidth = orderBy<ConnectionLine>(['hover', 'radius'], ['asc', 'asc']);
+export const sortByHoverStrokeWidth = orderBy<ConnectionLine>(
+  ['hover', 'radius'],
+  ['asc', 'asc']
+);
 
-export const visibleDistanceExtent = extent<ConnectionLine>('visibleDistance');
-export const visibleDurationExtent = extent<ConnectionLine>('visibleDuration');
-export const visibleFrequencyExtent = extent<ConnectionLine>('visibleFrequency');
+export const visibleDistanceExtent = extent<ConnectionLine>(
+  'visibleDistance'
+);
+export const visibleDurationExtent = extent<ConnectionLine>(
+  'visibleDuration'
+);
+export const visibleFrequencyExtent = extent<ConnectionLine>(
+  'visibleFrequency'
+);
 export const lengthExtent = extent<ConnectionLine>('length');
 
 class ConnectionLine {
@@ -22,7 +31,12 @@ class ConnectionLine {
   readonly connections: Connection[] = [];
   readonly key: string;
 
-  constructor(vis: VisualisationStore, key: string, from: PlaceCircle, to: PlaceCircle) {
+  constructor(
+    vis: VisualisationStore,
+    key: string,
+    from: PlaceCircle,
+    to: PlaceCircle
+  ) {
     this.vis = vis;
     this.key = key;
     this.from = from;
@@ -32,7 +46,8 @@ class ConnectionLine {
   @computed
   get visibleFrequency() {
     return this.connections.reduce(
-      (frequency, connection) => frequency + connection.visibleFrequency,
+      (frequency, connection) =>
+        frequency + connection.visibleFrequency,
       0
     );
   }
@@ -40,16 +55,22 @@ class ConnectionLine {
   @computed
   get visibleDistance() {
     return (
-      this.connections.reduce((distance, connection) => distance + connection.visibleDistance, 0) /
-      this.connections.length
+      this.connections.reduce(
+        (distance, connection) =>
+          distance + connection.visibleDistance,
+        0
+      ) / this.connections.length
     );
   }
 
   @computed
   get visibleDuration() {
     return (
-      this.connections.reduce((distance, connection) => distance + connection.visibleDuration, 0) /
-      this.connections.length
+      this.connections.reduce(
+        (distance, connection) =>
+          distance + connection.visibleDuration,
+        0
+      ) / this.connections.length
     );
   }
 
@@ -63,15 +84,21 @@ class ConnectionLine {
     const { view } = this.vis.ui;
 
     if (view === VIEW.GEOGRAPHIC) {
-      return this.vis.connectionDistanceLengthScale(this.visibleDistance);
+      return this.vis.connectionDistanceLengthScale(
+        this.visibleDistance
+      );
     }
 
     if (view === VIEW.DURATION) {
-      return this.vis.connectionDurationLengthScale(this.visibleDuration);
+      return this.vis.connectionDurationLengthScale(
+        this.visibleDuration
+      );
     }
 
     if (view === VIEW.FREQUENCY) {
-      return this.vis.connectionFrequencyLengthScale(this.visibleFrequency);
+      return this.vis.connectionFrequencyLengthScale(
+        this.visibleFrequency
+      );
     }
 
     return this.length;
@@ -93,7 +120,9 @@ class ConnectionLine {
 
     if (view === VIEW.GEOGRAPHIC) {
       if (this.visibleDistance >= 1000) {
-        return `${Math.round(this.visibleDistance / 1000).toLocaleString()} km`;
+        return `${Math.round(
+          this.visibleDistance / 1000
+        ).toLocaleString()} km`;
       }
 
       return `${Math.round(this.visibleDistance).toLocaleString()} m`;
@@ -104,7 +133,9 @@ class ConnectionLine {
     }
 
     if (view === VIEW.DURATION) {
-      return moment.duration(this.visibleDuration, 'seconds').humanize();
+      return moment
+        .duration(this.visibleDuration, 'seconds')
+        .humanize();
     }
 
     return null;

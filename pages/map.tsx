@@ -7,7 +7,10 @@ import { DiaryData, fetchDemoDiary } from '../stores/Diary';
 import { VIEW } from '../stores/UIStore';
 
 const DynamicVisualisation = dynamic({
-  loader: () => import('../components/Visualisation/Visualisation').then(module => module.default),
+  loader: () =>
+    import('../components/Visualisation/Visualisation').then(
+      module => module.default
+    ),
   ssr: false,
   loading: () => null,
 });
@@ -18,14 +21,20 @@ type Props = {
 };
 
 class Map extends PureComponent<Props> {
-  static async getInitialProps({ req, query }: NextContext): Promise<Props> {
+  static async getInitialProps({
+    req,
+    query,
+  }: NextContext): Promise<Props> {
     let view: VIEW | undefined;
 
     if (typeof query.view === 'string') {
       view = VIEW[query.view.toUpperCase()];
     }
 
-    return { data: await fetchDemoDiary({ isServer: req != null }), view };
+    return {
+      data: await fetchDemoDiary({ isServer: req != null }),
+      view,
+    };
   }
 
   handleFilterBarViewChange = (view?: VIEW) => {

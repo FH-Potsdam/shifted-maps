@@ -16,10 +16,14 @@ export type Location = {
 };
 
 export function isPlaceData(value: any): value is PlaceData {
-  return value.id != null && value.location != null && value.name != null;
+  return (
+    value.id != null && value.location != null && value.name != null
+  );
 }
 
-export const visibleFrequencyExtent = extent<Place>('visibleFrequency');
+export const visibleFrequencyExtent = extent<Place>(
+  'visibleFrequency'
+);
 export const visibleDurationExtent = extent<Place>('visibleDuration');
 
 class Place {
@@ -55,12 +59,18 @@ class Place {
 
   @computed
   get duration() {
-    return this.stays.reduce((duration, stay) => duration + stay.duration, 0);
+    return this.stays.reduce(
+      (duration, stay) => duration + stay.duration,
+      0
+    );
   }
 
   @computed
   get visibleDuration() {
-    return this.visibleStays.reduce((duration, stay) => duration + stay.duration, 0);
+    return this.visibleStays.reduce(
+      (duration, stay) => duration + stay.duration,
+      0
+    );
   }
 
   @computed

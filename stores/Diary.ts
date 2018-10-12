@@ -9,6 +9,10 @@ export type DiaryData = {
   trip?: TripData;
 }[];
 
-export function fetchDemoDiary(options?: RequestInit & FetchOptions): Promise<DiaryData> {
-  return fetch(`/static/data/demo.json`, options).then(response => response.json());
+export function fetchDemoDiary(
+  options?: RequestInit & FetchOptions
+): Promise<DiaryData> {
+  return fetch(`/static/data/demo.json`, options).then(
+    (response: Response) => response.json()
+  );
 }

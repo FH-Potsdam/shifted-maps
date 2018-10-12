@@ -9,7 +9,9 @@ const {
   keyframes,
   ThemeProvider,
   withTheme,
-} = styledComponents as styledComponents.ThemedStyledComponentsModule<Theme>;
+} = styledComponents as styledComponents.ThemedStyledComponentsModule<
+  Theme
+>;
 
 export { css, injectGlobal, keyframes, ThemeProvider, withTheme };
 export default styled;
@@ -37,7 +39,8 @@ export function mediaQuery<P>(name: Breakpoints) {
     >[]
   ) => {
     return css<P>`
-      @media (min-width: ${props => props.theme.breakpoints[name] / 16}em) {
+      @media (min-width: ${props =>
+          props.theme.breakpoints[name] / 16}em) {
         ${css<P>(strings, ...interpolations)};
       }
     `;

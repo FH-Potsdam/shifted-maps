@@ -10,7 +10,8 @@
   "scripts": {
     "start": "URL=http://localhost:3000/ next",
     "now-build": "next build",
-    "now-start": "next start"
+    "now-start": "next start",
+    "prettier": "prettier --write \"{components,pages,stores}/**/*.{ts,tsx}\""
   },
   "dependencies": {
     "@zeit/next-css": "^1.0.1",
@@ -49,6 +50,7 @@
     "@types/react-leaflet": "^1.1.6",
     "@types/styled-components": "^3.0.1",
     "babel-plugin-styled-components": "^1.8.0",
-    "mobx-react-devtools": "^6.0.3"
+    "mobx-react-devtools": "^6.0.3",
+    "prettier": "^1.14.3"
   }
 }

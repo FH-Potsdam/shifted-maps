@@ -21,21 +21,29 @@ type Props = {
 @observer
 class PlaceCircleMap extends Component<Props> {
   render() {
-    const { diameter, latLngBounds, zoom, children } = this.props.placeCircle;
+    const {
+      diameter,
+      latLngBounds,
+      zoom,
+      children,
+    } = this.props.placeCircle;
     const center = latLngBounds.getCenter();
 
     return (
       <g>
         <image
           clipPath="url(#clip-path-circle)"
-          href={`http://api.tiles.mapbox.com/v4/${config.mapboxStyleId}/${center.lng},${
+          href={`http://api.tiles.mapbox.com/v4/${
+            config.mapboxStyleId
+          }/${center.lng},${
             center.lat
-          },${zoom}/${diameter}x${diameter}${Browser.retina ? '@2x' : ''}.png?access_token=${
-            config.mapboxAccessToken
-          }`}
+          },${zoom}/${diameter}x${diameter}${
+            Browser.retina ? '@2x' : ''
+          }.png?access_token=${config.mapboxAccessToken}`}
           width={diameter}
           height={diameter}
-          transform={`translate(${diameter * -0.5}, ${diameter * -0.5})`}
+          transform={`translate(${diameter * -0.5}, ${diameter *
+            -0.5})`}
         />
         {children.length === 0 && <PlaceMapDot />}
       </g>

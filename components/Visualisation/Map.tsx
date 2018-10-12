@@ -1,5 +1,9 @@
 import { Component } from 'react';
-import { Map as ReactLeafletMap, TileLayer, MapProps } from 'react-leaflet';
+import {
+  Map as ReactLeafletMap,
+  TileLayer,
+  MapProps,
+} from 'react-leaflet';
 import { observer } from 'mobx-react';
 import { LatLngBounds } from 'leaflet';
 
@@ -19,7 +23,11 @@ class Map extends Component<Props & MapProps> {
     const { className, children, showTiles, ...props } = this.props;
 
     return (
-      <ReactLeafletMap {...props} className={className} zoomControl={false}>
+      <ReactLeafletMap
+        {...props}
+        className={className}
+        zoomControl={false}
+      >
         <TileLayer
           opacity={showTiles ? 0.25 : 0}
           url="https://api.tiles.mapbox.com/v4/{styleId}/{z}/{x}/{y}{r}.png?access_token={accessToken}"
@@ -60,6 +68,7 @@ export default styled(Map)`
   }
 
   .leaflet-layer {
-    transition: opacity ${props => props.theme.shortTransitionDuration};
+    transition: opacity
+      ${props => props.theme.shortTransitionDuration};
   }
 `;

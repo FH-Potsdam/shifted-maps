@@ -43,12 +43,16 @@ class Trip {
 
   @computed
   get from() {
-    return this.store.places.find(place => place.id === this.fromPlaceId);
+    return this.store.places.find(
+      place => place.id === this.fromPlaceId
+    );
   }
 
   @computed
   get to() {
-    return this.store.places.find(place => place.id === this.toPlaceId);
+    return this.store.places.find(
+      place => place.id === this.toPlaceId
+    );
   }
 
   @computed

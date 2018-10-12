@@ -14,7 +14,13 @@ class UIStore {
   view?: VIEW;
 
   @action
-  update({ view, timeSpan }: { timeSpan?: [number, number]; view?: VIEW }) {
+  update({
+    view,
+    timeSpan,
+  }: {
+    timeSpan?: [number, number];
+    view?: VIEW;
+  }) {
     this.view = view;
     this.timeSpan = timeSpan;
   }

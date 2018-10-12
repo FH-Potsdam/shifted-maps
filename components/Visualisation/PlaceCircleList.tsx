@@ -16,7 +16,10 @@ class PlaceCircleList extends Component<Props> {
     return (
       <g>
         {placeCircles.map(placeCircle => (
-          <PlaceCircle key={placeCircle.key} placeCircle={placeCircle} />
+          <PlaceCircle
+            key={placeCircle.key}
+            placeCircle={placeCircle}
+          />
         ))}
       </g>
     );

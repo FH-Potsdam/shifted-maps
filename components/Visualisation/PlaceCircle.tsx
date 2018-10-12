@@ -1,4 +1,9 @@
-import { Component, SyntheticEvent, RefObject, createRef } from 'react';
+import {
+  Component,
+  SyntheticEvent,
+  RefObject,
+  createRef,
+} from 'react';
 import { observer } from 'mobx-react';
 import { action, IReactionDisposer, autorun } from 'mobx';
 
@@ -15,7 +20,10 @@ const PlaceCircleBackground = styled.circle`
 const PlaceCircleStroke = styled.circle<{ hover: boolean }>`
   transition: stroke ${props => props.theme.shortTransitionDuration};
   fill: none;
-  stroke: ${props => (props.hover ? props.theme.highlightColor : props.theme.foregroundColor)};
+  stroke: ${props =>
+    props.hover
+      ? props.theme.highlightColor
+      : props.theme.foregroundColor};
 `;
 
 type Props = {
@@ -48,7 +56,10 @@ class PlaceCircle extends Component<Props> {
     const { point } = this.props.placeCircle;
     const group = this._ref.current!;
 
-    group.setAttribute('transform', `translate(${point.x}, ${point.y})`);
+    group.setAttribute(
+      'transform',
+      `translate(${point.x}, ${point.y})`
+    );
   };
 
   @action.bound
@@ -67,7 +78,13 @@ class PlaceCircle extends Component<Props> {
 
   render() {
     const { placeCircle, className } = this.props;
-    const { radius, strokeWidth, hover, place, children } = placeCircle;
+    const {
+      radius,
+      strokeWidth,
+      hover,
+      place,
+      children,
+    } = placeCircle;
 
     return (
       <g
@@ -78,7 +95,11 @@ class PlaceCircle extends Component<Props> {
       >
         <PlaceCircleBackground r={radius} />
         <PlaceCircleMap placeCircle={placeCircle} />
-        <PlaceCircleStroke r={radius} style={{ strokeWidth: `${strokeWidth}px` }} hover={hover} />
+        <PlaceCircleStroke
+          r={radius}
+          style={{ strokeWidth: `${strokeWidth}px` }}
+          hover={hover}
+        />
         <PlaceCircleLabel
           label={place.name}
           clusterSize={children.length}

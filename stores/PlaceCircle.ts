@@ -1,11 +1,23 @@
 import { computed, observable, action } from 'mobx';
-import { Map as LeafletMap, bounds, latLngBounds, point, Point } from 'leaflet';
+import {
+  Map as LeafletMap,
+  bounds,
+  latLngBounds,
+  point,
+  Point,
+} from 'leaflet';
 import orderBy from 'lodash/fp/orderBy';
 
 import Place from './Place';
-import VisualisationStore, { MAX_ZOOM, CRS } from './VisualisationStore';
+import VisualisationStore, {
+  MAX_ZOOM,
+  CRS,
+} from './VisualisationStore';
 
-export const sortByHoverRadius = orderBy<PlaceCircle>(['hover', 'radius'], ['asc', 'asc']);
+export const sortByHoverRadius = orderBy<PlaceCircle>(
+  ['hover', 'radius'],
+  ['asc', 'asc']
+);
 
 class PlaceCircle {
   readonly vis: VisualisationStore;
@@ -29,27 +41,25 @@ class PlaceCircle {
   }
 
   @action
-  updateByMap(map: LeafletMap) {
+  updateMapPoint(map: LeafletMap) {
     const { view } = this.vis.ui;
-    //const prevMapPoint = this.mapPoint;
     const nextMapPoint = map.latLngToLayerPoint(this.place.latLng);
 
     this.mapPoint = nextMapPoint;
-    //this.animate = prevMapPoint.equals(nextMapPoint);
 
     if (view == null) {
-      this.point = this.mapPoint;
+      this.updatePoint(this.mapPoint);
     }
   }
 
   @action
-  updateByGraphNode(node: Point) {
-    this.point = node.clone();
+  updateAnimate(animate: boolean) {
+    this.animate = animate;
   }
 
   @action
-  roundPoint() {
-    this.point = this.point.round();
+  updatePoint(point: Point, round: boolean = false) {
+    this.point = point[round ? 'round' : 'clone']();
   }
 
   @computed
@@ -69,7 +79,9 @@ class PlaceCircle {
 
   @computed
   get strokeWidth() {
-    return this.vis.placeStrokeWidthScale(this.place.visibleFrequency);
+    return this.vis.placeStrokeWidthScale(
+      this.place.visibleFrequency
+    );
   }
 
   @computed
@@ -80,7 +92,9 @@ class PlaceCircle {
       }
 
       if (this.radius < placeCircle.radius) {
-        const distance = this.mapPoint.distanceTo(placeCircle.mapPoint);
+        const distance = this.mapPoint.distanceTo(
+          placeCircle.mapPoint
+        );
         const maxDistance = this.radius + placeCircle.radius;
 
         if (distance > maxDistance) {
@@ -110,7 +124,9 @@ class PlaceCircle {
       return [];
     }
 
-    return this.vis.placeCircles.filter(placeCircle => placeCircle.parent === this);
+    return this.vis.placeCircles.filter(
+      placeCircle => placeCircle.parent === this
+    );
   }
 
   @computed
@@ -142,7 +158,10 @@ class PlaceCircle {
       const bottomRight = CRS.latLngToPoint(southEast, zoom);
 
       size = bounds(topLeft, bottomRight).getSize();
-    } while ((this.diameter > size.x || this.diameter > size.y) && (zoom = zoom + 1) <= MAX_ZOOM);
+    } while (
+      (this.diameter > size.x || this.diameter > size.y) &&
+      (zoom = zoom + 1) <= MAX_ZOOM
+    );
 
     return zoom;
   }

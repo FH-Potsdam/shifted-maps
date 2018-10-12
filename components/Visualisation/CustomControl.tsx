@@ -1,4 +1,9 @@
-import { MapControl, MapControlProps, withLeaflet, WrappedProps } from 'react-leaflet';
+import {
+  MapControl,
+  MapControlProps,
+  withLeaflet,
+  WrappedProps,
+} from 'react-leaflet';
 import { Control, DomEvent } from 'leaflet';
 import { createPortal } from 'react-dom';
 
@@ -33,7 +38,10 @@ class CustomControl extends MapControl<Props, LeafletCustomControl> {
 
   render() {
     if (this.leafletElement.container != null) {
-      return createPortal(this.props.children, this.leafletElement.container);
+      return createPortal(
+        this.props.children,
+        this.leafletElement.container
+      );
     }
 
     return null;
