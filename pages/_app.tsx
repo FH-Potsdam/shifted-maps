@@ -8,10 +8,7 @@ import theme from '../components/theme';
 import '../components/genericStyles';
 
 class App extends BaseApp {
-  static async getInitialProps({
-    Component,
-    ctx,
-  }: AppComponentContext) {
+  static async getInitialProps({ Component, ctx }: AppComponentContext) {
     let pageProps = {};
 
     if (ctx.req != null) {

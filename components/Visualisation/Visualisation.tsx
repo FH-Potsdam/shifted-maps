@@ -41,10 +41,7 @@ class Visualisation extends Component<Props> {
 
     this._uiStore = new UIStore();
     this._dataStore = new DataStore(this._uiStore, data);
-    this._visStore = new VisualisationStore(
-      this._uiStore,
-      this._dataStore
-    );
+    this._visStore = new VisualisationStore(this._uiStore, this._dataStore);
 
     this._uiStore.update({ view, timeSpan });
   }
@@ -75,11 +72,7 @@ class Visualisation extends Component<Props> {
     const nextZoom = this._map.getZoom();
     const nextCenter = this._map.getCenter();
 
-    if (
-      this._zoom !== nextZoom ||
-      this._center == null ||
-      !this._center.equals(nextCenter)
-    ) {
+    if (this._zoom !== nextZoom || this._center == null || !this._center.equals(nextCenter)) {
       this._visStore.update(this._map);
     }
 
@@ -88,11 +81,7 @@ class Visualisation extends Component<Props> {
   };
 
   render() {
-    const {
-      sortedPlaceCircles,
-      sortedConnectionLines,
-      initialBounds,
-    } = this._visStore;
+    const { sortedPlaceCircles, sortedConnectionLines, initialBounds } = this._visStore;
     const { view } = this._uiStore;
     const { onFilterBarViewChange } = this.props;
 
@@ -108,16 +97,11 @@ class Visualisation extends Component<Props> {
       >
         <SVGLayer>
           <defs>
-            <clipPath
-              id="clip-path-circle"
-              clipPathUnits="objectBoundingBox"
-            >
+            <clipPath id="clip-path-circle" clipPathUnits="objectBoundingBox">
               <circle r="0.5" cx="0.5" cy="0.5" />
             </clipPath>
           </defs>
-          <ConnectionLineList
-            connectionLines={sortedConnectionLines}
-          />
+          <ConnectionLineList connectionLines={sortedConnectionLines} />
           <PlaceCircleList placeCircles={sortedPlaceCircles} />
           <CustomControl position="topleft">
             <FilterToolbar

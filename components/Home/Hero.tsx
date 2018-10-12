@@ -20,9 +20,7 @@ const Hero: StatelessComponent<Props> = props => {
   return (
     <div className={className}>
       <Heading>Shifted Maps</Heading>
-      <Paragraph lead>
-        Visualizing personal Movement through Map Networks
-      </Paragraph>
+      <Paragraph lead>Visualizing personal Movement through Map Networks</Paragraph>
       <HeroHighlight>
         <NextLink href="map" prefetch>
           <HeroGo>
@@ -45,12 +43,9 @@ const Hero: StatelessComponent<Props> = props => {
         </HeroSectionLayout>
         <HeroCreditsSection>
           Shifted Maps is a student research project by{' '}
-          <Link href="http://www.lennerd.com">
-            Lennart Hildebrandt
-          </Link>{' '}
-          and <Link href="http://www.heikeotten.de">Heike Otten</Link>{' '}
-          at the Urban Complexity Lab, University of Applied Sciences
-          Potsdam.
+          <Link href="http://www.lennerd.com">Lennart Hildebrandt</Link> and{' '}
+          <Link href="http://www.heikeotten.de">Heike Otten</Link> at the Urban Complexity Lab,
+          University of Applied Sciences Potsdam.
         </HeroCreditsSection>
         <HeroSectionLayout>
           <LayoutItem span="2">
@@ -71,10 +66,7 @@ const Hero: StatelessComponent<Props> = props => {
           </LayoutItem>
           <LayoutItem span="3">
             <Link href="http://here.com">
-              <HeroLogo
-                src="/static/images/here-logo.png"
-                alt="Logo of Micrsoft HERE"
-              />
+              <HeroLogo src="/static/images/here-logo.png" alt="Logo of Micrsoft HERE" />
             </Link>
           </LayoutItem>
         </HeroSectionLayout>
@@ -171,12 +163,10 @@ const HeroCredits = styled(use('div'))`
   a {
     color: ${props => props.theme.foregroundColor};
     transition: border-bottom 400ms;
-    border-bottom: 1px solid
-      ${props => lighten(0.6, props.theme.foregroundColor)};
+    border-bottom: 1px solid ${props => lighten(0.6, props.theme.foregroundColor)};
 
     &:hover {
-      border-bottom-color: ${props =>
-        lighten(0.4, props.theme.foregroundColor)};
+      border-bottom-color: ${props => lighten(0.4, props.theme.foregroundColor)};
     }
   }
 `;

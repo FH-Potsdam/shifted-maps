@@ -30,10 +30,7 @@ class GraphStore {
   private _nodes: PlaceCircleNode[] = [];
   private _links: ConnectionLineLink[] = [];
 
-  private _simulation: Simulation<
-    PlaceCircleNode,
-    ConnectionLineLink
-  >;
+  private _simulation: Simulation<PlaceCircleNode, ConnectionLineLink>;
   private _linkForce: ForceLink<PlaceCircleNode, ConnectionLineLink>;
   private _xForce: ForceX<PlaceCircleNode>;
   private _yForce: ForceY<PlaceCircleNode>;
@@ -45,29 +42,19 @@ class GraphStore {
   private _zoom?: number;
   private _pixelOrigin?: Point;
 
-  constructor(
-    vis: VisualisationStore,
-    onTick: TickCallback,
-    onEnd: EndCallback
-  ) {
+  constructor(vis: VisualisationStore, onTick: TickCallback, onEnd: EndCallback) {
     this._vis = vis;
     this._onTick = onTick;
     this._onEnd = onEnd;
 
-    this._linkForce = forceLink<
-      PlaceCircleNode,
-      ConnectionLineLink
-    >().id(node => node.key);
+    this._linkForce = forceLink<PlaceCircleNode, ConnectionLineLink>().id(node => node.key);
 
     this._xForce = forceX<PlaceCircleNode>().strength(0.3);
     this._yForce = forceY<PlaceCircleNode>().strength(0.3);
 
     this._manyBodyForce = forceManyBody<PlaceCircleNode>();
 
-    this._simulation = forceSimulation<
-      PlaceCircleNode,
-      ConnectionLineLink
-    >()
+    this._simulation = forceSimulation<PlaceCircleNode, ConnectionLineLink>()
       .force('link', this._linkForce)
       .force('x', this._xForce)
       .force('y', this._yForce)
@@ -100,9 +87,7 @@ class GraphStore {
     }
 
     this._simulation.nodes(this.nodes);
-    this._linkForce
-      .links(this.links)
-      .distance(link => link.connectionLine.viewLength);
+    this._linkForce.links(this.links).distance(link => link.connectionLine.viewLength);
     this._xForce.x(node => node.placeCircle.mapPoint.x);
     this._yForce.y(node => node.placeCircle.mapPoint.y);
   };
@@ -114,17 +99,10 @@ class GraphStore {
     const prevPixelOrigin = this._pixelOrigin;
     const nextPixelOrigin = map.getPixelOrigin();
 
-    if (
-      prevZoom != null &&
-      prevPixelOrigin != null &&
-      nextZoom !== prevZoom
-    ) {
+    if (prevZoom != null && prevPixelOrigin != null && nextZoom !== prevZoom) {
       this.nodes.forEach(node => {
         // latLngToLayerPoint for custom zoom
-        const prevLatLng = map.unproject(
-          node.add(prevPixelOrigin),
-          prevZoom
-        );
+        const prevLatLng = map.unproject(node.add(prevPixelOrigin), prevZoom);
         const nextPoint = map.latLngToLayerPoint(prevLatLng);
 
         node.x = nextPoint.x;
@@ -150,9 +128,7 @@ class GraphStore {
     const nodes: PlaceCircleNode[] = [];
 
     this._vis.placeCircles.forEach(placeCircle => {
-      let node = this._nodes.find(
-        node => node.placeCircle === placeCircle
-      );
+      let node = this._nodes.find(node => node.placeCircle === placeCircle);
 
       if (node == null) {
         node = new PlaceCircleNode(placeCircle);
@@ -169,9 +145,7 @@ class GraphStore {
     const links: ConnectionLineLink[] = [];
 
     this._vis.connectionLines.forEach(connectionLine => {
-      let link = this._links.find(
-        link => link.connectionLine === connectionLine
-      );
+      let link = this._links.find(link => link.connectionLine === connectionLine);
 
       if (link == null) {
         link = new ConnectionLineLink(connectionLine);
@@ -184,8 +158,7 @@ class GraphStore {
   }
 }
 
-export class PlaceCircleNode extends Point
-  implements SimulationNodeDatum {
+export class PlaceCircleNode extends Point implements SimulationNodeDatum {
   readonly placeCircle: PlaceCircle;
 
   key: string;
@@ -203,8 +176,7 @@ export class PlaceCircleNode extends Point
   }
 }
 
-export class ConnectionLineLink
-  implements SimulationLinkDatum<PlaceCircleNode> {
+export class ConnectionLineLink implements SimulationLinkDatum<PlaceCircleNode> {
   readonly connectionLine: ConnectionLine;
 
   source: PlaceCircleNode | string;

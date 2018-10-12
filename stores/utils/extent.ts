@@ -5,10 +5,7 @@ function extent<T>(predicate: string | object | Function) {
 
   return (collection: T[]) =>
     collection.reduce(
-      ([min, max], value) => [
-        Math.min(min, func(value)),
-        Math.max(max, func(value)),
-      ],
+      ([min, max], value) => [Math.min(min, func(value)), Math.max(max, func(value))],
       [Infinity, -Infinity]
     );
 }

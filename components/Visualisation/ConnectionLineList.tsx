@@ -16,10 +16,7 @@ class ConnectionLineList extends Component<Props> {
     return (
       <g>
         {connectionLines.map(connectionLine => (
-          <ConnectionLine
-            key={connectionLine.key}
-            connectionLine={connectionLine}
-          />
+          <ConnectionLine key={connectionLine.key} connectionLine={connectionLine} />
         ))}
       </g>
     );

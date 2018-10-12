@@ -38,11 +38,7 @@ class PlaceCircleLabel extends PureComponent<Props> {
   private drawLabel() {
     const { label, clusterSize, theme } = this.props;
 
-    if (
-      this.ctx == null ||
-      this.labelCanvas == null ||
-      theme == null
-    ) {
+    if (this.ctx == null || this.labelCanvas == null || theme == null) {
       return;
     }
 
@@ -51,11 +47,7 @@ class PlaceCircleLabel extends PureComponent<Props> {
     const spacing = theme.spacingUnit;
 
     const clusterLabel =
-      clusterSize > 0
-        ? `+${clusterSize} other ${
-            clusterSize === 1 ? 'place' : 'places'
-          }`
-        : null;
+      clusterSize > 0 ? `+${clusterSize} other ${clusterSize === 1 ? 'place' : 'places'}` : null;
 
     this.ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
     const labelMetrics = this.ctx.measureText(label);
@@ -77,9 +69,7 @@ class PlaceCircleLabel extends PureComponent<Props> {
     this.labelCanvas.setAttribute('height', String(height));
     this.labelCanvas.style.width = `${Math.round(width * 0.5)}px`;
     this.labelCanvas.style.height = `${Math.round(height * 0.5)}px`;
-    this.labelCanvas.style[
-      DomUtil.TRANSFORM
-    ] = `translateX(${Math.round(width * -0.25)}px)`;
+    this.labelCanvas.style[DomUtil.TRANSFORM] = `translateX(${Math.round(width * -0.25)}px)`;
 
     this.ctx.textBaseline = 'hanging';
     this.ctx.textAlign = 'center';
@@ -95,16 +85,8 @@ class PlaceCircleLabel extends PureComponent<Props> {
 
     if (clusterLabel != null) {
       this.ctx.font = `italic ${clusterLabelFontSize * 2}px "soleil"`;
-      this.ctx.strokeText(
-        clusterLabel,
-        width / 2,
-        labelFontSize * 2 + spacing / 4
-      );
-      this.ctx.fillText(
-        clusterLabel,
-        width / 2,
-        labelFontSize * 2 + spacing / 4
-      );
+      this.ctx.strokeText(clusterLabel, width / 2, labelFontSize * 2 + spacing / 4);
+      this.ctx.fillText(clusterLabel, width / 2, labelFontSize * 2 + spacing / 4);
     }
   }
 
@@ -112,10 +94,7 @@ class PlaceCircleLabel extends PureComponent<Props> {
     const { className, offset } = this.props;
 
     return (
-      <foreignObject
-        className={className}
-        transform={`translate(0, ${Math.round(offset)})`}
-      >
+      <foreignObject className={className} transform={`translate(0, ${Math.round(offset)})`}>
         <canvas ref={this.ref} />
       </foreignObject>
     );

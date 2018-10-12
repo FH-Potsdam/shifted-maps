@@ -10,12 +10,7 @@ export type StayData = {
 };
 
 export function isStayData(value: any): value is StayData {
-  return (
-    value.at != null &&
-    value.duration != null &&
-    value.endAt != null &&
-    value.startAt != null
-  );
+  return value.at != null && value.duration != null && value.endAt != null && value.startAt != null;
 }
 
 class Stay {
@@ -49,9 +44,7 @@ class Stay {
 
   @computed
   get at() {
-    return this.store.places.find(
-      place => place.id === this.atPlaceId
-    );
+    return this.store.places.find(place => place.id === this.atPlaceId);
   }
 }
 

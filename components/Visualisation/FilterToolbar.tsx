@@ -18,9 +18,7 @@ type Props = {
 @observer
 class FilterToolbar extends Component<Props> {
   handleToggleView(view: VIEW) {
-    this.props.onViewChange(
-      view !== this.props.ui.view ? view : undefined
-    );
+    this.props.onViewChange(view !== this.props.ui.view ? view : undefined);
   }
 
   render() {
@@ -63,8 +61,7 @@ class FilterToolbar extends Component<Props> {
 
 export default styled(FilterToolbar)`
   background-color: rgba(255, 255, 255, 0.9);
-  padding: ${props => props.theme.spacingUnit * 1.5}px
-    ${props => props.theme.spacingUnit}px;
+  padding: ${props => props.theme.spacingUnit * 1.5}px ${props => props.theme.spacingUnit}px;
   width: ${props => props.theme.spacingUnit * 14}px;
 
   ${Heading} {

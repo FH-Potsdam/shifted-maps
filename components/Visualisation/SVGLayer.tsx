@@ -1,9 +1,4 @@
-import {
-  withLeaflet,
-  MapLayer,
-  WrappedProps,
-  MapLayerProps,
-} from 'react-leaflet';
+import { withLeaflet, MapLayer, WrappedProps, MapLayerProps } from 'react-leaflet';
 import {
   Layer as LeafletLayer,
   Bounds,
@@ -25,10 +20,7 @@ class LeafletSVGLayer extends LeafletLayer {
 
   onAdd() {
     if (this.svg == null) {
-      this.svg = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'svg'
-      );
+      this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       this.svg.style.pointerEvents = 'none';
       this.svg.style.overflow = 'visible';
       this.svg.classList.add('leaflet-zoom-animated');
@@ -102,9 +94,7 @@ class LeafletSVGLayer extends LeafletLayer {
       return;
     }
 
-    const min = this._map
-      .containerPointToLayerPoint(point(0, 0))
-      .round();
+    const min = this._map.containerPointToLayerPoint(point(0, 0)).round();
     const mapSize = this._map.getSize();
     const bounds = new Bounds(min, min.add(mapSize).round());
     const size = bounds.getSize();
@@ -119,22 +109,13 @@ class LeafletSVGLayer extends LeafletLayer {
     if (bounds.min != null) {
       this._position = bounds.min;
 
-      this.svg.style[DomUtil.TRANSFORM] = `translate(${
-        bounds.min.x
-      }px, ${bounds.min.y}px)`;
-      this.svg.setAttribute(
-        'viewBox',
-        [bounds.min.x, bounds.min.y, size.x, size.y].join(' ')
-      );
+      this.svg.style[DomUtil.TRANSFORM] = `translate(${bounds.min.x}px, ${bounds.min.y}px)`;
+      this.svg.setAttribute('viewBox', [bounds.min.x, bounds.min.y, size.x, size.y].join(' '));
     }
   }
 
   private _updateTransform(center: LatLng, zoom: number) {
-    if (
-      this.svg == null ||
-      this._center == null ||
-      this._zoom == null
-    ) {
+    if (this.svg == null || this._center == null || this._zoom == null) {
       return;
     }
 
@@ -150,16 +131,13 @@ class LeafletSVGLayer extends LeafletLayer {
       .add(viewHalf)
       .subtract(centerOffset);
 
-    this.svg.style[DomUtil.TRANSFORM] = `translate(${
-      this._position.x
-    }px, ${this._position.y}px) scale(${scale})`;
+    this.svg.style[DomUtil.TRANSFORM] = `translate(${this._position.x}px, ${
+      this._position.y
+    }px) scale(${scale})`;
   }
 }
 
-class SVGLayer extends MapLayer<
-  MapLayerProps & WrappedProps,
-  LeafletSVGLayer
-> {
+class SVGLayer extends MapLayer<MapLayerProps & WrappedProps, LeafletSVGLayer> {
   createLeafletElement() {
     return new LeafletSVGLayer();
   }
@@ -174,10 +152,7 @@ class SVGLayer extends MapLayer<
 
   render() {
     if (this.leafletElement.svg != null) {
-      return createPortal(
-        this.props.children,
-        this.leafletElement.svg
-      );
+      return createPortal(this.props.children, this.leafletElement.svg);
     }
 
     return null;

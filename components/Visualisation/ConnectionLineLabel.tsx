@@ -1,10 +1,4 @@
-import {
-  PureComponent,
-  createRef,
-  RefObject,
-  forwardRef,
-  Ref,
-} from 'react';
+import { PureComponent, createRef, RefObject, forwardRef, Ref } from 'react';
 import { DomUtil } from 'leaflet';
 
 import styled, { withTheme } from '../styled';
@@ -42,12 +36,7 @@ class ConnectionLineLabel extends PureComponent<Props> {
   private drawLabel = () => {
     const { label, theme } = this.props;
 
-    if (
-      label == null ||
-      theme == null ||
-      this.ctx == null ||
-      this.labelCanvas == null
-    ) {
+    if (label == null || theme == null || this.ctx == null || this.labelCanvas == null) {
       return;
     }
 
@@ -64,8 +53,7 @@ class ConnectionLineLabel extends PureComponent<Props> {
     this.labelCanvas.setAttribute('height', String(height));
     this.labelCanvas.style.width = `${width * 0.5}px`;
     this.labelCanvas.style.height = `${height * 0.5}px`;
-    this.labelCanvas.style[DomUtil.TRANSFORM] = `translate(${width *
-      -0.25}px, ${height * -0.5}px)`;
+    this.labelCanvas.style[DomUtil.TRANSFORM] = `translate(${width * -0.25}px, ${height * -0.5}px)`;
 
     this.ctx.fillStyle = theme.backgroundColor;
     this.ctx.rect(0, 0, width, height);
