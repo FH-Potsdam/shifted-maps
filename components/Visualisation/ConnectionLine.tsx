@@ -1,15 +1,15 @@
-import { Component, RefObject, createRef } from 'react';
-import { observer } from 'mobx-react';
 import { autorun, IReactionDisposer } from 'mobx';
+import { observer } from 'mobx-react';
+import { Component, createRef, RefObject } from 'react';
 
 import ConnectionLineModel from '../../stores/ConnectionLine';
 import styled from '../styled';
 import ConnectionLineLabel from './ConnectionLineLabel';
 
-type Props = {
+interface Props {
   connectionLine: ConnectionLineModel;
   className?: string;
-};
+}
 
 @observer
 class ConnectionLine extends Component<Props> {
@@ -24,14 +24,26 @@ class ConnectionLine extends Component<Props> {
     this._labelRef = createRef();
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     this._styleDisposer = autorun(this.style);
   }
 
-  componentWillUnmount() {
+  public componentWillUnmount() {
     if (this._styleDisposer != null) {
       this._styleDisposer();
     }
+  }
+
+  public render() {
+    const { className, connectionLine } = this.props;
+    const { label } = connectionLine;
+
+    return (
+      <g className={className}>
+        <ConnectionLineLine innerRef={this._lineRef} />
+        <ConnectionLineLabel innerRef={this._labelRef} label={label} />
+      </g>
+    );
   }
 
   private style = () => {
@@ -68,18 +80,6 @@ class ConnectionLine extends Component<Props> {
 
     label.setAttribute('transform', `translate(${center.x}, ${center.y}) rotate(${rotate})`);
   };
-
-  render() {
-    const { className, connectionLine } = this.props;
-    const { label } = connectionLine;
-
-    return (
-      <g className={className}>
-        <ConnectionLineLine innerRef={this._lineRef} />
-        <ConnectionLineLabel innerRef={this._labelRef} label={label} />
-      </g>
-    );
-  }
 }
 
 const ConnectionLineLine = styled.line`

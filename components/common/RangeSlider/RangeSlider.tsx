@@ -1,24 +1,19 @@
 import { PureComponent } from 'react';
 
-import Track from './Track';
-import Handle from './Handle';
 import styled from '../../styled';
+import Handle from './Handle';
+import Track from './Track';
 
-type Props = {
+interface Props {
   values: number[];
   min: number;
   max: number;
   className: string;
-};
+}
 
 class RangeSlider extends PureComponent<Props> {
-  private handleTrackClick = (value: number) => {
-    // Get closed "handle"/value and change it
-  };
 
-  private handleHandleChange = (index: number, value: number) => {};
-
-  render() {
+  public render() {
     const { values, min, max, className } = this.props;
 
     return (
@@ -38,6 +33,11 @@ class RangeSlider extends PureComponent<Props> {
       </div>
     );
   }
+  private handleTrackClick = (value: number) => {
+    // Get closed "handle"/value and change it
+  };
+
+  private handleHandleChange = (index: number, value: number) => {};
 }
 
 export default styled(RangeSlider)`

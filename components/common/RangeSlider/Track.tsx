@@ -2,17 +2,16 @@ import { PureComponent, SyntheticEvent } from 'react';
 
 import styled from '../../styled';
 
-type Props = {
+interface Props {
   min: number;
   max: number;
   onClick: (value: number) => void;
   className?: string;
-};
+}
 
 class Track extends PureComponent<Props> {
-  private handleClick = (event: SyntheticEvent) => {};
 
-  render() {
+  public render() {
     const { className, children } = this.props;
 
     return (
@@ -21,6 +20,7 @@ class Track extends PureComponent<Props> {
       </div>
     );
   }
+  private handleClick = (event: SyntheticEvent) => {};
 }
 
 export default styled(Track)`

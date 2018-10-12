@@ -1,8 +1,8 @@
 import styled, { injectGlobal, switchProp } from '../styled';
 
-type Props = {
+interface Props {
   name: string;
-};
+}
 
 const Icon = styled.i<Props>`
   font-family: 'icomoon';

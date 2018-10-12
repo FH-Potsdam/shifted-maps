@@ -1,7 +1,7 @@
-import { PureComponent, Fragment } from 'react';
 import { NextContext } from 'next';
 import dynamic from 'next/dynamic';
 import Router from 'next/router';
+import { Fragment, PureComponent } from 'react';
 
 import { DiaryData, fetchDemoDiary } from '../stores/Diary';
 import { VIEW } from '../stores/UIStore';
@@ -12,13 +12,13 @@ const DynamicVisualisation = dynamic({
   loading: () => null,
 });
 
-type Props = {
+interface Props {
   data: DiaryData;
   view?: VIEW;
-};
+}
 
 class Map extends PureComponent<Props> {
-  static async getInitialProps({ req, query }: NextContext): Promise<Props> {
+  public static async getInitialProps({ req, query }: NextContext): Promise<Props> {
     let view: VIEW | undefined;
 
     if (typeof query.view === 'string') {
@@ -31,7 +31,7 @@ class Map extends PureComponent<Props> {
     };
   }
 
-  handleFilterBarViewChange = (view?: VIEW) => {
+  public handleFilterBarViewChange = (view?: VIEW) => {
     const query: { view?: string } = {
       ...Router.query,
     };
@@ -45,7 +45,7 @@ class Map extends PureComponent<Props> {
     Router.push({ pathname: '/map', query });
   };
 
-  render() {
+  public render() {
     const { data, view } = this.props;
 
     return (

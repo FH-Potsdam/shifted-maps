@@ -1,16 +1,16 @@
-import { Component } from 'react';
 import { observer } from 'mobx-react';
+import { Component } from 'react';
 
 import ConnectionLineModel from '../../stores/ConnectionLine';
 import ConnectionLine from './ConnectionLine';
 
-type Props = {
+interface Props {
   connectionLines: ConnectionLineModel[];
-};
+}
 
 @observer
 class ConnectionLineList extends Component<Props> {
-  render() {
+  public render() {
     const { connectionLines } = this.props;
 
     return (

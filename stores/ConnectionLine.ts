@@ -1,12 +1,12 @@
+import orderBy from 'lodash/fp/orderBy';
 import { computed } from 'mobx';
 import moment from 'moment';
-import orderBy from 'lodash/fp/orderBy';
 
-import VisualisationStore from './VisualisationStore';
 import Connection from './Connection';
 import PlaceCircle from './PlaceCircle';
 import { VIEW } from './UIStore';
 import extent from './utils/extent';
+import VisualisationStore from './VisualisationStore';
 
 export const sortByHoverStrokeWidth = orderBy<ConnectionLine>(['hover', 'radius'], ['asc', 'asc']);
 
@@ -16,11 +16,11 @@ export const visibleFrequencyExtent = extent<ConnectionLine>('visibleFrequency')
 export const lengthExtent = extent<ConnectionLine>('length');
 
 class ConnectionLine {
-  readonly vis: VisualisationStore;
-  readonly from: PlaceCircle;
-  readonly to: PlaceCircle;
-  readonly connections: Connection[] = [];
-  readonly key: string;
+  public readonly vis: VisualisationStore;
+  public readonly from: PlaceCircle;
+  public readonly to: PlaceCircle;
+  public readonly connections: Connection[] = [];
+  public readonly key: string;
 
   constructor(vis: VisualisationStore, key: string, from: PlaceCircle, to: PlaceCircle) {
     this.vis = vis;

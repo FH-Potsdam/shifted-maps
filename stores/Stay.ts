@@ -2,23 +2,23 @@ import { computed } from 'mobx';
 
 import DataStore from './DataStore';
 
-export type StayData = {
+export interface StayData {
   readonly at: number;
   readonly duration: number;
   readonly endAt: number;
   readonly startAt: number;
-};
+}
 
 export function isStayData(value: any): value is StayData {
   return value.at != null && value.duration != null && value.endAt != null && value.startAt != null;
 }
 
 class Stay {
-  readonly store: DataStore;
-  readonly atPlaceId: number;
-  readonly duration: number;
-  readonly endAt: number;
-  readonly startAt: number;
+  public readonly store: DataStore;
+  public readonly atPlaceId: number;
+  public readonly duration: number;
+  public readonly endAt: number;
+  public readonly startAt: number;
 
   constructor(store: DataStore, data: StayData) {
     this.store = store;

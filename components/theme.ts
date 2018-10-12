@@ -1,4 +1,4 @@
-export type Theme = {
+export interface Theme {
   spacingUnit: number;
   foregroundColor: string;
   backgroundColor: string;
@@ -9,7 +9,7 @@ export type Theme = {
   fontSizeSmall: number;
   shortTransitionDuration: string;
   breakpoints: { [name in Breakpoints]: number };
-};
+}
 
 export type Breakpoints = 'tablet' | 'desktop';
 

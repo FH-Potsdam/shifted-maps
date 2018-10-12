@@ -1,6 +1,6 @@
 import * as styledComponents from 'styled-components';
 
-import { Theme, Breakpoints } from './theme';
+import { Breakpoints, Theme } from './theme';
 
 const {
   default: styled,
@@ -32,9 +32,9 @@ export function switchProp<P>(
 export function mediaQuery<P>(name: Breakpoints) {
   return (
     strings: TemplateStringsArray,
-    ...interpolations: styledComponents.Interpolation<
+    ...interpolations: Array<styledComponents.Interpolation<
       styledComponents.ThemedStyledProps<P, Theme>
-    >[]
+    >>
   ) => {
     return css<P>`
       @media (min-width: ${props => props.theme.breakpoints[name] / 16}em) {

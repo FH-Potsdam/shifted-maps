@@ -1,14 +1,14 @@
-import React from 'react';
-import BaseApp, { Container, AppComponentContext } from 'next/app';
-import Head from 'next/head';
 import { useStaticRendering } from 'mobx-react';
+import BaseApp, { AppComponentContext, Container } from 'next/app';
+import Head from 'next/head';
+import React from 'react';
 
+import '../components/genericStyles';
 import { ThemeProvider } from '../components/styled';
 import theme from '../components/theme';
-import '../components/genericStyles';
 
 class App extends BaseApp {
-  static async getInitialProps({ Component, ctx }: AppComponentContext) {
+  public static async getInitialProps({ Component, ctx }: AppComponentContext) {
     let pageProps = {};
 
     if (ctx.req != null) {
@@ -22,7 +22,7 @@ class App extends BaseApp {
     return { pageProps };
   }
 
-  render() {
+  public render() {
     const { Component, pageProps } = this.props;
 
     return (

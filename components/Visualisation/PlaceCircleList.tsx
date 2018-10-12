@@ -1,16 +1,16 @@
-import { Component } from 'react';
 import { observer } from 'mobx-react';
+import { Component } from 'react';
 
-import PlaceCircle from './PlaceCircle';
 import PlaceCircleModel from '../../stores/PlaceCircle';
+import PlaceCircle from './PlaceCircle';
 
-type Props = {
+interface IProps {
   placeCircles: PlaceCircleModel[];
-};
+}
 
 @observer
-class PlaceCircleList extends Component<Props> {
-  render() {
+class PlaceCircleList extends Component<IProps> {
+  public render() {
     const { placeCircles } = this.props;
 
     return (

@@ -1,24 +1,28 @@
-import { observable, computed, action } from 'mobx';
-import { Map as LeafletMap, latLngBounds, CRS as LeafletCRS } from 'leaflet';
 import { scaleLinear, scalePow } from 'd3';
+import {
+  CRS as LeafletCRS,
+  latLngBounds,
+  Map as LeafletMap,
+} from 'leaflet';
 import reverse from 'lodash/fp/reverse';
+import { action, computed, observable } from 'mobx';
 
-import DataStore from './DataStore';
-import PlaceCircle, { sortByHoverRadius } from './PlaceCircle';
+import Connection from './Connection';
 import ConnectionLine, {
+  lengthExtent as connectionLineLengthExtent,
   sortByHoverStrokeWidth,
   visibleDistanceExtent as visibleConnectionLineDistanceExtent,
   visibleDurationExtent as visibleConnectionLineDurationExtent,
   visibleFrequencyExtent as visibleConnectionLineFrequencyExtent,
-  lengthExtent as connectionLineLengthExtent,
 } from './ConnectionLine';
-import Connection from './Connection';
-import UIStore from './UIStore';
-import {
-  visibleFrequencyExtent as visiblePlaceFrequencyExtent,
-  visibleDurationExtent as visiblePlaceDurationExtent,
-} from './Place';
+import DataStore from './DataStore';
 import GraphStore, { PlaceCircleNode } from './GraphStore';
+import {
+  visibleDurationExtent as visiblePlaceDurationExtent,
+  visibleFrequencyExtent as visiblePlaceFrequencyExtent,
+} from './Place';
+import PlaceCircle, { sortByHoverRadius } from './PlaceCircle';
+import UIStore, { VIEW } from './UIStore';
 
 export const MAX_ZOOM = 18;
 export const CRS = LeafletCRS.EPSG3857;
@@ -31,13 +35,15 @@ const PLACE_RADIUS_RANGE_SCALE = scalePow<[number, number]>()
   .exponent(2)
   .range([[10, 50], [50, 300]]);
 
-const CONNECTION_STROKE_WIDTH_RANGE_SCALE = scalePow<[number, number]>()
+const CONNECTION_STROKE_WIDTH_RANGE_SCALE = scalePow<
+  [number, number]
+>()
   .exponent(2)
   .range([[0.5, 5], [1, 10]]);
 
 class VisualisationStore {
-  readonly data: DataStore;
-  readonly ui: UIStore;
+  public readonly data: DataStore;
+  public readonly ui: UIStore;
 
   private _graph?: GraphStore;
   private _placeCircles: PlaceCircle[] = [];
@@ -52,14 +58,21 @@ class VisualisationStore {
   }
 
   @action
-  update(map: LeafletMap) {
+  public update(map: LeafletMap) {
     const maxZoom = Math.min(MAX_ZOOM, map.getMaxZoom());
-    const zoomScale = scaleLinear().domain([map.getMinZoom(), maxZoom]);
+    const zoomScale = scaleLinear().domain([
+      map.getMinZoom(),
+      maxZoom,
+    ]);
 
     this._scale = zoomScale(map.getZoom());
 
     if (this._graph == null) {
-      this._graph = new GraphStore(this, this.handleGraphTick, this.handleGraphEnd);
+      this._graph = new GraphStore(
+        this,
+        this.handleGraphTick,
+        this.handleGraphEnd
+      );
     }
 
     this._graph.update(map);
@@ -70,20 +83,20 @@ class VisualisationStore {
   }
 
   @action
-  handleGraphTick = (nodes: PlaceCircleNode[]) => {
+  public handleGraphTick = (nodes: PlaceCircleNode[]) => {
     nodes.forEach(node => {
       node.placeCircle.updatePoint(node);
     });
   };
 
   @action
-  handleGraphEnd = (nodes: PlaceCircleNode[]) => {
+  public handleGraphEnd = (nodes: PlaceCircleNode[]) => {
     nodes.forEach(node => {
       node.placeCircle.updatePoint(node, true);
     });
   };
 
-  dispose() {
+  public dispose() {
     if (this._graph != null) {
       this._graph.dispose();
     }
@@ -94,7 +107,9 @@ class VisualisationStore {
     const placeCircles: PlaceCircle[] = [];
 
     this.data.places.forEach(place => {
-      let placeCircle = this._placeCircles.find(placeCircle => placeCircle.place === place);
+      let placeCircle = this._placeCircles.find(
+        placeCircle => placeCircle.place === place
+      );
 
       if (placeCircle == null) {
         placeCircle = new PlaceCircle(this, place);
@@ -116,8 +131,12 @@ class VisualisationStore {
     });
 
     this.data.connections.forEach(connection => {
-      let from = this.placeCircles.find(placeCircle => placeCircle.place === connection.from);
-      let to = this.placeCircles.find(placeCircle => placeCircle.place === connection.to);
+      let from = this.placeCircles.find(
+        placeCircle => placeCircle.place === connection.from
+      );
+      let to = this.placeCircles.find(
+        placeCircle => placeCircle.place === connection.to
+      );
 
       if (from == null || to == null) {
         throw new Error('Missing place circle');
@@ -137,11 +156,15 @@ class VisualisationStore {
       }
 
       const key = Connection.createId(from.place, to.place);
-      let connectionLine = connectionLines.find(connectionLine => connectionLine.key === key);
+      let connectionLine = connectionLines.find(
+        connectionLine => connectionLine.key === key
+      );
       let newConnectionLine = false;
 
       if (connectionLine == null) {
-        connectionLine = this._connectionLines.find(connectionLine => connectionLine.key === key);
+        connectionLine = this._connectionLines.find(
+          connectionLine => connectionLine.key === key
+        );
         newConnectionLine = true;
       }
 
@@ -189,17 +212,23 @@ class VisualisationStore {
 
   @computed
   get visiblePlaceCircles() {
-    return this.placeCircles.filter(placeCircle => placeCircle.visible);
+    return this.placeCircles.filter(
+      placeCircle => placeCircle.visible
+    );
   }
 
   @computed
   get visibleConnectionLines() {
-    return this.connectionLines.filter(connectionLines => connectionLines.visible);
+    return this.connectionLines.filter(
+      connectionLines => connectionLines.visible
+    );
   }
 
   @computed
   get placeStrokeWidthScale() {
-    const domain = visiblePlaceFrequencyExtent(this.data.visiblePlaces);
+    const domain = visiblePlaceFrequencyExtent(
+      this.data.visiblePlaces
+    );
 
     const scale = scalePow()
       .exponent(0.5)
@@ -216,7 +245,9 @@ class VisualisationStore {
 
   @computed
   get placeRadiusScale() {
-    const domain = visiblePlaceDurationExtent(this.data.visiblePlaces);
+    const domain = visiblePlaceDurationExtent(
+      this.data.visiblePlaces
+    );
 
     const scale = scalePow()
       .exponent(0.5)
@@ -233,17 +264,23 @@ class VisualisationStore {
 
   @computed
   get connectionDistanceDomain() {
-    return visibleConnectionLineDistanceExtent(this.visibleConnectionLines);
+    return visibleConnectionLineDistanceExtent(
+      this.visibleConnectionLines
+    );
   }
 
   @computed
   get connectionDurationDomain() {
-    return visibleConnectionLineDurationExtent(this.visibleConnectionLines);
+    return visibleConnectionLineDurationExtent(
+      this.visibleConnectionLines
+    );
   }
 
   @computed.struct
   get connectionFrequencyDomain() {
-    return visibleConnectionLineFrequencyExtent(this.visibleConnectionLines);
+    return visibleConnectionLineFrequencyExtent(
+      this.visibleConnectionLines
+    );
   }
 
   @computed
@@ -270,22 +307,30 @@ class VisualisationStore {
 
   @computed
   get connectionLengthScale() {
-    return scaleLinear().range(connectionLineLengthExtent(this.visibleConnectionLines));
+    return scaleLinear().range(
+      connectionLineLengthExtent(this.visibleConnectionLines)
+    );
   }
 
   @computed
   get connectionDistanceLengthScale() {
-    return this.connectionLengthScale.copy().domain(this.connectionDistanceDomain);
+    return this.connectionLengthScale
+      .copy()
+      .domain(this.connectionDistanceDomain);
   }
 
   @computed
   get connectionDurationLengthScale() {
-    return this.connectionLengthScale.copy().domain(this.connectionDurationDomain);
+    return this.connectionLengthScale
+      .copy()
+      .domain(this.connectionDurationDomain);
   }
 
   @computed
   get connectionFrequencyLengthScale() {
-    return this.connectionLengthScale.copy().domain(reverse(this.connectionFrequencyDomain));
+    return this.connectionLengthScale
+      .copy()
+      .domain(reverse(this.connectionFrequencyDomain));
   }
 }
 

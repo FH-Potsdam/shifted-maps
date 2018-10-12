@@ -1,27 +1,26 @@
 import { Component } from 'react';
 
-import styled, { css } from '../styled';
-import Heading from '../common/Heading';
 import { observer } from 'mobx-react';
 import DataStore from '../../stores/DataStore';
 import UIStore, { VIEW } from '../../stores/UIStore';
+import Heading from '../common/Heading';
 import Icon from '../common/Icon';
-import RangeSlider from '../common/RangeSlider/RangeSlider';
+import styled, { css } from '../styled';
 
-type Props = {
+interface IProps {
   className?: string;
   data: DataStore;
   ui: UIStore;
   onViewChange: (view?: VIEW) => void;
-};
+}
 
 @observer
-class FilterToolbar extends Component<Props> {
-  handleToggleView(view: VIEW) {
+class FilterToolbar extends Component<IProps> {
+  public handleToggleView(view: VIEW) {
     this.props.onViewChange(view !== this.props.ui.view ? view : undefined);
   }
 
-  render() {
+  public render() {
     const { className, data, ui } = this.props;
 
     return (
@@ -53,7 +52,6 @@ class FilterToolbar extends Component<Props> {
             <Icon name="frequency" title="Frequency View" />
           </FilterBarViewButton>
         </FilterBarViewList>
-        <FilterToolbarRangeSlider values={[1, 10]} min={1} max={10} />
       </div>
     );
   }
@@ -119,11 +117,6 @@ const FilterBarViewButton = styled.button<{ active: boolean }>`
   ${props =>
     props.active &&
     css`
-      color: ${props => props.theme.highlightColor};
+      color: ${props.theme.highlightColor};
     `};
-`;
-
-const FilterToolbarRangeSlider = styled(RangeSlider)`
-  background-color: black;
-  margin-top: ${props => props.theme.spacingUnit * 2}px;
 `;

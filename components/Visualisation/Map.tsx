@@ -1,21 +1,21 @@
-import { Component } from 'react';
-import { Map as ReactLeafletMap, TileLayer, MapProps } from 'react-leaflet';
-import { observer } from 'mobx-react';
 import { LatLngBounds } from 'leaflet';
+import { observer } from 'mobx-react';
+import { Component } from 'react';
+import { Map as ReactLeafletMap, MapProps, TileLayer } from 'react-leaflet';
 
-import styled from '../styled';
 import config from '../../config';
+import styled from '../styled';
 
-type Props = {
+interface Props {
   className?: string;
   children?: any;
   bounds: LatLngBounds;
   showTiles: boolean;
-};
+}
 
 @observer
 class Map extends Component<Props & MapProps> {
-  render() {
+  public render() {
     const { className, children, showTiles, ...props } = this.props;
 
     return (

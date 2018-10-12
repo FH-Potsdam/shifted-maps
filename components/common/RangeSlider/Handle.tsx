@@ -1,20 +1,20 @@
-import { PureComponent } from 'react';
 import { scaleLinear, ScaleLinear } from 'd3';
 import { DomUtil } from 'leaflet';
+import { PureComponent } from 'react';
 
 import styled from '../../styled';
 
-type Props = {
+interface Props {
   index: number;
   value: number;
   min: number;
   max: number;
   onChange: (index: number, value: number) => void;
   className?: string;
-};
+}
 
 class Handle extends PureComponent<Props> {
-  scale: ScaleLinear<number, number>;
+  public scale: ScaleLinear<number, number>;
 
   constructor(props: Props) {
     super(props);
@@ -24,7 +24,7 @@ class Handle extends PureComponent<Props> {
       .clamp(true);
   }
 
-  render() {
+  public render() {
     const { className, value, min, max } = this.props;
 
     this.scale.domain([min, max]);

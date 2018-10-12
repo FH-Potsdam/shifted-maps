@@ -1,35 +1,10 @@
 import { computed } from 'mobx';
 
+import DataStore from './DataStore';
 import Place from './Place';
 import Trip from './Trip';
-import DataStore from './DataStore';
 
 class Connection {
-  readonly store: DataStore;
-  readonly id: string;
-  readonly from: Place;
-  readonly to: Place;
-  readonly trips: Trip[] = [];
-
-  constructor(store: DataStore, id: string, from: Place, to: Place) {
-    this.store = store;
-
-    this.id = id;
-    this.from = from;
-    this.to = to;
-  }
-
-  static createId(from: Place, to: Place): string {
-    if (from === to) {
-      throw new Error('Cannot create id with same places.');
-    }
-
-    if (from.id < to.id) {
-      return `${from.id}-${to.id}`;
-    }
-
-    return this.createId(to, from);
-  }
 
   @computed
   get visibleTrips() {
@@ -86,6 +61,31 @@ class Connection {
   @computed
   get beelineDistance() {
     return this.from.latLng.distanceTo(this.to.latLng);
+  }
+
+  public static createId(from: Place, to: Place): string {
+    if (from === to) {
+      throw new Error('Cannot create id with same places.');
+    }
+
+    if (from.id < to.id) {
+      return `${from.id}-${to.id}`;
+    }
+
+    return this.createId(to, from);
+  }
+  public readonly store: DataStore;
+  public readonly id: string;
+  public readonly from: Place;
+  public readonly to: Place;
+  public readonly trips: Trip[] = [];
+
+  constructor(store: DataStore, id: string, from: Place, to: Place) {
+    this.store = store;
+
+    this.id = id;
+    this.from = from;
+    this.to = to;
   }
 }
 

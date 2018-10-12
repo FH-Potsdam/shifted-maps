@@ -1,9 +1,9 @@
-import { Component } from 'react';
-import { observer } from 'mobx-react';
 import { Browser } from 'leaflet';
+import { observer } from 'mobx-react';
+import { Component } from 'react';
 
-import PlaceCircle from '../../stores/PlaceCircle';
 import config from '../../config';
+import PlaceCircle from '../../stores/PlaceCircle';
 import styled from '../styled';
 
 const PlaceMapDot = styled.circle.attrs({
@@ -14,13 +14,13 @@ const PlaceMapDot = styled.circle.attrs({
   stroke: white;
 `;
 
-type Props = {
+interface Props {
   placeCircle: PlaceCircle;
-};
+}
 
 @observer
 class PlaceCircleMap extends Component<Props> {
-  render() {
+  public render() {
     const { diameter, latLngBounds, zoom, children } = this.props.placeCircle;
     const center = latLngBounds.getCenter();
 

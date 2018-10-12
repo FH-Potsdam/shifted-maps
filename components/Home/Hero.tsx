@@ -1,18 +1,18 @@
 import NextLink from 'next/link';
-import use from 'reuse';
 import { lighten } from 'polished';
 import { StatelessComponent } from 'react';
+import use from 'reuse';
 
-import Paragraph from '../common/Paragraph';
+import Heading from '../common/Heading';
 import Icon from '../common/Icon';
-import styled, { mediaQuery } from '../styled';
 import Layout, { LayoutItem } from '../common/Layout';
 import Link from '../common/Link';
-import Heading from '../common/Heading';
+import Paragraph from '../common/Paragraph';
+import styled, { mediaQuery } from '../styled';
 
-type Props = {
+interface Props {
   className?: string;
-};
+}
 
 const Hero: StatelessComponent<Props> = props => {
   const { className } = props;

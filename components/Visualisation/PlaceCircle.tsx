@@ -1,11 +1,11 @@
-import { Component, SyntheticEvent, RefObject, createRef } from 'react';
+import { action, autorun, IReactionDisposer } from 'mobx';
 import { observer } from 'mobx-react';
-import { action, IReactionDisposer, autorun } from 'mobx';
+import { Component, createRef, RefObject, SyntheticEvent } from 'react';
 
-import styled from '../styled';
-import PlaceCircleMap from './PlaceCircleMap';
 import PlaceCircleModel from '../../stores/PlaceCircle';
+import styled from '../styled';
 import PlaceCircleLabel from './PlaceCircleLabel';
+import PlaceCircleMap from './PlaceCircleMap';
 
 const PlaceCircleBackground = styled.circle`
   fill: ${props => props.theme.backgroundColor};
@@ -18,10 +18,10 @@ const PlaceCircleStroke = styled.circle<{ hover: boolean }>`
   stroke: ${props => (props.hover ? props.theme.highlightColor : props.theme.foregroundColor)};
 `;
 
-type Props = {
+interface Props {
   placeCircle: PlaceCircleModel;
   className?: string;
-};
+}
 
 @observer
 class PlaceCircle extends Component<Props> {
@@ -34,38 +34,17 @@ class PlaceCircle extends Component<Props> {
     this._ref = createRef();
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     this._styleDisposer = autorun(this.style);
   }
 
-  componentWillUnmount() {
+  public componentWillUnmount() {
     if (this._styleDisposer != null) {
       this._styleDisposer();
     }
   }
 
-  private style = () => {
-    const { point } = this.props.placeCircle;
-    const group = this._ref.current!;
-
-    group.setAttribute('transform', `translate(${point.x}, ${point.y})`);
-  };
-
-  @action.bound
-  private handleMouseEnter(event: SyntheticEvent) {
-    event.stopPropagation();
-
-    this.props.placeCircle.hover = true;
-  }
-
-  @action.bound
-  private handleMouseLeave(event: SyntheticEvent) {
-    event.stopPropagation();
-
-    this.props.placeCircle.hover = false;
-  }
-
-  render() {
+  public render() {
     const { placeCircle, className } = this.props;
     const { radius, strokeWidth, hover, place, children } = placeCircle;
 
@@ -87,6 +66,27 @@ class PlaceCircle extends Component<Props> {
         />
       </g>
     );
+  }
+
+  private style = () => {
+    const { point } = this.props.placeCircle;
+    const group = this._ref.current!;
+
+    group.setAttribute('transform', `translate(${point.x}, ${point.y})`);
+  };
+
+  @action.bound
+  private handleMouseEnter(event: SyntheticEvent) {
+    event.stopPropagation();
+
+    this.props.placeCircle.hover = true;
+  }
+
+  @action.bound
+  private handleMouseLeave(event: SyntheticEvent) {
+    event.stopPropagation();
+
+    this.props.placeCircle.hover = false;
   }
 }
 

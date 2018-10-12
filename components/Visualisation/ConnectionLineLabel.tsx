@@ -1,20 +1,20 @@
-import { PureComponent, createRef, RefObject, forwardRef, Ref } from 'react';
 import { DomUtil } from 'leaflet';
+import { createRef, forwardRef, PureComponent, Ref, RefObject } from 'react';
 
 import styled, { withTheme } from '../styled';
 import { Theme } from '../theme';
 
-type Props = {
+interface Props {
   label: string | null;
   theme?: Theme;
   innerRef?: Ref<SVGForeignObjectElement>;
   className?: string;
-};
+}
 
 class ConnectionLineLabel extends PureComponent<Props> {
-  ref: RefObject<HTMLCanvasElement>;
-  labelCanvas?: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D | null = null;
+  public ref: RefObject<HTMLCanvasElement>;
+  public labelCanvas?: HTMLCanvasElement;
+  public ctx: CanvasRenderingContext2D | null = null;
 
   constructor(props: Props) {
     super(props);
@@ -22,15 +22,25 @@ class ConnectionLineLabel extends PureComponent<Props> {
     this.ref = createRef();
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     this.labelCanvas = this.ref.current!;
     this.ctx = this.labelCanvas.getContext('2d');
 
     this.drawLabel();
   }
 
-  componentDidUpdate() {
+  public componentDidUpdate() {
     this.drawLabel();
+  }
+
+  public render() {
+    const { innerRef, className } = this.props;
+
+    return (
+      <foreignObject ref={innerRef} className={className}>
+        <canvas ref={this.ref} />
+      </foreignObject>
+    );
   }
 
   private drawLabel = () => {
@@ -65,16 +75,6 @@ class ConnectionLineLabel extends PureComponent<Props> {
 
     this.ctx.fillText(label, padding, 0);
   };
-
-  render() {
-    const { innerRef, className } = this.props;
-
-    return (
-      <foreignObject ref={innerRef} className={className}>
-        <canvas ref={this.ref} />
-      </foreignObject>
-    );
-  }
 }
 
 export default styled(

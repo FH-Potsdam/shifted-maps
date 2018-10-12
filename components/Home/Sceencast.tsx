@@ -1,8 +1,8 @@
 import styled from '../styled';
 
-type Props = {
+interface Props {
   className?: string;
-};
+}
 
 function Screencast({ className }: Props) {
   return (

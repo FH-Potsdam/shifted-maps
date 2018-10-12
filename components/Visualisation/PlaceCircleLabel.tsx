@@ -1,22 +1,22 @@
-import { PureComponent, createRef, RefObject } from 'react';
 import { DomUtil } from 'leaflet';
+import { createRef, PureComponent, RefObject } from 'react';
 
 import styled, { withTheme } from '../styled';
 import { Theme } from '../theme';
 
-type Props = {
+interface Props {
   label: string;
   clusterSize: number;
   className?: string;
   offset: number;
   hover: boolean;
   theme?: Theme;
-};
+}
 
 class PlaceCircleLabel extends PureComponent<Props> {
-  ref: RefObject<HTMLCanvasElement>;
-  labelCanvas?: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D | null = null;
+  public ref: RefObject<HTMLCanvasElement>;
+  public labelCanvas?: HTMLCanvasElement;
+  public ctx: CanvasRenderingContext2D | null = null;
 
   constructor(props: Props) {
     super(props);
@@ -24,15 +24,25 @@ class PlaceCircleLabel extends PureComponent<Props> {
     this.ref = createRef();
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     this.labelCanvas = this.ref.current!;
     this.ctx = this.labelCanvas.getContext('2d');
 
     this.drawLabel();
   }
 
-  componentDidUpdate() {
+  public componentDidUpdate() {
     this.drawLabel();
+  }
+
+  public render() {
+    const { className, offset } = this.props;
+
+    return (
+      <foreignObject className={className} transform={`translate(0, ${Math.round(offset)})`}>
+        <canvas ref={this.ref} />
+      </foreignObject>
+    );
   }
 
   private drawLabel() {
@@ -88,16 +98,6 @@ class PlaceCircleLabel extends PureComponent<Props> {
       this.ctx.strokeText(clusterLabel, width / 2, labelFontSize * 2 + spacing / 4);
       this.ctx.fillText(clusterLabel, width / 2, labelFontSize * 2 + spacing / 4);
     }
-  }
-
-  render() {
-    const { className, offset } = this.props;
-
-    return (
-      <foreignObject className={className} transform={`translate(0, ${Math.round(offset)})`}>
-        <canvas ref={this.ref} />
-      </foreignObject>
-    );
   }
 }
 

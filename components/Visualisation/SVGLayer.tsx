@@ -1,24 +1,24 @@
-import { withLeaflet, MapLayer, WrappedProps, MapLayerProps } from 'react-leaflet';
 import {
-  Layer as LeafletLayer,
   Bounds,
+  DomUtil,
   LatLng,
+  Layer as LeafletLayer,
   Point,
   point,
-  DomUtil,
   ZoomAnimEvent,
 } from 'leaflet';
 import { createPortal } from 'react-dom';
+import { MapLayer, MapLayerProps, withLeaflet, WrappedProps } from 'react-leaflet';
 
 class LeafletSVGLayer extends LeafletLayer {
-  svg?: SVGSVGElement;
+  public svg?: SVGSVGElement;
 
   private _center?: LatLng;
   private _zoom?: number;
   private _position: Point = point(0, 0);
   private _size?: Point;
 
-  onAdd() {
+  public onAdd() {
     if (this.svg == null) {
       this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       this.svg.style.pointerEvents = 'none';
@@ -37,7 +37,7 @@ class LeafletSVGLayer extends LeafletLayer {
     return this;
   }
 
-  onRemove() {
+  public onRemove() {
     if (this.svg != null) {
       const parent = this.svg.parentNode;
 
@@ -49,7 +49,7 @@ class LeafletSVGLayer extends LeafletLayer {
     return this;
   }
 
-  getEvents() {
+  public getEvents() {
     const events = {
       viewreset: this._reset,
       zoom: this._handleZoom,
@@ -138,11 +138,11 @@ class LeafletSVGLayer extends LeafletLayer {
 }
 
 class SVGLayer extends MapLayer<MapLayerProps & WrappedProps, LeafletSVGLayer> {
-  createLeafletElement() {
+  public createLeafletElement() {
     return new LeafletSVGLayer();
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     if (super.componentDidMount) {
       super.componentDidMount();
     }
@@ -150,7 +150,7 @@ class SVGLayer extends MapLayer<MapLayerProps & WrappedProps, LeafletSVGLayer> {
     this.forceUpdate();
   }
 
-  render() {
+  public render() {
     if (this.leafletElement.svg != null) {
       return createPortal(this.props.children, this.leafletElement.svg);
     }

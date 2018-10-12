@@ -1,27 +1,27 @@
-import { computed, observable, action } from 'mobx';
-import { Map as LeafletMap, bounds, latLngBounds, point, Point } from 'leaflet';
+import { bounds, latLngBounds, Map as LeafletMap, point, Point } from 'leaflet';
 import orderBy from 'lodash/fp/orderBy';
+import { action, computed, observable } from 'mobx';
 
 import Place from './Place';
-import VisualisationStore, { MAX_ZOOM, CRS } from './VisualisationStore';
+import VisualisationStore, { CRS, MAX_ZOOM } from './VisualisationStore';
 
 export const sortByHoverRadius = orderBy<PlaceCircle>(['hover', 'radius'], ['asc', 'asc']);
 
 class PlaceCircle {
-  readonly vis: VisualisationStore;
-  readonly place: Place;
+  public readonly vis: VisualisationStore;
+  public readonly place: Place;
 
   @observable
-  hover: boolean = false;
+  public hover: boolean = false;
 
   @observable.ref
-  mapPoint: Point = point(0, 0);
+  public mapPoint: Point = point(0, 0);
 
   @observable.ref
-  point: Point = point(0, 0);
+  public point: Point = point(0, 0);
 
   @observable
-  animate: boolean = false;
+  public animate: boolean = false;
 
   constructor(vis: VisualisationStore, place: Place) {
     this.vis = vis;
@@ -29,7 +29,7 @@ class PlaceCircle {
   }
 
   @action
-  updateMapPoint(map: LeafletMap) {
+  public updateMapPoint(map: LeafletMap) {
     const { view } = this.vis.ui;
     const nextMapPoint = map.latLngToLayerPoint(this.place.latLng);
 
@@ -41,12 +41,12 @@ class PlaceCircle {
   }
 
   @action
-  updateAnimate(animate: boolean) {
+  public updateAnimate(animate: boolean) {
     this.animate = animate;
   }
 
   @action
-  updatePoint(point: Point, round: boolean = false) {
+  public updatePoint(point: Point, round: boolean = false) {
     this.point = point[round ? 'round' : 'clone']();
   }
 

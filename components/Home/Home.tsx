@@ -1,5 +1,5 @@
-import Screencast from './Sceencast';
 import Hero from './Hero';
+import Screencast from './Sceencast';
 
 const Home = () => {
   return (

@@ -2,14 +2,14 @@ import { computed } from 'mobx';
 
 import DataStore from './DataStore';
 
-export type TripData = {
+export interface TripData {
   readonly from: number;
   readonly to: number;
   readonly startAt: number;
   readonly endAt: number;
   readonly distance: number;
   readonly duration: number;
-};
+}
 export function isTripData(value: any): value is TripData {
   return (
     value.from != null &&
@@ -22,13 +22,13 @@ export function isTripData(value: any): value is TripData {
 }
 
 class Trip {
-  readonly store: DataStore;
-  readonly fromPlaceId: number;
-  readonly toPlaceId: number;
-  readonly startAt: number;
-  readonly endAt: number;
-  readonly distance: number;
-  readonly duration: number;
+  public readonly store: DataStore;
+  public readonly fromPlaceId: number;
+  public readonly toPlaceId: number;
+  public readonly startAt: number;
+  public readonly endAt: number;
+  public readonly distance: number;
+  public readonly duration: number;
 
   constructor(store: DataStore, data: TripData) {
     this.store = store;

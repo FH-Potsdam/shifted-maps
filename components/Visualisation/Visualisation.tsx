@@ -1,88 +1,88 @@
-import { Component } from 'react';
-import { configure, action } from 'mobx';
+import { LatLng, LeafletEvent, Map as LeafletMap } from 'leaflet';
+import { action, configure } from 'mobx';
 import { observer } from 'mobx-react';
-import { LeafletEvent, Map as LeafletMap, LatLng } from 'leaflet';
+import { Component } from 'react';
 
-import { DiaryData } from '../../stores/Diary';
 import DataStore from '../../stores/DataStore';
-import Map from './Map';
-import SVGLayer from './SVGLayer';
-import PlaceCircleList from './PlaceCircleList';
+import { DiaryData } from '../../stores/Diary';
+import UIStore, { VIEW } from '../../stores/UIStore';
 import VisualisationStore from '../../stores/VisualisationStore';
 import ConnectionLineList from './ConnectionLineList';
 import CustomControl from './CustomControl';
 import FilterToolbar from './FilterToolbar';
-import UIStore, { VIEW } from '../../stores/UIStore';
+import Map from './Map';
+import PlaceCircleList from './PlaceCircleList';
+import SVGLayer from './SVGLayer';
 
 configure({
   enforceActions: 'observed',
 });
 
-type Props = {
+interface IProps {
   data: DiaryData;
   view?: VIEW;
   timeSpan?: [number, number];
   onFilterBarViewChange: (view?: VIEW) => void;
-};
+}
 
 @observer
-class Visualisation extends Component<Props> {
-  private _dataStore: DataStore;
-  private _visStore: VisualisationStore;
-  private _uiStore: UIStore;
-  private _map?: LeafletMap;
-  private _zoom?: number;
-  private _center?: LatLng;
+class Visualisation extends Component<IProps> {
+  private dataStore: DataStore;
+  private visStore: VisualisationStore;
+  private uiStore: UIStore;
+  private map?: LeafletMap;
+  private zoom?: number;
+  private center?: LatLng;
 
-  constructor(props: Props) {
+  constructor(props: IProps) {
     super(props);
 
     const { view, data, timeSpan } = props;
 
-    this._uiStore = new UIStore();
-    this._dataStore = new DataStore(this._uiStore, data);
-    this._visStore = new VisualisationStore(this._uiStore, this._dataStore);
+    this.uiStore = new UIStore();
+    this.dataStore = new DataStore(this.uiStore, data);
+    this.visStore = new VisualisationStore(this.uiStore, this.dataStore);
 
-    this._uiStore.update({ view, timeSpan });
+    this.uiStore.update({ view, timeSpan });
   }
 
   @action
-  componentDidUpdate() {
+  public componentDidUpdate() {
     const { view, timeSpan } = this.props;
 
-    this._uiStore.update({ view, timeSpan });
+    this.uiStore.update({ view, timeSpan });
 
-    if (this._map != null) {
-      this._visStore.update(this._map);
+    if (this.map != null) {
+      this.visStore.update(this.map);
     }
   }
 
-  componentWillUnmount() {
-    this._visStore.dispose();
+  public componentWillUnmount() {
+    this.visStore.dispose();
   }
 
   @action
-  handleMapViewDidChange = (event: LeafletEvent) => {
-    this._map = event.target;
+  public handleMapViewDidChange = (event: LeafletEvent) => {
+    this.map = event.target;
 
-    if (this._map == null) {
+    if (this.map == null) {
       return;
     }
 
-    const nextZoom = this._map.getZoom();
-    const nextCenter = this._map.getCenter();
+    const nextZoom = this.map.getZoom();
+    const nextCenter = this.map.getCenter();
 
-    if (this._zoom !== nextZoom || this._center == null || !this._center.equals(nextCenter)) {
-      this._visStore.update(this._map);
+    if (this.zoom !== nextZoom || this.center == null || !this.center.equals(nextCenter)) {
+      this.visStore.update(this.map);
     }
 
-    this._zoom = this._map.getZoom();
-    this._center = this._map.getCenter();
+    this.zoom = this.map.getZoom();
+    this.center = this.map.getCenter();
   };
 
-  render() {
-    const { sortedPlaceCircles, sortedConnectionLines, initialBounds } = this._visStore;
-    const { view } = this._uiStore;
+  public render() {
+    const { sortedPlaceCircles, sortedConnectionLines, initialBounds } = this.visStore;
+    const { view } = this.uiStore;
     const { onFilterBarViewChange } = this.props;
 
     return (
@@ -105,8 +105,8 @@ class Visualisation extends Component<Props> {
           <PlaceCircleList placeCircles={sortedPlaceCircles} />
           <CustomControl position="topleft">
             <FilterToolbar
-              ui={this._uiStore}
-              data={this._dataStore}
+              ui={this.uiStore}
+              data={this.dataStore}
               onViewChange={onFilterBarViewChange}
             />
           </CustomControl>

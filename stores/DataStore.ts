@@ -1,17 +1,17 @@
 import { computed } from 'mobx';
 
+import Connection from './Connection';
 import { DiaryData } from './Diary';
 import Place, { isPlaceData } from './Place';
 import Stay, { isStayData } from './Stay';
 import Trip, { isTripData } from './Trip';
-import Connection from './Connection';
 import UIStore from './UIStore';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 class DataStore {
-  readonly ui: UIStore;
-  readonly data: DiaryData;
+  public readonly ui: UIStore;
+  public readonly data: DiaryData;
 
   constructor(ui: UIStore, data: DiaryData) {
     this.ui = ui;
