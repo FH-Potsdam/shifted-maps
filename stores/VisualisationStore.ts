@@ -1,7 +1,7 @@
 import { scaleLinear, scalePow } from 'd3';
 import { CRS as LeafletCRS, LatLng, latLngBounds, Map as LeafletMap, Point } from 'leaflet';
 import reverse from 'lodash/fp/reverse';
-import { action, autorun, computed, IReactionDisposer, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 
 import Connection from './Connection';
 import ConnectionLine, {

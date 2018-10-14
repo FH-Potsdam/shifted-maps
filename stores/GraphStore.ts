@@ -1,8 +1,8 @@
 import {
   ForceLink,
   forceLink,
-  ForceManyBody,
-  forceManyBody,
+  // ForceManyBody,
+  // forceManyBody,
   forceSimulation,
   forceX,
   ForceX,
@@ -11,7 +11,7 @@ import {
   Simulation,
 } from 'd3';
 import { Point } from 'leaflet';
-import { autorun, computed, IReactionDisposer, reaction } from 'mobx';
+import { autorun, computed, IReactionDisposer } from 'mobx';
 
 import ConnectionLineLink from './ConnectionLineLink';
 import PlaceCircleNode from './PlaceCircleNode';
@@ -31,7 +31,7 @@ class GraphStore {
   private linkForce: ForceLink<PlaceCircleNode, ConnectionLineLink>;
   private xForce: ForceX<PlaceCircleNode>;
   private yForce: ForceY<PlaceCircleNode>;
-  private manyBodyForce: ForceManyBody<PlaceCircleNode>;
+  // private manyBodyForce: ForceManyBody<PlaceCircleNode>;
 
   private toggleDisposer: IReactionDisposer;
   private updateDisposer: IReactionDisposer;

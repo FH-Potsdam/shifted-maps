@@ -8,6 +8,7 @@ export interface ITheme {
   fontSize: number;
   fontSizeSmall: number;
   shortTransitionDuration: string;
+  transitionDuration: string;
   breakpoints: { [name in Breakpoints]: number };
 }
 
@@ -29,6 +30,7 @@ const theme: ITheme = {
   highlightColor: '#2963a5',
   shortTransitionDuration: '200ms',
   spacingUnit,
+  transitionDuration: '400ms',
 };
 
 export default theme;
