@@ -1,7 +1,7 @@
 import { scaleLinear, scalePow } from 'd3';
-import { CRS as LeafletCRS, latLngBounds, Map as LeafletMap } from 'leaflet';
+import { CRS as LeafletCRS, LatLng, latLngBounds, Map as LeafletMap, Point } from 'leaflet';
 import reverse from 'lodash/fp/reverse';
-import { action, computed, observable } from 'mobx';
+import { action, autorun, computed, IReactionDisposer, observable } from 'mobx';
 
 import Connection from './Connection';
 import ConnectionLine, {
@@ -39,60 +39,89 @@ const CONNECTION_STROKE_WIDTH_RANGE_SCALE = scalePow<[number, number]>()
 class VisualisationStore {
   readonly data: DataStore;
   readonly ui: UIStore;
+  readonly graph: GraphStore;
 
-  private graph?: GraphStore;
+  @observable
+  pixelOrigin?: Point;
+
+  @observable
+  zoom?: number;
+
+  @observable
+  ready: boolean = false;
+
   private placeCirclesCache: PlaceCircle[] = [];
   private connectionLinesCache: ConnectionLine[] = [];
 
   @observable
-  private scale?: number;
+  private crs?: LeafletCRS;
+
+  @observable
+  private minZoom?: number;
+
+  @observable
+  private maxZoom?: number;
 
   constructor(ui: UIStore, data: DataStore) {
     this.ui = ui;
     this.data = data;
-  }
 
-  @action
-  update(map: LeafletMap) {
-    const maxZoom = Math.min(MAX_ZOOM, map.getMaxZoom());
-    const zoomScale = scaleLinear().domain([map.getMinZoom(), maxZoom]);
-
-    this.scale = zoomScale(map.getZoom());
-
-    if (this.graph == null) {
-      this.graph = new GraphStore(this, this.handleGraphTick, this.handleGraphEnd);
-    }
-
-    this.graph.update(map);
-
-    this.placeCircles.forEach(placeCircle => {
-      placeCircle.updateMapPoint(map);
-    });
-  }
-
-  @action
-  animate() {
-    console.log('Test');
+    this.graph = new GraphStore(this, this.handleGraphTick, this.handleGraphEnd);
   }
 
   @action
   handleGraphTick = (nodes: PlaceCircleNode[]) => {
     nodes.forEach(node => {
-      node.placeCircle.updatePoint(node);
+      node.placeCircle.point = node.clone();
     });
   };
 
   @action
   handleGraphEnd = (nodes: PlaceCircleNode[]) => {
     nodes.forEach(node => {
-      node.placeCircle.updatePoint(node, true);
+      node.placeCircle.point = node.round();
     });
   };
 
-  dispose() {
-    if (this.graph != null) {
-      this.graph.dispose();
+  @action
+  update(map?: LeafletMap) {
+    if (map == null) {
+      return;
     }
+
+    this.ready = true;
+    this.crs = map.options.crs;
+    this.zoom = map.getZoom();
+    this.minZoom = map.getMinZoom();
+    this.maxZoom = Math.min(MAX_ZOOM, map.getMaxZoom());
+
+    const pixelOrigin = map.getPixelOrigin();
+
+    if (this.pixelOrigin == null || !this.pixelOrigin.equals(pixelOrigin)) {
+      this.pixelOrigin = pixelOrigin;
+    }
+  }
+
+  dispose() {
+    this.graph.dispose();
+  }
+
+  @computed
+  get zoomScale() {
+    if (this.maxZoom == null || this.minZoom == null) {
+      return;
+    }
+
+    return scaleLinear().domain([this.minZoom, this.maxZoom]);
+  }
+
+  @computed
+  get scale() {
+    if (this.zoomScale == null || this.zoom == null) {
+      return;
+    }
+
+    return this.zoomScale(this.zoom);
   }
 
   @computed
@@ -294,6 +323,38 @@ class VisualisationStore {
   @computed
   get connectionFrequencyLengthScale() {
     return this.connectionLengthScale.copy().domain(reverse(this.connectionFrequencyDomain));
+  }
+
+  project(
+    latLng: LatLng,
+    zoom: number | undefined = this.zoom,
+    pixelOrigin: Point | undefined = this.pixelOrigin
+  ) {
+    if (this.crs == null) {
+      throw new Error('No CRS.');
+    }
+
+    if (zoom == null || pixelOrigin == null) {
+      throw new Error('Cannot calculate point without zoom or pixel origin.');
+    }
+
+    return this.crs.latLngToPoint(latLng, zoom).subtract(pixelOrigin);
+  }
+
+  unproject(
+    point: Point,
+    zoom: number | undefined = this.zoom,
+    pixelOrigin: Point | undefined = this.pixelOrigin
+  ) {
+    if (this.crs == null) {
+      throw new Error('No CRS.');
+    }
+
+    if (zoom == null || pixelOrigin == null) {
+      throw new Error('Cannot calculate latLng without zoom or pixel origin.');
+    }
+
+    return this.crs.pointToLatLng(point.add(pixelOrigin), zoom);
   }
 }
 

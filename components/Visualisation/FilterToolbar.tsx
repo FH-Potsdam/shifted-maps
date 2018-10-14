@@ -61,6 +61,10 @@ export default styled(FilterToolbar)`
   background-color: rgba(255, 255, 255, 0.9);
   padding: ${props => props.theme.spacingUnit * 1.5}px ${props => props.theme.spacingUnit}px;
   width: ${props => props.theme.spacingUnit * 14}px;
+  position: absolute;
+  z-index: 1;
+  top: ${props => props.theme.spacingUnit}px;
+  left: ${props => props.theme.spacingUnit}px;
 
   ${Heading} {
     font-size: ${props => props.theme.fontSizeBig}px;

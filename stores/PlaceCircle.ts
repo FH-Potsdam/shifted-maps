@@ -1,6 +1,6 @@
-import { bounds, latLngBounds, Map as LeafletMap, point, Point } from 'leaflet';
+import { bounds, latLngBounds, point, Point } from 'leaflet';
 import orderBy from 'lodash/fp/orderBy';
-import { action, computed, observable } from 'mobx';
+import { computed, observable } from 'mobx';
 
 import Place from './Place';
 import VisualisationStore, { CRS, MAX_ZOOM } from './VisualisationStore';
@@ -14,40 +14,17 @@ class PlaceCircle {
   @observable
   hover: boolean = false;
 
-  @observable.ref
-  mapPoint: Point = point(0, 0);
-
-  @observable.ref
-  point: Point = point(0, 0);
-
   @observable
-  animate: boolean = false;
+  point: Point = point(0, 0);
 
   constructor(vis: VisualisationStore, place: Place) {
     this.vis = vis;
     this.place = place;
   }
 
-  @action
-  updateMapPoint(map: LeafletMap) {
-    const { view } = this.vis.ui;
-    const nextMapPoint = map.latLngToLayerPoint(this.place.latLng);
-
-    this.mapPoint = nextMapPoint;
-
-    if (view == null) {
-      this.updatePoint(this.mapPoint);
-    }
-  }
-
-  @action
-  updateAnimate(animate: boolean) {
-    this.animate = animate;
-  }
-
-  @action
-  updatePoint(point: Point, round: boolean = false) {
-    this.point = point[round ? 'round' : 'clone']();
+  @computed
+  get mapPoint() {
+    return this.vis.project(this.place.latLng);
   }
 
   @computed

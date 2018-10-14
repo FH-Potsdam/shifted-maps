@@ -1,7 +1,6 @@
 {
   "editor.formatOnSave": true,
   "prettier.requireConfig": true,
-  "prettier.tslintIntegration": true,
   "editor.wordWrapColumn": 100,
   "javascript.validate.enable": false,
   "javascript.format.enable": false,

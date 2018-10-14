@@ -1,18 +1,15 @@
-import { LatLng, LeafletEvent, Map as LeafletMap } from 'leaflet';
+import { LeafletEvent, Map as LeafletMap } from 'leaflet';
 import { action, configure } from 'mobx';
 import { observer } from 'mobx-react';
-import { Component } from 'react';
+import { Component, Fragment } from 'react';
 
 import DataStore from '../../stores/DataStore';
 import { DiaryData } from '../../stores/Diary';
 import UIStore, { VIEW } from '../../stores/UIStore';
 import VisualisationStore from '../../stores/VisualisationStore';
-import ConnectionLineList from './ConnectionLineList';
-import CustomControl from './CustomControl';
 import FilterToolbar from './FilterToolbar';
 import Map from './Map';
-import PlaceCircleList from './PlaceCircleList';
-import SVGLayer from './SVGLayer';
+import SVGVisualisationLayer from './SVGVisualisationLayer';
 
 configure({
   enforceActions: 'observed',
@@ -31,8 +28,6 @@ class Visualisation extends Component<IProps> {
   private visStore: VisualisationStore;
   private uiStore: UIStore;
   private map?: LeafletMap;
-  private zoom?: number;
-  private center?: LatLng;
 
   constructor(props: IProps) {
     super(props);
@@ -47,18 +42,11 @@ class Visualisation extends Component<IProps> {
   }
 
   @action
-  componentDidUpdate(prevProps: IProps) {
+  componentDidUpdate() {
     const { view, timeSpan } = this.props;
 
     this.uiStore.update({ view, timeSpan });
-
-    if (this.map != null) {
-      this.visStore.update(this.map);
-    }
-
-    if (prevProps.view !== view) {
-      this.visStore.animate();
-    }
+    this.visStore.update(this.map);
   }
 
   componentWillUnmount() {
@@ -68,54 +56,38 @@ class Visualisation extends Component<IProps> {
   @action
   handleMapViewDidChange = (event: LeafletEvent) => {
     this.map = event.target;
+    this.visStore.update(this.map);
+  };
 
-    if (this.map == null) {
-      return;
-    }
-
-    const nextZoom = this.map.getZoom();
-    const nextCenter = this.map.getCenter();
-
-    if (this.zoom !== nextZoom || this.center == null || !this.center.equals(nextCenter)) {
-      this.visStore.update(this.map);
-    }
-
-    this.zoom = this.map.getZoom();
-    this.center = this.map.getCenter();
+  @action
+  handleZoomStart = () => {
+    this.visStore.graph.stop();
   };
 
   render() {
-    const { sortedPlaceCircles, sortedConnectionLines, initialBounds } = this.visStore;
+    const { initialBounds } = this.visStore;
     const { view } = this.uiStore;
     const { onFilterBarViewChange } = this.props;
 
     return (
-      <Map
-        bounds={initialBounds}
-        showTiles={view == null}
-        // @ts-ignore outdated types
-        whenReady={this.handleMapViewDidChange}
-        onMoveEnd={this.handleMapViewDidChange}
-        onZoomEnd={this.handleMapViewDidChange}
-        onResize={this.handleMapViewDidChange}
-      >
-        <SVGLayer>
-          <defs>
-            <clipPath id="clip-path-circle" clipPathUnits="objectBoundingBox">
-              <circle r="0.5" cx="0.5" cy="0.5" />
-            </clipPath>
-          </defs>
-          <ConnectionLineList connectionLines={sortedConnectionLines} />
-          <PlaceCircleList placeCircles={sortedPlaceCircles} />
-          <CustomControl position="topleft">
-            <FilterToolbar
-              ui={this.uiStore}
-              data={this.dataStore}
-              onViewChange={onFilterBarViewChange}
-            />
-          </CustomControl>
-        </SVGLayer>
-      </Map>
+      <Fragment>
+        <Map
+          bounds={initialBounds}
+          showTiles={view == null}
+          // @ts-ignore outdated types
+          whenReady={this.handleMapViewDidChange}
+          onZoomEnd={this.handleMapViewDidChange}
+          onResize={this.handleMapViewDidChange}
+          onZoomStart={this.handleZoomStart}
+        >
+          <SVGVisualisationLayer vis={this.visStore} />
+        </Map>
+        <FilterToolbar
+          ui={this.uiStore}
+          data={this.dataStore}
+          onViewChange={onFilterBarViewChange}
+        />
+      </Fragment>
     );
   }
 }
