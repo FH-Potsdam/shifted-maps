@@ -52,6 +52,10 @@ class Connection {
 
   @computed
   get visibleDistance() {
+    if (this.visibleTrips.length === 0) {
+      return 0;
+    }
+
     return (
       this.visibleTrips.reduce((distance, trip) => {
         return distance + trip.distance;

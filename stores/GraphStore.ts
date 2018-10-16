@@ -49,10 +49,12 @@ class GraphStore {
     this.onTick = onTick;
     this.onEnd = onEnd;
 
-    this.linkForce = forceLink<PlaceCircleNode, ConnectionLineLink>().id(node => node.key);
+    this.linkForce = forceLink<PlaceCircleNode, ConnectionLineLink>()
+      .id(node => node.key)
+      .distance(link => link.connectionLine.viewLength);
 
-    this.xForce = forceX<PlaceCircleNode>();
-    this.yForce = forceY<PlaceCircleNode>();
+    this.xForce = forceX<PlaceCircleNode>().x(node => node.placeCircle.mapPoint.x);
+    this.yForce = forceY<PlaceCircleNode>().y(node => node.placeCircle.mapPoint.y);
 
     // this.manyBodyForce = forceManyBody<PlaceCircleNode>();
 
@@ -105,15 +107,14 @@ class GraphStore {
 
     const viewActive = ui.view != null;
 
+    console.log('update simulation', this.nodes.length);
+
     this.simulation.nodes(this.nodes);
 
-    this.linkForce
-      .links(this.links)
-      .distance(link => link.connectionLine.viewLength)
-      .strength(viewActive ? 0.5 : 0);
+    this.linkForce.links(this.links).strength(viewActive ? 0.5 : 0);
 
-    this.xForce.x(node => node.placeCircle.mapPoint.x).strength(viewActive ? 0.2 : 1);
-    this.yForce.y(node => node.placeCircle.mapPoint.y).strength(viewActive ? 0.2 : 1);
+    this.xForce.strength(viewActive ? 0.2 : 1);
+    this.yForce.strength(viewActive ? 0.2 : 1);
 
     // this.manyBodyForce.strength(viewActive ? -30 : 0);
   };

@@ -1,6 +1,5 @@
 import { SimulationNodeDatum } from 'd3';
 import { Point } from 'leaflet';
-
 import PlaceCircle from './PlaceCircle';
 
 class PlaceCircleNode extends Point implements SimulationNodeDatum {
