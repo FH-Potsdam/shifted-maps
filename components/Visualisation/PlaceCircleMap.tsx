@@ -21,6 +21,12 @@ class PlaceCircleMap extends Component<IProps> {
   @observable
   private activeHref?: string;
 
+  private handleImageLoaded = debounce(10)(
+    action(() => {
+      this.activeHref = this.href;
+    })
+  );
+
   @computed
   get href() {
     const { diameter, zoom, latLngBounds } = this.props.placeCircle;
@@ -41,18 +47,16 @@ class PlaceCircleMap extends Component<IProps> {
     if (index === -1) {
       const image = new PlaceCircleMapImage(href, this.handleImageLoaded);
       this.cachedImages.push(image);
+
+      while (this.cachedImages.length > 2) {
+        this.cachedImages.shift();
+      }
     } else {
       this.handleImageLoaded();
     }
 
     return this.cachedImages;
   }
-
-  private handleImageLoaded = debounce(10)(
-    action(() => {
-      this.activeHref = this.href;
-    })
-  );
 
   render() {
     const { className, placeCircle } = this.props;
@@ -71,7 +75,7 @@ class PlaceCircleMap extends Component<IProps> {
             transform={`translate(${diameter * -0.5}, ${diameter * -0.5})`}
           />
         ))}
-        {children.length === 0 && <PlaceMapDot />}
+        <PlaceMapDot style={{ display: children.length === 0 ? 'block' : 'none' }} />
       </g>
     );
   }

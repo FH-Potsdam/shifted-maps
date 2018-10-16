@@ -1,10 +1,13 @@
+import { action, observable } from 'mobx';
+import { observer } from 'mobx-react';
+import moment from 'moment';
 import { Component } from 'react';
 
-import { observer } from 'mobx-react';
-import DataStore from '../../stores/DataStore';
+import DataStore, { DAY_IN_SEC } from '../../stores/DataStore';
 import UIStore, { VIEW } from '../../stores/UIStore';
 import Heading from '../common/Heading';
 import Icon from '../common/Icon';
+import Slider from '../common/Slider';
 import styled, { css } from '../styled';
 
 interface IProps {
@@ -12,52 +15,124 @@ interface IProps {
   data: DataStore;
   ui: UIStore;
   onViewChange: (view?: VIEW) => void;
+  onTimeSpanChange: (timeSpan: ReadonlyArray<number>) => void;
 }
 
 @observer
-class FilterToolbar extends Component<IProps> {
+class FilterBar extends Component<IProps> {
+  @observable
+  timeSpan: ReadonlyArray<number>;
+
+  constructor(props: IProps) {
+    super(props);
+
+    this.timeSpan = props.ui.timeSpan || props.data.timeSpan;
+  }
+
   handleToggleView(view: VIEW) {
     this.props.onViewChange(view !== this.props.ui.view ? view : undefined);
   }
 
+  @action
+  handleTimeSpanUpdate = (timeSpan: ReadonlyArray<number>) => {
+    this.timeSpan = timeSpan;
+  };
+
+  @action
+  handleTimeSpanChange = (timeSpan: ReadonlyArray<number>) => {
+    this.timeSpan = timeSpan;
+
+    this.props.onTimeSpanChange(timeSpan);
+  };
+
   render() {
-    const { className, data, ui } = this.props;
+    const { className } = this.props;
 
     return (
       <div className={className}>
         <Heading use="h1">Shifted Maps</Heading>
-        <FilterBarStats>
-          <dt>Places:</dt>
-          <dd>{data.visiblePlaces.length}</dd>
-          <dt>Connections:</dt>
-          <dd>{data.visibleConnections.length}</dd>
-        </FilterBarStats>
-        <FilterBarViewList>
-          <FilterBarViewButton
-            onClick={() => this.handleToggleView(VIEW.GEOGRAPHIC)}
-            active={ui.view === VIEW.GEOGRAPHIC}
-          >
-            <Icon name="geographic" title="Geographic View" />
-          </FilterBarViewButton>
-          <FilterBarViewButton
-            onClick={() => this.handleToggleView(VIEW.DURATION)}
-            active={ui.view === VIEW.DURATION}
-          >
-            <Icon name="duration" title="Temporal View" />
-          </FilterBarViewButton>
-          <FilterBarViewButton
-            onClick={() => this.handleToggleView(VIEW.FREQUENCY)}
-            active={ui.view === VIEW.FREQUENCY}
-          >
-            <Icon name="frequency" title="Frequency View" />
-          </FilterBarViewButton>
-        </FilterBarViewList>
+        {this.renderStats()}
+        {this.renderViewList()}
+        {this.renderTimeSlider()}
+        {this.renderTimeRange()}
       </div>
+    );
+  }
+
+  private renderStats() {
+    const { data } = this.props;
+
+    return (
+      <FilterBarStats>
+        <dt>Places:</dt>
+        <dd>{data.visiblePlaces.length}</dd>
+        <dt>Connections:</dt>
+        <dd>{data.visibleConnections.length}</dd>
+      </FilterBarStats>
+    );
+  }
+
+  private renderViewList() {
+    const { ui } = this.props;
+
+    return (
+      <FilterBarViewList>
+        <FilterBarViewButton
+          onClick={() => this.handleToggleView(VIEW.GEOGRAPHIC)}
+          active={ui.view === VIEW.GEOGRAPHIC}
+        >
+          <Icon name="geographic" title="Geographic View" />
+        </FilterBarViewButton>
+        <FilterBarViewButton
+          onClick={() => this.handleToggleView(VIEW.DURATION)}
+          active={ui.view === VIEW.DURATION}
+        >
+          <Icon name="duration" title="Temporal View" />
+        </FilterBarViewButton>
+        <FilterBarViewButton
+          onClick={() => this.handleToggleView(VIEW.FREQUENCY)}
+          active={ui.view === VIEW.FREQUENCY}
+        >
+          <Icon name="frequency" title="Frequency View" />
+        </FilterBarViewButton>
+      </FilterBarViewList>
+    );
+  }
+
+  private renderTimeSlider() {
+    const { data, ui } = this.props;
+
+    return (
+      <TimeSlider
+        onUpdate={this.handleTimeSpanUpdate}
+        onChange={this.handleTimeSpanChange}
+        domain={data.timeSpan}
+        values={this.timeSpan || ui.timeSpan}
+        step={DAY_IN_SEC}
+      />
+    );
+  }
+
+  private renderTimeRange() {
+    const start = moment.unix(this.timeSpan[0]);
+    const end = moment.unix(this.timeSpan[1]);
+
+    return (
+      <SliderRange>
+        <SliderRangeStart>
+          <strong>{start.format('dddd')}</strong>
+          {start.format('D. MMM YYYY')}
+        </SliderRangeStart>
+        <SliderRangeEnd>
+          <strong>{end.format('dddd')}</strong>
+          {end.format('D. MMM YYYY')}
+        </SliderRangeEnd>
+      </SliderRange>
     );
   }
 }
 
-export default styled(FilterToolbar)`
+export default styled(FilterBar)`
   background-color: rgba(255, 255, 255, 0.9);
   padding: ${props => props.theme.spacingUnit * 1.5}px ${props => props.theme.spacingUnit}px;
   width: ${props => props.theme.spacingUnit * 14}px;
@@ -123,4 +198,35 @@ const FilterBarViewButton = styled.button<{ active: boolean }>`
     css`
       color: ${props.theme.highlightColor};
     `};
+`;
+
+const TimeSlider = styled(Slider)`
+  margin-top: ${props => props.theme.spacingUnit * 2}px;
+  margin-left: 5px;
+  margin-right: 5px;
+`;
+
+const SliderRange = styled.div`
+  display: flex;
+  margin-top: ${props => props.theme.spacingUnit * 0.5}px;
+`;
+
+const SliderRangeValue = styled.div`
+  width: 50%;
+  font-style: italic;
+
+  strong {
+    display: block;
+    font-style: normal;
+    text-transform: uppercase;
+    font-size: ${props => props.theme.fontSizeSmall}px;
+  }
+`;
+
+const SliderRangeStart = styled(SliderRangeValue)`
+  text-align: left;
+`;
+
+const SliderRangeEnd = styled(SliderRangeValue)`
+  text-align: right;
 `;

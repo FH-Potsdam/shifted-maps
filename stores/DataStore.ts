@@ -7,7 +7,7 @@ import Stay, { isStayData } from './Stay';
 import Trip, { isTripData } from './Trip';
 import UIStore from './UIStore';
 
-const DAY_IN_MS = 1000 * 60 * 60 * 24;
+export const DAY_IN_SEC = 60 * 60 * 24;
 
 class DataStore {
   readonly ui: UIStore;
@@ -87,15 +87,15 @@ class DataStore {
   }
 
   @computed
-  get timeSpan() {
+  get timeSpan(): ReadonlyArray<number> {
     return this.stays.reduce<[number, number]>(
       ([start, end], stay: Stay) => {
         if (stay.startAt < start) {
-          start = Math.floor(stay.startAt / DAY_IN_MS) * DAY_IN_MS;
+          start = Math.floor(stay.startAt / DAY_IN_SEC) * DAY_IN_SEC;
         }
 
         if (stay.endAt > end) {
-          end = Math.ceil(stay.endAt / DAY_IN_MS) * DAY_IN_MS;
+          end = Math.ceil(stay.endAt / DAY_IN_SEC) * DAY_IN_SEC;
         }
 
         return [start, end];

@@ -34,12 +34,3 @@ const Icon = styled.i<IProps>`
 `;
 
 export default Icon;
-
-injectGlobal`
-  @font-face {
-    font-family: 'icomoon';
-    src: url('/static/fonts/icomoon.ttf?3vnion') format('truetype'), url('/static/fonts/icomoon.woff?3vnion') format('woff');
-    font-weight: normal;
-    font-style: normal;
-  }
-`;

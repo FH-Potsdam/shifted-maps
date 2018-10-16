@@ -15,11 +15,21 @@ const DynamicVisualisation = dynamic({
 interface IProps {
   data: DiaryData;
   view?: VIEW;
+  timeSpan?: ReadonlyArray<number>;
 }
 
 class Map extends PureComponent<IProps> {
   static async getInitialProps({ req, query }: NextContext): Promise<IProps> {
+    let timeSpan: ReadonlyArray<number> | undefined;
     let view: VIEW | undefined;
+
+    if (typeof query.timeSpan === 'string') {
+      const timeSpanStrings = query.timeSpan.split('-');
+
+      if (timeSpanStrings.length === 2) {
+        timeSpan = timeSpanStrings.map(timeSpanString => +timeSpanString);
+      }
+    }
 
     if (typeof query.view === 'string') {
       view = VIEW[query.view.toUpperCase()];
@@ -27,11 +37,12 @@ class Map extends PureComponent<IProps> {
 
     return {
       data: await fetchDemoDiary({ isServer: req != null }),
+      timeSpan,
       view,
     };
   }
 
-  handleFilterBarViewChange = (view?: VIEW) => {
+  handleViewChange = (view?: VIEW) => {
     const query: { view?: string } = {
       ...Router.query,
     };
@@ -45,15 +56,26 @@ class Map extends PureComponent<IProps> {
     Router.push({ pathname: '/map', query });
   };
 
+  handleTimeSpanChange = (timeSpan: ReadonlyArray<number>) => {
+    const query = {
+      ...Router.query,
+      timeSpan: timeSpan.join('-'),
+    };
+
+    Router.push({ pathname: '/map', query });
+  };
+
   render() {
-    const { data, view } = this.props;
+    const { data, view, timeSpan } = this.props;
 
     return (
       <Fragment>
         <DynamicVisualisation
           data={data}
           view={view}
-          onFilterBarViewChange={this.handleFilterBarViewChange}
+          timeSpan={timeSpan}
+          onViewChange={this.handleViewChange}
+          onTimeSpanChange={this.handleTimeSpanChange}
         />
       </Fragment>
     );

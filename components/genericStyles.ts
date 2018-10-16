@@ -7,6 +7,13 @@ import theme from './theme';
 injectGlobal`
   @import url("https://use.typekit.net/hil0jky.css");
 
+  @font-face {
+    font-family: 'icomoon';
+    src: url('/static/fonts/icomoon.ttf?3vnion') format('truetype'), url('/static/fonts/icomoon.woff?3vnion') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+
   * {
     box-sizing: border-box;
   }

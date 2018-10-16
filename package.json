@@ -29,6 +29,7 @@
     "polished": "^2.2.0",
     "popmotion": "^8.4.1",
     "react": "^16.5.2",
+    "react-compound-slider": "^0.16.2",
     "react-dom": "^16.5.2",
     "react-leaflet": "^2.0.1",
     "react-pose": "^3.3.6",

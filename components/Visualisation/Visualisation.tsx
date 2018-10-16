@@ -18,8 +18,9 @@ configure({
 interface IProps {
   data: DiaryData;
   view?: VIEW;
-  timeSpan?: [number, number];
-  onFilterBarViewChange: (view?: VIEW) => void;
+  timeSpan?: ReadonlyArray<number>;
+  onViewChange: (view?: VIEW) => void;
+  onTimeSpanChange: (timeSpan: ReadonlyArray<number>) => void;
 }
 
 @observer
@@ -35,10 +36,10 @@ class Visualisation extends Component<IProps> {
     const { view, data, timeSpan } = props;
 
     this.uiStore = new UIStore();
+    this.uiStore.update({ view, timeSpan });
+
     this.dataStore = new DataStore(this.uiStore, data);
     this.visStore = new VisualisationStore(this.uiStore, this.dataStore);
-
-    this.uiStore.update({ view, timeSpan });
   }
 
   @action
@@ -67,7 +68,7 @@ class Visualisation extends Component<IProps> {
   render() {
     const { initialBounds } = this.visStore;
     const { view } = this.uiStore;
-    const { onFilterBarViewChange } = this.props;
+    const { onViewChange, onTimeSpanChange } = this.props;
 
     return (
       <Fragment>
@@ -85,7 +86,8 @@ class Visualisation extends Component<IProps> {
         <FilterToolbar
           ui={this.uiStore}
           data={this.dataStore}
-          onViewChange={onFilterBarViewChange}
+          onViewChange={onViewChange}
+          onTimeSpanChange={onTimeSpanChange}
         />
       </Fragment>
     );

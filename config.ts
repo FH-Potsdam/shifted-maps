@@ -2,12 +2,12 @@ import getConfig from 'next/config';
 
 const { publicRuntimeConfig } = getConfig();
 
-type Config = {
+interface IConfig {
   url: string;
   mapboxAccessToken: string;
   mapboxStyleId: string;
-};
+}
 
-const config: Config = publicRuntimeConfig;
+const config: IConfig = publicRuntimeConfig;
 
 export default config;

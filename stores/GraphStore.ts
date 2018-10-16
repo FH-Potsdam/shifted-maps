@@ -88,8 +88,8 @@ class GraphStore {
       return;
     }
 
-    if (ui.view != null) {
-      console.log('Test');
+    if (ui.view != null && ui.timeSpan != null) {
+      console.log('How to run callback when value changed?');
     }
 
     this.simulation.alpha(1);

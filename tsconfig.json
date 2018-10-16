@@ -23,6 +23,6 @@
     "experimentalDecorators": true,
   },
   "types": [
-    "types"
-  ]
+    "types",
+  ],
 }

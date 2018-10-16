@@ -82,10 +82,11 @@ class ConnectionLine extends Component<IProps> {
   };
 }
 
-const ConnectionLineLine = styled.line`
-  stroke: ${props => props.theme.foregroundColor};
-`;
-
 export default styled(ConnectionLine)`
   pointer-events: auto;
+  display: ${props => (props.connectionLine.visible ? 'block' : 'none')};
+`;
+
+const ConnectionLineLine = styled.line`
+  stroke: ${props => props.theme.foregroundColor};
 `;
