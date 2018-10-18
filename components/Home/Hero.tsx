@@ -4,7 +4,7 @@ import { StatelessComponent } from 'react';
 import use from 'reuse';
 
 import Heading from '../common/Heading';
-import Icon from '../common/Icon';
+import { GoIcon } from '../common/icons';
 import Layout, { LayoutItem } from '../common/Layout';
 import Link from '../common/Link';
 import Paragraph from '../common/Paragraph';
@@ -24,7 +24,7 @@ const Hero: StatelessComponent<IProps> = props => {
       <HeroHighlight>
         <NextLink href="map" prefetch>
           <HeroGo>
-            Test the Demo <Icon name="go" />
+            Test the Demo <GoIcon />
           </HeroGo>
         </NextLink>
       </HeroHighlight>
@@ -32,12 +32,12 @@ const Hero: StatelessComponent<IProps> = props => {
         <HeroSectionLayout>
           <LayoutItem span="4">
             <HeroDownload href="/static/downloads/ShiftedMaps_Paper_V2.pdf">
-              <Icon name="go" /> Paper <em>874 KB</em>
+              <GoIcon /> Paper <em>874 KB</em>
             </HeroDownload>
           </LayoutItem>
           <LayoutItem span="4">
             <HeroDownload href="/static/downloads/ShiftedMaps_Plakat.pdf">
-              <Icon name="go" /> Poster <em>4.8 MB</em>
+              <GoIcon name="go" /> Poster <em>4.8 MB</em>
             </HeroDownload>
           </LayoutItem>
         </HeroSectionLayout>
@@ -123,7 +123,7 @@ const HeroGo = styled(Link)`
   display: block;
   line-height: ${props => props.theme.spacingUnit * 2}px;
 
-  ${Icon} {
+  ${GoIcon} {
     font-size: ${props => props.theme.spacingUnit * 2}px;
     vertical-align: middle;
     margin-left: ${props => props.theme.spacingUnit}px;
@@ -138,15 +138,11 @@ const HeroGo = styled(Link)`
 const HeroDownload = styled(Link)`
   display: block;
 
-  ${Icon} {
+  ${GoIcon} {
     display: block;
     font-size: ${props => props.theme.spacingUnit * 2}px;
     margin-bottom: ${props => props.theme.spacingUnit * 0.5}px;
-
-    &:before {
-      display: inline-block;
-      transform: rotate(90deg);
-    }
+    transform: rotate(90deg);
   }
 
   em {

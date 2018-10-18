@@ -6,7 +6,7 @@ import { Component } from 'react';
 import DataStore, { DAY_IN_SEC } from '../../stores/DataStore';
 import UIStore, { VIEW } from '../../stores/UIStore';
 import Heading from '../common/Heading';
-import Icon from '../common/Icon';
+import { DurationIcon, FrequencyIcon, GeographicIcon } from '../common/icons';
 import Slider from '../common/Slider';
 import styled, { css } from '../styled';
 
@@ -81,19 +81,19 @@ class FilterBar extends Component<IProps> {
           onClick={() => this.handleToggleView(VIEW.GEOGRAPHIC)}
           active={ui.view === VIEW.GEOGRAPHIC}
         >
-          <Icon name="geographic" title="Geographic View" />
+          <GeographicIcon width="32" height="32" />
         </FilterBarViewButton>
         <FilterBarViewButton
           onClick={() => this.handleToggleView(VIEW.DURATION)}
           active={ui.view === VIEW.DURATION}
         >
-          <Icon name="duration" title="Temporal View" />
+          <DurationIcon />
         </FilterBarViewButton>
         <FilterBarViewButton
           onClick={() => this.handleToggleView(VIEW.FREQUENCY)}
           active={ui.view === VIEW.FREQUENCY}
         >
-          <Icon name="frequency" title="Frequency View" />
+          <FrequencyIcon width="32" height="32" />
         </FilterBarViewButton>
       </FilterBarViewList>
     );

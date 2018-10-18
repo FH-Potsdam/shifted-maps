@@ -15,6 +15,22 @@ module.exports = flow(
   webpack(config, options) {
     return {
       ...config,
+      module: {
+        ...config.module,
+        rules: [
+          {
+            test: /\.svg$/,
+            use: [
+              {
+                loader: '@svgr/webpack',
+                options: {
+                  ref: true,
+                },
+              },
+            ],
+          },
+        ].concat(config.module.rules),
+      },
       plugins: [
         ...config.plugins,
         new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),

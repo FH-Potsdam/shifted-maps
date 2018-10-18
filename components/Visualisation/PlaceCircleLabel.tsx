@@ -65,7 +65,7 @@ class PlaceCircleLabel extends PureComponent<IProps> {
     ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
     const labelMetrics = ctx.measureText(label);
     let width = labelMetrics.width;
-    let height = labelFontSize * 2;
+    let height = labelFontSize * 2 + 5;
 
     if (clusterLabel != null) {
       ctx.font = `italic ${clusterLabelFontSize * 2}px "soleil"`;
@@ -102,10 +102,8 @@ class PlaceCircleLabel extends PureComponent<IProps> {
     const image = this.ref.current!;
 
     image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', this.labelCanvas!.toDataURL());
-    image.setAttribute('width', String(width));
-    image.setAttribute('height', String(height));
-    image.style.width = `${Math.round(width * 0.5)}px`;
-    image.style.height = `${Math.round(height * 0.5)}px`;
+    image.setAttribute('width', String(width * 0.5));
+    image.setAttribute('height', String(height * 0.5));
     image.style[DomUtil.TRANSFORM] = `translateX(${Math.round(width * -0.25)}px)`;
   }
 }

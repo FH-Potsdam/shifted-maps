@@ -2,11 +2,11 @@ import { DomUtil } from 'leaflet';
 import { createRef, forwardRef, PureComponent, Ref, RefObject } from 'react';
 
 import styled, { withTheme } from '../styled';
-import { Theme } from '../theme';
+import { ITheme } from '../theme';
 
 interface IProps {
   label: string | null;
-  theme?: Theme;
+  theme?: ITheme;
   innerRef?: Ref<SVGForeignObjectElement>;
   className?: string;
 }
