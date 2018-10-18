@@ -1,4 +1,4 @@
-import styled, { injectGlobal, switchProp } from '../styled';
+import styled, { switchProp } from '../styled';
 
 interface IProps {
   name: string;

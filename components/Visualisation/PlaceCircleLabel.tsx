@@ -2,7 +2,7 @@ import { DomUtil } from 'leaflet';
 import { createRef, PureComponent, RefObject } from 'react';
 
 import styled, { withTheme } from '../styled';
-import { Theme } from '../theme';
+import { ITheme } from '../theme';
 
 interface IProps {
   label: string;
@@ -10,11 +10,11 @@ interface IProps {
   className?: string;
   offset: number;
   hover: boolean;
-  theme?: Theme;
+  theme?: ITheme;
 }
 
 class PlaceCircleLabel extends PureComponent<IProps> {
-  ref: RefObject<HTMLCanvasElement>;
+  ref: RefObject<SVGImageElement>;
   labelCanvas?: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D | null = null;
 
@@ -25,7 +25,7 @@ class PlaceCircleLabel extends PureComponent<IProps> {
   }
 
   componentDidMount() {
-    this.labelCanvas = this.ref.current!;
+    this.labelCanvas = document.createElement('canvas');
     this.ctx = this.labelCanvas.getContext('2d');
 
     this.drawLabel();
@@ -36,20 +36,23 @@ class PlaceCircleLabel extends PureComponent<IProps> {
   }
 
   render() {
-    const { className, offset } = this.props;
+    const { className } = this.props;
 
     return (
-      <foreignObject className={className} transform={`translate(0, ${Math.round(offset)})`}>
-        <canvas ref={this.ref} />
-      </foreignObject>
+      <g className={className}>
+        <image ref={this.ref} />
+      </g>
     );
   }
 
   private drawLabel() {
     const { label, clusterSize, theme } = this.props;
 
-    if (this.ctx == null || this.labelCanvas == null || theme == null) {
-      return;
+    const ctx = this.ctx!;
+    const canvas = this.labelCanvas!;
+
+    if (theme == null) {
+      throw new Error('Missing theme.');
     }
 
     const labelFontSize = theme.fontSize;
@@ -59,14 +62,14 @@ class PlaceCircleLabel extends PureComponent<IProps> {
     const clusterLabel =
       clusterSize > 0 ? `+${clusterSize} other ${clusterSize === 1 ? 'place' : 'places'}` : null;
 
-    this.ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
-    const labelMetrics = this.ctx.measureText(label);
+    ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
+    const labelMetrics = ctx.measureText(label);
     let width = labelMetrics.width;
     let height = labelFontSize * 2;
 
     if (clusterLabel != null) {
-      this.ctx.font = `italic ${clusterLabelFontSize * 2}px "soleil"`;
-      const clusterSizeMetrics = this.ctx.measureText(clusterLabel);
+      ctx.font = `italic ${clusterLabelFontSize * 2}px "soleil"`;
+      const clusterSizeMetrics = ctx.measureText(clusterLabel);
 
       width = Math.max(width, clusterSizeMetrics.width);
       height += labelFontSize * 2 + spacing / 4;
@@ -75,29 +78,35 @@ class PlaceCircleLabel extends PureComponent<IProps> {
     width = Math.round(width) + spacing;
     height = Math.round(height) + spacing / 2;
 
-    this.labelCanvas.setAttribute('width', String(width));
-    this.labelCanvas.setAttribute('height', String(height));
-    this.labelCanvas.style.width = `${Math.round(width * 0.5)}px`;
-    this.labelCanvas.style.height = `${Math.round(height * 0.5)}px`;
-    this.labelCanvas.style[DomUtil.TRANSFORM] = `translateX(${Math.round(width * -0.25)}px)`;
+    canvas.setAttribute('width', String(width));
+    canvas.setAttribute('height', String(height));
 
-    this.ctx.textBaseline = 'hanging';
-    this.ctx.textAlign = 'center';
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
-    this.ctx.lineWidth = spacing / 2;
-    this.ctx.fillStyle = theme.highlightColor;
-    this.ctx.strokeStyle = theme.backgroundColor;
+    ctx.textBaseline = 'hanging';
+    ctx.textAlign = 'center';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = spacing / 2;
+    ctx.fillStyle = theme.highlightColor;
+    ctx.strokeStyle = theme.backgroundColor;
 
-    this.ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
-    this.ctx.strokeText(label, width / 2, 0);
-    this.ctx.fillText(label, width / 2, 0);
+    ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
+    ctx.strokeText(label, width / 2, 0);
+    ctx.fillText(label, width / 2, 0);
 
     if (clusterLabel != null) {
-      this.ctx.font = `italic ${clusterLabelFontSize * 2}px "soleil"`;
-      this.ctx.strokeText(clusterLabel, width / 2, labelFontSize * 2 + spacing / 4);
-      this.ctx.fillText(clusterLabel, width / 2, labelFontSize * 2 + spacing / 4);
+      ctx.font = `italic ${clusterLabelFontSize * 2}px "soleil"`;
+      ctx.strokeText(clusterLabel, width / 2, labelFontSize * 2 + spacing / 4);
+      ctx.fillText(clusterLabel, width / 2, labelFontSize * 2 + spacing / 4);
     }
+
+    const image = this.ref.current!;
+
+    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', this.labelCanvas!.toDataURL());
+    image.setAttribute('width', String(width));
+    image.setAttribute('height', String(height));
+    image.style.width = `${Math.round(width * 0.5)}px`;
+    image.style.height = `${Math.round(height * 0.5)}px`;
+    image.style[DomUtil.TRANSFORM] = `translateX(${Math.round(width * -0.25)}px)`;
   }
 }
 
@@ -105,4 +114,5 @@ export default styled(withTheme<IProps>(PlaceCircleLabel))`
   transition: opacity ${props => props.theme.shortTransitionDuration};
   pointer-events: none;
   opacity: ${props => (props.hover ? 1 : 0)};
+  transform: translate(0, ${props => Math.round(props.offset)}px);
 `;

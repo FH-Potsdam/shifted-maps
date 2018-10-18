@@ -68,7 +68,7 @@ class PlaceCircleMap extends Component<IProps> {
           <image
             className={this.activeHref === image.href ? 'active' : ''}
             key={image.href}
-            href={image.href}
+            xlinkHref={image.href}
             clipPath="url(#clip-path-circle)"
             width={diameter}
             height={diameter}
