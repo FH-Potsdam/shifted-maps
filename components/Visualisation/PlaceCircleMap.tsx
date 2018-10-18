@@ -14,6 +14,10 @@ interface IProps {
   className?: string;
 }
 
+const normalizeCoordinate = (coordinate: number) => {
+  return Math.round(coordinate * 10000) / 10000;
+};
+
 @observer
 class PlaceCircleMap extends Component<IProps> {
   private cachedImages: PlaceCircleMapImage[] = [];
@@ -32,11 +36,11 @@ class PlaceCircleMap extends Component<IProps> {
     const { diameter, zoom, latLngBounds } = this.props.placeCircle;
     const center = latLngBounds.getCenter();
 
-    return `http://api.tiles.mapbox.com/v4/${config.mapboxStyleId}/${center.lng},${
-      center.lat
-    },${zoom}/${diameter}x${diameter}${Browser.retina ? '@2x' : ''}.png?access_token=${
-      config.mapboxAccessToken
-    }`;
+    return `http://api.tiles.mapbox.com/v4/${config.mapboxStyleId}/${normalizeCoordinate(
+      center.lng
+    )},${normalizeCoordinate(center.lat)},${zoom}/${diameter}x${diameter}${
+      Browser.retina ? '@2x' : ''
+    }.png?access_token=${config.mapboxAccessToken}`;
   }
 
   @computed
