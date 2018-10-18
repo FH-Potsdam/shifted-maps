@@ -184,6 +184,7 @@ const FilterBarViewButton = styled.button<{ active: boolean }>`
   color: ${props => props.theme.foregroundColor};
   padding: 0;
   font-size: ${props => props.theme.spacingUnit * 2}px;
+  background-color: white;
 
   &:not(:first-child) {
     margin-left: ${props => props.theme.spacingUnit * 1.5}px;
