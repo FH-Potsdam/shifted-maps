@@ -7,12 +7,12 @@ import { ITheme } from '../theme';
 interface IProps {
   label: string | null;
   theme?: ITheme;
-  innerRef?: Ref<SVGForeignObjectElement>;
+  forwardedRef?: Ref<SVGForeignObjectElement>;
   className?: string;
 }
 
 class ConnectionLineLabel extends PureComponent<IProps> {
-  ref: RefObject<HTMLCanvasElement>;
+  ref: RefObject<SVGImageElement>;
   labelCanvas?: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D | null = null;
 
@@ -23,7 +23,7 @@ class ConnectionLineLabel extends PureComponent<IProps> {
   }
 
   componentDidMount() {
-    this.labelCanvas = this.ref.current!;
+    this.labelCanvas = document.createElement('canvas');
     this.ctx = this.labelCanvas.getContext('2d');
 
     this.drawLabel();
@@ -34,53 +34,65 @@ class ConnectionLineLabel extends PureComponent<IProps> {
   }
 
   render() {
-    const { innerRef, className } = this.props;
+    const { forwardedRef, className } = this.props;
 
     return (
-      <foreignObject ref={innerRef} className={className}>
-        <canvas ref={this.ref} />
-      </foreignObject>
+      <g ref={forwardedRef} className={className}>
+        <image ref={this.ref} />
+      </g>
     );
   }
 
   private drawLabel = () => {
     const { label, theme } = this.props;
 
-    if (label == null || theme == null || this.ctx == null || this.labelCanvas == null) {
+    if (label == null || theme == null) {
       return;
     }
 
+    const ctx = this.ctx!;
+    const canvas = this.labelCanvas!;
+
     const fontSize = theme.fontSizeSmall;
 
-    this.ctx.font = `italic ${fontSize * 2}px "soleil"`;
-    const metrics = this.ctx.measureText(label);
+    ctx.textBaseline = 'hanging';
+    ctx.font = `italic ${fontSize * 2}px "soleil"`;
+    const metrics = ctx.measureText(label);
 
     const padding = theme.spacingUnit * 0.5;
     const width = Math.round(metrics.width) + padding * 2;
-    const height = fontSize * 2;
+    const height = Math.round(
+      metrics.emHeightAscent && metrics.emHeightDescent
+        ? metrics.emHeightAscent + metrics.emHeightDescent
+        : fontSize * 2
+    );
 
-    this.labelCanvas.setAttribute('width', String(width));
-    this.labelCanvas.setAttribute('height', String(height));
-    this.labelCanvas.style.width = `${width * 0.5}px`;
-    this.labelCanvas.style.height = `${height * 0.5}px`;
-    this.labelCanvas.style[DomUtil.TRANSFORM] = `translate(${width * -0.25}px, ${height * -0.5}px)`;
+    canvas.setAttribute('width', String(width));
+    canvas.setAttribute('height', String(height));
 
-    this.ctx.fillStyle = theme.backgroundColor;
-    this.ctx.rect(0, 0, width, height);
-    this.ctx.fill();
+    ctx.fillStyle = theme.backgroundColor;
+    ctx.rect(0, 0, width, height);
+    ctx.fill();
 
-    this.ctx.textBaseline = 'hanging';
-    this.ctx.font = `italic ${fontSize * 2}px "soleil"`;
-    this.ctx.fillStyle = theme.foregroundColor;
+    ctx.textBaseline = 'hanging';
+    ctx.font = `italic ${fontSize * 2}px "soleil"`;
+    ctx.fillStyle = theme.foregroundColor;
 
-    this.ctx.fillText(label, padding, 0);
+    ctx.fillText(label, padding, 0);
+
+    const image = this.ref.current!;
+
+    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', canvas.toDataURL());
+    image.setAttribute('width', String(width * 0.5));
+    image.setAttribute('height', String(height * 0.5));
+    image.style[DomUtil.TRANSFORM] = `translate(${width * -0.25}px, ${height * -0.25}px)`;
   };
 }
 
 export default styled(
   withTheme<IProps>(
     forwardRef<SVGForeignObjectElement, IProps>((props, ref) => (
-      <ConnectionLineLabel {...props} innerRef={ref} />
+      <ConnectionLineLabel {...props} forwardedRef={ref} />
     ))
   )
 )`

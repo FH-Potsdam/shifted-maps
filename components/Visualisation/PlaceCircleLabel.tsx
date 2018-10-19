@@ -48,12 +48,12 @@ class PlaceCircleLabel extends PureComponent<IProps> {
   private drawLabel() {
     const { label, clusterSize, theme } = this.props;
 
-    const ctx = this.ctx!;
-    const canvas = this.labelCanvas!;
-
     if (theme == null) {
       throw new Error('Missing theme.');
     }
+
+    const ctx = this.ctx!;
+    const canvas = this.labelCanvas!;
 
     const labelFontSize = theme.fontSize;
     const clusterLabelFontSize = theme.fontSizeSmall;
@@ -62,17 +62,28 @@ class PlaceCircleLabel extends PureComponent<IProps> {
     const clusterLabel =
       clusterSize > 0 ? `+${clusterSize} other ${clusterSize === 1 ? 'place' : 'places'}` : null;
 
+    ctx.textBaseline = 'hanging';
+    ctx.textAlign = 'center';
     ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
     const labelMetrics = ctx.measureText(label);
     let width = labelMetrics.width;
-    let height = labelFontSize * 2 + 5;
+    let height =
+      labelMetrics.emHeightAscent && labelMetrics.emHeightDescent
+        ? labelMetrics.emHeightAscent + labelMetrics.emHeightDescent
+        : labelFontSize * 2;
 
     if (clusterLabel != null) {
+      ctx.textBaseline = 'hanging';
+      ctx.textAlign = 'center';
       ctx.font = `italic ${clusterLabelFontSize * 2}px "soleil"`;
       const clusterSizeMetrics = ctx.measureText(clusterLabel);
 
       width = Math.max(width, clusterSizeMetrics.width);
-      height += labelFontSize * 2 + spacing / 4;
+      height +=
+        (clusterSizeMetrics.emHeightAscent && clusterSizeMetrics.emHeightDescent
+          ? clusterSizeMetrics.emHeightAscent + clusterSizeMetrics.emHeightDescent
+          : clusterLabelFontSize * 2) +
+        spacing * 0.25;
     }
 
     width = Math.round(width) + spacing;
@@ -81,14 +92,14 @@ class PlaceCircleLabel extends PureComponent<IProps> {
     canvas.setAttribute('width', String(width));
     canvas.setAttribute('height', String(height));
 
-    ctx.textBaseline = 'hanging';
-    ctx.textAlign = 'center';
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.lineWidth = spacing / 2;
     ctx.fillStyle = theme.highlightColor;
     ctx.strokeStyle = theme.backgroundColor;
 
+    ctx.textBaseline = 'hanging';
+    ctx.textAlign = 'center';
     ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
     ctx.strokeText(label, width / 2, 0);
     ctx.fillText(label, width / 2, 0);
@@ -101,7 +112,7 @@ class PlaceCircleLabel extends PureComponent<IProps> {
 
     const image = this.ref.current!;
 
-    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', this.labelCanvas!.toDataURL());
+    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', canvas.toDataURL());
     image.setAttribute('width', String(width * 0.5));
     image.setAttribute('height', String(height * 0.5));
     image.style[DomUtil.TRANSFORM] = `translateX(${Math.round(width * -0.25)}px)`;

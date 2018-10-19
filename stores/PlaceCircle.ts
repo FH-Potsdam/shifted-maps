@@ -15,7 +15,7 @@ class PlaceCircle {
   hover: boolean = false;
 
   @observable
-  point: Point = point(0, 0);
+  graphPoint: Point = point(0, 0);
 
   constructor(vis: VisualisationStore, place: Place) {
     this.vis = vis;
@@ -25,6 +25,17 @@ class PlaceCircle {
   @computed
   get mapPoint() {
     return this.vis.project(this.place.latLng);
+  }
+
+  @computed<Point>({
+    equals(a, b) {
+      return a.equals(b);
+    },
+  })
+  get point() {
+    const { x, y } = this.graphPoint;
+
+    return new Point(Math.round(x * 10) / 10, Math.round(y * 10) / 10);
   }
 
   @computed

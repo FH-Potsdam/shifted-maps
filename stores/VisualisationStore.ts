@@ -72,14 +72,14 @@ class VisualisationStore {
   @action
   handleGraphTick = (nodes: PlaceCircleNode[]) => {
     nodes.forEach(node => {
-      node.placeCircle.point = node.clone();
+      node.placeCircle.graphPoint = node.clone();
     });
   };
 
   @action
   handleGraphEnd = (nodes: PlaceCircleNode[]) => {
     nodes.forEach(node => {
-      node.placeCircle.point = node.round();
+      node.placeCircle.graphPoint = node.round();
     });
   };
 

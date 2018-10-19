@@ -78,6 +78,10 @@ class GraphStore {
   }
 
   dispose() {
+    this.stop();
+
+    console.log('dispose graph');
+
     this.toggleDisposer();
     this.updateDisposer();
     this.zoomDisposer();
@@ -107,11 +111,11 @@ class GraphStore {
 
     const viewActive = ui.view != null;
 
-    console.log('update simulation', this.nodes.length);
-
     this.simulation.nodes(this.nodes);
 
-    this.linkForce.links(this.links).strength(viewActive ? 0.5 : 0);
+    this.linkForce
+      .links(this.links)
+      .strength(link => (viewActive && link.connectionLine.visible ? 0.5 : 0));
 
     this.xForce.strength(viewActive ? 0.2 : 1);
     this.yForce.strength(viewActive ? 0.2 : 1);
