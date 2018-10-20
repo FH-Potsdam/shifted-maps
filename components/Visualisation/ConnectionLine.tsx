@@ -36,12 +36,12 @@ class ConnectionLine extends Component<IProps> {
 
   render() {
     const { className, connectionLine } = this.props;
-    const { label } = connectionLine;
+    const { label, hover } = connectionLine;
 
     return (
       <g className={className}>
-        <ConnectionLineLine innerRef={this.lineRef} />
-        <ConnectionLineLabel innerRef={this.labelRef} label={label} />
+        <ConnectionLineLine innerRef={this.lineRef} hover={hover} />
+        <ConnectionLineLabel innerRef={this.labelRef} label={label} hover={hover} />
       </g>
     );
   }
@@ -87,6 +87,6 @@ export default styled(ConnectionLine)`
   display: ${props => (props.connectionLine.visible ? 'block' : 'none')};
 `;
 
-const ConnectionLineLine = styled.line`
-  stroke: ${props => props.theme.foregroundColor};
+const ConnectionLineLine = styled.line<{ hover: boolean }>`
+  stroke: ${props => (props.hover ? props.theme.highlightColor : props.theme.foregroundColor)};
 `;

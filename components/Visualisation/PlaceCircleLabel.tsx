@@ -62,7 +62,6 @@ class PlaceCircleLabel extends PureComponent<IProps> {
     const clusterLabel =
       clusterSize > 0 ? `+${clusterSize} other ${clusterSize === 1 ? 'place' : 'places'}` : null;
 
-    ctx.textBaseline = 'hanging';
     ctx.textAlign = 'center';
     ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
     const labelMetrics = ctx.measureText(label);
@@ -73,7 +72,6 @@ class PlaceCircleLabel extends PureComponent<IProps> {
         : labelFontSize * 2;
 
     if (clusterLabel != null) {
-      ctx.textBaseline = 'hanging';
       ctx.textAlign = 'center';
       ctx.font = `italic ${clusterLabelFontSize * 2}px "soleil"`;
       const clusterSizeMetrics = ctx.measureText(clusterLabel);
@@ -98,16 +96,19 @@ class PlaceCircleLabel extends PureComponent<IProps> {
     ctx.fillStyle = theme.highlightColor;
     ctx.strokeStyle = theme.backgroundColor;
 
-    ctx.textBaseline = 'hanging';
+    const baseline = labelFontSize * 2;
+
     ctx.textAlign = 'center';
     ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
-    ctx.strokeText(label, width / 2, 0);
-    ctx.fillText(label, width / 2, 0);
+    ctx.strokeText(label, width / 2, baseline);
+    ctx.fillText(label, width / 2, baseline);
 
     if (clusterLabel != null) {
+      const baseline = clusterLabelFontSize * 2 + labelFontSize * 2 + spacing / 4;
+
       ctx.font = `italic ${clusterLabelFontSize * 2}px "soleil"`;
-      ctx.strokeText(clusterLabel, width / 2, labelFontSize * 2 + spacing / 4);
-      ctx.fillText(clusterLabel, width / 2, labelFontSize * 2 + spacing / 4);
+      ctx.strokeText(clusterLabel, width / 2, baseline);
+      ctx.fillText(clusterLabel, width / 2, baseline);
     }
 
     const image = this.ref.current!;

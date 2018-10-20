@@ -6,6 +6,7 @@ import { ITheme } from '../theme';
 
 interface IProps {
   label: string | null;
+  hover: boolean;
   theme?: ITheme;
   forwardedRef?: Ref<SVGForeignObjectElement>;
   className?: string;
@@ -44,7 +45,7 @@ class ConnectionLineLabel extends PureComponent<IProps> {
   }
 
   private drawLabel = () => {
-    const { label, theme } = this.props;
+    const { label, theme, hover } = this.props;
 
     if (label == null || theme == null) {
       return;
@@ -55,7 +56,6 @@ class ConnectionLineLabel extends PureComponent<IProps> {
 
     const fontSize = theme.fontSizeSmall;
 
-    ctx.textBaseline = 'hanging';
     ctx.font = `italic ${fontSize * 2}px "soleil"`;
     const metrics = ctx.measureText(label);
 
@@ -74,11 +74,10 @@ class ConnectionLineLabel extends PureComponent<IProps> {
     ctx.rect(0, 0, width, height);
     ctx.fill();
 
-    ctx.textBaseline = 'hanging';
     ctx.font = `italic ${fontSize * 2}px "soleil"`;
-    ctx.fillStyle = theme.foregroundColor;
+    ctx.fillStyle = hover ? theme.highlightColor : theme.foregroundColor;
 
-    ctx.fillText(label, padding, 0);
+    ctx.fillText(label, padding, fontSize * 2);
 
     const image = this.ref.current!;
 

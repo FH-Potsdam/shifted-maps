@@ -3,7 +3,10 @@ import orderBy from 'lodash/fp/orderBy';
 import { computed, observable } from 'mobx';
 
 import Place from './Place';
+import roundPoint from './utils/roundPoint';
 import VisualisationStore, { CRS, MAX_ZOOM } from './VisualisationStore';
+
+const roundPlaceCirclePoint = roundPoint(0.2);
 
 export const sortByHoverRadius = orderBy<PlaceCircle>(['hover', 'radius'], ['asc', 'asc']);
 
@@ -33,9 +36,7 @@ class PlaceCircle {
     },
   })
   get point() {
-    const { x, y } = this.graphPoint;
-
-    return new Point(Math.round(x * 10) / 10, Math.round(y * 10) / 10);
+    return roundPlaceCirclePoint(this.graphPoint);
   }
 
   @computed
