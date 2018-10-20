@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { DomUtil } from 'leaflet';
 import { createRef, forwardRef, PureComponent, Ref, RefObject } from 'react';
 
@@ -6,7 +7,7 @@ import { ITheme } from '../theme';
 
 interface IProps {
   label: string | null;
-  hover: boolean;
+  highlight: boolean;
   theme?: ITheme;
   forwardedRef?: Ref<SVGForeignObjectElement>;
   className?: string;
@@ -35,17 +36,17 @@ class ConnectionLineLabel extends PureComponent<IProps> {
   }
 
   render() {
-    const { forwardedRef, className } = this.props;
+    const { forwardedRef, className, label } = this.props;
 
     return (
-      <g ref={forwardedRef} className={className}>
+      <g ref={forwardedRef} className={classNames(className, { visible: label != null })}>
         <image ref={this.ref} />
       </g>
     );
   }
 
   private drawLabel = () => {
-    const { label, theme, hover } = this.props;
+    const { label, theme, highlight } = this.props;
 
     if (label == null || theme == null) {
       return;
@@ -75,7 +76,7 @@ class ConnectionLineLabel extends PureComponent<IProps> {
     ctx.fill();
 
     ctx.font = `italic ${fontSize * 2}px "soleil"`;
-    ctx.fillStyle = hover ? theme.highlightColor : theme.foregroundColor;
+    ctx.fillStyle = highlight ? theme.highlightColor : theme.foregroundColor;
 
     ctx.fillText(label, padding, fontSize * 2);
 
@@ -95,5 +96,10 @@ export default styled(
     ))
   )
 )`
-  display: ${props => (props.label != null ? 'block' : 'none')};
+  will-change: transform;
+  display: none;
+
+  &.visible {
+    display: block;
+  }
 `;

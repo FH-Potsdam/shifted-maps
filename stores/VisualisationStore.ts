@@ -3,6 +3,12 @@ import { CRS as LeafletCRS, LatLng, latLngBounds, Map as LeafletMap, Point } fro
 import reverse from 'lodash/fp/reverse';
 import { action, computed, observable } from 'mobx';
 
+import {
+  CONNECTION_STROKE_WIDTH_RANGE_SCALE,
+  MAX_ZOOM,
+  PLACE_RADIUS_RANGE_SCALE,
+  PLACE_STROKE_WIDTH_RANGE_SCALE,
+} from './config';
 import Connection from './Connection';
 import ConnectionLine, {
   lengthExtent as connectionLineLengthExtent,
@@ -21,20 +27,29 @@ import PlaceCircle, { sortByHoverRadius } from './PlaceCircle';
 import PlaceCircleNode from './PlaceCircleNode';
 import UIStore from './UIStore';
 
-export const MAX_ZOOM = 18;
-export const CRS = LeafletCRS.EPSG3857;
+type VisualisationElement = PlaceCircle | ConnectionLine;
 
-const PLACE_STROKE_WIDTH_RANGE_SCALE = scalePow<[number, number]>()
-  .exponent(2)
-  .range([[1, 5], [4, 20]]);
+function sortVisualisationElements(elements: VisualisationElement[]): VisualisationElement[] {
+  return [...elements].sort((a, b) => {
+    if (a.highlight !== b.highlight) {
+      return Number(a.highlight) - Number(b.highlight);
+    }
 
-const PLACE_RADIUS_RANGE_SCALE = scalePow<[number, number]>()
-  .exponent(2)
-  .range([[10, 50], [50, 300]]);
+    if (a instanceof PlaceCircle && b instanceof PlaceCircle) {
+      if (a.hover !== b.hover) {
+        return Number(a.hover) - Number(b.hover);
+      }
 
-const CONNECTION_STROKE_WIDTH_RANGE_SCALE = scalePow<[number, number]>()
-  .exponent(2)
-  .range([[0.5, 5], [1, 10]]);
+      return a.radius - b.radius;
+    }
+
+    if (a instanceof ConnectionLine && b instanceof ConnectionLine) {
+      return a.strokeWidth - b.strokeWidth;
+    }
+
+    return a instanceof PlaceCircle ? 1 : -1;
+  });
+}
 
 class VisualisationStore {
   readonly data: DataStore;
@@ -225,6 +240,11 @@ class VisualisationStore {
   }
 
   @computed
+  get elements() {
+    return sortVisualisationElements([...this.placeCircles, ...this.connectionLines]);
+  }
+
+  @computed
   get visiblePlaceCircles() {
     return this.placeCircles.filter(placeCircle => placeCircle.visible);
   }
@@ -323,6 +343,14 @@ class VisualisationStore {
   @computed
   get connectionFrequencyLengthScale() {
     return this.connectionLengthScale.copy().domain(reverse(this.connectionFrequencyDomain));
+  }
+
+  @computed
+  get hovering() {
+    return (
+      this.visiblePlaceCircles.some(placeCircle => placeCircle.hover) ||
+      this.visibleConnectionLines.some(connectionLine => connectionLine.hover)
+    );
   }
 
   project(

@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { DomUtil } from 'leaflet';
 import { createRef, PureComponent, RefObject } from 'react';
 
@@ -36,10 +37,13 @@ class PlaceCircleLabel extends PureComponent<IProps> {
   }
 
   render() {
-    const { className } = this.props;
+    const { className, hover, offset } = this.props;
 
     return (
-      <g className={className}>
+      <g
+        className={classNames(className, { visible: hover })}
+        transform={`translate(0, ${Math.round(offset)})`}
+      >
         <image ref={this.ref} />
       </g>
     );
@@ -123,6 +127,9 @@ class PlaceCircleLabel extends PureComponent<IProps> {
 export default styled(withTheme<IProps>(PlaceCircleLabel))`
   transition: opacity ${props => props.theme.shortTransitionDuration};
   pointer-events: none;
-  opacity: ${props => (props.hover ? 1 : 0)};
-  transform: translate(0, ${props => Math.round(props.offset)}px);
+  opacity: 0;
+
+  &.visible {
+    opacity: 1;
+  }
 `;

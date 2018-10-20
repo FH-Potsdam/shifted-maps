@@ -1,4 +1,6 @@
-import { action, autorun, IReactionDisposer } from 'mobx';
+import classNames from 'classnames';
+import debounce from 'lodash/fp/debounce';
+import { action, autorun, IReactionDisposer, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Component, createRef, RefObject, SyntheticEvent } from 'react';
 
@@ -12,10 +14,14 @@ const PlaceCircleBackground = styled.circle`
   stroke: none;
 `;
 
-const PlaceCircleStroke = styled.circle<{ hover: boolean }>`
+const PlaceCircleStroke = styled.circle`
   transition: stroke ${props => props.theme.shortTransitionDuration};
   fill: none;
-  stroke: ${props => (props.hover ? props.theme.highlightColor : props.theme.foregroundColor)};
+  stroke: ${props => props.theme.foregroundColor};
+
+  &.highlight {
+    stroke: ${props => props.theme.highlightColor};
+  }
 `;
 
 interface IProps {
@@ -25,7 +31,8 @@ interface IProps {
 
 @observer
 class PlaceCircle extends Component<IProps> {
-  private ref: RefObject<SVGGElement>;
+  private readonly ref: RefObject<SVGGElement>;
+
   private styleDisposer?: IReactionDisposer;
 
   constructor(props: IProps) {
@@ -46,18 +53,22 @@ class PlaceCircle extends Component<IProps> {
 
   render() {
     const { placeCircle, className } = this.props;
-    const { radius, strokeWidth, hover, place, children } = placeCircle;
+    const { radius, strokeWidth, hover, place, children, visible, fade } = placeCircle;
 
     return (
       <g
         ref={this.ref}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
-        className={className}
+        className={classNames(className, { visible, fade })}
       >
         <PlaceCircleBackground r={radius} />
         <PlaceCircleMap placeCircle={placeCircle} />
-        <PlaceCircleStroke r={radius} style={{ strokeWidth: `${strokeWidth}px` }} hover={hover} />
+        <PlaceCircleStroke
+          r={radius}
+          style={{ strokeWidth: `${strokeWidth}px` }}
+          className={classNames({ highlight: hover })}
+        />
         <PlaceCircleLabel
           label={place.name}
           clusterSize={children.length}
@@ -91,8 +102,19 @@ class PlaceCircle extends Component<IProps> {
 }
 
 export default styled(PlaceCircle)`
+  will-change: transform, opacity;
   pointer-events: auto;
-  display: ${props => (props.placeCircle.visible ? 'block' : 'none')};
+  transition: opacity ${props => props.theme.transitionDuration};
+  display: none;
+  opacity: 1;
+
+  &.visible {
+    display: block;
+  }
+
+  &.fade {
+    opacity: 0.2;
+  }
 
   .leaflet-dragging & {
     cursor: move;

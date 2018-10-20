@@ -2,9 +2,8 @@ import { observer } from 'mobx-react';
 import { Component } from 'react';
 
 import VisualisationStore from '../../stores/VisualisationStore';
-import ConnectionLineList from './ConnectionLineList';
-import PlaceCircleList from './PlaceCircleList';
 import SVGLayer from './SVGLayer';
+import VisualisationElements from './VisualisationElementList';
 
 interface IProps {
   vis: VisualisationStore;
@@ -19,8 +18,6 @@ class SVGVisualisationLayer extends Component<IProps> {
       return null;
     }
 
-    const { sortedConnectionLines, sortedPlaceCircles } = vis;
-
     return (
       <SVGLayer>
         <defs>
@@ -28,8 +25,7 @@ class SVGVisualisationLayer extends Component<IProps> {
             <circle r="0.5" cx="0.5" cy="0.5" />
           </clipPath>
         </defs>
-        <ConnectionLineList connectionLines={sortedConnectionLines} />
-        <PlaceCircleList placeCircles={sortedPlaceCircles} />
+        <VisualisationElements vis={vis} />
       </SVGLayer>
     );
   }

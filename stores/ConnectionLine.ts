@@ -1,5 +1,5 @@
 import orderBy from 'lodash/fp/orderBy';
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import moment from 'moment';
 
 import Connection from './Connection';
@@ -21,6 +21,9 @@ class ConnectionLine {
   readonly to: PlaceCircle;
   readonly connections: Connection[] = [];
   readonly key: string;
+
+  @observable
+  hover: boolean = false;
 
   constructor(vis: VisualisationStore, key: string, from: PlaceCircle, to: PlaceCircle) {
     this.vis = vis;
@@ -83,8 +86,13 @@ class ConnectionLine {
   }
 
   @computed
-  get hover() {
-    return this.from.hover || this.to.hover;
+  get highlight() {
+    return this.hover || this.from.hover || this.to.hover;
+  }
+
+  @computed
+  get fade() {
+    return !this.highlight && this.vis.hovering;
   }
 
   @computed

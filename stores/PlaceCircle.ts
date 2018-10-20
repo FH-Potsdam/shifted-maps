@@ -2,9 +2,10 @@ import { bounds, latLngBounds, point, Point } from 'leaflet';
 import orderBy from 'lodash/fp/orderBy';
 import { computed, observable } from 'mobx';
 
+import { CRS, MAX_ZOOM } from './config';
 import Place from './Place';
 import roundPoint from './utils/roundPoint';
-import VisualisationStore, { CRS, MAX_ZOOM } from './VisualisationStore';
+import VisualisationStore from './VisualisationStore';
 
 const roundPlaceCirclePoint = roundPoint(0.2);
 
@@ -23,6 +24,16 @@ class PlaceCircle {
   constructor(vis: VisualisationStore, place: Place) {
     this.vis = vis;
     this.place = place;
+  }
+
+  @computed
+  get highlight() {
+    return this.hover || this.connectionLines.some(connectionLine => connectionLine.highlight);
+  }
+
+  @computed
+  get fade() {
+    return !this.highlight && this.vis.hovering;
   }
 
   @computed
@@ -139,6 +150,13 @@ class PlaceCircle {
   @computed
   get visible() {
     return this.parent == null && this.place.visible;
+  }
+
+  @computed
+  get connectionLines() {
+    return this.vis.connectionLines.filter(
+      connectionLine => connectionLine.from === this || connectionLine.to === this
+    );
   }
 }
 

@@ -1,6 +1,7 @@
-import { autorun, IReactionDisposer } from 'mobx';
+import classNames from 'classnames';
+import { action, autorun, IReactionDisposer } from 'mobx';
 import { observer } from 'mobx-react';
-import { Component, createRef, RefObject } from 'react';
+import { Component, createRef, RefObject, SyntheticEvent } from 'react';
 
 import ConnectionLineModel from '../../stores/ConnectionLine';
 import styled from '../styled';
@@ -13,8 +14,8 @@ interface IProps {
 
 @observer
 class ConnectionLine extends Component<IProps> {
-  private lineRef: RefObject<SVGLineElement>;
-  private labelRef: RefObject<SVGForeignObjectElement>;
+  private readonly lineRef: RefObject<SVGLineElement>;
+  private readonly labelRef: RefObject<SVGForeignObjectElement>;
   private styleDisposer?: IReactionDisposer;
 
   constructor(props: IProps) {
@@ -36,12 +37,16 @@ class ConnectionLine extends Component<IProps> {
 
   render() {
     const { className, connectionLine } = this.props;
-    const { label, hover } = connectionLine;
+    const { label, highlight, visible, fade } = connectionLine;
 
     return (
-      <g className={className}>
-        <ConnectionLineLine innerRef={this.lineRef} hover={hover} />
-        <ConnectionLineLabel innerRef={this.labelRef} label={label} hover={hover} />
+      <g
+        className={classNames(className, { visible, fade })}
+        onMouseEnter={this.handleMouseEnter}
+        onMouseLeave={this.handleMouseLeave}
+      >
+        <ConnectionLineLine innerRef={this.lineRef} className={classNames({ highlight })} />
+        <ConnectionLineLabel innerRef={this.labelRef} label={label} highlight={highlight} />
       </g>
     );
   }
@@ -51,13 +56,6 @@ class ConnectionLine extends Component<IProps> {
 
     const line = this.lineRef.current!;
     const label = this.labelRef.current!;
-
-    line.setAttribute('stroke-width', String(strokeWidth));
-    line.setAttribute('x1', String(from.point.x));
-    line.setAttribute('y1', String(from.point.y));
-    line.setAttribute('x2', String(to.point.x));
-    line.setAttribute('y2', String(to.point.y));
-
     const vector = to.point.subtract(from.point);
     const distance = to.point.distanceTo(from.point);
 
@@ -65,9 +63,19 @@ class ConnectionLine extends Component<IProps> {
       return;
     }
 
-    const fromPart = from.point.add(vector.multiplyBy(from.radius / distance));
-    const toPart = to.point.subtract(vector.multiplyBy(to.radius / distance));
+    const fromPart = from.point.add(
+      vector.multiplyBy((from.radius + from.strokeWidth / 2 - 0.5) / distance)
+    );
+    const toPart = to.point.subtract(
+      vector.multiplyBy((to.radius + to.strokeWidth / 2 - 0.5) / distance)
+    );
     const vectorPart = toPart.subtract(fromPart);
+
+    line.setAttribute('stroke-width', String(strokeWidth));
+    line.setAttribute('x1', String(fromPart.x));
+    line.setAttribute('y1', String(fromPart.y));
+    line.setAttribute('x2', String(toPart.x));
+    line.setAttribute('y2', String(toPart.y));
 
     const center = fromPart.add(vectorPart.divideBy(2));
     let rotate = (Math.atan2(vector.y, vector.x) * 180) / Math.PI;
@@ -80,13 +88,42 @@ class ConnectionLine extends Component<IProps> {
 
     label.setAttribute('transform', `translate(${center.x}, ${center.y}) rotate(${rotate})`);
   };
+
+  @action.bound
+  private handleMouseEnter(event: SyntheticEvent) {
+    event.stopPropagation();
+
+    this.props.connectionLine.hover = true;
+  }
+
+  @action.bound
+  private handleMouseLeave(event: SyntheticEvent) {
+    event.stopPropagation();
+
+    this.props.connectionLine.hover = false;
+  }
 }
 
 export default styled(ConnectionLine)`
   pointer-events: auto;
-  display: ${props => (props.connectionLine.visible ? 'block' : 'none')};
+  will-change: opacity;
+  transition: opacity ${props => props.theme.transitionDuration};
+  display: none;
+  opacity: 1;
+
+  &.visible {
+    display: block;
+  }
+
+  &.fade {
+    opacity: 0.2;
+  }
 `;
 
-const ConnectionLineLine = styled.line<{ hover: boolean }>`
-  stroke: ${props => (props.hover ? props.theme.highlightColor : props.theme.foregroundColor)};
+const ConnectionLineLine = styled.line`
+  stroke: ${props => props.theme.foregroundColor};
+
+  &.highlight {
+    stroke: ${props => props.theme.highlightColor};
+  }
 `;
