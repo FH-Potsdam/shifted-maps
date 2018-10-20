@@ -1,8 +1,8 @@
 import {
   ForceLink,
   forceLink,
-  // ForceManyBody,
-  // forceManyBody,
+  ForceManyBody,
+  forceManyBody,
   forceSimulation,
   forceX,
   ForceX,
@@ -27,11 +27,11 @@ class GraphStore {
   private cachedNodes: PlaceCircleNode[] = [];
   private cachedLinks: ConnectionLineLink[] = [];
 
-  private simulation: Simulation<PlaceCircleNode, ConnectionLineLink>;
-  private linkForce: ForceLink<PlaceCircleNode, ConnectionLineLink>;
-  private xForce: ForceX<PlaceCircleNode>;
-  private yForce: ForceY<PlaceCircleNode>;
-  // private manyBodyForce: ForceManyBody<PlaceCircleNode>;
+  private readonly simulation: Simulation<PlaceCircleNode, ConnectionLineLink>;
+  private readonly linkForce: ForceLink<PlaceCircleNode, ConnectionLineLink>;
+  private readonly xForce: ForceX<PlaceCircleNode>;
+  private readonly yForce: ForceY<PlaceCircleNode>;
+  private readonly manyBodyForce: ForceManyBody<PlaceCircleNode>;
 
   private toggleDisposer: IReactionDisposer;
   private updateDisposer: IReactionDisposer;
@@ -56,13 +56,13 @@ class GraphStore {
     this.xForce = forceX<PlaceCircleNode>().x(node => node.placeCircle.mapPoint.x);
     this.yForce = forceY<PlaceCircleNode>().y(node => node.placeCircle.mapPoint.y);
 
-    // this.manyBodyForce = forceManyBody<PlaceCircleNode>();
+    this.manyBodyForce = forceManyBody<PlaceCircleNode>();
 
     this.simulation = forceSimulation<PlaceCircleNode, ConnectionLineLink>()
       .force('link', this.linkForce)
       .force('x', this.xForce)
       .force('y', this.yForce)
-      // .force('many-body', this.manyBodyForce)
+      .force('many-body', this.manyBodyForce)
       .on('tick', () => this.onTick(this.nodes))
       .on('end', () => this.onEnd(this.nodes))
       .velocityDecay(0.9)
@@ -120,7 +120,7 @@ class GraphStore {
     this.xForce.strength(viewActive ? 0.2 : 1);
     this.yForce.strength(viewActive ? 0.2 : 1);
 
-    // this.manyBodyForce.strength(viewActive ? -30 : 0);
+    this.manyBodyForce.strength(viewActive ? -15 : 0);
   };
 
   private zoomSimulation = () => {
