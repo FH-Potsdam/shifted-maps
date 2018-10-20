@@ -35,6 +35,12 @@ class PlaceCircle extends Component<IProps> {
 
   private styleDisposer?: IReactionDisposer;
 
+  private toggle = debounce(50)(
+    action((hover: boolean) => {
+      this.props.placeCircle.hover = hover;
+    })
+  );
+
   constructor(props: IProps) {
     super(props);
 
@@ -86,19 +92,17 @@ class PlaceCircle extends Component<IProps> {
     group.setAttribute('transform', `translate(${point.x}, ${point.y})`);
   };
 
-  @action.bound
-  private handleMouseEnter(event: SyntheticEvent) {
+  private handleMouseEnter = (event: SyntheticEvent) => {
     event.stopPropagation();
 
-    this.props.placeCircle.hover = true;
-  }
+    this.toggle(true);
+  };
 
-  @action.bound
-  private handleMouseLeave(event: SyntheticEvent) {
+  private handleMouseLeave = (event: SyntheticEvent) => {
     event.stopPropagation();
 
-    this.props.placeCircle.hover = false;
-  }
+    this.toggle(false);
+  };
 }
 
 export default styled(PlaceCircle)`

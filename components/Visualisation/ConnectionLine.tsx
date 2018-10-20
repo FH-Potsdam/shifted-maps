@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import debounce from 'lodash/fp/debounce';
 import { action, autorun, IReactionDisposer } from 'mobx';
 import { observer } from 'mobx-react';
 import { Component, createRef, RefObject, SyntheticEvent } from 'react';
@@ -17,6 +18,12 @@ class ConnectionLine extends Component<IProps> {
   private readonly lineRef: RefObject<SVGLineElement>;
   private readonly labelRef: RefObject<SVGForeignObjectElement>;
   private styleDisposer?: IReactionDisposer;
+
+  private toggle = debounce(50)(
+    action((hover: boolean) => {
+      this.props.connectionLine.hover = hover;
+    })
+  );
 
   constructor(props: IProps) {
     super(props);
@@ -89,19 +96,17 @@ class ConnectionLine extends Component<IProps> {
     label.setAttribute('transform', `translate(${center.x}, ${center.y}) rotate(${rotate})`);
   };
 
-  @action.bound
-  private handleMouseEnter(event: SyntheticEvent) {
+  private handleMouseEnter = (event: SyntheticEvent) => {
     event.stopPropagation();
 
-    this.props.connectionLine.hover = true;
-  }
+    this.toggle(true);
+  };
 
-  @action.bound
-  private handleMouseLeave(event: SyntheticEvent) {
+  private handleMouseLeave = (event: SyntheticEvent) => {
     event.stopPropagation();
 
-    this.props.connectionLine.hover = false;
-  }
+    this.toggle(false);
+  };
 }
 
 export default styled(ConnectionLine)`
