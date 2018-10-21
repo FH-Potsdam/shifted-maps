@@ -1,23 +1,26 @@
 import classNames from 'classnames';
 import { DomUtil } from 'leaflet';
-import { createRef, PureComponent, RefObject } from 'react';
+import { autorun, computed, IReactionDisposer } from 'mobx';
+import { observer } from 'mobx-react';
+import { Component, createRef, RefObject } from 'react';
 
+import PlaceCircle from '../../stores/PlaceCircle';
 import styled, { withTheme } from '../styled';
 import { ITheme } from '../theme';
 
 interface IProps {
-  label: string;
-  clusterSize: number;
+  placeCircle: PlaceCircle;
   className?: string;
-  offset: number;
-  hover: boolean;
   theme?: ITheme;
 }
 
-class PlaceCircleLabel extends PureComponent<IProps> {
+@observer
+class PlaceCircleLabel extends Component<IProps> {
   ref: RefObject<SVGImageElement>;
   labelCanvas?: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D | null = null;
+
+  private drawDisposer?: IReactionDisposer;
 
   constructor(props: IProps) {
     super(props);
@@ -25,32 +28,46 @@ class PlaceCircleLabel extends PureComponent<IProps> {
     this.ref = createRef();
   }
 
+  @computed
+  get offset() {
+    const { strokeWidth, radius } = this.props.placeCircle;
+
+    return strokeWidth * 0.5 + 4 + radius;
+  }
+
   componentDidMount() {
     this.labelCanvas = document.createElement('canvas');
     this.ctx = this.labelCanvas.getContext('2d');
 
-    this.drawLabel();
+    this.drawDisposer = autorun(this.drawLabel);
   }
 
-  componentDidUpdate() {
-    this.drawLabel();
+  componentWillUnmount() {
+    if (this.drawDisposer != null) {
+      this.drawDisposer();
+    }
   }
 
   render() {
-    const { className, hover, offset } = this.props;
+    const { className, placeCircle } = this.props;
+    const { highlight } = placeCircle;
 
     return (
       <g
-        className={classNames(className, { visible: hover })}
-        transform={`translate(0, ${Math.round(offset)})`}
+        className={classNames(className, { visible: highlight })}
+        transform={`translate(0, ${Math.round(this.offset)})`}
       >
         <image ref={this.ref} />
       </g>
     );
   }
 
-  private drawLabel() {
-    const { label, clusterSize, theme } = this.props;
+  private drawLabel = () => {
+    const { theme, placeCircle } = this.props;
+    const { children, place, hover } = placeCircle;
+
+    const clusterSize = children.length;
+    const label = place.name;
 
     if (theme == null) {
       throw new Error('Missing theme.');
@@ -97,7 +114,7 @@ class PlaceCircleLabel extends PureComponent<IProps> {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.lineWidth = spacing / 2;
-    ctx.fillStyle = theme.highlightColor;
+    ctx.fillStyle = hover ? theme.highlightColor : theme.foregroundColor;
     ctx.strokeStyle = theme.backgroundColor;
 
     const baseline = labelFontSize * 2;
@@ -121,7 +138,7 @@ class PlaceCircleLabel extends PureComponent<IProps> {
     image.setAttribute('width', String(width * 0.5));
     image.setAttribute('height', String(height * 0.5));
     image.style[DomUtil.TRANSFORM] = `translateX(${Math.round(width * -0.25)}px)`;
-  }
+  };
 }
 
 export default styled(withTheme<IProps>(PlaceCircleLabel))`

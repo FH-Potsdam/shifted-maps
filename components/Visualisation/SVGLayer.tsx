@@ -1,8 +1,14 @@
-import { SVG } from 'leaflet';
+import { DomUtil, SVG } from 'leaflet';
 import { createPortal } from 'react-dom';
 import { MapLayer, MapLayerProps, withLeaflet, WrappedProps } from 'react-leaflet';
 
-class SVGLayer extends MapLayer<MapLayerProps & WrappedProps, SVG> {
+import styled from '../styled';
+
+interface IProps {
+  className?: string;
+}
+
+class SVGLayer extends MapLayer<MapLayerProps & WrappedProps & IProps, SVG> {
   createLeafletElement() {
     return new SVG();
   }
@@ -16,15 +22,23 @@ class SVGLayer extends MapLayer<MapLayerProps & WrappedProps, SVG> {
   }
 
   render() {
+    const { className } = this.props;
     // @ts-ignore private property
-    if (this.leafletElement._container != null) {
-      // @ts-ignore private property
-      return createPortal(this.props.children, this.leafletElement._container);
+    const container: HTMLElement | void = this.leafletElement._container;
+
+    if (container == null) {
+      return null;
     }
 
-    return null;
+    if (className != null) {
+      DomUtil.addClass(container, className);
+    }
+
+    return createPortal(this.props.children, container);
   }
 }
 
 // @TODO Use withLeaflet as decorator once types are updated.
-export default withLeaflet(SVGLayer);
+export default styled(withLeaflet(SVGLayer))`
+  overflow: visible;
+`;

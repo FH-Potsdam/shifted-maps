@@ -9,21 +9,6 @@ import styled from '../styled';
 import PlaceCircleLabel from './PlaceCircleLabel';
 import PlaceCircleMap from './PlaceCircleMap';
 
-const PlaceCircleBackground = styled.circle`
-  fill: ${props => props.theme.backgroundColor};
-  stroke: none;
-`;
-
-const PlaceCircleStroke = styled.circle`
-  transition: stroke ${props => props.theme.shortTransitionDuration};
-  fill: none;
-  stroke: ${props => props.theme.foregroundColor};
-
-  &.highlight {
-    stroke: ${props => props.theme.highlightColor};
-  }
-`;
-
 interface IProps {
   placeCircle: PlaceCircleModel;
   className?: string;
@@ -59,7 +44,7 @@ class PlaceCircle extends Component<IProps> {
 
   render() {
     const { placeCircle, className } = this.props;
-    const { radius, strokeWidth, hover, place, children, visible, fade } = placeCircle;
+    const { radius, strokeWidth, hover, visible, fade } = placeCircle;
 
     return (
       <g
@@ -75,12 +60,7 @@ class PlaceCircle extends Component<IProps> {
           style={{ strokeWidth: `${strokeWidth}px` }}
           className={classNames({ highlight: hover })}
         />
-        <PlaceCircleLabel
-          label={place.name}
-          clusterSize={children.length}
-          offset={strokeWidth * 0.5 + 4 + radius}
-          hover={hover}
-        />
+        <PlaceCircleLabel placeCircle={placeCircle} />
       </g>
     );
   }
@@ -123,5 +103,20 @@ export default styled(PlaceCircle)`
   .leaflet-dragging & {
     cursor: move;
     cursor: grabbing;
+  }
+`;
+
+const PlaceCircleBackground = styled.circle`
+  fill: ${props => props.theme.backgroundColor};
+  stroke: none;
+`;
+
+const PlaceCircleStroke = styled.circle`
+  transition: stroke ${props => props.theme.shortTransitionDuration};
+  fill: none;
+  stroke: ${props => props.theme.foregroundColor};
+
+  &.highlight {
+    stroke: ${props => props.theme.highlightColor};
   }
 `;

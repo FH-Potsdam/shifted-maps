@@ -6,6 +6,7 @@ import { Component } from 'react';
 
 import config from '../../config';
 import PlaceCircle from '../../stores/PlaceCircle';
+import round from '../../stores/utils/round';
 import styled from '../styled';
 import PlaceCircleMapImage from './PlaceCircleMapImage';
 
@@ -14,9 +15,7 @@ interface IProps {
   className?: string;
 }
 
-const normalizeCoordinate = (coordinate: number) => {
-  return Math.round(coordinate * 10000) / 10000;
-};
+const roundCoordinate = round(0.0001);
 
 @observer
 class PlaceCircleMap extends Component<IProps> {
@@ -27,9 +26,9 @@ class PlaceCircleMap extends Component<IProps> {
     const { diameter, zoom, latLngBounds } = this.props.placeCircle;
     const center = latLngBounds.getCenter();
 
-    return `http://api.tiles.mapbox.com/v4/${config.mapboxStyleId}/${normalizeCoordinate(
+    return `http://api.tiles.mapbox.com/v4/${config.mapboxStyleId}/${roundCoordinate(
       center.lng
-    )},${normalizeCoordinate(center.lat)},${zoom}/${diameter}x${diameter}${
+    )},${roundCoordinate(center.lat)},${zoom}/${diameter}x${diameter}${
       Browser.retina ? '@2x' : ''
     }.png?access_token=${config.mapboxAccessToken}`;
   }
