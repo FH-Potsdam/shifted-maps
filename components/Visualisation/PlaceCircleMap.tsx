@@ -38,7 +38,7 @@ class PlaceCircleMap extends Component<IProps> {
     const { zoom, latLngBounds } = placeCircle;
     const center = latLngBounds.getCenter();
 
-    return `http://api.tiles.mapbox.com/v4/${config.mapboxStyleId}/${roundCoordinate(
+    return `http://api.mapbox.com/v4/${config.mapboxStyleId}/${roundCoordinate(
       center.lng
     )},${roundCoordinate(center.lat)},${zoom}/${this.imageDiameter}x${this.imageDiameter}${
       Browser.retina ? '@2x' : ''
@@ -67,12 +67,13 @@ class PlaceCircleMap extends Component<IProps> {
 
   render() {
     const { className, placeCircle } = this.props;
-    const { children, key, radius } = placeCircle;
+    const { key, radius, dots, hover } = placeCircle;
 
     const clipPathId = `clip-path-place-circle-${key}`;
+    const lastDotIndex = dots.length - 1;
 
     return (
-      <g className={className}>
+      <g className={classNames(className, { highlight: hover })}>
         <defs>
           <clipPath id={clipPathId}>
             <circle r={radius} cx={this.imageRadius} cy={this.imageRadius} />
@@ -89,11 +90,19 @@ class PlaceCircleMap extends Component<IProps> {
             transform={`translate(${this.imageRadius * -1}, ${this.imageRadius * -1})`}
           />
         ))}
-        <PlaceMapDot style={{ display: children.length === 0 ? 'block' : 'none' }} />
+        {dots.map((dot, index) => (
+          <PlaceMapDot key={index} cx={dot.x} cy={dot.y} r={index === lastDotIndex ? 4 : 2.5} />
+        ))}
       </g>
     );
   }
 }
+
+const PlaceMapDot = styled.circle`
+  fill: ${props => props.theme.foregroundColor};
+  stroke-width: 2;
+  stroke: white;
+`;
 
 export default styled(PlaceCircleMap)`
   image {
@@ -104,12 +113,10 @@ export default styled(PlaceCircleMap)`
       opacity: 1;
     }
   }
-`;
 
-const PlaceMapDot = styled.circle.attrs({
-  r: 3,
-})`
-  fill: ${props => props.theme.foregroundColor};
-  stroke-width: 2;
-  stroke: white;
+  &.highlight {
+    ${PlaceMapDot} {
+      fill: ${props => props.theme.highlightColor};
+    }
+  }
 `;

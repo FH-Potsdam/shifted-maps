@@ -80,8 +80,6 @@ class GraphStore {
   dispose() {
     this.stop();
 
-    console.log('dispose graph');
-
     this.toggleDisposer();
     this.updateDisposer();
     this.zoomDisposer();
@@ -120,7 +118,7 @@ class GraphStore {
     this.xForce.strength(viewActive ? 0.2 : 1);
     this.yForce.strength(viewActive ? 0.2 : 1);
 
-    this.manyBodyForce.strength(node => (viewActive && node.placeCircle.visible ? -6000 : 0));
+    this.manyBodyForce.strength(node => (viewActive && node.placeCircle.visible ? -30 : 0));
   };
 
   private zoomSimulation = () => {

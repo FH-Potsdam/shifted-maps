@@ -113,19 +113,17 @@ class PlaceCircle {
 
   @computed
   get latLngBounds() {
+    const bounds = this.place.latLng.toBounds(200);
+
     if (this.children.length === 0) {
-      return this.place.latLng.toBounds(400);
+      return bounds;
     }
 
-    const bounds = latLngBounds([this.place.latLng]);
-
     this.children.forEach(placeCircle => {
-      bounds.extend(placeCircle.place.latLng);
+      bounds.extend(placeCircle.place.latLng.toBounds(200));
     });
 
-    // The have the full bounds inside the place circle, we need to expand it by a factor of around 1.41.
-    // 1.41 ≈ sqrt(pow(r, 2) + pow(r, 2)) / r
-    return bounds.pad(1.41);
+    return bounds;
   }
 
   @computed
@@ -134,17 +132,32 @@ class PlaceCircle {
     const southEast = this.latLngBounds.getSouthEast();
     let zoom = 0;
     let size;
+    let diameter;
 
     do {
       zoom = zoom + 1;
+
+      if (zoom > MAX_ZOOM) {
+        break;
+      }
 
       const topLeft = CRS.latLngToPoint(northWest, zoom);
       const bottomRight = CRS.latLngToPoint(southEast, zoom);
 
       size = bounds(topLeft, bottomRight).getSize();
-    } while ((this.diameter > size.x || this.diameter > size.y) && zoom < MAX_ZOOM);
+      diameter = Math.sqrt(Math.pow(size.x, 2) + Math.pow(size.y, 2));
+    } while (this.diameter > diameter);
 
-    return zoom;
+    return zoom - 1;
+  }
+
+  @computed
+  get dots() {
+    const center = CRS.latLngToPoint(this.latLngBounds.getCenter(), this.zoom);
+
+    return [...this.children, this].map(placeCircle =>
+      CRS.latLngToPoint(placeCircle.place.latLng, this.zoom).subtract(center)
+    );
   }
 
   @computed

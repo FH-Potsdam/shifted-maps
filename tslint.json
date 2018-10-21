@@ -10,7 +10,7 @@
         "no-shadowed-variable": false,
         "no-unused-expression": [true, "allow-tagged-template"],
         "no-console": false,
-        "member-access": [true, "no-public"]
+        "member-access": [true, "no-public"],
     },
     "rulesDirectory": []
 }

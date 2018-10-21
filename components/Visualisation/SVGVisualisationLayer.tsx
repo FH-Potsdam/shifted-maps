@@ -20,11 +20,6 @@ class SVGVisualisationLayer extends Component<IProps> {
 
     return (
       <SVGLayer>
-        <defs>
-          <clipPath id="clip-path-circle" clipPathUnits="objectBoundingBox">
-            <circle r="0.5" cx="0.5" cy="0.5" />
-          </clipPath>
-        </defs>
         <VisualisationElements vis={vis} />
       </SVGLayer>
     );
