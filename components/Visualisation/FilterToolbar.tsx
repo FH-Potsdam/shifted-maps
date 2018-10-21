@@ -182,18 +182,19 @@ export default styled(FilterBar)`
 
 const FilterBarStats = styled.dl`
   display: flex;
-  flex-wrap: wrap;
   margin: 0;
   margin-top: ${props => props.theme.spacingUnit}px;
-  justify-content: space-between;
+  flex-wrap: wrap;
 
   dt,
   dd {
     margin: 0;
+    width: 50%;
   }
 
   dt {
     font-style: italic;
+    white-space: nowrap;
   }
 
   dd {

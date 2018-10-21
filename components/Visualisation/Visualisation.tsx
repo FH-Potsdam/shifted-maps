@@ -1,7 +1,7 @@
 import { LeafletEvent, Map as LeafletMap } from 'leaflet';
 import { action, configure } from 'mobx';
 import { observer } from 'mobx-react';
-import { Component, Fragment } from 'react';
+import { Component, SyntheticEvent } from 'react';
 
 import DataStore from '../../stores/DataStore';
 import { DiaryData } from '../../stores/Diary';
@@ -54,24 +54,13 @@ class Visualisation extends Component<IProps> {
     this.visStore.dispose();
   }
 
-  @action
-  handleMapViewDidChange = (event: LeafletEvent) => {
-    this.map = event.target;
-    this.visStore.update(this.map);
-  };
-
-  @action
-  handleZoomStart = () => {
-    this.visStore.graph.stop();
-  };
-
   render() {
     const { initialBounds } = this.visStore;
     const { view } = this.uiStore;
     const { onViewChange, onTimeSpanChange } = this.props;
 
     return (
-      <Fragment>
+      <div onWheel={this.handleWheel}>
         <Map
           bounds={initialBounds}
           showTiles={view == null}
@@ -89,9 +78,24 @@ class Visualisation extends Component<IProps> {
           onViewChange={onViewChange}
           onTimeSpanChange={onTimeSpanChange}
         />
-      </Fragment>
+      </div>
     );
   }
+
+  @action
+  private handleMapViewDidChange = (event: LeafletEvent) => {
+    this.map = event.target;
+    this.visStore.update(this.map);
+  };
+
+  @action
+  private handleZoomStart = () => {
+    this.visStore.graph.stop();
+  };
+
+  private handleWheel = (event: SyntheticEvent) => {
+    event.stopPropagation();
+  };
 }
 
 export default Visualisation;
