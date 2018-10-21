@@ -78,7 +78,7 @@ class ConnectionLineLabel extends PureComponent<IProps> {
     ctx.font = `italic ${fontSize * 2}px "soleil"`;
     ctx.fillStyle = highlight ? theme.highlightColor : theme.foregroundColor;
 
-    ctx.fillText(label, padding, fontSize * 2);
+    ctx.fillText(label, padding, fontSize * 2 - 4);
 
     const image = this.ref.current!;
 
