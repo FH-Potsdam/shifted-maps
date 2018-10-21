@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import debounce from 'lodash/fp/debounce';
-import { action, autorun, IReactionDisposer, observable } from 'mobx';
+import { action, autorun, IReactionDisposer } from 'mobx';
 import { observer } from 'mobx-react';
 import { Component, createRef, RefObject, SyntheticEvent } from 'react';
 
@@ -11,6 +11,7 @@ import PlaceCircleMap from './PlaceCircleMap';
 
 interface IProps {
   placeCircle: PlaceCircleModel;
+  maxRadius: number;
   className?: string;
 }
 
@@ -43,7 +44,7 @@ class PlaceCircle extends Component<IProps> {
   }
 
   render() {
-    const { placeCircle, className } = this.props;
+    const { placeCircle, className, maxRadius } = this.props;
     const { radius, strokeWidth, hover, visible, fade } = placeCircle;
 
     return (
@@ -54,7 +55,7 @@ class PlaceCircle extends Component<IProps> {
         className={classNames(className, { visible, fade })}
       >
         <PlaceCircleBackground r={radius} />
-        <PlaceCircleMap placeCircle={placeCircle} />
+        <PlaceCircleMap placeCircle={placeCircle} maxRadius={maxRadius} />
         <PlaceCircleStroke
           r={radius}
           style={{ strokeWidth: `${strokeWidth}px` }}

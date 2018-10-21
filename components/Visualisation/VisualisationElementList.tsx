@@ -14,13 +14,19 @@ interface IProps {
 @observer
 class VisualisationElementList extends Component<IProps> {
   render() {
-    const { elements } = this.props.vis;
+    const { elements, maxPlaceCircleRadius } = this.props.vis;
 
     return (
       <g>
         {elements.map(element => {
           if (element instanceof PlaceCircleModel) {
-            return <PlaceCircle key={element.key} placeCircle={element} />;
+            return (
+              <PlaceCircle
+                key={element.key}
+                placeCircle={element}
+                maxRadius={maxPlaceCircleRadius}
+              />
+            );
           }
 
           if (element instanceof ConnectionLineModel) {

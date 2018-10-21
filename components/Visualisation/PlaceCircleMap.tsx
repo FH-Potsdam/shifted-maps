@@ -12,6 +12,7 @@ import PlaceCircleMapImage from './PlaceCircleMapImage';
 
 interface IProps {
   placeCircle: PlaceCircle;
+  maxRadius: number;
   className?: string;
 }
 
@@ -22,13 +23,24 @@ class PlaceCircleMap extends Component<IProps> {
   private cachedImages: PlaceCircleMapImage[] = [];
 
   @computed
+  get imageRadius() {
+    return this.props.maxRadius;
+  }
+
+  @computed
+  get imageDiameter() {
+    return this.imageRadius * 2;
+  }
+
+  @computed
   get href() {
-    const { diameter, zoom, latLngBounds } = this.props.placeCircle;
+    const { placeCircle } = this.props;
+    const { zoom, latLngBounds } = placeCircle;
     const center = latLngBounds.getCenter();
 
     return `http://api.tiles.mapbox.com/v4/${config.mapboxStyleId}/${roundCoordinate(
       center.lng
-    )},${roundCoordinate(center.lat)},${zoom}/${diameter}x${diameter}${
+    )},${roundCoordinate(center.lat)},${zoom}/${this.imageDiameter}x${this.imageDiameter}${
       Browser.retina ? '@2x' : ''
     }.png?access_token=${config.mapboxAccessToken}`;
   }
@@ -55,19 +67,26 @@ class PlaceCircleMap extends Component<IProps> {
 
   render() {
     const { className, placeCircle } = this.props;
-    const { children, diameter } = placeCircle;
+    const { children, key, radius } = placeCircle;
+
+    const clipPathId = `clip-path-place-circle-${key}`;
 
     return (
       <g className={className}>
+        <defs>
+          <clipPath id={clipPathId}>
+            <circle r={radius} cx={this.imageRadius} cy={this.imageRadius} />
+          </clipPath>
+        </defs>
         {this.images.map(image => (
           <image
             className={classNames({ active: image.loaded })}
             key={image.href}
             xlinkHref={image.href}
-            clipPath="url(#clip-path-circle)"
-            width={diameter}
-            height={diameter}
-            transform={`translate(${diameter * -0.5}, ${diameter * -0.5})`}
+            clipPath={`url(#${clipPathId})`}
+            width={this.imageDiameter}
+            height={this.imageDiameter}
+            transform={`translate(${this.imageRadius * -1}, ${this.imageRadius * -1})`}
           />
         ))}
         <PlaceMapDot style={{ display: children.length === 0 ? 'block' : 'none' }} />
