@@ -1,6 +1,6 @@
+import classNames from 'classnames';
 import { Browser } from 'leaflet';
-import debounce from 'lodash/fp/debounce';
-import { action, computed, observable } from 'mobx';
+import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
 
@@ -22,15 +22,6 @@ const normalizeCoordinate = (coordinate: number) => {
 class PlaceCircleMap extends Component<IProps> {
   private cachedImages: PlaceCircleMapImage[] = [];
 
-  @observable
-  private activeHref?: string;
-
-  private handleImageLoaded = debounce(10)(
-    action(() => {
-      this.activeHref = this.href;
-    })
-  );
-
   @computed
   get href() {
     const { diameter, zoom, latLngBounds } = this.props.placeCircle;
@@ -46,20 +37,21 @@ class PlaceCircleMap extends Component<IProps> {
   @computed
   get images() {
     const href = this.href;
-    const index = this.cachedImages.findIndex(image => image.href === href);
+    const images = [];
 
-    if (index === -1) {
-      const image = new PlaceCircleMapImage(href, this.handleImageLoaded);
-      this.cachedImages.push(image);
+    let image = this.cachedImages.find(image => image.href === href);
 
-      while (this.cachedImages.length > 2) {
-        this.cachedImages.shift();
-      }
-    } else {
-      this.handleImageLoaded();
+    if (image == null) {
+      image = new PlaceCircleMapImage(href);
     }
 
-    return this.cachedImages;
+    const fallbackImages = this.cachedImages
+      .filter(image => image.loaded && image.href !== href)
+      .slice(0, 4);
+
+    images.push(...fallbackImages, image);
+
+    return (this.cachedImages = images);
   }
 
   render() {
@@ -70,7 +62,7 @@ class PlaceCircleMap extends Component<IProps> {
       <g className={className}>
         {this.images.map(image => (
           <image
-            className={this.activeHref === image.href ? 'active' : ''}
+            className={classNames({ active: image.loaded })}
             key={image.href}
             xlinkHref={image.href}
             clipPath="url(#clip-path-circle)"
