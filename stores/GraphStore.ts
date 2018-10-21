@@ -120,7 +120,7 @@ class GraphStore {
     this.xForce.strength(viewActive ? 0.2 : 1);
     this.yForce.strength(viewActive ? 0.2 : 1);
 
-    this.manyBodyForce.strength(viewActive ? -15 : 0);
+    this.manyBodyForce.strength(node => (viewActive && node.placeCircle.visible ? -6000 : 0));
   };
 
   private zoomSimulation = () => {
