@@ -6,6 +6,7 @@ import Connection from './Connection';
 import PlaceCircle from './PlaceCircle';
 import { VIEW } from './UIStore';
 import extent from './utils/extent';
+import { formatDistance, formatDuration, formatFrequency } from './utils/formatLabel';
 import VisualisationStore from './VisualisationStore';
 
 export const sortByHoverStrokeWidth = orderBy<ConnectionLine>(['hover', 'radius'], ['asc', 'asc']);
@@ -100,19 +101,15 @@ class ConnectionLine {
     const { view } = this.vis.ui;
 
     if (view === VIEW.GEOGRAPHIC) {
-      if (this.visibleDistance >= 1000) {
-        return `${Math.round(this.visibleDistance / 1000).toLocaleString()} km`;
-      }
-
-      return `${Math.round(this.visibleDistance).toLocaleString()} m`;
+      return formatDistance(this.visibleDistance);
     }
 
     if (view === VIEW.FREQUENCY) {
-      return `${this.visibleFrequency} ×`;
+      return formatFrequency(this.visibleFrequency);
     }
 
     if (view === VIEW.DURATION) {
-      return moment.duration(this.visibleDuration, 'seconds').humanize();
+      return formatDuration(this.visibleDuration);
     }
 
     return null;

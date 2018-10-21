@@ -5,6 +5,7 @@ import { Component } from 'react';
 
 import DataStore, { DAY_IN_SEC } from '../../stores/DataStore';
 import UIStore, { VIEW } from '../../stores/UIStore';
+import { formatDistance, formatDuration, formatFrequency } from '../../stores/utils/formatLabel';
 import Heading from '../common/Heading';
 import { DurationIcon, FrequencyIcon, GeographicIcon } from '../common/icons';
 import Slider from '../common/Slider';
@@ -60,7 +61,40 @@ class FilterBar extends Component<IProps> {
   }
 
   private renderStats() {
-    const { data } = this.props;
+    const { data, ui } = this.props;
+
+    if (ui.view === VIEW.GEOGRAPHIC) {
+      return (
+        <FilterBarStats>
+          <dt>Travel Distance:</dt>
+          <dd>{formatDistance(data.totalConnectionDistance)}</dd>
+          <dt>Avg. Distance:</dt>
+          <dd>{formatDistance(data.averageConnectionDistance)}</dd>
+        </FilterBarStats>
+      );
+    }
+
+    if (ui.view === VIEW.DURATION) {
+      return (
+        <FilterBarStats>
+          <dt>Travel Duration:</dt>
+          <dd>{formatDuration(data.totalConnectionDuration)}</dd>
+          <dt>Avg. Duration:</dt>
+          <dd>{formatDuration(data.averageConnectionDuration)}</dd>
+        </FilterBarStats>
+      );
+    }
+
+    if (ui.view === VIEW.FREQUENCY) {
+      return (
+        <FilterBarStats>
+          <dt>Travel Frequency:</dt>
+          <dd>{formatFrequency(data.totalConnectionFrequency)}</dd>
+          <dt>Avg. Frequency:</dt>
+          <dd>{formatFrequency(data.averageConnectionFrequency)}</dd>
+        </FilterBarStats>
+      );
+    }
 
     return (
       <FilterBarStats>
@@ -151,10 +185,10 @@ const FilterBarStats = styled.dl`
   flex-wrap: wrap;
   margin: 0;
   margin-top: ${props => props.theme.spacingUnit}px;
+  justify-content: space-between;
 
   dt,
   dd {
-    width: 50%;
     margin: 0;
   }
 

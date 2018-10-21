@@ -113,6 +113,42 @@ class DataStore {
   get visibleConnections() {
     return this.connections.filter(connection => connection.visible);
   }
+
+  @computed
+  get totalConnectionDistance() {
+    return this.visibleConnections.reduce((distance, connection) => {
+      return distance + connection.visibleDistance;
+    }, 0);
+  }
+
+  @computed
+  get averageConnectionDistance() {
+    return this.totalConnectionDistance / this.visibleConnections.length;
+  }
+
+  @computed
+  get totalConnectionDuration() {
+    return this.visibleConnections.reduce((distance, connection) => {
+      return distance + connection.visibleDuration;
+    }, 0);
+  }
+
+  @computed
+  get averageConnectionDuration() {
+    return this.totalConnectionDuration / this.visibleConnections.length;
+  }
+
+  @computed
+  get totalConnectionFrequency() {
+    return this.visibleConnections.reduce((distance, connection) => {
+      return distance + connection.visibleFrequency;
+    }, 0);
+  }
+
+  @computed
+  get averageConnectionFrequency() {
+    return this.totalConnectionFrequency / this.visibleConnections.length;
+  }
 }
 
 export default DataStore;
