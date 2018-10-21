@@ -3,7 +3,7 @@ import { Component } from 'react';
 
 import VisualisationStore from '../../stores/VisualisationStore';
 import SVGLayer from './SVGLayer';
-import VisualisationElements from './VisualisationElementList';
+import VisualisationElementList from './VisualisationElementList';
 
 interface IProps {
   vis: VisualisationStore;
@@ -20,7 +20,7 @@ class SVGVisualisationLayer extends Component<IProps> {
 
     return (
       <SVGLayer>
-        <VisualisationElements vis={vis} />
+        <VisualisationElementList vis={vis} />
       </SVGLayer>
     );
   }

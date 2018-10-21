@@ -16,10 +16,9 @@ interface IProps {
 
 @observer
 class PlaceCircleLabel extends Component<IProps> {
-  ref: RefObject<SVGImageElement>;
-  labelCanvas?: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D | null = null;
-
+  private readonly ref: RefObject<SVGImageElement>;
+  private labelCanvas?: HTMLCanvasElement;
+  private ctx: CanvasRenderingContext2D | null = null;
   private drawDisposer?: IReactionDisposer;
 
   constructor(props: IProps) {

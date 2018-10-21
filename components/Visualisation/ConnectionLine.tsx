@@ -44,7 +44,7 @@ class ConnectionLine extends Component<IProps> {
 
   render() {
     const { className, connectionLine } = this.props;
-    const { label, highlight, visible, fade } = connectionLine;
+    const { highlight, visible, fade } = connectionLine;
 
     return (
       <g
@@ -53,7 +53,7 @@ class ConnectionLine extends Component<IProps> {
         onMouseLeave={this.handleMouseLeave}
       >
         <ConnectionLineLine innerRef={this.lineRef} className={classNames({ highlight })} />
-        <ConnectionLineLabel innerRef={this.labelRef} label={label} highlight={highlight} />
+        <ConnectionLineLabel innerRef={this.labelRef} connectionLine={connectionLine} />
       </g>
     );
   }

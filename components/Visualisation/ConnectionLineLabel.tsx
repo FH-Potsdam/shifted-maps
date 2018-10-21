@@ -1,22 +1,26 @@
 import classNames from 'classnames';
 import { DomUtil } from 'leaflet';
-import { createRef, forwardRef, PureComponent, Ref, RefObject } from 'react';
+import { autorun, IReactionDisposer } from 'mobx';
+import { observer } from 'mobx-react';
+import { Component, createRef, forwardRef, Ref, RefObject } from 'react';
 
+import ConnectionLine from '../../stores/ConnectionLine';
 import styled, { withTheme } from '../styled';
 import { ITheme } from '../theme';
 
 interface IProps {
-  label: string | null;
-  highlight: boolean;
+  connectionLine: ConnectionLine;
   theme?: ITheme;
   forwardedRef?: Ref<SVGForeignObjectElement>;
   className?: string;
 }
 
-class ConnectionLineLabel extends PureComponent<IProps> {
-  ref: RefObject<SVGImageElement>;
-  labelCanvas?: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D | null = null;
+@observer
+class ConnectionLineLabel extends Component<IProps> {
+  private labelCanvas?: HTMLCanvasElement;
+  private ctx: CanvasRenderingContext2D | null = null;
+  private readonly ref: RefObject<SVGImageElement>;
+  private drawDisposer?: IReactionDisposer;
 
   constructor(props: IProps) {
     super(props);
@@ -28,15 +32,18 @@ class ConnectionLineLabel extends PureComponent<IProps> {
     this.labelCanvas = document.createElement('canvas');
     this.ctx = this.labelCanvas.getContext('2d');
 
-    this.drawLabel();
+    this.drawDisposer = autorun(this.drawLabel);
   }
 
-  componentDidUpdate() {
-    this.drawLabel();
+  componentWillUnmount() {
+    if (this.drawDisposer != null) {
+      this.drawDisposer();
+    }
   }
 
   render() {
-    const { forwardedRef, className, label } = this.props;
+    const { forwardedRef, className, connectionLine } = this.props;
+    const { label } = connectionLine;
 
     return (
       <g ref={forwardedRef} className={classNames(className, { visible: label != null })}>
@@ -46,7 +53,8 @@ class ConnectionLineLabel extends PureComponent<IProps> {
   }
 
   private drawLabel = () => {
-    const { label, theme, highlight } = this.props;
+    const { connectionLine, theme } = this.props;
+    const { label, highlight } = connectionLine;
 
     if (label == null || theme == null) {
       return;
