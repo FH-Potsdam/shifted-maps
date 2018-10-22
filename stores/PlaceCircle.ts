@@ -72,7 +72,7 @@ class PlaceCircle {
   @computed
   get parent(): PlaceCircle | undefined {
     let parent = this.vis.placeCircles.find(placeCircle => {
-      if (placeCircle === this) {
+      if (placeCircle === this || !placeCircle.place.visible) {
         return false;
       }
 
@@ -107,7 +107,9 @@ class PlaceCircle {
       return [];
     }
 
-    return this.vis.placeCircles.filter(placeCircle => placeCircle.parent === this);
+    return this.vis.placeCircles.filter(
+      placeCircle => placeCircle.place.visible && placeCircle.parent === this
+    );
   }
 
   @computed
