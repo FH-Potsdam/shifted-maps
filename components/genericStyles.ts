@@ -51,4 +51,8 @@ injectGlobal`
   strong {
     font-weight: 900;
   }
+
+  p {
+    margin: 0;
+  }
 `;

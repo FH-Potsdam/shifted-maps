@@ -1,4 +1,5 @@
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
+import classNames from 'classnames';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import moment from 'moment';
@@ -8,9 +9,16 @@ import DataStore, { DAY_IN_SEC } from '../../stores/DataStore';
 import UIStore, { VIEW } from '../../stores/UIStore';
 import { formatDistance, formatDuration, formatFrequency } from '../../stores/utils/formatLabel';
 import Heading from '../common/Heading';
-import { DurationIcon, FrequencyIcon, GeographicIcon } from '../common/icons';
+import {
+  DurationIcon,
+  FrequencyIcon,
+  GeographicIcon,
+  Icon,
+  InfoIcon,
+  MapIcon,
+} from '../common/icons';
 import Slider from '../common/Slider';
-import styled, { css } from '../styled';
+import styled from '../styled';
 
 interface IProps {
   className?: string;
@@ -49,6 +57,7 @@ class FilterBar extends Component<IProps> {
         <Heading use="h1">Shifted Maps</Heading>
         {this.renderStats()}
         {this.renderViewList()}
+        {this.renderViewInfo()}
         {this.renderTimeSlider()}
         {this.renderTimeRange()}
       </div>
@@ -60,44 +69,44 @@ class FilterBar extends Component<IProps> {
 
     if (ui.view === VIEW.GEOGRAPHIC) {
       return (
-        <FilterBarStats>
+        <Stats>
           <dt>Travel Distance:</dt>
           <dd>{formatDistance(data.totalConnectionDistance)}</dd>
           <dt>Avg. Distance:</dt>
           <dd>{formatDistance(data.averageConnectionDistance)}</dd>
-        </FilterBarStats>
+        </Stats>
       );
     }
 
     if (ui.view === VIEW.DURATION) {
       return (
-        <FilterBarStats>
+        <Stats>
           <dt>Travel Duration:</dt>
           <dd>{formatDuration(data.totalConnectionDuration)}</dd>
           <dt>Avg. Duration:</dt>
           <dd>{formatDuration(data.averageConnectionDuration)}</dd>
-        </FilterBarStats>
+        </Stats>
       );
     }
 
     if (ui.view === VIEW.FREQUENCY) {
       return (
-        <FilterBarStats>
+        <Stats>
           <dt>Travel Frequency:</dt>
           <dd>{formatFrequency(data.totalConnectionFrequency)}</dd>
           <dt>Avg. Frequency:</dt>
           <dd>{formatFrequency(data.averageConnectionFrequency)}</dd>
-        </FilterBarStats>
+        </Stats>
       );
     }
 
     return (
-      <FilterBarStats>
+      <Stats>
         <dt>Places:</dt>
         <dd>{data.visiblePlaces.length}</dd>
         <dt>Connections:</dt>
         <dd>{data.visibleConnections.length}</dd>
-      </FilterBarStats>
+      </Stats>
     );
   }
 
@@ -105,26 +114,62 @@ class FilterBar extends Component<IProps> {
     const { ui } = this.props;
 
     return (
-      <FilterBarViewList>
-        <FilterBarViewButton
-          onClick={event => this.handleToggleView(event, VIEW.GEOGRAPHIC)}
-          active={ui.view === VIEW.GEOGRAPHIC}
+      <ViewList>
+        <ViewButton
+          onClick={event => this.handleViewButtonClick(event)}
+          className={classNames({ active: ui.view == null })}
         >
-          <GeographicIcon width="32" height="32" />
-        </FilterBarViewButton>
-        <FilterBarViewButton
-          onClick={event => this.handleToggleView(event, VIEW.DURATION)}
-          active={ui.view === VIEW.DURATION}
+          <MapIcon />
+        </ViewButton>
+        <ViewButton
+          onClick={event => this.handleViewButtonClick(event, VIEW.GEOGRAPHIC)}
+          className={classNames({ active: ui.view === VIEW.GEOGRAPHIC })}
+        >
+          <GeographicIcon />
+        </ViewButton>
+        <ViewButton
+          onClick={event => this.handleViewButtonClick(event, VIEW.DURATION)}
+          className={classNames({ active: ui.view === VIEW.DURATION })}
         >
           <DurationIcon />
-        </FilterBarViewButton>
-        <FilterBarViewButton
-          onClick={event => this.handleToggleView(event, VIEW.FREQUENCY)}
-          active={ui.view === VIEW.FREQUENCY}
+        </ViewButton>
+        <ViewButton
+          onClick={event => this.handleViewButtonClick(event, VIEW.FREQUENCY)}
+          className={classNames({ active: ui.view === VIEW.FREQUENCY })}
         >
-          <FrequencyIcon width="32" height="32" />
-        </FilterBarViewButton>
-      </FilterBarViewList>
+          <FrequencyIcon />
+        </ViewButton>
+      </ViewList>
+    );
+  }
+
+  private renderViewInfo() {
+    const { ui } = this.props;
+    let viewName = 'Map';
+    let viewText = 'Places are positioned by their geospatial location.';
+
+    if (ui.view === VIEW.GEOGRAPHIC) {
+      viewName = 'Distance';
+      viewText = 'Network is arranged by the actual distance travelled between places.';
+    }
+
+    if (ui.view === VIEW.DURATION) {
+      viewName = 'Time';
+      viewText = 'Network is arranged by the actual time it took to get from one place to another.';
+    }
+
+    if (ui.view === VIEW.FREQUENCY) {
+      viewName = 'Frequency';
+      viewText = 'Network is arranged by the frequency of travels between places.';
+    }
+
+    return (
+      <ViewInfo>
+        <ViewName title={viewText}>
+          {viewName}
+          <InfoIcon />
+        </ViewName>
+      </ViewInfo>
     );
   }
 
@@ -160,10 +205,10 @@ class FilterBar extends Component<IProps> {
     );
   }
 
-  private handleToggleView(event: MouseEvent<HTMLButtonElement>, view: VIEW) {
+  private handleViewButtonClick(event: MouseEvent<HTMLButtonElement>, view?: VIEW) {
     event.stopPropagation();
 
-    this.props.onViewChange(view !== this.props.ui.view ? view : undefined);
+    this.props.onViewChange(view);
   }
 
   @action
@@ -193,7 +238,7 @@ export default styled(FilterBar)`
   }
 `;
 
-const FilterBarStats = styled.dl`
+const Stats = styled.dl`
   display: flex;
   margin: 0;
   margin-top: ${props => props.theme.spacingUnit}px;
@@ -220,38 +265,51 @@ const FilterBarStats = styled.dl`
   }
 `;
 
-const FilterBarViewList = styled.div`
+const ViewList = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: ${props => props.theme.spacingUnit * 4}px;
+  margin-top: ${props => props.theme.spacingUnit * 3}px;
 `;
 
-const FilterBarViewButton = styled.button<{ active: boolean }>`
+const ViewButton = styled.button`
   transition: color ${props => props.theme.shortTransitionDuration};
   border: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   border-radius: 50%;
   cursor: pointer;
   color: ${props => props.theme.foregroundColor};
   padding: 0;
-  font-size: ${props => props.theme.spacingUnit * 2}px;
   background-color: white;
 
-  &:not(:first-child) {
-    margin-left: ${props => props.theme.spacingUnit * 1.5}px;
+  ${Icon} {
+    width: 32px;
+    height: 32px;
   }
 
-  &:hover {
+  & + & {
+    margin-left: ${props => props.theme.spacingUnit * 1}px;
+  }
+
+  &:hover,
+  &.active {
     color: ${props => props.theme.highlightColor};
   }
+`;
 
-  ${props =>
-    props.active &&
-    css`
-      color: ${props.theme.highlightColor};
-    `};
+const ViewInfo = styled.div`
+  margin-top: ${props => props.theme.spacingUnit * 0.5}px;
+  text-align: center;
+`;
+
+const ViewName = styled.strong`
+  font-weight: 400;
+  cursor: help;
+
+  ${InfoIcon} {
+    margin-left: 0.5em;
+  }
 `;
 
 const TimeSlider = styled(Slider)`
