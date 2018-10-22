@@ -63,7 +63,7 @@ class DataStore {
 
     this.trips.forEach(trip => {
       // Ignore trips where start and end is at the same place.
-      if (trip.from === trip.to) {
+      if (trip.from === trip.to || trip.from.latLng.equals(trip.to.latLng)) {
         return;
       }
 

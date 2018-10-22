@@ -2,7 +2,6 @@ import { latLng } from 'leaflet';
 import { computed } from 'mobx';
 
 import DataStore from './DataStore';
-import extent from './utils/extent';
 
 export interface IPlaceData {
   readonly id: number;
@@ -18,9 +17,6 @@ export interface ILocation {
 export function isPlaceData(value: any): value is IPlaceData {
   return value.id != null && value.location != null && value.name != null;
 }
-
-export const visibleFrequencyExtent = extent<Place>('visibleFrequency');
-export const visibleDurationExtent = extent<Place>('visibleDuration');
 
 class Place {
   readonly store: DataStore;

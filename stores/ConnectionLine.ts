@@ -1,19 +1,10 @@
-import orderBy from 'lodash/fp/orderBy';
 import { computed } from 'mobx';
 
 import Connection from './Connection';
 import PlaceCircle from './PlaceCircle';
 import { VIEW } from './UIStore';
-import extent from './utils/extent';
 import { formatDistance, formatDuration, formatFrequency } from './utils/formatLabel';
 import VisualisationStore from './VisualisationStore';
-
-export const sortByHoverStrokeWidth = orderBy<ConnectionLine>(['hover', 'radius'], ['asc', 'asc']);
-
-export const visibleDistanceExtent = extent<ConnectionLine>('visibleDistance');
-export const visibleDurationExtent = extent<ConnectionLine>('visibleDuration');
-export const visibleFrequencyExtent = extent<ConnectionLine>('visibleFrequency');
-export const lengthExtent = extent<ConnectionLine>('length');
 
 class ConnectionLine {
   readonly vis: VisualisationStore;
@@ -54,7 +45,7 @@ class ConnectionLine {
   }
 
   @computed
-  get length() {
+  get beeline() {
     return this.from.mapPoint.distanceTo(this.to.mapPoint);
   }
 
@@ -63,18 +54,22 @@ class ConnectionLine {
     const { view } = this.vis.ui;
 
     if (view === VIEW.GEOGRAPHIC) {
-      return this.vis.connectionDistanceLengthScale(this.visibleDistance);
+      return this.vis.connectionLineBeelineScale(this.visibleDistance);
     }
 
     if (view === VIEW.DURATION) {
-      return this.vis.connectionDurationLengthScale(this.visibleDuration);
+      const scaledDistance = this.vis.connectionLineDurationDistanceScale(this.visibleDuration);
+
+      return this.vis.connectionLineBeelineScale(scaledDistance);
     }
 
     if (view === VIEW.FREQUENCY) {
-      return this.vis.connectionFrequencyLengthScale(this.visibleFrequency);
+      const scaledDistance = this.vis.connectionLineFrequencyDistanceScale(this.visibleFrequency);
+
+      return this.vis.connectionLineBeelineScale(scaledDistance);
     }
 
-    return this.length;
+    return this.beeline;
   }
 
   @computed

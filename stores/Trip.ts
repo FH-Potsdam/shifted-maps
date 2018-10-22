@@ -44,12 +44,24 @@ class Trip {
 
   @computed
   get from() {
-    return this.store.places.find(place => place.id === this.fromPlaceId);
+    const from = this.store.places.find(place => place.id === this.fromPlaceId);
+
+    if (from == null) {
+      throw new Error('Missing place.');
+    }
+
+    return from;
   }
 
   @computed
   get to() {
-    return this.store.places.find(place => place.id === this.toPlaceId);
+    const to = this.store.places.find(place => place.id === this.toPlaceId);
+
+    if (to == null) {
+      throw new Error('Missing place.');
+    }
+
+    return to;
   }
 
   @computed

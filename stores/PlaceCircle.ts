@@ -1,5 +1,4 @@
 import { bounds, point, Point } from 'leaflet';
-import orderBy from 'lodash/fp/orderBy';
 import { computed, observable } from 'mobx';
 
 import { CRS, MAX_ZOOM } from './config';
@@ -8,8 +7,6 @@ import roundPoint from './utils/roundPoint';
 import VisualisationStore from './VisualisationStore';
 
 const roundPlaceCirclePoint = roundPoint(0.2);
-
-export const sortByHoverRadius = orderBy<PlaceCircle>(['hover', 'radius'], ['asc', 'asc']);
 
 class PlaceCircle {
   readonly vis: VisualisationStore;

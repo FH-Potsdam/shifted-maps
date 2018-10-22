@@ -10,22 +10,13 @@ import {
   PLACE_STROKE_WIDTH_RANGE_SCALE,
 } from './config';
 import Connection from './Connection';
-import ConnectionLine, {
-  lengthExtent as connectionLineLengthExtent,
-  sortByHoverStrokeWidth,
-  visibleDistanceExtent as visibleConnectionLineDistanceExtent,
-  visibleDurationExtent as visibleConnectionLineDurationExtent,
-  visibleFrequencyExtent as visibleConnectionLineFrequencyExtent,
-} from './ConnectionLine';
+import ConnectionLine from './ConnectionLine';
 import DataStore from './DataStore';
 import GraphStore from './GraphStore';
-import {
-  visibleDurationExtent as visiblePlaceDurationExtent,
-  visibleFrequencyExtent as visiblePlaceFrequencyExtent,
-} from './Place';
-import PlaceCircle, { sortByHoverRadius } from './PlaceCircle';
+import PlaceCircle from './PlaceCircle';
 import PlaceCircleNode from './PlaceCircleNode';
 import UIStore from './UIStore';
+import extent from './utils/extent';
 import sortVisualisationElements from './utils/sortVisualisationElements';
 
 export type VisualisationElement = PlaceCircle | ConnectionLine;
@@ -222,16 +213,6 @@ class VisualisationStore {
   }
 
   @computed
-  get sortedPlaceCircles() {
-    return sortByHoverRadius(this.placeCircles);
-  }
-
-  @computed
-  get sortedConnectionLines() {
-    return sortByHoverStrokeWidth(this.connectionLines);
-  }
-
-  @computed
   get elements() {
     return sortVisualisationElements([...this.placeCircles, ...this.connectionLines]);
   }
@@ -248,7 +229,7 @@ class VisualisationStore {
 
   @computed
   get placeStrokeWidthScale() {
-    const domain = visiblePlaceFrequencyExtent(this.data.visiblePlaces);
+    const domain = extent('visibleFrequency')(this.data.visiblePlaces);
 
     const scale = scalePow()
       .exponent(0.5)
@@ -265,7 +246,7 @@ class VisualisationStore {
 
   @computed
   get placeRadiusScale() {
-    const domain = visiblePlaceDurationExtent(this.data.visiblePlaces);
+    const domain = extent('visibleDuration')(this.data.visiblePlaces);
 
     const scale = scalePow()
       .exponent(0.5)
@@ -281,23 +262,8 @@ class VisualisationStore {
   }
 
   @computed
-  get connectionDistanceDomain() {
-    return visibleConnectionLineDistanceExtent(this.visibleConnectionLines);
-  }
-
-  @computed
-  get connectionDurationDomain() {
-    return visibleConnectionLineDurationExtent(this.visibleConnectionLines);
-  }
-
-  @computed.struct
-  get connectionFrequencyDomain() {
-    return visibleConnectionLineFrequencyExtent(this.visibleConnectionLines);
-  }
-
-  @computed
   get connectionStrokeWidthScale() {
-    const domain = this.connectionFrequencyDomain;
+    const domain = this.connectionLineFrequencyDomain;
 
     const scale = scalePow()
       .exponent(0.25)
@@ -318,23 +284,41 @@ class VisualisationStore {
   }
 
   @computed
-  get connectionLengthScale() {
-    return scaleLinear().range(connectionLineLengthExtent(this.visibleConnectionLines));
+  get connectionLineDistanceDomain() {
+    return extent('visibleDistance')(this.visibleConnectionLines);
   }
 
   @computed
-  get connectionDistanceLengthScale() {
-    return this.connectionLengthScale.copy().domain(this.connectionDistanceDomain);
+  get connectionLineDurationDomain() {
+    return extent('visibleDuration')(this.visibleConnectionLines);
   }
 
   @computed
-  get connectionDurationLengthScale() {
-    return this.connectionLengthScale.copy().domain(this.connectionDurationDomain);
+  get connectionLineFrequencyDomain() {
+    return extent('visibleFrequency')(this.visibleConnectionLines);
   }
 
   @computed
-  get connectionFrequencyLengthScale() {
-    return this.connectionLengthScale.copy().domain(reverse(this.connectionFrequencyDomain));
+  get connectionLineBeelineScale() {
+    const beelineExtent = extent('beeline');
+
+    return scaleLinear()
+      .domain(beelineExtent(this.data.visibleConnections))
+      .range(beelineExtent(this.visibleConnectionLines));
+  }
+
+  @computed
+  get connectionLineDurationDistanceScale() {
+    return scaleLinear()
+      .domain(this.connectionLineDurationDomain)
+      .range(this.connectionLineDistanceDomain);
+  }
+
+  @computed
+  get connectionLineFrequencyDistanceScale() {
+    return scaleLinear()
+      .domain(reverse(this.connectionLineFrequencyDomain))
+      .range(this.connectionLineDistanceDomain);
   }
 
   @computed

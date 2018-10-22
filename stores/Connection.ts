@@ -84,7 +84,7 @@ class Connection {
   }
 
   @computed
-  get beelineDistance() {
+  get beeline() {
     return this.from.latLng.distanceTo(this.to.latLng);
   }
 }
