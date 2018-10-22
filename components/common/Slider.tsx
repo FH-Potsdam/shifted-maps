@@ -64,7 +64,7 @@ const SliderRail = styled.div`
     top: 7px;
     left: 0;
     width: 100%;
-    height: 2px;
+    height: 1px;
     background-color: ${props => props.theme.foregroundColor};
     opacity: 0.2;
   }
@@ -86,12 +86,13 @@ const SliderHandle = styled(({ percent, ...props }: SliderItem) => {
     transition: color ${props => props.theme.shortTransitionDuration};
     content: '';
     position: absolute;
-    top: 11px;
-    left: 11px;
-    width: 10px;
-    height: 10px;
-    background-color: ${props => props.theme.foregroundColor};
+    top: 12px;
+    left: 12px;
+    width: 8px;
+    height: 8px;
+    background-color: currentColor;
     border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   }
 
   &:hover {
@@ -99,6 +100,7 @@ const SliderHandle = styled(({ percent, ...props }: SliderItem) => {
 
     &:after {
       background-color: ${props => props.theme.highlightColor};
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
     }
   }
 `;
@@ -121,7 +123,7 @@ const SliderTrack = styled(({ source, target, ...props }: TrackItem) => {
     left: 0;
     top: 7px;
     width: 100%;
-    height: 2px;
-    background-color: ${props => props.theme.foregroundColor};
+    height: 1px;
+    background-color: currentColor;
   }
 `;

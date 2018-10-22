@@ -1,6 +1,6 @@
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 import classNames from 'classnames';
-import { action, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import moment from 'moment';
 import { Component, createRef, MouseEvent, RefObject } from 'react';
@@ -9,14 +9,7 @@ import DataStore, { DAY_IN_SEC } from '../../stores/DataStore';
 import UIStore, { VIEW } from '../../stores/UIStore';
 import { formatDistance, formatDuration, formatFrequency } from '../../stores/utils/formatLabel';
 import Heading from '../common/Heading';
-import {
-  DurationIcon,
-  FrequencyIcon,
-  GeographicIcon,
-  Icon,
-  InfoIcon,
-  MapIcon,
-} from '../common/icons';
+import { DurationIcon, FrequencyIcon, GeographicIcon, Icon, MapIcon } from '../common/icons';
 import Slider from '../common/Slider';
 import styled from '../styled';
 
@@ -32,6 +25,8 @@ interface IProps {
 class FilterBar extends Component<IProps> {
   @observable
   private timeSpan: ReadonlyArray<number>;
+  @observable
+  private timeSpanChanging: boolean = false;
   private ref: RefObject<HTMLDivElement>;
 
   constructor(props: IProps) {
@@ -45,6 +40,24 @@ class FilterBar extends Component<IProps> {
     disableBodyScroll(this.ref.current!);
   }
 
+  @action
+  componentDidUpdate() {
+    // Update timeSpan from incoming data or ui store if user is not currently using the slider.
+    if (!this.timeSpanChanging) {
+      const { data, ui } = this.props;
+
+      this.timeSpan = ui.timeSpan || data.timeSpan;
+    }
+  }
+
+  @computed
+  get timeSliderActive() {
+    return (
+      this.timeSpan[0] !== this.props.data.timeSpan[0] ||
+      this.timeSpan[1] !== this.props.data.timeSpan[1]
+    );
+  }
+
   componentWillUnMount() {
     enableBodyScroll(this.ref.current!);
   }
@@ -55,9 +68,9 @@ class FilterBar extends Component<IProps> {
     return (
       <div className={className} ref={this.ref}>
         <Heading use="h1">Shifted Maps</Heading>
-        {this.renderStats()}
         {this.renderViewList()}
         {this.renderViewInfo()}
+        {this.renderStats()}
         {this.renderTimeSlider()}
         {this.renderTimeRange()}
       </div>
@@ -146,26 +159,28 @@ class FilterBar extends Component<IProps> {
   private renderViewInfo() {
     const { ui } = this.props;
     let viewName = 'Map';
-    // let viewText = 'Places are positioned by their geospatial location.';
+    let viewText = 'Places are positioned by their geospatial location.';
 
     if (ui.view === VIEW.GEOGRAPHIC) {
       viewName = 'Distance';
-      // viewText = 'Network is arranged by the actual distance travelled between places.';
+      viewText = 'Network is arranged by the average distance travelled between places.';
     }
 
     if (ui.view === VIEW.DURATION) {
       viewName = 'Time';
-      // viewText = 'Network is arranged by the actual time it took to get from one place to another.';
+      viewText =
+        'Network is arranged by the average time it took to get from one place to another.';
     }
 
     if (ui.view === VIEW.FREQUENCY) {
       viewName = 'Frequency';
-      // viewText = 'Network is arranged by the frequency of travels between places.';
+      viewText = 'Network is arranged by the total frequency of travels between places.';
     }
 
     return (
       <ViewInfo>
         <ViewName>{viewName}</ViewName>
+        <ViewText>{viewText}</ViewText>
       </ViewInfo>
     );
   }
@@ -175,6 +190,7 @@ class FilterBar extends Component<IProps> {
 
     return (
       <TimeSlider
+        className={classNames({ active: this.timeSliderActive })}
         onUpdate={this.handleTimeSpanUpdate}
         onChange={this.handleTimeSpanChange}
         domain={data.timeSpan}
@@ -189,7 +205,7 @@ class FilterBar extends Component<IProps> {
     const end = moment.unix(this.timeSpan[1]);
 
     return (
-      <SliderRange>
+      <SliderRange className={classNames({ active: this.timeSliderActive })}>
         <SliderRangeStart>
           <strong>{start.format('dddd')}</strong>
           {start.format('D. MMM YYYY')}
@@ -211,11 +227,13 @@ class FilterBar extends Component<IProps> {
   @action
   private handleTimeSpanUpdate = (timeSpan: ReadonlyArray<number>) => {
     this.timeSpan = timeSpan;
+    this.timeSpanChanging = true;
   };
 
   @action
   private handleTimeSpanChange = (timeSpan: ReadonlyArray<number>) => {
     this.timeSpan = timeSpan;
+    this.timeSpanChanging = false;
 
     this.props.onTimeSpanChange(timeSpan);
   };
@@ -223,12 +241,13 @@ class FilterBar extends Component<IProps> {
 
 export default styled(FilterBar)`
   background-color: rgba(255, 255, 255, 0.9);
-  padding: ${props => props.theme.spacingUnit * 1.5}px ${props => props.theme.spacingUnit}px;
+  padding: ${props => props.theme.spacingUnit * 1.5}px ${props => props.theme.spacingUnit * 1.25}px;
   width: ${props => props.theme.spacingUnit * 16}px;
   position: absolute;
   z-index: 1;
   top: ${props => props.theme.spacingUnit}px;
   left: ${props => props.theme.spacingUnit}px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
   ${Heading} {
     font-size: ${props => props.theme.fontSizeBig}px;
@@ -238,7 +257,9 @@ export default styled(FilterBar)`
 const Stats = styled.dl`
   display: flex;
   margin: 0;
-  margin-top: ${props => props.theme.spacingUnit}px;
+  margin-top: ${props => props.theme.spacingUnit * 1}px;
+  border-top: 1px solid ${props => props.theme.highlightColor};
+  padding-top: ${props => props.theme.spacingUnit * 1}px;
   flex-wrap: wrap;
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
@@ -259,13 +280,14 @@ const Stats = styled.dl`
     font-weight: 900;
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'tnum' 1;
+    color: ${props => props.theme.highlightColor};
   }
 `;
 
 const ViewList = styled.div`
   display: flex;
-  justify-content: center;
-  margin-top: ${props => props.theme.spacingUnit * 3}px;
+  justify-content: space-between;
+  margin-top: ${props => props.theme.spacingUnit * 1.5}px;
 `;
 
 const ViewButton = styled.button`
@@ -280,7 +302,8 @@ const ViewButton = styled.button`
   color: ${props => props.theme.foregroundColor};
   padding: 0;
   background-color: white;
-  transform: scale(0.9);
+  transform: scale(1);
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2);
 
   ${Icon} {
     width: 32px;
@@ -294,44 +317,60 @@ const ViewButton = styled.button`
   &:hover,
   &.active {
     color: ${props => props.theme.highlightColor};
-    transform: scale(1);
+  }
+
+  &:active,
+  &.active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 `;
 
 const ViewInfo = styled.div`
-  margin-top: ${props => props.theme.spacingUnit * 0.5}px;
-  text-align: center;
+  display: flex;
+  align-items: baseline;
+  margin-top: ${props => props.theme.spacingUnit * 0.75}px;
 `;
 
 const ViewName = styled.strong`
-  font-weight: 400;
-  cursor: help;
+  margin-right: ${props => props.theme.spacingUnit * 0.75}px;
+  color: ${props => props.theme.highlightColor};
+`;
 
-  ${InfoIcon} {
-    margin-left: 0.5em;
-  }
+const ViewText = styled.p`
+  font-size: ${props => props.theme.fontSizeSmall}px;
 `;
 
 const TimeSlider = styled(Slider)`
-  margin-top: ${props => props.theme.spacingUnit * 2}px;
+  margin-top: ${props => props.theme.spacingUnit * 1.5}px;
   margin-left: 5px;
   margin-right: 5px;
-`;
 
-const SliderRange = styled.div`
-  display: flex;
-  margin-top: ${props => props.theme.spacingUnit * 0.5}px;
+  &.active {
+    color: ${props => props.theme.highlightColor};
+  }
 `;
 
 const SliderRangeValue = styled.div`
   width: 50%;
+  font-size: ${props => props.theme.fontSizeSmall}px;
 
   strong {
     display: block;
     font-style: normal;
     text-transform: uppercase;
-    font-size: ${props => props.theme.fontSizeSmall}px;
     letter-spacing: 0.5px;
+  }
+`;
+
+const SliderRange = styled.div`
+  display: flex;
+  margin-top: ${props => props.theme.spacingUnit * 0.25}px;
+
+  &.active {
+    ${SliderRangeValue} strong {
+      color: ${props => props.theme.highlightColor};
+    }
   }
 `;
 

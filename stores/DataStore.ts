@@ -123,6 +123,10 @@ class DataStore {
 
   @computed
   get averageConnectionDistance() {
+    if (this.visibleConnections.length === 0) {
+      return 0;
+    }
+
     return this.totalConnectionDistance / this.visibleConnections.length;
   }
 
@@ -135,6 +139,10 @@ class DataStore {
 
   @computed
   get averageConnectionDuration() {
+    if (this.visibleConnections.length === 0) {
+      return 0;
+    }
+
     return this.totalConnectionDuration / this.visibleConnections.length;
   }
 
@@ -147,6 +155,10 @@ class DataStore {
 
   @computed
   get averageConnectionFrequency() {
+    if (this.visibleConnections.length === 0) {
+      return 0;
+    }
+
     return this.totalConnectionFrequency / this.visibleConnections.length;
   }
 }

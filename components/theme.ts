@@ -23,7 +23,7 @@ const theme: ITheme = {
     tablet: 600,
   },
   fontSize: spacingUnit, // 16
-  fontSizeBig: spacingUnit * 1.25, // 20
+  fontSizeBig: spacingUnit * 1.5, // 24
   fontSizeHero: spacingUnit * 2, // 32
   fontSizeSmall: spacingUnit * 0.75, // 12
   foregroundColor: '#333333',

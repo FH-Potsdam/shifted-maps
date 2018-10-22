@@ -9,6 +9,18 @@ export type DiaryData = Array<{
   trip?: ITripData;
 }>;
 
+let demoDataCache: DiaryData | undefined;
+
 export function fetchDemoDiary(options?: RequestInit & IFetchOptions): Promise<DiaryData> {
-  return fetch(`/static/data/demo.json`, options).then((response: Response) => response.json());
+  if (demoDataCache != null) {
+    return Promise.resolve(demoDataCache);
+  }
+
+  return fetch(`/static/data/demo.json`, options)
+    .then((response: Response) => response.json())
+    .then((data: DiaryData) => {
+      demoDataCache = data;
+
+      return data;
+    });
 }
