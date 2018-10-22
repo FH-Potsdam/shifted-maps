@@ -65,7 +65,7 @@ class ConnectionLineLabel extends Component<IProps> {
 
     const fontSize = theme.fontSizeSmall;
 
-    ctx.font = `italic ${fontSize * 2}px "soleil"`;
+    ctx.font = `${fontSize * 2}px "Overpass"`;
     const metrics = ctx.measureText(label);
 
     const padding = theme.spacingUnit * 0.5;
@@ -83,7 +83,7 @@ class ConnectionLineLabel extends Component<IProps> {
     ctx.rect(0, 0, width, height);
     ctx.fill();
 
-    ctx.font = `italic ${fontSize * 2}px "soleil"`;
+    ctx.font = `${fontSize * 2}px "Overpass"`;
     ctx.fillStyle = highlight ? theme.highlightColor : theme.foregroundColor;
 
     ctx.fillText(label, padding, fontSize * 2 - 4);

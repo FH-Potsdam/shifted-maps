@@ -83,7 +83,7 @@ class PlaceCircleLabel extends Component<IProps> {
       clusterSize > 0 ? `+${clusterSize} other ${clusterSize === 1 ? 'place' : 'places'}` : null;
 
     ctx.textAlign = 'center';
-    ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
+    ctx.font = `${labelFontSize * 2}px "Overpass"`;
     const labelMetrics = ctx.measureText(label);
     let width = labelMetrics.width;
     let height =
@@ -93,7 +93,7 @@ class PlaceCircleLabel extends Component<IProps> {
 
     if (clusterLabel != null) {
       ctx.textAlign = 'center';
-      ctx.font = `italic ${clusterLabelFontSize * 2}px "soleil"`;
+      ctx.font = `italic ${clusterLabelFontSize * 2}px "Overpass"`;
       const clusterSizeMetrics = ctx.measureText(clusterLabel);
 
       width = Math.max(width, clusterSizeMetrics.width);
@@ -119,14 +119,14 @@ class PlaceCircleLabel extends Component<IProps> {
     const baseline = labelFontSize * 2;
 
     ctx.textAlign = 'center';
-    ctx.font = `italic ${labelFontSize * 2}px "soleil"`;
+    ctx.font = `${labelFontSize * 2}px "Overpass"`;
     ctx.strokeText(label, width / 2, baseline);
     ctx.fillText(label, width / 2, baseline);
 
     if (clusterLabel != null) {
       const baseline = clusterLabelFontSize * 2 + labelFontSize * 2 + spacing / 4;
 
-      ctx.font = `italic ${clusterLabelFontSize * 2}px "soleil"`;
+      ctx.font = `italic ${clusterLabelFontSize * 2}px "Overpass"`;
       ctx.strokeText(clusterLabel, width / 2, baseline);
       ctx.fillText(clusterLabel, width / 2, baseline);
     }

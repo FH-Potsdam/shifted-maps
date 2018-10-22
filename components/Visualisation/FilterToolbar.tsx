@@ -23,8 +23,8 @@ interface IProps {
 @observer
 class FilterBar extends Component<IProps> {
   @observable
-  timeSpan: ReadonlyArray<number>;
-  ref: RefObject<HTMLDivElement>;
+  private timeSpan: ReadonlyArray<number>;
+  private ref: RefObject<HTMLDivElement>;
 
   constructor(props: IProps) {
     super(props);
@@ -180,7 +180,7 @@ class FilterBar extends Component<IProps> {
 export default styled(FilterBar)`
   background-color: rgba(255, 255, 255, 0.9);
   padding: ${props => props.theme.spacingUnit * 1.5}px ${props => props.theme.spacingUnit}px;
-  width: ${props => props.theme.spacingUnit * 14}px;
+  width: ${props => props.theme.spacingUnit * 16}px;
   position: absolute;
   z-index: 1;
   top: ${props => props.theme.spacingUnit}px;
@@ -207,12 +207,14 @@ const FilterBarStats = styled.dl`
   }
 
   dt {
-    font-style: italic;
     white-space: nowrap;
   }
 
   dd {
     text-align: right;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
   }
 `;
 
@@ -263,13 +265,13 @@ const SliderRange = styled.div`
 
 const SliderRangeValue = styled.div`
   width: 50%;
-  font-style: italic;
 
   strong {
     display: block;
     font-style: normal;
     text-transform: uppercase;
     font-size: ${props => props.theme.fontSizeSmall}px;
+    letter-spacing: 0.5px;
   }
 `;
 

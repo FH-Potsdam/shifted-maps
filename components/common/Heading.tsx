@@ -1,12 +1,18 @@
 import use from 'reuse';
 
-import styled, { theme } from '../styled';
+import styled, { css, theme } from '../styled';
 
 const Heading = styled(use('h1'))`
   color: ${theme('highlightColor')};
   margin: 0;
 
-  ${props => props.use === 'h1' && `text-transform: uppercase;`};
+  ${props =>
+    props.use === 'h1' &&
+    css`
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    `};
 `;
 
 Heading.defaultProps = {
