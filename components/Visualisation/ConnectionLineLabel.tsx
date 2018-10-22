@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import { Component, createRef, forwardRef, Ref, RefObject } from 'react';
 
 import ConnectionLine from '../../stores/ConnectionLine';
+import checkFont from '../../utils/checkFont';
 import styled, { withTheme } from '../styled';
 import { ITheme } from '../theme';
 
@@ -33,6 +34,12 @@ class ConnectionLineLabel extends Component<IProps> {
     this.ctx = this.labelCanvas.getContext('2d');
 
     this.drawDisposer = autorun(this.drawLabel);
+
+    this.checkFont();
+  }
+
+  componentDidUpdate() {
+    this.checkFont();
   }
 
   componentWillUnmount() {
@@ -65,7 +72,7 @@ class ConnectionLineLabel extends Component<IProps> {
 
     const fontSize = theme.fontSizeSmall;
 
-    ctx.font = `${fontSize * 2}px "Overpass"`;
+    ctx.font = `${fontSize * 2}px Overpass`;
     const metrics = ctx.measureText(label);
 
     const padding = theme.spacingUnit * 0.5;
@@ -95,6 +102,19 @@ class ConnectionLineLabel extends Component<IProps> {
     image.setAttribute('height', String(height * 0.5));
     image.style[DomUtil.TRANSFORM] = `translate(${width * -0.25}px, ${height * -0.25}px)`;
   };
+
+  private checkFont() {
+    const { connectionLine, theme } = this.props;
+    const { label } = connectionLine;
+
+    if (theme == null || label == null) {
+      return;
+    }
+
+    const font = `${theme.fontSizeSmall * 2}px Overpass`;
+
+    checkFont(font, label, this.drawLabel);
+  }
 }
 
 export default styled(

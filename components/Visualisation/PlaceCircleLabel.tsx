@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import { Component, createRef, RefObject } from 'react';
 
 import PlaceCircle from '../../stores/PlaceCircle';
+import checkFont from '../../utils/checkFont';
 import styled, { withTheme } from '../styled';
 import { ITheme } from '../theme';
 
@@ -39,6 +40,12 @@ class PlaceCircleLabel extends Component<IProps> {
     this.ctx = this.labelCanvas.getContext('2d');
 
     this.drawDisposer = autorun(this.drawLabel);
+
+    this.checkFont();
+  }
+
+  componentDidUpdate() {
+    this.checkFont();
   }
 
   componentWillUnmount() {
@@ -138,6 +145,30 @@ class PlaceCircleLabel extends Component<IProps> {
     image.setAttribute('height', String(height * 0.5));
     image.style[DomUtil.TRANSFORM] = `translateX(${Math.round(width * -0.25)}px)`;
   };
+
+  private checkFont() {
+    const { placeCircle, theme } = this.props;
+
+    if (theme == null) {
+      return;
+    }
+
+    const { children, place } = placeCircle;
+    const clusterSize = children.length;
+    const label = place.name;
+
+    const labelFontSize = theme.fontSize;
+    const clusterLabelFontSize = theme.fontSizeSmall;
+
+    const clusterLabel =
+      clusterSize > 0 ? `+${clusterSize} other ${clusterSize === 1 ? 'place' : 'places'}` : null;
+
+    checkFont(`${labelFontSize * 2}px "Overpass"`, label, this.drawLabel);
+
+    if (clusterLabel) {
+      checkFont(`italic ${clusterLabelFontSize * 2}px "Overpass"`, clusterLabel, this.drawLabel);
+    }
+  }
 }
 
 export default styled(withTheme<IProps>(PlaceCircleLabel))`
