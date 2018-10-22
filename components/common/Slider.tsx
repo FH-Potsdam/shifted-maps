@@ -73,13 +73,16 @@ const SliderRail = styled.div`
 const SliderHandle = styled(({ percent, ...props }: SliderItem) => {
   return <div style={{ left: `${percent}%` }} {...props} />;
 })`
+  transition: transform ${props => props.theme.shortTransitionDuration};
   width: 32px;
   height: 32px;
   position: absolute;
   top: 0;
   transform: translate(-16px, -8px);
+  cursor: pointer;
 
   &:after {
+    transition: color ${props => props.theme.shortTransitionDuration};
     content: '';
     position: absolute;
     top: 11px;
@@ -88,6 +91,14 @@ const SliderHandle = styled(({ percent, ...props }: SliderItem) => {
     height: 10px;
     background-color: ${props => props.theme.foregroundColor};
     border-radius: 50%;
+  }
+
+  &:hover {
+    transform: translate(-16px, -8px) scale(1.2);
+
+    &:after {
+      background-color: ${props => props.theme.highlightColor};
+    }
   }
 `;
 
