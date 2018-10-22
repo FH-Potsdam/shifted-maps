@@ -1,12 +1,13 @@
 import { LeafletEvent, Map as LeafletMap } from 'leaflet';
 import { action, configure } from 'mobx';
 import { observer } from 'mobx-react';
-import { Component, SyntheticEvent } from 'react';
+import { Component } from 'react';
 
 import DataStore from '../../stores/DataStore';
 import { DiaryData } from '../../stores/Diary';
 import UIStore, { VIEW } from '../../stores/UIStore';
 import VisualisationStore from '../../stores/VisualisationStore';
+import styled from '../styled';
 import FilterToolbar from './FilterToolbar';
 import Map from './Map';
 import SVGVisualisationLayer from './SVGVisualisationLayer';
@@ -21,6 +22,7 @@ interface IProps {
   timeSpan?: ReadonlyArray<number>;
   onViewChange: (view?: VIEW) => void;
   onTimeSpanChange: (timeSpan: ReadonlyArray<number>) => void;
+  className?: string;
 }
 
 @observer
@@ -57,10 +59,10 @@ class Visualisation extends Component<IProps> {
   render() {
     const { initialBounds } = this.visStore;
     const { view } = this.uiStore;
-    const { onViewChange, onTimeSpanChange } = this.props;
+    const { className, onViewChange, onTimeSpanChange } = this.props;
 
     return (
-      <div onWheel={this.handleWheel}>
+      <div className={className}>
         <Map
           bounds={initialBounds}
           showTiles={view == null}
@@ -92,10 +94,6 @@ class Visualisation extends Component<IProps> {
   private handleZoomStart = () => {
     this.visStore.graph.stop();
   };
-
-  private handleWheel = (event: SyntheticEvent) => {
-    event.stopPropagation();
-  };
 }
 
-export default Visualisation;
+export default styled(Visualisation)``;

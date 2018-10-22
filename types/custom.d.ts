@@ -5,3 +5,9 @@ declare module '*.svg' {
 
   export default SVGComponent;
 }
+
+declare module 'body-scroll-lock' {
+  function disableBodyScroll(element: HTMLElement): void;
+
+  function enableBodyScroll(element: HTMLElement): void;
+}

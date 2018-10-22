@@ -1,7 +1,8 @@
+import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import moment from 'moment';
-import { Component } from 'react';
+import { Component, createRef, RefObject } from 'react';
 
 import DataStore, { DAY_IN_SEC } from '../../stores/DataStore';
 import UIStore, { VIEW } from '../../stores/UIStore';
@@ -23,34 +24,28 @@ interface IProps {
 class FilterBar extends Component<IProps> {
   @observable
   timeSpan: ReadonlyArray<number>;
+  ref: RefObject<HTMLDivElement>;
 
   constructor(props: IProps) {
     super(props);
 
     this.timeSpan = props.ui.timeSpan || props.data.timeSpan;
+    this.ref = createRef();
   }
 
-  handleToggleView(view: VIEW) {
-    this.props.onViewChange(view !== this.props.ui.view ? view : undefined);
+  componentDidMount() {
+    disableBodyScroll(this.ref.current!);
   }
 
-  @action
-  handleTimeSpanUpdate = (timeSpan: ReadonlyArray<number>) => {
-    this.timeSpan = timeSpan;
-  };
-
-  @action
-  handleTimeSpanChange = (timeSpan: ReadonlyArray<number>) => {
-    this.timeSpan = timeSpan;
-
-    this.props.onTimeSpanChange(timeSpan);
-  };
+  componentWillUnMount() {
+    enableBodyScroll(this.ref.current!);
+  }
 
   render() {
     const { className } = this.props;
 
     return (
-      <div className={className}>
+      <div className={className} ref={this.ref}>
         <Heading use="h1">Shifted Maps</Heading>
         {this.renderStats()}
         {this.renderViewList()}
@@ -164,6 +159,22 @@ class FilterBar extends Component<IProps> {
       </SliderRange>
     );
   }
+
+  private handleToggleView(view: VIEW) {
+    this.props.onViewChange(view !== this.props.ui.view ? view : undefined);
+  }
+
+  @action
+  private handleTimeSpanUpdate = (timeSpan: ReadonlyArray<number>) => {
+    this.timeSpan = timeSpan;
+  };
+
+  @action
+  private handleTimeSpanChange = (timeSpan: ReadonlyArray<number>) => {
+    this.timeSpan = timeSpan;
+
+    this.props.onTimeSpanChange(timeSpan);
+  };
 }
 
 export default styled(FilterBar)`
@@ -185,6 +196,9 @@ const FilterBarStats = styled.dl`
   margin: 0;
   margin-top: ${props => props.theme.spacingUnit}px;
   flex-wrap: wrap;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  user-select: none;
 
   dt,
   dd {
