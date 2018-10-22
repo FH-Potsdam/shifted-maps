@@ -1,4 +1,4 @@
-import { bounds, latLngBounds, point, Point } from 'leaflet';
+import { bounds, point, Point } from 'leaflet';
 import orderBy from 'lodash/fp/orderBy';
 import { computed, observable } from 'mobx';
 
@@ -16,9 +16,6 @@ class PlaceCircle {
   readonly place: Place;
 
   @observable
-  hover: boolean = false;
-
-  @observable
   graphPoint: Point = point(0, 0);
 
   constructor(vis: VisualisationStore, place: Place) {
@@ -27,13 +24,18 @@ class PlaceCircle {
   }
 
   @computed
+  get active() {
+    return this.vis.activeElement === this;
+  }
+
+  @computed
   get highlight() {
-    return this.hover || this.connectionLines.some(connectionLine => connectionLine.highlight);
+    return this.active || this.connectionLines.some(connectionLine => connectionLine.highlight);
   }
 
   @computed
   get fade() {
-    return !this.highlight && this.vis.hovering;
+    return !this.highlight && this.vis.activeElement != null;
   }
 
   @computed

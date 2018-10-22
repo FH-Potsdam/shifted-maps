@@ -1,18 +1,20 @@
 import classNames from 'classnames';
 import debounce from 'lodash/fp/debounce';
-import { action, autorun, IReactionDisposer } from 'mobx';
+import { autorun, IReactionDisposer } from 'mobx';
 import { observer } from 'mobx-react';
-import { Component, createRef, RefObject, SyntheticEvent } from 'react';
+import { Component, createRef, MouseEvent, RefObject } from 'react';
 
 import PlaceCircleModel from '../../stores/PlaceCircle';
+import VisualisationStore from '../../stores/VisualisationStore';
 import styled from '../styled';
 import PlaceCircleLabel from './PlaceCircleLabel';
 import PlaceCircleMap from './PlaceCircleMap';
 
 interface IProps {
   placeCircle: PlaceCircleModel;
-  maxRadius: number;
+  vis: VisualisationStore;
   className?: string;
+  touch: boolean;
 }
 
 @observer
@@ -21,11 +23,11 @@ class PlaceCircle extends Component<IProps> {
 
   private styleDisposer?: IReactionDisposer;
 
-  private toggle = debounce(50)(
-    action((hover: boolean) => {
-      this.props.placeCircle.hover = hover;
-    })
-  );
+  private toggle = debounce(50)((active?: boolean) => {
+    const { placeCircle, vis } = this.props;
+
+    vis.toggle(placeCircle, active);
+  });
 
   constructor(props: IProps) {
     super(props);
@@ -41,25 +43,31 @@ class PlaceCircle extends Component<IProps> {
     if (this.styleDisposer != null) {
       this.styleDisposer();
     }
+
+    this.toggle.cancel();
   }
 
   render() {
-    const { placeCircle, className, maxRadius } = this.props;
-    const { radius, strokeWidth, hover, visible, fade } = placeCircle;
+    const { placeCircle, className, vis, touch } = this.props;
+    const { radius, strokeWidth, active, visible, fade } = placeCircle;
+
+    const toggleListeners = !touch
+      ? {
+          onMouseEnter: this.handleMouseEnter,
+          onMouseLeave: this.handleMouseLeave,
+        }
+      : {
+          onClick: this.handleClick,
+        };
 
     return (
-      <g
-        ref={this.ref}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-        className={classNames(className, { visible, fade })}
-      >
+      <g ref={this.ref} className={classNames(className, { visible, fade })} {...toggleListeners}>
         <PlaceCircleBackground r={radius} />
-        <PlaceCircleMap placeCircle={placeCircle} maxRadius={maxRadius} />
+        <PlaceCircleMap placeCircle={placeCircle} vis={vis} />
         <PlaceCircleStroke
           r={radius}
           style={{ strokeWidth: `${strokeWidth}px` }}
-          className={classNames({ highlight: hover })}
+          className={classNames({ highlight: active })}
         />
         <PlaceCircleLabel placeCircle={placeCircle} />
       </g>
@@ -73,16 +81,18 @@ class PlaceCircle extends Component<IProps> {
     group.setAttribute('transform', `translate(${point.x}, ${point.y})`);
   };
 
-  private handleMouseEnter = (event: SyntheticEvent) => {
-    event.stopPropagation();
-
+  private handleMouseEnter = () => {
     this.toggle(true);
   };
 
-  private handleMouseLeave = (event: SyntheticEvent) => {
+  private handleMouseLeave = () => {
+    this.toggle(false);
+  };
+
+  private handleClick = (event: MouseEvent<SVGGElement>) => {
     event.stopPropagation();
 
-    this.toggle(false);
+    this.toggle();
   };
 }
 

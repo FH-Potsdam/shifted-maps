@@ -2,6 +2,7 @@ const withTypescript = require('@zeit/next-typescript');
 const withCSS = require('@zeit/next-css');
 const webpack = require('webpack');
 const flow = require('lodash/fp/flow');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = flow(
   withTypescript,
@@ -12,29 +13,25 @@ module.exports = flow(
     mapboxAccessToken: 'pk.eyJ1IjoibGVubmVyZCIsImEiOiJXRjB3WGswIn0.3plnt32h0h8pfb9aZ_oGyw',
     mapboxStyleId: 'heike.6bac2bcd',
   },
-  webpack(config, options) {
-    return {
-      ...config,
-      module: {
-        ...config.module,
-        rules: [
-          {
-            test: /\.svg$/,
-            use: [
-              {
-                loader: '@svgr/webpack',
-                options: {
-                  ref: true,
-                },
-              },
-            ],
+  webpack(config, { isServer }) {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: [
+        {
+          loader: '@svgr/webpack',
+          options: {
+            ref: true,
           },
-        ].concat(config.module.rules),
-      },
-      plugins: [
-        ...config.plugins,
-        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
+        },
       ],
-    };
+    });
+
+    config.plugins.push(new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/));
+
+    if (isServer) {
+      config.plugins.push(new ForkTsCheckerWebpackPlugin());
+    }
+
+    return config;
   },
 });

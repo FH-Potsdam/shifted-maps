@@ -7,12 +7,13 @@ import VisualisationElementList from './VisualisationElementList';
 
 interface IProps {
   vis: VisualisationStore;
+  touch: boolean;
 }
 
 @observer
 class SVGVisualisationLayer extends Component<IProps> {
   render() {
-    const { vis } = this.props;
+    const { vis, touch } = this.props;
 
     if (!vis.ready) {
       return null;
@@ -20,7 +21,7 @@ class SVGVisualisationLayer extends Component<IProps> {
 
     return (
       <SVGLayer>
-        <VisualisationElementList vis={vis} />
+        <VisualisationElementList vis={vis} touch={touch} />
       </SVGLayer>
     );
   }

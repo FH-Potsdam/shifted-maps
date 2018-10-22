@@ -9,8 +9,8 @@ function sortVisualisationElements(elements: VisualisationElement[]): Visualisat
     }
 
     if (a instanceof PlaceCircle && b instanceof PlaceCircle) {
-      if (a.hover !== b.hover) {
-        return Number(a.hover) - Number(b.hover);
+      if (a.active !== b.active) {
+        return Number(a.active) - Number(b.active);
       }
 
       return a.radius - b.radius;

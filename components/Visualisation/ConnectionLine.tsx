@@ -1,15 +1,18 @@
 import classNames from 'classnames';
 import debounce from 'lodash/fp/debounce';
-import { action, autorun, IReactionDisposer } from 'mobx';
+import { autorun, IReactionDisposer } from 'mobx';
 import { observer } from 'mobx-react';
-import { Component, createRef, RefObject, SyntheticEvent } from 'react';
+import { Component, createRef, MouseEvent, RefObject, SyntheticEvent } from 'react';
 
 import ConnectionLineModel from '../../stores/ConnectionLine';
+import VisualisationStore from '../../stores/VisualisationStore';
 import styled from '../styled';
 import ConnectionLineLabel from './ConnectionLineLabel';
 
 interface IProps {
   connectionLine: ConnectionLineModel;
+  vis: VisualisationStore;
+  touch: boolean;
   className?: string;
 }
 
@@ -19,11 +22,11 @@ class ConnectionLine extends Component<IProps> {
   private readonly labelRef: RefObject<SVGForeignObjectElement>;
   private styleDisposer?: IReactionDisposer;
 
-  private toggle = debounce(50)(
-    action((hover: boolean) => {
-      this.props.connectionLine.hover = hover;
-    })
-  );
+  private toggle = debounce(50)((active?: boolean) => {
+    const { connectionLine, vis } = this.props;
+
+    vis.toggle(connectionLine, active);
+  });
 
   constructor(props: IProps) {
     super(props);
@@ -43,15 +46,20 @@ class ConnectionLine extends Component<IProps> {
   }
 
   render() {
-    const { className, connectionLine } = this.props;
+    const { className, connectionLine, touch } = this.props;
     const { highlight, visible, fade } = connectionLine;
 
+    const toggleListeners = !touch
+      ? {
+          onMouseEnter: this.handleMouseEnter,
+          onMouseLeave: this.handleMouseLeave,
+        }
+      : {
+          onClick: this.handleClick,
+        };
+
     return (
-      <g
-        className={classNames(className, { visible, fade })}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-      >
+      <g className={classNames(className, { visible, fade })} {...toggleListeners}>
         <ConnectionLineLine innerRef={this.lineRef} className={classNames({ highlight })} />
         <ConnectionLineLabel innerRef={this.labelRef} connectionLine={connectionLine} />
       </g>
@@ -106,6 +114,12 @@ class ConnectionLine extends Component<IProps> {
     event.stopPropagation();
 
     this.toggle(false);
+  };
+
+  private handleClick = (event: MouseEvent<SVGGElement>) => {
+    event.stopPropagation();
+
+    this.toggle();
   };
 }
 

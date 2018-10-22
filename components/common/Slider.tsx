@@ -80,6 +80,7 @@ const SliderHandle = styled(({ percent, ...props }: SliderItem) => {
   top: 0;
   transform: translate(-16px, -8px);
   cursor: pointer;
+  touch-action: pan-x;
 
   &:after {
     transition: color ${props => props.theme.shortTransitionDuration};

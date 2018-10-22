@@ -44,6 +44,9 @@ class VisualisationStore {
   @observable
   ready: boolean = false;
 
+  @observable
+  activeElement: VisualisationElement | null = null;
+
   private placeCirclesCache: PlaceCircle[] = [];
   private connectionLinesCache: ConnectionLine[] = [];
 
@@ -94,6 +97,16 @@ class VisualisationStore {
     if (this.pixelOrigin == null || !this.pixelOrigin.equals(pixelOrigin)) {
       this.pixelOrigin = pixelOrigin;
     }
+  }
+
+  @action
+  toggle(element: VisualisationElement, active: boolean = !element.active) {
+    this.activeElement = active ? element : null;
+  }
+
+  @action
+  deactivateElement() {
+    this.activeElement = null;
   }
 
   dispose() {
@@ -322,14 +335,6 @@ class VisualisationStore {
   @computed
   get connectionFrequencyLengthScale() {
     return this.connectionLengthScale.copy().domain(reverse(this.connectionFrequencyDomain));
-  }
-
-  @computed
-  get hovering() {
-    return (
-      this.visiblePlaceCircles.some(placeCircle => placeCircle.hover) ||
-      this.visibleConnectionLines.some(connectionLine => connectionLine.hover)
-    );
   }
 
   @computed

@@ -7,12 +7,13 @@ import { Component } from 'react';
 import config from '../../config';
 import PlaceCircle from '../../stores/PlaceCircle';
 import round from '../../stores/utils/round';
+import VisualisationStore from '../../stores/VisualisationStore';
 import styled from '../styled';
 import PlaceCircleMapImage from './PlaceCircleMapImage';
 
 interface IProps {
   placeCircle: PlaceCircle;
-  maxRadius: number;
+  vis: VisualisationStore;
   className?: string;
 }
 
@@ -24,7 +25,7 @@ class PlaceCircleMap extends Component<IProps> {
 
   @computed
   get imageRadius() {
-    return this.props.maxRadius;
+    return this.props.vis.maxPlaceCircleRadius;
   }
 
   @computed
@@ -67,13 +68,13 @@ class PlaceCircleMap extends Component<IProps> {
 
   render() {
     const { className, placeCircle } = this.props;
-    const { key, radius, dots, hover } = placeCircle;
+    const { key, radius, dots, active } = placeCircle;
 
     const clipPathId = `clip-path-place-circle-${key}`;
     const lastDotIndex = dots.length - 1;
 
     return (
-      <g className={classNames(className, { highlight: hover })}>
+      <g className={classNames(className, { highlight: active })}>
         <defs>
           <clipPath id={clipPathId}>
             <circle r={radius} cx={this.imageRadius} cy={this.imageRadius} />

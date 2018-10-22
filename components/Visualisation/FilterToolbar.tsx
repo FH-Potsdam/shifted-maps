@@ -2,7 +2,7 @@ import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import moment from 'moment';
-import { Component, createRef, RefObject } from 'react';
+import { Component, createRef, MouseEvent, RefObject } from 'react';
 
 import DataStore, { DAY_IN_SEC } from '../../stores/DataStore';
 import UIStore, { VIEW } from '../../stores/UIStore';
@@ -107,19 +107,19 @@ class FilterBar extends Component<IProps> {
     return (
       <FilterBarViewList>
         <FilterBarViewButton
-          onClick={() => this.handleToggleView(VIEW.GEOGRAPHIC)}
+          onClick={event => this.handleToggleView(event, VIEW.GEOGRAPHIC)}
           active={ui.view === VIEW.GEOGRAPHIC}
         >
           <GeographicIcon width="32" height="32" />
         </FilterBarViewButton>
         <FilterBarViewButton
-          onClick={() => this.handleToggleView(VIEW.DURATION)}
+          onClick={event => this.handleToggleView(event, VIEW.DURATION)}
           active={ui.view === VIEW.DURATION}
         >
           <DurationIcon />
         </FilterBarViewButton>
         <FilterBarViewButton
-          onClick={() => this.handleToggleView(VIEW.FREQUENCY)}
+          onClick={event => this.handleToggleView(event, VIEW.FREQUENCY)}
           active={ui.view === VIEW.FREQUENCY}
         >
           <FrequencyIcon width="32" height="32" />
@@ -160,7 +160,9 @@ class FilterBar extends Component<IProps> {
     );
   }
 
-  private handleToggleView(view: VIEW) {
+  private handleToggleView(event: MouseEvent<HTMLButtonElement>, view: VIEW) {
+    event.stopPropagation();
+
     this.props.onViewChange(view !== this.props.ui.view ? view : undefined);
   }
 

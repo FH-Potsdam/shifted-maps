@@ -7,6 +7,7 @@ import DataStore from '../../stores/DataStore';
 import { DiaryData } from '../../stores/Diary';
 import UIStore, { VIEW } from '../../stores/UIStore';
 import VisualisationStore from '../../stores/VisualisationStore';
+import Touch from '../common/Touch';
 import styled from '../styled';
 import FilterToolbar from './FilterToolbar';
 import Map from './Map';
@@ -62,25 +63,33 @@ class Visualisation extends Component<IProps> {
     const { className, onViewChange, onTimeSpanChange } = this.props;
 
     return (
-      <div className={className}>
-        <Map
-          bounds={initialBounds}
-          showTiles={view == null}
-          // @ts-ignore outdated types
-          whenReady={this.handleMapViewDidChange}
-          onZoomEnd={this.handleMapViewDidChange}
-          onResize={this.handleMapViewDidChange}
-          onZoomStart={this.handleZoomStart}
-        >
-          <SVGVisualisationLayer vis={this.visStore} />
-        </Map>
-        <FilterToolbar
-          ui={this.uiStore}
-          data={this.dataStore}
-          onViewChange={onViewChange}
-          onTimeSpanChange={onTimeSpanChange}
-        />
-      </div>
+      <Touch>
+        {touch => {
+          const listener = touch ? { onClick: this.handleClick } : {};
+
+          return (
+            <div className={className} {...listener}>
+              <Map
+                bounds={initialBounds}
+                showTiles={view == null}
+                // @ts-ignore outdated types
+                whenReady={this.handleMapViewDidChange}
+                onZoomEnd={this.handleMapViewDidChange}
+                onResize={this.handleMapViewDidChange}
+                onZoomStart={this.handleZoomStart}
+              >
+                <SVGVisualisationLayer vis={this.visStore} touch={touch} />
+              </Map>
+              <FilterToolbar
+                ui={this.uiStore}
+                data={this.dataStore}
+                onViewChange={onViewChange}
+                onTimeSpanChange={onTimeSpanChange}
+              />
+            </div>
+          );
+        }}
+      </Touch>
     );
   }
 
@@ -93,6 +102,11 @@ class Visualisation extends Component<IProps> {
   @action
   private handleZoomStart = () => {
     this.visStore.graph.stop();
+  };
+
+  @action
+  private handleClick = () => {
+    this.visStore.deactivateElement();
   };
 }
 

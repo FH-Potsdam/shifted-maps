@@ -63,7 +63,7 @@ class PlaceCircleLabel extends Component<IProps> {
 
   private drawLabel = () => {
     const { theme, placeCircle } = this.props;
-    const { children, place, hover } = placeCircle;
+    const { children, place, active } = placeCircle;
 
     const clusterSize = children.length;
     const label = place.name;
@@ -113,7 +113,7 @@ class PlaceCircleLabel extends Component<IProps> {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.lineWidth = spacing / 2;
-    ctx.fillStyle = hover ? theme.highlightColor : theme.foregroundColor;
+    ctx.fillStyle = active ? theme.highlightColor : theme.foregroundColor;
     ctx.strokeStyle = theme.backgroundColor;
 
     const baseline = labelFontSize * 2;
