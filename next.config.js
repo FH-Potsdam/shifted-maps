@@ -2,7 +2,6 @@ const withTypescript = require('@zeit/next-typescript');
 const withCSS = require('@zeit/next-css');
 const webpack = require('webpack');
 const flow = require('lodash/fp/flow');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = flow(
   withTypescript,
@@ -27,10 +26,6 @@ module.exports = flow(
     });
 
     config.plugins.push(new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/));
-
-    if (isServer) {
-      config.plugins.push(new ForkTsCheckerWebpackPlugin());
-    }
 
     return config;
   },

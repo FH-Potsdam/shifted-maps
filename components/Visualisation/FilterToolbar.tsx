@@ -146,29 +146,26 @@ class FilterBar extends Component<IProps> {
   private renderViewInfo() {
     const { ui } = this.props;
     let viewName = 'Map';
-    let viewText = 'Places are positioned by their geospatial location.';
+    // let viewText = 'Places are positioned by their geospatial location.';
 
     if (ui.view === VIEW.GEOGRAPHIC) {
       viewName = 'Distance';
-      viewText = 'Network is arranged by the actual distance travelled between places.';
+      // viewText = 'Network is arranged by the actual distance travelled between places.';
     }
 
     if (ui.view === VIEW.DURATION) {
       viewName = 'Time';
-      viewText = 'Network is arranged by the actual time it took to get from one place to another.';
+      // viewText = 'Network is arranged by the actual time it took to get from one place to another.';
     }
 
     if (ui.view === VIEW.FREQUENCY) {
       viewName = 'Frequency';
-      viewText = 'Network is arranged by the frequency of travels between places.';
+      // viewText = 'Network is arranged by the frequency of travels between places.';
     }
 
     return (
       <ViewInfo>
-        <ViewName title={viewText}>
-          {viewName}
-          <InfoIcon />
-        </ViewName>
+        <ViewName>{viewName}</ViewName>
       </ViewInfo>
     );
   }
@@ -272,7 +269,8 @@ const ViewList = styled.div`
 `;
 
 const ViewButton = styled.button`
-  transition: color ${props => props.theme.shortTransitionDuration};
+  transition: color ${props => props.theme.shortTransitionDuration},
+    transform ${props => props.theme.shortTransitionDuration};
   border: 0;
   display: flex;
   align-items: center;
@@ -282,6 +280,7 @@ const ViewButton = styled.button`
   color: ${props => props.theme.foregroundColor};
   padding: 0;
   background-color: white;
+  transform: scale(0.9);
 
   ${Icon} {
     width: 32px;
@@ -295,6 +294,7 @@ const ViewButton = styled.button`
   &:hover,
   &.active {
     color: ${props => props.theme.highlightColor};
+    transform: scale(1);
   }
 `;
 
