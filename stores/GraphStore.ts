@@ -113,10 +113,10 @@ class GraphStore {
 
     this.linkForce
       .links(this.links)
-      .strength(link => (viewActive && link.connectionLine.visible ? 0.5 : 0));
+      .strength(link => (viewActive && link.connectionLine.visible ? 0.6 : 0));
 
-    this.xForce.strength(viewActive ? 0.2 : 1);
-    this.yForce.strength(viewActive ? 0.2 : 1);
+    this.xForce.strength(viewActive ? 0.1 : 1);
+    this.yForce.strength(viewActive ? 0.1 : 1);
 
     this.manyBodyForce.strength(node => (viewActive && node.placeCircle.visible ? -30 : 0));
   };
