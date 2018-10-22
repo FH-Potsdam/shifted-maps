@@ -42,12 +42,10 @@ class Connection {
   }
 
   @computed
-  get distance() {
-    return (
-      this.trips.reduce((distance, trip) => {
-        return distance + trip.distance;
-      }, 0) / this.trips.length
-    );
+  get totalVisibleDistance() {
+    return this.visibleTrips.reduce((distance, trip) => {
+      return distance + trip.distance;
+    }, 0);
   }
 
   @computed
@@ -56,25 +54,23 @@ class Connection {
       return 0;
     }
 
-    return (
-      this.visibleTrips.reduce((distance, trip) => {
-        return distance + trip.distance;
-      }, 0) / this.visibleTrips.length
-    );
+    return this.totalVisibleDistance / this.visibleTrips.length;
   }
 
   @computed
-  get duration() {
-    return this.trips.reduce((duration, trip) => {
+  get totalVisibleDuration() {
+    return this.visibleTrips.reduce((duration, trip) => {
       return duration + trip.duration;
     }, 0);
   }
 
   @computed
   get visibleDuration() {
-    return this.visibleTrips.reduce((duration, trip) => {
-      return duration + trip.duration;
-    }, 0);
+    if (this.visibleTrips.length === 0) {
+      return 0;
+    }
+
+    return this.totalVisibleDuration / this.visibleTrips.length;
   }
 
   @computed

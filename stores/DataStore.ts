@@ -117,7 +117,7 @@ class DataStore {
   @computed
   get totalConnectionDistance() {
     return this.visibleConnections.reduce((distance, connection) => {
-      return distance + connection.visibleDistance;
+      return distance + connection.totalVisibleDistance;
     }, 0);
   }
 
@@ -129,7 +129,7 @@ class DataStore {
   @computed
   get totalConnectionDuration() {
     return this.visibleConnections.reduce((distance, connection) => {
-      return distance + connection.visibleDuration;
+      return distance + connection.totalVisibleDuration;
     }, 0);
   }
 
