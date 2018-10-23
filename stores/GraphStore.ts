@@ -1,8 +1,10 @@
 import {
+  // ForceCollide,
+  // forceCollide,
+  // ForceManyBody,
+  // forceManyBody,
   ForceLink,
   forceLink,
-  ForceManyBody,
-  forceManyBody,
   forceSimulation,
   forceX,
   ForceX,
@@ -31,7 +33,8 @@ class GraphStore {
   private readonly linkForce: ForceLink<PlaceCircleNode, ConnectionLineLink>;
   private readonly xForce: ForceX<PlaceCircleNode>;
   private readonly yForce: ForceY<PlaceCircleNode>;
-  private readonly manyBodyForce: ForceManyBody<PlaceCircleNode>;
+  // private readonly manyBodyForce: ForceManyBody<PlaceCircleNode>;
+  // private readonly collideForce: ForceCollide<PlaceCircleNode>;
 
   private toggleDisposer: IReactionDisposer;
   private updateDisposer: IReactionDisposer;
@@ -56,13 +59,15 @@ class GraphStore {
     this.xForce = forceX<PlaceCircleNode>().x(node => node.placeCircle.mapPoint.x);
     this.yForce = forceY<PlaceCircleNode>().y(node => node.placeCircle.mapPoint.y);
 
-    this.manyBodyForce = forceManyBody<PlaceCircleNode>();
+    // this.manyBodyForce = forceManyBody<PlaceCircleNode>();
+    // this.collideForce = forceCollide<PlaceCircleNode>().strength(0.1);
 
     this.simulation = forceSimulation<PlaceCircleNode, ConnectionLineLink>()
       .force('link', this.linkForce)
       .force('x', this.xForce)
       .force('y', this.yForce)
-      .force('many-body', this.manyBodyForce)
+      // .force('many-body', this.manyBodyForce)
+      // .force('collide', this.collideForce)
       .on('tick', () => this.onTick(this.nodes))
       .on('end', () => this.onEnd(this.nodes))
       .velocityDecay(0.9)
@@ -113,12 +118,18 @@ class GraphStore {
 
     this.linkForce
       .links(this.links)
-      .strength(link => (viewActive && link.connectionLine.visible ? 0.6 : 0));
+      .strength(link => (viewActive && link.connectionLine.visible ? 0.7 : 0));
 
     this.xForce.strength(viewActive ? 0.1 : 1);
     this.yForce.strength(viewActive ? 0.1 : 1);
 
-    this.manyBodyForce.strength(node => (viewActive && node.placeCircle.visible ? -30 : 0));
+    // this.manyBodyForce.strength(node => (viewActive && node.placeCircle.visible ? -30 : 0));
+    /*this.collideForce.radius(
+      node =>
+        viewActive && node.placeCircle.visible
+          ? node.placeCircle.radius + node.placeCircle.strokeWidth + 10
+          : 0
+    );*/
   };
 
   private zoomSimulation = () => {
