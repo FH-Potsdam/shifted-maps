@@ -5,13 +5,13 @@ import { Breakpoints, ITheme } from './theme';
 const {
   default: styled,
   css,
-  injectGlobal,
+  createGlobalStyle,
   keyframes,
   ThemeProvider,
   withTheme,
 } = styledComponents as styledComponents.ThemedStyledComponentsModule<ITheme>;
 
-export { css, injectGlobal, keyframes, ThemeProvider, withTheme };
+export { css, createGlobalStyle, keyframes, ThemeProvider, withTheme };
 export default styled;
 
 export function theme(key: keyof ITheme) {

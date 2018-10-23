@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { DomUtil } from 'leaflet';
-import { autorun, computed, IReactionDisposer } from 'mobx';
-import { observer } from 'mobx-react';
+import { autorun, computed } from 'mobx';
+import { disposeOnUnmount, observer } from 'mobx-react';
 import { Component, createRef, RefObject } from 'react';
 
 import PlaceCircle from '../../stores/PlaceCircle';
@@ -21,8 +21,7 @@ interface IProps {
 class PlaceCircleLabel extends Component<IProps> {
   private readonly ref: RefObject<SVGImageElement>;
   private labelCanvas?: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D | null = null;
-  private drawDisposer?: IReactionDisposer;
+  private ctx?: CanvasRenderingContext2D | null;
 
   constructor(props: IProps) {
     super(props);
@@ -41,19 +40,13 @@ class PlaceCircleLabel extends Component<IProps> {
     this.labelCanvas = document.createElement('canvas');
     this.ctx = this.labelCanvas.getContext('2d');
 
-    this.drawDisposer = autorun(this.drawLabel);
+    disposeOnUnmount(this, autorun(this.drawLabel));
 
     this.checkFont();
   }
 
   componentDidUpdate() {
     this.checkFont();
-  }
-
-  componentWillUnmount() {
-    if (this.drawDisposer != null) {
-      this.drawDisposer();
-    }
   }
 
   render() {
@@ -86,8 +79,7 @@ class PlaceCircleLabel extends Component<IProps> {
     const mobileOrTablet = device === DEVICE.mobile || device === DEVICE.tablet;
 
     const labelFontSize = mobileOrTablet ? theme.fontSizeSmall : theme.fontSize;
-    const clusterLabelFontSize =
-      mobileOrTablet ? theme.fontSizeMini : theme.fontSizeSmall;
+    const clusterLabelFontSize = mobileOrTablet ? theme.fontSizeMini : theme.fontSizeSmall;
     const spacing = theme.spacingUnit;
 
     const clusterLabel =

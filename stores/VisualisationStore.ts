@@ -1,4 +1,4 @@
-import { scaleLinear, scalePow } from 'd3';
+import { scaleLinear, scalePow } from 'd3-scale';
 import { CRS as LeafletCRS, LatLng, latLngBounds, Map as LeafletMap, Point } from 'leaflet';
 import debounce from 'lodash/fp/debounce';
 import reverse from 'lodash/fp/reverse';

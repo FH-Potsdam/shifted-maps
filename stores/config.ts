@@ -1,4 +1,4 @@
-import { scaleLinear, scalePow } from 'd3';
+import { scaleLinear, scalePow } from 'd3-scale';
 import { CRS as LeafletCRS } from 'leaflet';
 
 export const MAX_ZOOM = 18;

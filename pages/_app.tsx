@@ -1,9 +1,10 @@
 import { useStaticRendering } from 'mobx-react';
 import BaseApp, { AppComponentContext, Container } from 'next/app';
 import Head from 'next/head';
-import React from 'react';
+import 'normalize.css';
+import React, { Fragment } from 'react';
 
-import '../components/genericStyles';
+import GlobalStyle from '../components/GlobalStyle';
 import { ThemeProvider } from '../components/styled';
 import theme from '../components/theme';
 import config from '../config';
@@ -62,7 +63,10 @@ class App extends BaseApp {
           <link href="/static/images/favicon.ico" rel="shortcut icon" />
         </Head>
         <ThemeProvider theme={theme}>
-          <Component {...pageProps} />
+          <Fragment>
+            <Component {...pageProps} />
+            <GlobalStyle />
+          </Fragment>
         </ThemeProvider>
       </Container>
     );

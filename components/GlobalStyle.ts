@@ -1,11 +1,8 @@
-import 'normalize.css';
-
-import { injectGlobal } from './styled';
+import { createGlobalStyle } from './styled';
 import theme from './theme';
 
-// @TODO Use styled components v4 global component to be able to use theme props (foreground, background colors).
-injectGlobal`
-  @font-face {
+const GlobalStyle = createGlobalStyle`
+ @font-face {
     font-family: 'Overpass';
     font-style: normal;
     font-weight: 400;
@@ -56,3 +53,5 @@ injectGlobal`
     margin: 0;
   }
 `;
+
+export default GlobalStyle;

@@ -1,4 +1,4 @@
-import { SimulationLinkDatum } from 'd3';
+import { SimulationLinkDatum } from 'd3-force';
 
 import ConnectionLine from './ConnectionLine';
 import PlaceCircleNode from './PlaceCircleNode';

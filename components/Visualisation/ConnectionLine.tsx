@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { action, autorun, IReactionDisposer, observable } from 'mobx';
-import { observer } from 'mobx-react';
+import { action, autorun, observable } from 'mobx';
+import { disposeOnUnmount, observer } from 'mobx-react';
 import { Component, MouseEvent, SyntheticEvent } from 'react';
 
 import ConnectionLineModel from '../../stores/ConnectionLine';
@@ -19,8 +19,6 @@ interface IProps {
 
 @observer
 class ConnectionLine extends Component<IProps> {
-  private styleDisposer?: IReactionDisposer;
-
   @observable.ref
   private lineRef: SVGLineElement | null = null;
 
@@ -28,13 +26,7 @@ class ConnectionLine extends Component<IProps> {
   private labelRef: SVGGElement | null = null;
 
   componentDidMount() {
-    this.styleDisposer = autorun(this.style);
-  }
-
-  componentWillUnmount() {
-    if (this.styleDisposer != null) {
-      this.styleDisposer();
-    }
+    disposeOnUnmount(this, autorun(this.style));
   }
 
   render() {
@@ -56,9 +48,14 @@ class ConnectionLine extends Component<IProps> {
 
     return (
       <g className={classNames(className, { fade })} {...toggleListeners}>
-        <ConnectionLineLine innerRef={this.updateLineRef} className={classNames({ highlight })} />
+        <ConnectionLineLine
+          // @ts-ignore broken types for styled-components@4
+          ref={this.updateLineRef}
+          className={classNames({ highlight })}
+        />
         <ConnectionLineLabel
-          innerRef={this.updateLabelRef}
+          // @ts-ignore broken types for styled-components@4
+          ref={this.updateLabelRef}
           connectionLine={connectionLine}
           device={device}
         />

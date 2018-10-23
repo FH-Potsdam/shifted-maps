@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { DomUtil } from 'leaflet';
-import { autorun, IReactionDisposer } from 'mobx';
-import { observer } from 'mobx-react';
+import { autorun } from 'mobx';
+import { disposeOnUnmount, observer } from 'mobx-react';
 import { Component, createRef, forwardRef, Ref, RefObject } from 'react';
 
 import ConnectionLine from '../../stores/ConnectionLine';
@@ -23,7 +23,6 @@ class ConnectionLineLabel extends Component<IProps> {
   private labelCanvas?: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D | null = null;
   private readonly ref: RefObject<SVGImageElement>;
-  private drawDisposer?: IReactionDisposer;
 
   constructor(props: IProps) {
     super(props);
@@ -35,19 +34,13 @@ class ConnectionLineLabel extends Component<IProps> {
     this.labelCanvas = document.createElement('canvas');
     this.ctx = this.labelCanvas.getContext('2d');
 
-    this.drawDisposer = autorun(this.drawLabel);
+    disposeOnUnmount(this, autorun(this.drawLabel));
 
     this.checkFont();
   }
 
   componentDidUpdate() {
     this.checkFont();
-  }
-
-  componentWillUnmount() {
-    if (this.drawDisposer != null) {
-      this.drawDisposer();
-    }
   }
 
   render() {

@@ -363,7 +363,7 @@ export default styled(FilterBar)`
       ${props => props.theme.spacingUnit * 1.25}px;
     top: ${props => props.theme.spacingUnit}px;
     left: ${props => props.theme.spacingUnit}px;
-    width: ${props => props.theme.spacingUnit * 15}px;
+    width: ${props => props.theme.spacingUnit * 16}px;
     height: auto;
     max-height: calc(100% - ${props => props.theme.spacingUnit * 2}px);
     overflow: auto;

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { action, autorun, IReactionDisposer, observable } from 'mobx';
-import { observer } from 'mobx-react';
+import { action, autorun, observable } from 'mobx';
+import { disposeOnUnmount, observer } from 'mobx-react';
 import { Component, MouseEvent } from 'react';
 
 import PlaceCircleModel from '../../stores/PlaceCircle';
@@ -20,19 +20,11 @@ interface IProps {
 
 @observer
 class PlaceCircle extends Component<IProps> {
-  private styleDisposer?: IReactionDisposer;
-
   @observable.ref
   private ref: SVGGElement | null = null;
 
   componentDidMount() {
-    this.styleDisposer = autorun(this.style);
-  }
-
-  componentWillUnmount() {
-    if (this.styleDisposer != null) {
-      this.styleDisposer();
-    }
+    disposeOnUnmount(this, autorun(this.style));
   }
 
   render() {

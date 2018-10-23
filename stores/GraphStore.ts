@@ -11,7 +11,7 @@ import {
   forceY,
   ForceY,
   Simulation,
-} from 'd3';
+} from 'd3-force';
 import { Point } from 'leaflet';
 import { autorun, computed, IReactionDisposer } from 'mobx';
 
