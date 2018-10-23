@@ -3,6 +3,8 @@ const withCSS = require('@zeit/next-css');
 const webpack = require('webpack');
 const flow = require('lodash/fp/flow');
 
+const package = require('./package');
+
 module.exports = flow(
   withTypescript,
   withCSS
@@ -11,6 +13,7 @@ module.exports = flow(
     url: process.env.NOW_URL || process.env.URL,
     mapboxAccessToken: 'pk.eyJ1IjoibGVubmVyZCIsImEiOiJXRjB3WGswIn0.3plnt32h0h8pfb9aZ_oGyw',
     mapboxStyleId: 'heike.6bac2bcd',
+    version: package.version,
   },
   webpack(config, { isServer }) {
     config.module.rules.push({

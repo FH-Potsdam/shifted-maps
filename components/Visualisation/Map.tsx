@@ -1,7 +1,7 @@
 import { LatLngBounds } from 'leaflet';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
-import { Map as ReactLeafletMap, MapProps, TileLayer } from 'react-leaflet';
+import { AttributionControl, Map as ReactLeafletMap, MapProps, TileLayer } from 'react-leaflet';
 
 import config from '../../config';
 import styled from '../styled';
@@ -19,7 +19,12 @@ class Map extends Component<IProps & MapProps> {
     const { className, children, showTiles, ...props } = this.props;
 
     return (
-      <ReactLeafletMap {...props} className={className} zoomControl={false}>
+      <ReactLeafletMap
+        {...props}
+        className={className}
+        zoomControl={false}
+        attributionControl={false}
+      >
         <TileLayer
           opacity={showTiles ? 0.25 : 0}
           url="https://api.tiles.mapbox.com/v4/{styleId}/{z}/{x}/{y}{r}.png?access_token={accessToken}"
@@ -29,6 +34,7 @@ class Map extends Component<IProps & MapProps> {
           styleId={config.mapboxStyleId}
           accessToken={config.mapboxAccessToken}
         />
+        <AttributionControl prefix={`Version: ${config.version}`} />
         {children}
       </ReactLeafletMap>
     );

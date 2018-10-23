@@ -6,6 +6,7 @@ interface IConfig {
   url: string;
   mapboxAccessToken: string;
   mapboxStyleId: string;
+  version: string;
 }
 
 const config: IConfig = publicRuntimeConfig;
