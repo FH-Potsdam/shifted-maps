@@ -303,8 +303,8 @@ class VisualisationStore {
     const beelineExtent = extent('beeline');
 
     return scaleLinear()
-      .domain(beelineExtent(this.data.visibleConnections))
-      .range(beelineExtent(this.visibleConnectionLines));
+      .domain(beelineExtent(this.data.connections))
+      .range(beelineExtent(this.connectionLines));
   }
 
   @computed
