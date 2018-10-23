@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { action, computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import moment from 'moment';
+import { transparentize } from 'polished';
 import { Component, createRef, MouseEvent, RefObject } from 'react';
 
 import DataStore, { DAY_IN_SEC } from '../../stores/DataStore';
@@ -23,31 +24,19 @@ interface IProps {
 
 @observer
 class FilterBar extends Component<IProps> {
-  @observable
-  private timeSpan: ReadonlyArray<number>;
-  @observable
-  private timeSpanChanging: boolean = false;
   private ref: RefObject<HTMLDivElement>;
+
+  @observable
+  private currentTimeSpan?: ReadonlyArray<number>;
 
   constructor(props: IProps) {
     super(props);
 
-    this.timeSpan = props.ui.timeSpan || props.data.timeSpan;
     this.ref = createRef();
   }
 
   componentDidMount() {
     disableBodyScroll(this.ref.current!);
-  }
-
-  @action
-  componentDidUpdate() {
-    // Update timeSpan from incoming data or ui store if user is not currently using the slider.
-    if (!this.timeSpanChanging) {
-      const { data, ui } = this.props;
-
-      this.timeSpan = ui.timeSpan || data.timeSpan;
-    }
   }
 
   @computed
@@ -56,6 +45,13 @@ class FilterBar extends Component<IProps> {
       this.timeSpan[0] !== this.props.data.timeSpan[0] ||
       this.timeSpan[1] !== this.props.data.timeSpan[1]
     );
+  }
+
+  @computed
+  get timeSpan() {
+    const { data, ui } = this.props;
+
+    return ui.timeSpan || data.timeSpan;
   }
 
   componentWillUnMount() {
@@ -163,18 +159,17 @@ class FilterBar extends Component<IProps> {
 
     if (ui.view === VIEW.GEOGRAPHIC) {
       viewName = 'Distance';
-      viewText = 'Network is arranged by the average distance travelled between places.';
+      viewText = 'Network is arranged by average distance travelled between places.';
     }
 
     if (ui.view === VIEW.DURATION) {
       viewName = 'Time';
-      viewText =
-        'Network is arranged by the average time it took to get from one place to another.';
+      viewText = 'Network is arranged by average time it took to get from one place to another.';
     }
 
     if (ui.view === VIEW.FREQUENCY) {
       viewName = 'Frequency';
-      viewText = 'Network is arranged by the total frequency of travels between places.';
+      viewText = 'Network is arranged by total frequency of travels between places.';
     }
 
     return (
@@ -186,23 +181,24 @@ class FilterBar extends Component<IProps> {
   }
 
   private renderTimeSlider() {
-    const { data, ui } = this.props;
+    const { data } = this.props;
 
     return (
       <TimeSlider
         className={classNames({ active: this.timeSliderActive })}
-        onUpdate={this.handleTimeSpanUpdate}
         onChange={this.handleTimeSpanChange}
+        onUpdate={this.handleTimeSpanUpdate}
         domain={data.timeSpan}
-        values={this.timeSpan || ui.timeSpan}
+        values={this.timeSpan}
         step={DAY_IN_SEC}
       />
     );
   }
 
   private renderTimeRange() {
-    const start = moment.unix(this.timeSpan[0]);
-    const end = moment.unix(this.timeSpan[1]);
+    const timeSpan = this.currentTimeSpan || this.timeSpan;
+    const start = moment.unix(timeSpan[0]);
+    const end = moment.unix(timeSpan[1]);
 
     return (
       <SliderRange className={classNames({ active: this.timeSliderActive })}>
@@ -226,14 +222,12 @@ class FilterBar extends Component<IProps> {
 
   @action
   private handleTimeSpanUpdate = (timeSpan: ReadonlyArray<number>) => {
-    this.timeSpan = timeSpan;
-    this.timeSpanChanging = true;
+    this.currentTimeSpan = timeSpan;
   };
 
   @action
   private handleTimeSpanChange = (timeSpan: ReadonlyArray<number>) => {
-    this.timeSpan = timeSpan;
-    this.timeSpanChanging = false;
+    this.currentTimeSpan = undefined;
 
     this.props.onTimeSpanChange(timeSpan);
   };
@@ -242,7 +236,7 @@ class FilterBar extends Component<IProps> {
 export default styled(FilterBar)`
   background-color: rgba(255, 255, 255, 0.9);
   padding: ${props => props.theme.spacingUnit * 1.5}px ${props => props.theme.spacingUnit * 1.25}px;
-  width: ${props => props.theme.spacingUnit * 16}px;
+  width: ${props => props.theme.spacingUnit * 15}px;
   position: absolute;
   z-index: 1;
   top: ${props => props.theme.spacingUnit}px;
@@ -258,7 +252,7 @@ const Stats = styled.dl`
   display: flex;
   margin: 0;
   margin-top: ${props => props.theme.spacingUnit * 1}px;
-  border-top: 1px solid ${props => props.theme.highlightColor};
+  border-top: 1px solid ${props => transparentize(0.8, props.theme.highlightColor)};
   padding-top: ${props => props.theme.spacingUnit * 1}px;
   flex-wrap: wrap;
   -webkit-tap-highlight-color: transparent;
@@ -287,7 +281,7 @@ const Stats = styled.dl`
 const ViewList = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: ${props => props.theme.spacingUnit * 1.5}px;
+  margin-top: ${props => props.theme.spacingUnit * 1.25}px;
 `;
 
 const ViewButton = styled.button`

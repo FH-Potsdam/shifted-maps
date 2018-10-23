@@ -11,7 +11,7 @@ const Heading = styled(use('h1'))`
     css`
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     `};
 `;
 
