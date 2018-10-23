@@ -264,7 +264,7 @@ class VisualisationStore {
 
       const range = createPlaceStrokeWidthRangeScale(this.width)(this.scale);
 
-      scale.rangeRound(range);
+      scale.range(range);
     }
 
     return scale;
