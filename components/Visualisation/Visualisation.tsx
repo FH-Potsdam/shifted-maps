@@ -27,10 +27,16 @@ interface IProps {
   className?: string;
 }
 
+export enum DEVICE {
+  mobile,
+  tablet,
+  desktop,
+}
+
 @observer
 class Visualisation extends Component<IProps> {
   @observable
-  mobile: boolean = false;
+  device: DEVICE = DEVICE.desktop;
 
   private dataStore: DataStore;
   private visStore: VisualisationStore;
@@ -91,7 +97,7 @@ class Visualisation extends Component<IProps> {
                     data={this.dataStore}
                     onViewChange={onViewChange}
                     onTimeSpanChange={onTimeSpanChange}
-                    mobile={this.mobile}
+                    device={this.device}
                   />
                 </div>
               );
@@ -120,7 +126,18 @@ class Visualisation extends Component<IProps> {
 
   @action
   private handleResize = (contentRect: ContentRect) => {
-    this.mobile = 600 > contentRect.entry.width;
+    const { width } = contentRect.entry;
+    let device;
+
+    if (width >= 580) {
+      device = DEVICE.desktop;
+    } else if (width >= 440) {
+      device = DEVICE.tablet;
+    } else {
+      device = DEVICE.mobile;
+    }
+
+    this.device = device;
   };
 }
 

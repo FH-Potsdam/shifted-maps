@@ -21,12 +21,13 @@ import {
 } from '../common/icons';
 import Slider from '../common/Slider';
 import styled from '../styled';
+import { DEVICE } from './Visualisation';
 
 interface IProps {
   className?: string;
   data: DataStore;
   ui: UIStore;
-  mobile: boolean;
+  device: DEVICE;
   onViewChange: (view?: VIEW) => void;
   onTimeSpanChange: (timeSpan: ReadonlyArray<number>) => void;
 }
@@ -71,7 +72,8 @@ class FilterBar extends Component<IProps> {
   }
 
   render() {
-    const { className, mobile } = this.props;
+    const { className, device } = this.props;
+    const mobile = device === DEVICE.mobile;
 
     return (
       <div
@@ -263,7 +265,9 @@ class FilterBar extends Component<IProps> {
 
   @action
   private handleHeadingClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (this.props.mobile) {
+    const { device } = this.props;
+
+    if (device === DEVICE.mobile) {
       event.stopPropagation();
       event.preventDefault();
     }
