@@ -11,6 +11,7 @@
     "start": "URL=http://localhost:3000/ next",
     "now-build": "next build",
     "now-start": "next start",
+    "now-export": "next export -o public",
     "prettier": "prettier --write \"{components,pages,stores}/**/*.{ts,tsx}\""
   },
   "dependencies": {

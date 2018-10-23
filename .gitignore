@@ -7,7 +7,7 @@
 
 # Compiled versions
 /.next
-/out
+/public
 
 # Other
 /npm-debug.log
