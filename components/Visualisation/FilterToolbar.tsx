@@ -79,7 +79,7 @@ class FilterBar extends Component<IProps> {
     if (ui.view === VIEW.GEOGRAPHIC) {
       return (
         <Stats>
-          <dt>Travel Distance:</dt>
+          <dt>Total Distance:</dt>
           <dd>{formatDistance(data.totalConnectionDistance)}</dd>
           <dt>Avg. Distance:</dt>
           <dd>{formatDistance(data.averageConnectionDistance)}</dd>
@@ -90,7 +90,7 @@ class FilterBar extends Component<IProps> {
     if (ui.view === VIEW.DURATION) {
       return (
         <Stats>
-          <dt>Travel Duration:</dt>
+          <dt>Total Duration:</dt>
           <dd>{formatDuration(data.totalConnectionDuration)}</dd>
           <dt>Avg. Duration:</dt>
           <dd>{formatDuration(data.averageConnectionDuration)}</dd>
@@ -101,7 +101,7 @@ class FilterBar extends Component<IProps> {
     if (ui.view === VIEW.FREQUENCY) {
       return (
         <Stats>
-          <dt>Travel Frequency:</dt>
+          <dt>Total Frequency:</dt>
           <dd>{formatFrequency(data.totalConnectionFrequency)}</dd>
           <dt>Avg. Frequency:</dt>
           <dd>{formatFrequency(data.averageConnectionFrequency)}</dd>
@@ -158,17 +158,17 @@ class FilterBar extends Component<IProps> {
     let viewText = 'Places are positioned by their geospatial location.';
 
     if (ui.view === VIEW.GEOGRAPHIC) {
-      viewName = 'Distance';
+      viewName = 'Travel Distance';
       viewText = 'Network is arranged by average distance travelled between places.';
     }
 
     if (ui.view === VIEW.DURATION) {
-      viewName = 'Time';
+      viewName = 'Travel Time';
       viewText = 'Network is arranged by average time it took to get from one place to another.';
     }
 
     if (ui.view === VIEW.FREQUENCY) {
-      viewName = 'Frequency';
+      viewName = 'Travel Frequency';
       viewText = 'Network is arranged by total frequency of travels between places.';
     }
 
@@ -321,8 +321,6 @@ const ViewButton = styled.button`
 `;
 
 const ViewInfo = styled.div`
-  display: flex;
-  align-items: baseline;
   margin-top: ${props => props.theme.spacingUnit * 0.75}px;
 `;
 
