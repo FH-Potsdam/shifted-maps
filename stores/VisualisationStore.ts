@@ -8,6 +8,7 @@ import {
   createPlaceRadiusRangeScale,
   createPlaceStrokeWidthRangeScale,
   MAX_ZOOM,
+  PLACE_RADIUS_RANGE_MAX_SCALE,
   SCREEN_WIDTH_DOMAIN,
 } from './config';
 import Connection from './Connection';
@@ -34,13 +35,13 @@ class VisualisationStore {
   zoom?: number;
 
   @observable
-  ready: boolean = false;
-
-  @observable
   activeElement: VisualisationElement | null = null;
 
   @observable
-  width: number = SCREEN_WIDTH_DOMAIN[1];
+  width?: number;
+
+  @observable
+  maxPlaceCircleRadius?: number;
 
   private placeCirclesCache: PlaceCircle[] = [];
   private connectionLinesCache: ConnectionLine[] = [];
@@ -81,7 +82,6 @@ class VisualisationStore {
       return;
     }
 
-    this.ready = true;
     this.crs = map.options.crs;
     this.zoom = map.getZoom();
     this.minZoom = map.getMinZoom();
@@ -97,6 +97,14 @@ class VisualisationStore {
   @action
   updateWidth(width: number) {
     this.width = width;
+
+    let maxPlaceCircleRadius = createPlaceRadiusRangeScale(width).range()[1][1];
+
+    if (this.maxPlaceCircleRadius != null) {
+      maxPlaceCircleRadius = Math.max(maxPlaceCircleRadius, this.maxPlaceCircleRadius);
+    }
+
+    this.maxPlaceCircleRadius = Math.ceil(maxPlaceCircleRadius);
   }
 
   @action
@@ -111,6 +119,11 @@ class VisualisationStore {
 
   dispose() {
     this.graph.dispose();
+  }
+
+  @computed
+  get ready() {
+    return this.pixelOrigin != null && this.zoom != null && this.width != null;
   }
 
   @computed
@@ -245,6 +258,10 @@ class VisualisationStore {
       .domain(domain);
 
     if (this.scale != null) {
+      if (this.width == null) {
+        throw new Error('Width unknown.');
+      }
+
       const range = createPlaceStrokeWidthRangeScale(this.width)(this.scale);
 
       scale.rangeRound(range);
@@ -254,7 +271,7 @@ class VisualisationStore {
   }
 
   @computed
-  get placeRadiusScale() {
+  get placeCircleRadiusScale() {
     const domain = extent('visibleDuration')(this.data.visiblePlaces);
 
     const scale = scalePow()
@@ -262,9 +279,13 @@ class VisualisationStore {
       .domain(domain);
 
     if (this.scale != null) {
+      if (this.width == null) {
+        throw new Error('Width unknown.');
+      }
+
       const range = createPlaceRadiusRangeScale(this.width)(this.scale);
 
-      scale.rangeRound(range);
+      scale.range(range);
     }
 
     return scale;
@@ -279,7 +300,10 @@ class VisualisationStore {
       .domain(domain);
 
     if (this.scale != null) {
-      console.log(createConnectionStrokeWidthRangeScale(this.width)(this.scale));
+      if (this.width == null) {
+        throw new Error('Width unknown.');
+      }
+
       let range = createConnectionStrokeWidthRangeScale(this.width)(this.scale);
 
       // In case there is only one connection line, make the higher range the default stroke width.
@@ -329,11 +353,6 @@ class VisualisationStore {
     return scaleLinear()
       .domain(reverse(this.connectionLineFrequencyDomain))
       .range(this.connectionLineDistanceDomain);
-  }
-
-  @computed
-  get maxPlaceCircleRadius() {
-    return Math.round(createPlaceRadiusRangeScale(this.width).range()[1][1]);
   }
 
   project(

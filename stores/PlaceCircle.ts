@@ -56,13 +56,15 @@ class PlaceCircle {
 
   @computed
   get radius() {
-    const radius = this.vis.placeRadiusScale(this.place.visibleDuration);
-
-    return radius;
+    return this.vis.placeCircleRadiusScale(this.place.visibleDuration);
   }
 
   @computed
   get dotRadius() {
+    if (this.vis.width == null) {
+      throw new Error('Unknown width.');
+    }
+
     return PLACE_DOT_RADIUS_SCALE(this.vis.width);
   }
 
@@ -83,7 +85,7 @@ class PlaceCircle {
         return false;
       }
 
-      if (this.radius < placeCircle.radius) {
+      if (this.radius <= placeCircle.radius) {
         const distance = this.mapPoint.distanceTo(placeCircle.mapPoint);
         const maxDistance = this.radius + placeCircle.radius;
 

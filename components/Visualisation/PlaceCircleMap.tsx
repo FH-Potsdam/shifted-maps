@@ -25,7 +25,13 @@ class PlaceCircleMap extends Component<IProps> {
 
   @computed
   get imageRadius() {
-    return this.props.vis.maxPlaceCircleRadius;
+    const { maxPlaceCircleRadius } = this.props.vis;
+
+    if (maxPlaceCircleRadius == null) {
+      throw new Error('Missing max place circle radius.');
+    }
+
+    return maxPlaceCircleRadius;
   }
 
   @computed

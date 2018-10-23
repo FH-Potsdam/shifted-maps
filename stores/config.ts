@@ -11,12 +11,12 @@ export const SCREEN_WIDTH_DOMAIN = [300, 1200];
 const PLACE_RADIUS_RANGE_MIN_SCALE = scaleLinear<[number, number]>()
   .domain(SCREEN_WIDTH_DOMAIN)
   .clamp(true)
-  .range([/* min width */ [10, 30], /* max width */ [10, 50]]);
+  .range([/* min width */ [20, 30], /* max width */ [20, 30]]);
 
-const PLACE_RADIUS_RANGE_MAX_SCALE = scaleLinear<[number, number]>()
+export const PLACE_RADIUS_RANGE_MAX_SCALE = scaleLinear<[number, number]>()
   .domain(SCREEN_WIDTH_DOMAIN)
   .clamp(true)
-  .range([/* min width */ [20, 100], /* max width */ [50, 300]]);
+  .range([/* min width */ [30, 100], /* max width */ [50, 300]]);
 
 export function createPlaceRadiusRangeScale(width: number) {
   const rangeMin = PLACE_RADIUS_RANGE_MIN_SCALE(width);
@@ -68,4 +68,4 @@ export function createConnectionStrokeWidthRangeScale(width: number) {
 export const PLACE_DOT_RADIUS_SCALE = scaleLinear<number>()
   .domain(SCREEN_WIDTH_DOMAIN)
   .clamp(true)
-  .range([3, 4]);
+  .range([3, 3.5]);
