@@ -81,7 +81,7 @@ class FilterBar extends Component<IProps> {
         ref={this.ref}
       >
         <NextLink href="/">
-          <ViewHeading onClick={this.handleHeadingClick}>
+          <HeadlingLink onClick={this.handleHeadingClick}>
             <Heading use="h1">
               <span>
                 {mobileOrTablet && this.renderActiveView()}
@@ -89,7 +89,7 @@ class FilterBar extends Component<IProps> {
               </span>
               {mobileOrTablet && <DownIcon />}
             </Heading>
-          </ViewHeading>
+          </HeadlingLink>
         </NextLink>
         <ViewSection>
           {this.renderViewList()}
@@ -252,12 +252,12 @@ class FilterBar extends Component<IProps> {
     return (
       <SliderRange className={classNames({ active: this.timeSliderActive })}>
         <SliderRangeStart>
-          <strong>{start.format('dddd')}</strong>
-          {start.format('D. MMM YYYY')}
+          <strong>{start.format('D. MMM ‘YY')}</strong>
+          <span>{start.format('dddd')}</span>
         </SliderRangeStart>
         <SliderRangeEnd>
-          <strong>{end.format('dddd')}</strong>
-          {end.format('D. MMM YYYY')}
+          <strong>{end.format('D. MMM ‘YY')}</strong>
+          <span>{end.format('dddd')}</span>
         </SliderRangeEnd>
       </SliderRange>
     );
@@ -365,7 +365,8 @@ export default styled(FilterBar)`
     left: ${props => props.theme.spacingUnit}px;
     width: ${props => props.theme.spacingUnit * 15}px;
     height: auto;
-    overflow: visible;
+    max-height: calc(100% - ${props => props.theme.spacingUnit * 2}px);
+    overflow: scroll;
 
     ${Heading} {
       height: auto;
@@ -375,37 +376,31 @@ export default styled(FilterBar)`
 
 const ViewSection = styled.section`
   grid-area: view;
-  margin-top: ${props => props.theme.spacingUnit * 1}px;
+  margin-top: ${props => props.theme.spacingUnit * 1.5}px;
 
   @media (min-width: 440px) {
-    margin-top: ${props => props.theme.spacingUnit * 0.5}px;
+    margin-top: ${props => props.theme.spacingUnit * 0.75}px;
   }
 
   @media (min-width: 580px) {
-    margin-top: ${props => props.theme.spacingUnit * 1}px;
+    margin-top: ${props => props.theme.spacingUnit * 1.5}px;
   }
 `;
 
 const TimeSection = styled.section`
   grid-area: time;
-  margin-top: ${props => props.theme.spacingUnit * 1}px;
-  border-top: 1px solid ${props => transparentize(0.8, props.theme.highlightColor)};
-  padding-top: ${props => props.theme.spacingUnit * 1}px;
+  margin-top: ${props => props.theme.spacingUnit * 1.5}px;
 
   @media (min-width: 440px) {
-    margin-top: ${props => props.theme.spacingUnit * 0.5}px;
-    border-top: none;
-    padding-top: 0;
+    margin-top: ${props => props.theme.spacingUnit * 0.75}px;
   }
 
   @media (min-width: 580px) {
-    margin-top: ${props => props.theme.spacingUnit * 1}px;
-    border-top: 1px solid ${props => transparentize(0.8, props.theme.highlightColor)};
-    padding-top: ${props => props.theme.spacingUnit * 1}px;
+    margin-top: ${props => props.theme.spacingUnit * 1.5}px;
   }
 `;
 
-const ViewHeading = styled.a`
+const HeadlingLink = styled.a`
   text-decoration: none;
   grid-area: heading;
 `;
@@ -487,7 +482,7 @@ const ViewButton = styled.button`
 `;
 
 const ViewInfo = styled.div`
-  margin-top: ${props => props.theme.spacingUnit * 0.75}px;
+  margin-top: ${props => props.theme.spacingUnit * 1}px;
 `;
 
 const ViewName = styled.strong`
@@ -496,11 +491,11 @@ const ViewName = styled.strong`
 `;
 
 const ViewText = styled.p`
-  font-size: ${props => props.theme.fontSizeSmall}px;
+  color: ${props => transparentize(0.4, props.theme.foregroundColor)};
 `;
 
 const TimeSlider = styled(Slider)`
-  margin-top: ${props => props.theme.spacingUnit * 1.5}px;
+  margin-top: ${props => props.theme.spacingUnit * 3}px;
   margin-left: 5px;
   margin-right: 5px;
 
@@ -511,13 +506,13 @@ const TimeSlider = styled(Slider)`
 
 const SliderRangeValue = styled.div`
   width: 50%;
-  font-size: ${props => props.theme.fontSizeSmall}px;
 
   strong {
     display: block;
-    font-style: normal;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  }
+
+  span {
+    color: ${props => transparentize(0.4, props.theme.foregroundColor)};
   }
 `;
 
