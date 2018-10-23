@@ -22,7 +22,7 @@ const Hero: StatelessComponent<IProps> = props => {
       <Heading>Shifted Maps</Heading>
       <Paragraph lead>Visualizing personal Movement through Map Networks</Paragraph>
       <HeroHighlight>
-        <NextLink href="map" prefetch>
+        <NextLink href="/map" prefetch>
           <HeroGo>
             Test the Demo <GoIcon />
           </HeroGo>

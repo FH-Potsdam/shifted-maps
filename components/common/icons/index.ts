@@ -1,6 +1,7 @@
 import use from 'reuse';
 import styled from 'styled-components';
 
+import Down from '../icons/down.svg';
 import Duration from '../icons/duration.svg';
 import Frequency from '../icons/frequency.svg';
 import Geographic from '../icons/geographic.svg';
@@ -21,3 +22,12 @@ export const GeographicIcon = styled(use(Icon, Geographic))``;
 export const GoIcon = styled(use(Icon, Go))``;
 export const MapIcon = styled(use(Icon, Map))``;
 export const InfoIcon = styled(use(Icon, Info))``;
+export const DownIcon = styled(
+  use(
+    Icon,
+    styled(Down)`
+      stroke-width: 3px;
+      stroke: currentColor;
+    `
+  )
+)``;

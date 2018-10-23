@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { action, computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import moment from 'moment';
+import NextLink from 'next/link';
 import { transparentize } from 'polished';
 import { Component, createRef, MouseEvent, RefObject } from 'react';
 
@@ -10,7 +11,14 @@ import DataStore, { DAY_IN_SEC } from '../../stores/DataStore';
 import UIStore, { VIEW } from '../../stores/UIStore';
 import { formatDistance, formatDuration, formatFrequency } from '../../stores/utils/formatLabel';
 import Heading from '../common/Heading';
-import { DurationIcon, FrequencyIcon, GeographicIcon, Icon, MapIcon } from '../common/icons';
+import {
+  DownIcon,
+  DurationIcon,
+  FrequencyIcon,
+  GeographicIcon,
+  Icon,
+  MapIcon,
+} from '../common/icons';
 import Slider from '../common/Slider';
 import styled from '../styled';
 
@@ -18,6 +26,7 @@ interface IProps {
   className?: string;
   data: DataStore;
   ui: UIStore;
+  mobile: boolean;
   onViewChange: (view?: VIEW) => void;
   onTimeSpanChange: (timeSpan: ReadonlyArray<number>) => void;
 }
@@ -28,6 +37,9 @@ class FilterBar extends Component<IProps> {
 
   @observable
   private currentTimeSpan?: ReadonlyArray<number>;
+
+  @observable
+  private collapsed: boolean = true;
 
   constructor(props: IProps) {
     super(props);
@@ -59,18 +71,53 @@ class FilterBar extends Component<IProps> {
   }
 
   render() {
-    const { className } = this.props;
+    const { className, mobile } = this.props;
 
     return (
-      <div className={className} ref={this.ref}>
-        <Heading use="h1">Shifted Maps</Heading>
-        {this.renderViewList()}
-        {this.renderViewInfo()}
-        {this.renderStats()}
-        {this.renderTimeSlider()}
-        {this.renderTimeRange()}
+      <div
+        className={classNames(className, { collapsed: mobile && this.collapsed, mobile })}
+        ref={this.ref}
+      >
+        <NextLink href="/">
+          <ViewHeading onClick={this.handleHeadingClick}>
+            <Heading use="h1">
+              <span>
+                {mobile && this.renderActiveView()}
+                Shifted Maps
+              </span>
+              {mobile && <DownIcon />}
+            </Heading>
+          </ViewHeading>
+        </NextLink>
+        <ViewSection>
+          {this.renderViewList()}
+          {this.renderViewInfo()}
+        </ViewSection>
+        <TimeSection>
+          {this.renderStats()}
+          {this.renderTimeSlider()}
+          {this.renderTimeRange()}
+        </TimeSection>
       </div>
     );
+  }
+
+  private renderActiveView() {
+    const { ui } = this.props;
+
+    if (ui.view === VIEW.GEOGRAPHIC) {
+      return <GeographicIcon />;
+    }
+
+    if (ui.view === VIEW.DURATION) {
+      return <DurationIcon />;
+    }
+
+    if (ui.view === VIEW.FREQUENCY) {
+      return <FrequencyIcon />;
+    }
+
+    return <MapIcon />;
   }
 
   private renderStats() {
@@ -101,7 +148,7 @@ class FilterBar extends Component<IProps> {
     if (ui.view === VIEW.FREQUENCY) {
       return (
         <Stats>
-          <dt>Total Frequency:</dt>
+          <dt>Total Trips:</dt>
           <dd>{formatFrequency(data.totalConnectionFrequency)}</dd>
           <dt>Avg. Frequency:</dt>
           <dd>{formatFrequency(data.averageConnectionFrequency)}</dd>
@@ -169,7 +216,7 @@ class FilterBar extends Component<IProps> {
 
     if (ui.view === VIEW.FREQUENCY) {
       viewName = 'Travel Frequency';
-      viewText = 'Network is arranged by total frequency of travels between places.';
+      viewText = 'Network is arranged by frequency of travels between places.';
     }
 
     return (
@@ -214,6 +261,16 @@ class FilterBar extends Component<IProps> {
     );
   }
 
+  @action
+  private handleHeadingClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (this.props.mobile) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    this.collapsed = !this.collapsed;
+  };
+
   private handleViewButtonClick(event: MouseEvent<HTMLButtonElement>, view?: VIEW) {
     event.stopPropagation();
 
@@ -234,26 +291,123 @@ class FilterBar extends Component<IProps> {
 }
 
 export default styled(FilterBar)`
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto auto;
+  grid-template-areas: 'heading' 'view' 'time';
+  grid-column-gap: ${props => props.theme.spacingUnit * 1.25}px;
   background-color: rgba(255, 255, 255, 0.9);
-  padding: ${props => props.theme.spacingUnit * 1.5}px ${props => props.theme.spacingUnit * 1.25}px;
-  width: ${props => props.theme.spacingUnit * 15}px;
+  padding: 0 ${props => props.theme.spacingUnit * 1.25}px;
+  padding-bottom: ${props => props.theme.spacingUnit * 1.5}px;
+  width: 100%;
   position: absolute;
   z-index: 1;
-  top: ${props => props.theme.spacingUnit}px;
-  left: ${props => props.theme.spacingUnit}px;
+  left: 0;
+  overflow: hidden;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
   ${Heading} {
     font-size: ${props => props.theme.fontSizeBig}px;
+    height: ${props => props.theme.spacingUnit * 3}px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+
+    ${GeographicIcon},
+    ${DurationIcon},
+    ${FrequencyIcon},
+    ${MapIcon} {
+      margin-right: ${props => props.theme.spacingUnit}px;
+    }
   }
+
+  ${DownIcon} {
+    transition: transform ${props => props.theme.shortTransitionDuration};
+    transform: rotateX(180deg);
+  }
+
+  &.collapsed {
+    height: ${props => props.theme.spacingUnit * 3}px;
+    top: 0;
+
+    ${DownIcon} {
+      transform: rotateX(0deg);
+    }
+  }
+
+  @media (min-width: 440px) {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas: 'heading heading' 'view time' 'view time';
+    padding-left: ${props => props.theme.spacingUnit * 1.5}px;
+    padding-right: ${props => props.theme.spacingUnit * 1.5}px;
+
+    ${Heading} {
+      height: ${props => props.theme.spacingUnit * 3.5}px;
+    }
+
+    &.collapsed {
+      height: ${props => props.theme.spacingUnit * 3.5}px;
+    }
+  }
+
+  @media (min-width: 580px) {
+    display: block;
+    padding: ${props => props.theme.spacingUnit * 1.5}px
+      ${props => props.theme.spacingUnit * 1.25}px;
+    top: ${props => props.theme.spacingUnit}px;
+    left: ${props => props.theme.spacingUnit}px;
+    width: ${props => props.theme.spacingUnit * 15}px;
+    height: auto;
+    overflow: visible;
+
+    ${Heading} {
+      height: auto;
+    }
+  }
+`;
+
+const ViewSection = styled.section`
+  grid-area: view;
+  margin-top: ${props => props.theme.spacingUnit * 1}px;
+
+  @media (min-width: 440px) {
+    margin-top: ${props => props.theme.spacingUnit * 0.5}px;
+  }
+
+  @media (min-width: 580px) {
+    margin-top: ${props => props.theme.spacingUnit * 1}px;
+  }
+`;
+
+const TimeSection = styled.section`
+  grid-area: time;
+  margin-top: ${props => props.theme.spacingUnit * 1}px;
+  border-top: 1px solid ${props => transparentize(0.8, props.theme.highlightColor)};
+  padding-top: ${props => props.theme.spacingUnit * 1}px;
+
+  @media (min-width: 440px) {
+    margin-top: ${props => props.theme.spacingUnit * 0.5}px;
+    border-top: none;
+    padding-top: 0;
+  }
+
+  @media (min-width: 580px) {
+    margin-top: ${props => props.theme.spacingUnit * 1}px;
+    border-top: 1px solid ${props => transparentize(0.8, props.theme.highlightColor)};
+    padding-top: ${props => props.theme.spacingUnit * 1}px;
+  }
+`;
+
+const ViewHeading = styled.a`
+  text-decoration: none;
+  grid-area: heading;
 `;
 
 const Stats = styled.dl`
   display: flex;
   margin: 0;
-  margin-top: ${props => props.theme.spacingUnit * 1}px;
-  border-top: 1px solid ${props => transparentize(0.8, props.theme.highlightColor)};
-  padding-top: ${props => props.theme.spacingUnit * 1}px;
   flex-wrap: wrap;
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
@@ -281,7 +435,14 @@ const Stats = styled.dl`
 const ViewList = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: ${props => props.theme.spacingUnit * 1.25}px;
+
+  @media (min-width: 440px) {
+    justify-content: flex-start;
+  }
+
+  @media (min-width: 580px) {
+    justify-content: space-between;
+  }
 `;
 
 const ViewButton = styled.button`

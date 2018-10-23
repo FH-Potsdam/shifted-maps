@@ -131,9 +131,9 @@ class PlaceCircleLabel extends Component<IProps> {
     ctx.fillText(label, width / 2, baseline);
 
     if (clusterLabel != null) {
-      const baseline = clusterLabelFontSize * 2 + labelFontSize * 2 + spacing / 4;
+      const baseline = clusterLabelFontSize * 2 + labelFontSize * 2 + spacing / 2;
 
-      ctx.font = `italic ${clusterLabelFontSize * 2}px "Overpass"`;
+      ctx.font = `${clusterLabelFontSize * 2}px "Overpass"`;
       ctx.strokeText(clusterLabel, width / 2, baseline);
       ctx.fillText(clusterLabel, width / 2, baseline);
     }
@@ -166,7 +166,7 @@ class PlaceCircleLabel extends Component<IProps> {
     checkFont(`${labelFontSize * 2}px "Overpass"`, label, this.drawLabel);
 
     if (clusterLabel) {
-      checkFont(`italic ${clusterLabelFontSize * 2}px "Overpass"`, clusterLabel, this.drawLabel);
+      checkFont(`${clusterLabelFontSize * 2}px "Overpass"`, clusterLabel, this.drawLabel);
     }
   }
 }

@@ -1,7 +1,8 @@
 import { LeafletEvent, Map as LeafletMap } from 'leaflet';
-import { action, configure } from 'mobx';
+import { action, configure, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
+import Measure, { ContentRect } from 'react-measure';
 
 import DataStore from '../../stores/DataStore';
 import { DiaryData } from '../../stores/Diary';
@@ -28,6 +29,9 @@ interface IProps {
 
 @observer
 class Visualisation extends Component<IProps> {
+  @observable
+  mobile: boolean = false;
+
   private dataStore: DataStore;
   private visStore: VisualisationStore;
   private uiStore: UIStore;
@@ -63,33 +67,38 @@ class Visualisation extends Component<IProps> {
     const { className, onViewChange, onTimeSpanChange } = this.props;
 
     return (
-      <Touch>
-        {touch => {
-          const listener = touch ? { onClick: this.handleClick } : {};
+      <Measure onResize={this.handleResize}>
+        {({ measureRef }) => (
+          <Touch>
+            {touch => {
+              const listener = touch ? { onClick: this.handleClick } : {};
 
-          return (
-            <div className={className} {...listener}>
-              <Map
-                bounds={initialBounds}
-                showTiles={view == null}
-                // @ts-ignore outdated types
-                whenReady={this.handleMapViewDidChange}
-                onZoomEnd={this.handleMapViewDidChange}
-                onResize={this.handleMapViewDidChange}
-                onZoomStart={this.handleZoomStart}
-              >
-                <SVGVisualisationLayer vis={this.visStore} touch={touch} />
-              </Map>
-              <FilterToolbar
-                ui={this.uiStore}
-                data={this.dataStore}
-                onViewChange={onViewChange}
-                onTimeSpanChange={onTimeSpanChange}
-              />
-            </div>
-          );
-        }}
-      </Touch>
+              return (
+                <div ref={measureRef} className={className} {...listener}>
+                  <Map
+                    bounds={initialBounds}
+                    showTiles={view == null}
+                    // @ts-ignore outdated types
+                    whenReady={this.handleMapViewDidChange}
+                    onZoomEnd={this.handleMapViewDidChange}
+                    onResize={this.handleMapViewDidChange}
+                    onZoomStart={this.handleZoomStart}
+                  >
+                    <SVGVisualisationLayer vis={this.visStore} touch={touch} />
+                  </Map>
+                  <FilterToolbar
+                    ui={this.uiStore}
+                    data={this.dataStore}
+                    onViewChange={onViewChange}
+                    onTimeSpanChange={onTimeSpanChange}
+                    mobile={this.mobile}
+                  />
+                </div>
+              );
+            }}
+          </Touch>
+        )}
+      </Measure>
     );
   }
 
@@ -107,6 +116,11 @@ class Visualisation extends Component<IProps> {
   @action
   private handleClick = () => {
     this.visStore.deactivateElement();
+  };
+
+  @action
+  private handleResize = (contentRect: ContentRect) => {
+    this.mobile = 600 > contentRect.entry.width;
   };
 }
 

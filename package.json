@@ -33,6 +33,7 @@
     "react-compound-slider": "^0.16.2",
     "react-dom": "^16.5.2",
     "react-leaflet": "^2.0.1",
+    "react-measure": "^2.1.2",
     "react-pose": "^3.3.6",
     "reuse": "^1.0.4",
     "styled-components": "^3.4.9"
@@ -51,6 +52,7 @@
     "@types/react": "^16.4.14",
     "@types/react-dom": "^16.0.8",
     "@types/react-leaflet": "^1.1.6",
+    "@types/react-measure": "^2.0.4",
     "@types/styled-components": "^3.0.1",
     "@zeit/next-css": "^1.0.1",
     "@zeit/next-typescript": "^1.1.1",
