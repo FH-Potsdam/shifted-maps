@@ -6,28 +6,44 @@ import PlaceCircleModel from '../../stores/PlaceCircle';
 import VisualisationStore from '../../stores/VisualisationStore';
 import ConnectionLine from './ConnectionLine';
 import PlaceCircle from './PlaceCircle';
+import { DEVICE } from './Visualisation';
 
 interface IProps {
   vis: VisualisationStore;
   touch: boolean;
+  device: DEVICE;
 }
 
 @observer
 class VisualisationElementList extends Component<IProps> {
   render() {
-    const { vis, touch } = this.props;
+    const { vis, touch, device } = this.props;
     const { elements } = vis;
 
     return (
       <g>
         {elements.map(element => {
           if (element instanceof PlaceCircleModel) {
-            return <PlaceCircle key={element.key} placeCircle={element} vis={vis} touch={touch} />;
+            return (
+              <PlaceCircle
+                key={element.key}
+                placeCircle={element}
+                vis={vis}
+                touch={touch}
+                device={device}
+              />
+            );
           }
 
           if (element instanceof ConnectionLineModel) {
             return (
-              <ConnectionLine key={element.key} connectionLine={element} vis={vis} touch={touch} />
+              <ConnectionLine
+                key={element.key}
+                connectionLine={element}
+                vis={vis}
+                touch={touch}
+                device={device}
+              />
             );
           }
 

@@ -90,7 +90,7 @@ class Visualisation extends Component<IProps> {
                     onResize={this.handleMapViewDidChange}
                     onZoomStart={this.handleZoomStart}
                   >
-                    <SVGVisualisationLayer vis={this.visStore} touch={touch} />
+                    <SVGVisualisationLayer vis={this.visStore} touch={touch} device={this.device} />
                   </Map>
                   <FilterToolbar
                     ui={this.uiStore}

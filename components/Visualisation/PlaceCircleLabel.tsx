@@ -8,9 +8,11 @@ import PlaceCircle from '../../stores/PlaceCircle';
 import checkFont from '../../utils/checkFont';
 import styled, { withTheme } from '../styled';
 import { ITheme } from '../theme';
+import { DEVICE } from './Visualisation';
 
 interface IProps {
   placeCircle: PlaceCircle;
+  device: DEVICE;
   className?: string;
   theme?: ITheme;
 }
@@ -69,7 +71,7 @@ class PlaceCircleLabel extends Component<IProps> {
   }
 
   private drawLabel = () => {
-    const { theme, placeCircle } = this.props;
+    const { theme, placeCircle, device } = this.props;
     const { children, place, active } = placeCircle;
 
     const clusterSize = children.length;
@@ -82,8 +84,9 @@ class PlaceCircleLabel extends Component<IProps> {
     const ctx = this.ctx!;
     const canvas = this.labelCanvas!;
 
-    const labelFontSize = theme.fontSize;
-    const clusterLabelFontSize = theme.fontSizeSmall;
+    const labelFontSize = device === DEVICE.mobile ? theme.fontSizeSmall : theme.fontSize;
+    const clusterLabelFontSize =
+      device === DEVICE.mobile ? theme.fontSizeMini : theme.fontSizeSmall;
     const spacing = theme.spacingUnit;
 
     const clusterLabel =

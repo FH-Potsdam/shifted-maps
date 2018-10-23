@@ -8,12 +8,14 @@ import ConnectionLineModel from '../../stores/ConnectionLine';
 import VisualisationStore from '../../stores/VisualisationStore';
 import styled from '../styled';
 import ConnectionLineLabel from './ConnectionLineLabel';
+import { DEVICE } from './Visualisation';
 
 interface IProps {
   connectionLine: ConnectionLineModel;
   vis: VisualisationStore;
   touch: boolean;
   className?: string;
+  device: DEVICE;
 }
 
 @observer
@@ -43,7 +45,7 @@ class ConnectionLine extends Component<IProps> {
   }
 
   render() {
-    const { className, connectionLine, touch } = this.props;
+    const { className, connectionLine, touch, device } = this.props;
     const { highlight, visible, fade } = connectionLine;
 
     if (!visible) {
@@ -62,7 +64,11 @@ class ConnectionLine extends Component<IProps> {
     return (
       <g className={classNames(className, { fade })} {...toggleListeners}>
         <ConnectionLineLine innerRef={this.updateLineRef} className={classNames({ highlight })} />
-        <ConnectionLineLabel innerRef={this.updateLabelRef} connectionLine={connectionLine} />
+        <ConnectionLineLabel
+          innerRef={this.updateLabelRef}
+          connectionLine={connectionLine}
+          device={device}
+        />
       </g>
     );
   }

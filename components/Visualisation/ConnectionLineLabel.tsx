@@ -8,9 +8,11 @@ import ConnectionLine from '../../stores/ConnectionLine';
 import checkFont from '../../utils/checkFont';
 import styled, { withTheme } from '../styled';
 import { ITheme } from '../theme';
+import { DEVICE } from './Visualisation';
 
 interface IProps {
   connectionLine: ConnectionLine;
+  device: DEVICE;
   theme?: ITheme;
   forwardedRef?: Ref<SVGForeignObjectElement>;
   className?: string;
@@ -60,7 +62,7 @@ class ConnectionLineLabel extends Component<IProps> {
   }
 
   private drawLabel = () => {
-    const { connectionLine, theme } = this.props;
+    const { connectionLine, theme, device } = this.props;
     const { label, highlight } = connectionLine;
 
     if (label == null || theme == null) {
@@ -70,7 +72,7 @@ class ConnectionLineLabel extends Component<IProps> {
     const ctx = this.ctx!;
     const canvas = this.labelCanvas!;
 
-    const fontSize = theme.fontSizeSmall;
+    const fontSize = device === DEVICE.mobile ? theme.fontSizeMini : theme.fontSizeSmall;
 
     ctx.font = `${fontSize * 2}px Overpass`;
     const metrics = ctx.measureText(label);

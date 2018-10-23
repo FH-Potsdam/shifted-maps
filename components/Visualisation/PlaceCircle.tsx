@@ -9,12 +9,14 @@ import VisualisationStore from '../../stores/VisualisationStore';
 import styled from '../styled';
 import PlaceCircleLabel from './PlaceCircleLabel';
 import PlaceCircleMap from './PlaceCircleMap';
+import { DEVICE } from './Visualisation';
 
 interface IProps {
   placeCircle: PlaceCircleModel;
   vis: VisualisationStore;
   className?: string;
   touch: boolean;
+  device: DEVICE;
 }
 
 @observer
@@ -43,7 +45,7 @@ class PlaceCircle extends Component<IProps> {
   }
 
   render() {
-    const { placeCircle, className, vis, touch } = this.props;
+    const { placeCircle, className, vis, touch, device } = this.props;
     const { radius, strokeWidth, active, visible, fade } = placeCircle;
 
     if (!visible) {
@@ -68,7 +70,7 @@ class PlaceCircle extends Component<IProps> {
           style={{ strokeWidth: `${strokeWidth}px` }}
           className={classNames({ highlight: active })}
         />
-        <PlaceCircleLabel placeCircle={placeCircle} />
+        <PlaceCircleLabel placeCircle={placeCircle} device={device} />
       </g>
     );
   }
