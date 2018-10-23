@@ -366,7 +366,7 @@ export default styled(FilterBar)`
     width: ${props => props.theme.spacingUnit * 15}px;
     height: auto;
     max-height: calc(100% - ${props => props.theme.spacingUnit * 2}px);
-    overflow: scroll;
+    overflow: auto;
 
     ${Heading} {
       height: auto;

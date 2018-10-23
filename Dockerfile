@@ -5,7 +5,7 @@ WORKDIR /usr/src
 
 # Install dependencies
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install --silent
 
 # Copy the relevant files to the working directory
 COPY . .
