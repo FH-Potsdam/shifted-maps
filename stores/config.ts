@@ -32,12 +32,12 @@ export function createPlaceRadiusRangeScale(width: number) {
 const PLACE_STROKE_WIDTH_RANGE_MIN_SCALE = scaleLinear<[number, number]>()
   .domain(SCREEN_WIDTH_DOMAIN)
   .clamp(true)
-  .range([/* min width */ [1, 3], /* max width */ [1, 5]]);
+  .range([/* min width */ [1, 2], /* max width */ [1, 2]]);
 
 const PLACE_STROKE_WIDTH_RANGE_MAX_SCALE = scaleLinear<[number, number]>()
   .domain(SCREEN_WIDTH_DOMAIN)
   .clamp(true)
-  .range([/* min width */ [3, 7], /* max width */ [5, 20]]);
+  .range([/* min width */ [1, 3], /* max width */ [5, 15]]);
 
 export function createPlaceStrokeWidthRangeScale(width: number) {
   const rangeMin = PLACE_STROKE_WIDTH_RANGE_MIN_SCALE(width);
