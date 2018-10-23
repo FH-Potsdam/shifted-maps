@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import debounce from 'lodash/fp/debounce';
 import { action, autorun, IReactionDisposer, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Component, MouseEvent, SyntheticEvent } from 'react';
@@ -27,12 +26,6 @@ class ConnectionLine extends Component<IProps> {
 
   @observable.ref
   private labelRef: SVGGElement | null = null;
-
-  private toggle = debounce(50)((active?: boolean) => {
-    const { connectionLine, vis } = this.props;
-
-    vis.toggle(connectionLine, active);
-  });
 
   componentDidMount() {
     this.styleDisposer = autorun(this.style);
@@ -143,6 +136,12 @@ class ConnectionLine extends Component<IProps> {
 
     this.toggle();
   };
+
+  private toggle(active?: boolean) {
+    const { connectionLine, vis } = this.props;
+
+    vis.toggle(connectionLine, active);
+  }
 }
 
 export default styled(ConnectionLine)`

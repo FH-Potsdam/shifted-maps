@@ -1,5 +1,6 @@
 import { scaleLinear, scalePow } from 'd3';
 import { CRS as LeafletCRS, LatLng, latLngBounds, Map as LeafletMap, Point } from 'leaflet';
+import debounce from 'lodash/fp/debounce';
 import reverse from 'lodash/fp/reverse';
 import { action, computed, observable } from 'mobx';
 
@@ -8,8 +9,6 @@ import {
   createPlaceRadiusRangeScale,
   createPlaceStrokeWidthRangeScale,
   MAX_ZOOM,
-  PLACE_RADIUS_RANGE_MAX_SCALE,
-  SCREEN_WIDTH_DOMAIN,
 } from './config';
 import Connection from './Connection';
 import ConnectionLine from './ConnectionLine';
@@ -42,6 +41,12 @@ class VisualisationStore {
 
   @observable
   maxPlaceCircleRadius?: number;
+
+  toggle = debounce(50)(
+    action((element: VisualisationElement, active: boolean = !element.active) => {
+      this.activeElement = active ? element : null;
+    })
+  );
 
   private placeCirclesCache: PlaceCircle[] = [];
   private connectionLinesCache: ConnectionLine[] = [];
@@ -105,11 +110,6 @@ class VisualisationStore {
     }
 
     this.maxPlaceCircleRadius = Math.ceil(maxPlaceCircleRadius);
-  }
-
-  @action
-  toggle(element: VisualisationElement, active: boolean = !element.active) {
-    this.activeElement = active ? element : null;
   }
 
   @action

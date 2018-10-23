@@ -71,8 +71,9 @@ class ConnectionLineLabel extends Component<IProps> {
 
     const ctx = this.ctx!;
     const canvas = this.labelCanvas!;
+    const mobileOrTablet = device === DEVICE.mobile || device === DEVICE.tablet;
 
-    const fontSize = device === DEVICE.mobile ? theme.fontSizeMini : theme.fontSizeSmall;
+    const fontSize = mobileOrTablet ? theme.fontSizeMini : theme.fontSizeSmall;
 
     ctx.font = `${fontSize * 2}px Overpass`;
     const metrics = ctx.measureText(label);

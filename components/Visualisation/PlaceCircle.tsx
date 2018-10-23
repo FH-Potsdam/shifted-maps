@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import debounce from 'lodash/fp/debounce';
 import { action, autorun, IReactionDisposer, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Component, MouseEvent } from 'react';
@@ -26,12 +25,6 @@ class PlaceCircle extends Component<IProps> {
   @observable.ref
   private ref: SVGGElement | null = null;
 
-  private toggle = debounce(50)((active?: boolean) => {
-    const { placeCircle, vis } = this.props;
-
-    vis.toggle(placeCircle, active);
-  });
-
   componentDidMount() {
     this.styleDisposer = autorun(this.style);
   }
@@ -40,8 +33,6 @@ class PlaceCircle extends Component<IProps> {
     if (this.styleDisposer != null) {
       this.styleDisposer();
     }
-
-    this.toggle.cancel();
   }
 
   render() {
@@ -103,6 +94,12 @@ class PlaceCircle extends Component<IProps> {
 
     this.toggle();
   };
+
+  private toggle(active?: boolean) {
+    const { placeCircle, vis } = this.props;
+
+    vis.toggle(placeCircle, active);
+  }
 }
 
 export default styled(PlaceCircle)`

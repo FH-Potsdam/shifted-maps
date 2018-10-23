@@ -83,10 +83,11 @@ class PlaceCircleLabel extends Component<IProps> {
 
     const ctx = this.ctx!;
     const canvas = this.labelCanvas!;
+    const mobileOrTablet = device === DEVICE.mobile || device === DEVICE.tablet;
 
-    const labelFontSize = device === DEVICE.mobile ? theme.fontSizeSmall : theme.fontSize;
+    const labelFontSize = mobileOrTablet ? theme.fontSizeSmall : theme.fontSize;
     const clusterLabelFontSize =
-      device === DEVICE.mobile ? theme.fontSizeMini : theme.fontSizeSmall;
+      mobileOrTablet ? theme.fontSizeMini : theme.fontSizeSmall;
     const spacing = theme.spacingUnit;
 
     const clusterLabel =

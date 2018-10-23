@@ -11,4 +11,4 @@ RUN npm install
 COPY . .
 
 # Build and export the app
-RUN npm now-build && npm now-export
+RUN npm run now-build && npm run now-export -- -o /public
