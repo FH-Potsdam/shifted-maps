@@ -68,7 +68,7 @@ class PlaceCircleMap extends Component<IProps> {
 
   render() {
     const { className, placeCircle } = this.props;
-    const { key, radius, dots, active } = placeCircle;
+    const { key, radius, dots, active, dotRadius } = placeCircle;
 
     const clipPathId = `clip-path-place-circle-${key}`;
     const lastDotIndex = dots.length - 1;
@@ -92,7 +92,12 @@ class PlaceCircleMap extends Component<IProps> {
           />
         ))}
         {dots.map((dot, index) => (
-          <PlaceMapDot key={index} cx={dot.x} cy={dot.y} r={index === lastDotIndex ? 4 : 2.5} />
+          <PlaceMapDot
+            key={index}
+            cx={dot.x}
+            cy={dot.y}
+            r={index === lastDotIndex ? dotRadius : dotRadius * 0.625}
+          />
         ))}
       </g>
     );

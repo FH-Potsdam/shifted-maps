@@ -73,21 +73,21 @@ class FilterBar extends Component<IProps> {
 
   render() {
     const { className, device } = this.props;
-    const mobile = device === DEVICE.mobile;
+    const mobileOrTablet = device === DEVICE.mobile || device === DEVICE.tablet;
 
     return (
       <div
-        className={classNames(className, { collapsed: mobile && this.collapsed, mobile })}
+        className={classNames(className, { collapsed: mobileOrTablet && this.collapsed })}
         ref={this.ref}
       >
         <NextLink href="/">
           <ViewHeading onClick={this.handleHeadingClick}>
             <Heading use="h1">
               <span>
-                {mobile && this.renderActiveView()}
+                {mobileOrTablet && this.renderActiveView()}
                 Shifted Maps
               </span>
-              {mobile && <DownIcon />}
+              {mobileOrTablet && <DownIcon />}
             </Heading>
           </ViewHeading>
         </NextLink>
@@ -267,11 +267,12 @@ class FilterBar extends Component<IProps> {
   private handleHeadingClick = (event: MouseEvent<HTMLAnchorElement>) => {
     const { device } = this.props;
 
-    if (device === DEVICE.mobile) {
-      event.stopPropagation();
-      event.preventDefault();
+    if (device !== DEVICE.mobile && device !== DEVICE.tablet) {
+      return;
     }
 
+    event.stopPropagation();
+    event.preventDefault();
     this.collapsed = !this.collapsed;
   };
 

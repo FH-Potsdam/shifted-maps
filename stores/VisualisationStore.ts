@@ -4,10 +4,11 @@ import reverse from 'lodash/fp/reverse';
 import { action, computed, observable } from 'mobx';
 
 import {
-  CONNECTION_STROKE_WIDTH_RANGE_SCALE,
+  createConnectionStrokeWidthRangeScale,
+  createPlaceRadiusRangeScale,
+  createPlaceStrokeWidthRangeScale,
   MAX_ZOOM,
-  PLACE_RADIUS_RANGE_SCALE,
-  PLACE_STROKE_WIDTH_RANGE_SCALE,
+  SCREEN_WIDTH_DOMAIN,
 } from './config';
 import Connection from './Connection';
 import ConnectionLine from './ConnectionLine';
@@ -37,6 +38,9 @@ class VisualisationStore {
 
   @observable
   activeElement: VisualisationElement | null = null;
+
+  @observable
+  width: number = SCREEN_WIDTH_DOMAIN[1];
 
   private placeCirclesCache: PlaceCircle[] = [];
   private connectionLinesCache: ConnectionLine[] = [];
@@ -72,7 +76,7 @@ class VisualisationStore {
   };
 
   @action
-  update(map?: LeafletMap) {
+  updateMap(map?: LeafletMap) {
     if (map == null) {
       return;
     }
@@ -88,6 +92,11 @@ class VisualisationStore {
     if (this.pixelOrigin == null || !this.pixelOrigin.equals(pixelOrigin)) {
       this.pixelOrigin = pixelOrigin;
     }
+  }
+
+  @action
+  updateWidth(width: number) {
+    this.width = width;
   }
 
   @action
@@ -236,7 +245,7 @@ class VisualisationStore {
       .domain(domain);
 
     if (this.scale != null) {
-      const range = PLACE_STROKE_WIDTH_RANGE_SCALE(this.scale);
+      const range = createPlaceStrokeWidthRangeScale(this.width)(this.scale);
 
       scale.rangeRound(range);
     }
@@ -253,7 +262,7 @@ class VisualisationStore {
       .domain(domain);
 
     if (this.scale != null) {
-      const range = PLACE_RADIUS_RANGE_SCALE(this.scale);
+      const range = createPlaceRadiusRangeScale(this.width)(this.scale);
 
       scale.rangeRound(range);
     }
@@ -270,7 +279,7 @@ class VisualisationStore {
       .domain(domain);
 
     if (this.scale != null) {
-      let range = CONNECTION_STROKE_WIDTH_RANGE_SCALE(this.scale);
+      let range = createConnectionStrokeWidthRangeScale(this.width)(this.scale);
 
       // In case there is only one connection line, make the higher range the default stroke width.
       if (domain[0] === domain[1]) {
@@ -323,7 +332,8 @@ class VisualisationStore {
 
   @computed
   get maxPlaceCircleRadius() {
-    return Math.round(this.placeRadiusScale.range()[1]);
+    console.log(createPlaceRadiusRangeScale(this.width).range()[1][1]);
+    return Math.round(createPlaceRadiusRangeScale(this.width).range()[1][1]);
   }
 
   project(

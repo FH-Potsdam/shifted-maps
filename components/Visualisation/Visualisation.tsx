@@ -60,7 +60,7 @@ class Visualisation extends Component<IProps> {
     const { view, timeSpan } = this.props;
 
     this.uiStore.update({ view, timeSpan });
-    this.visStore.update(this.map);
+    this.visStore.updateMap(this.map);
   }
 
   componentWillUnmount() {
@@ -111,7 +111,7 @@ class Visualisation extends Component<IProps> {
   @action
   private handleMapViewDidChange = (event: LeafletEvent) => {
     this.map = event.target;
-    this.visStore.update(this.map);
+    this.visStore.updateMap(this.map);
   };
 
   @action
@@ -138,6 +138,7 @@ class Visualisation extends Component<IProps> {
     }
 
     this.device = device;
+    this.visStore.updateWidth(width);
   };
 }
 

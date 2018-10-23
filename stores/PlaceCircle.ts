@@ -1,7 +1,7 @@
 import { bounds, point, Point } from 'leaflet';
 import { computed, observable } from 'mobx';
 
-import { CRS, MAX_ZOOM } from './config';
+import { CRS, MAX_ZOOM, PLACE_DOT_RADIUS_SCALE } from './config';
 import Place from './Place';
 import roundPoint from './utils/roundPoint';
 import VisualisationStore from './VisualisationStore';
@@ -59,6 +59,11 @@ class PlaceCircle {
     const radius = this.vis.placeRadiusScale(this.place.visibleDuration);
 
     return radius;
+  }
+
+  @computed
+  get dotRadius() {
+    return PLACE_DOT_RADIUS_SCALE(this.vis.width);
   }
 
   @computed
