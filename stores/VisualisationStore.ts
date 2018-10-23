@@ -279,6 +279,7 @@ class VisualisationStore {
       .domain(domain);
 
     if (this.scale != null) {
+      console.log(createConnectionStrokeWidthRangeScale(this.width)(this.scale));
       let range = createConnectionStrokeWidthRangeScale(this.width)(this.scale);
 
       // In case there is only one connection line, make the higher range the default stroke width.
@@ -332,7 +333,6 @@ class VisualisationStore {
 
   @computed
   get maxPlaceCircleRadius() {
-    console.log(createPlaceRadiusRangeScale(this.width).range()[1][1]);
     return Math.round(createPlaceRadiusRangeScale(this.width).range()[1][1]);
   }
 

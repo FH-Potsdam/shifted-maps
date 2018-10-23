@@ -19,9 +19,12 @@ const PLACE_RADIUS_RANGE_MAX_SCALE = scaleLinear<[number, number]>()
   .range([/* min width */ [20, 100], /* max width */ [50, 300]]);
 
 export function createPlaceRadiusRangeScale(width: number) {
+  const rangeMin = PLACE_RADIUS_RANGE_MIN_SCALE(width);
+  const rangeMax = PLACE_RADIUS_RANGE_MAX_SCALE(width);
+
   return scalePow<[number, number]>()
     .exponent(2)
-    .range([PLACE_RADIUS_RANGE_MIN_SCALE(width), PLACE_RADIUS_RANGE_MAX_SCALE(width)]);
+    .range([[rangeMin[0], rangeMax[0]], [rangeMin[1], rangeMax[1]]]);
 }
 
 /* ------ */
@@ -37,9 +40,12 @@ const PLACE_STROKE_WIDTH_RANGE_MAX_SCALE = scaleLinear<[number, number]>()
   .range([/* min width */ [3, 7], /* max width */ [5, 20]]);
 
 export function createPlaceStrokeWidthRangeScale(width: number) {
+  const rangeMin = PLACE_STROKE_WIDTH_RANGE_MIN_SCALE(width);
+  const rangeMax = PLACE_STROKE_WIDTH_RANGE_MAX_SCALE(width);
+
   return scalePow<[number, number]>()
     .exponent(2)
-    .range([PLACE_STROKE_WIDTH_RANGE_MIN_SCALE(width), PLACE_STROKE_WIDTH_RANGE_MAX_SCALE(width)]);
+    .range([[rangeMin[0], rangeMax[0]], [rangeMin[1], rangeMax[1]]]);
 }
 
 /* ------ */
@@ -50,9 +56,11 @@ const CONNECTION_STROKE_WIDTH_RANGE_MAX_SCALE = scaleLinear<[number, number]>()
   .range([/* min width */ [1, 5], /* max width */ [5, 10]]);
 
 export function createConnectionStrokeWidthRangeScale(width: number) {
+  const rangeMax = CONNECTION_STROKE_WIDTH_RANGE_MAX_SCALE(width);
+
   return scalePow<[number, number]>()
     .exponent(2)
-    .range([[0.5, 1], CONNECTION_STROKE_WIDTH_RANGE_MAX_SCALE(width)]);
+    .range([[0.5, rangeMax[0]], [1, rangeMax[1]]]);
 }
 
 /* ------ */
