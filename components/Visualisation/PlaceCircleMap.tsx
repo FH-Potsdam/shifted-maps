@@ -39,7 +39,7 @@ class PlaceCircleMap extends Component<IProps> {
     const { zoom, latLngBounds } = placeCircle;
     const center = latLngBounds.getCenter();
 
-    return `http://api.mapbox.com/v4/${config.mapboxStyleId}/${roundCoordinate(
+    return `https://api.mapbox.com/v4/${config.mapboxStyleId}/${roundCoordinate(
       center.lng
     )},${roundCoordinate(center.lat)},${zoom}/${this.imageDiameter}x${this.imageDiameter}${
       Browser.retina ? '@2x' : ''

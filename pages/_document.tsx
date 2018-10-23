@@ -23,8 +23,10 @@ class Document extends BaseDocument<IProps> {
       <html>
         <Head>
           <title>Shifted Maps</title>
+          <meta content="follow index" name="robots" />
           <meta property="description" content="Visualizing networks in personal movement data" />
           <meta property="og:title" content="Shifted Maps" />
+          <meta property="og:site_name" content="Shifted Maps" />
           <meta
             property="og:author"
             content="Heike Otten, Lennart Hildebrandt, Till Nagel, Marian Dörk, Boris Müller"
