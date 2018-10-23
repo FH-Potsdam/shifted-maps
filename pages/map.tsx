@@ -3,7 +3,8 @@ import dynamic from 'next/dynamic';
 import Router from 'next/router';
 import { Fragment, PureComponent } from 'react';
 
-import { DiaryData, fetchDemoDiary } from '../stores/Diary';
+import demo from '../static/data/demo.json';
+import { DiaryData } from '../stores/Diary';
 import { VIEW } from '../stores/UIStore';
 
 const DynamicVisualisation = dynamic({
@@ -19,7 +20,7 @@ interface IProps {
 }
 
 class Map extends PureComponent<IProps> {
-  static async getInitialProps({ req, query }: NextContext): Promise<IProps> {
+  static getInitialProps({ query }: NextContext): IProps {
     let timeSpan: ReadonlyArray<number> | undefined;
     let view: VIEW | undefined;
 
@@ -36,7 +37,7 @@ class Map extends PureComponent<IProps> {
     }
 
     return {
-      data: await fetchDemoDiary({ isServer: req != null }),
+      data: demo,
       timeSpan,
       view,
     };
