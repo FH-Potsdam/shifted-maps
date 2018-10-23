@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import debounce from 'lodash/fp/debounce';
-import { autorun, IReactionDisposer } from 'mobx';
+import { action, autorun, IReactionDisposer, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { Component, createRef, MouseEvent, RefObject } from 'react';
+import { Component, MouseEvent } from 'react';
 
 import PlaceCircleModel from '../../stores/PlaceCircle';
 import VisualisationStore from '../../stores/VisualisationStore';
@@ -19,21 +19,16 @@ interface IProps {
 
 @observer
 class PlaceCircle extends Component<IProps> {
-  private readonly ref: RefObject<SVGGElement>;
-
   private styleDisposer?: IReactionDisposer;
+
+  @observable.ref
+  private ref: SVGGElement | null = null;
 
   private toggle = debounce(50)((active?: boolean) => {
     const { placeCircle, vis } = this.props;
 
     vis.toggle(placeCircle, active);
   });
-
-  constructor(props: IProps) {
-    super(props);
-
-    this.ref = createRef();
-  }
 
   componentDidMount() {
     this.styleDisposer = autorun(this.style);
@@ -51,6 +46,10 @@ class PlaceCircle extends Component<IProps> {
     const { placeCircle, className, vis, touch } = this.props;
     const { radius, strokeWidth, active, visible, fade } = placeCircle;
 
+    if (!visible) {
+      return null;
+    }
+
     const toggleListeners = !touch
       ? {
           onMouseEnter: this.handleMouseEnter,
@@ -61,7 +60,7 @@ class PlaceCircle extends Component<IProps> {
         };
 
     return (
-      <g ref={this.ref} className={classNames(className, { visible, fade })} {...toggleListeners}>
+      <g ref={this.updateRef} className={classNames(className, { fade })} {...toggleListeners}>
         <PlaceCircleBackground r={radius} />
         <PlaceCircleMap placeCircle={placeCircle} vis={vis} />
         <PlaceCircleStroke
@@ -74,11 +73,19 @@ class PlaceCircle extends Component<IProps> {
     );
   }
 
-  private style = () => {
-    const { point } = this.props.placeCircle;
-    const group = this.ref.current!;
+  @action
+  private updateRef = (ref: SVGGElement | null) => {
+    this.ref = ref;
+  };
 
-    group.setAttribute('transform', `translate(${point.x}, ${point.y})`);
+  private style = () => {
+    if (this.ref == null) {
+      return;
+    }
+
+    const { point } = this.props.placeCircle;
+
+    this.ref.setAttribute('transform', `translate(${point.x}, ${point.y})`);
   };
 
   private handleMouseEnter = () => {
@@ -100,12 +107,7 @@ export default styled(PlaceCircle)`
   will-change: transform, opacity;
   pointer-events: auto;
   transition: opacity ${props => props.theme.transitionDuration};
-  display: none;
   opacity: 1;
-
-  &.visible {
-    display: block;
-  }
 
   &.fade {
     opacity: 0.2;

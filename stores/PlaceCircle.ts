@@ -56,7 +56,9 @@ class PlaceCircle {
 
   @computed
   get radius() {
-    return this.vis.placeRadiusScale(this.place.visibleDuration);
+    const radius = this.vis.placeRadiusScale(this.place.visibleDuration);
+
+    return radius;
   }
 
   @computed

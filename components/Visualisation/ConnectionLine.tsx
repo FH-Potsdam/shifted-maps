@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import debounce from 'lodash/fp/debounce';
-import { autorun, IReactionDisposer } from 'mobx';
+import { action, autorun, IReactionDisposer, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { Component, createRef, MouseEvent, RefObject, SyntheticEvent } from 'react';
+import { Component, MouseEvent, SyntheticEvent } from 'react';
 
 import ConnectionLineModel from '../../stores/ConnectionLine';
 import VisualisationStore from '../../stores/VisualisationStore';
@@ -18,22 +18,19 @@ interface IProps {
 
 @observer
 class ConnectionLine extends Component<IProps> {
-  private readonly lineRef: RefObject<SVGLineElement>;
-  private readonly labelRef: RefObject<SVGForeignObjectElement>;
   private styleDisposer?: IReactionDisposer;
+
+  @observable.ref
+  private lineRef: SVGLineElement | null = null;
+
+  @observable.ref
+  private labelRef: SVGGElement | null = null;
 
   private toggle = debounce(50)((active?: boolean) => {
     const { connectionLine, vis } = this.props;
 
     vis.toggle(connectionLine, active);
   });
-
-  constructor(props: IProps) {
-    super(props);
-
-    this.lineRef = createRef();
-    this.labelRef = createRef();
-  }
 
   componentDidMount() {
     this.styleDisposer = autorun(this.style);
@@ -49,6 +46,10 @@ class ConnectionLine extends Component<IProps> {
     const { className, connectionLine, touch } = this.props;
     const { highlight, visible, fade } = connectionLine;
 
+    if (!visible) {
+      return null;
+    }
+
     const toggleListeners = !touch
       ? {
           onMouseEnter: this.handleMouseEnter,
@@ -59,18 +60,30 @@ class ConnectionLine extends Component<IProps> {
         };
 
     return (
-      <g className={classNames(className, { visible, fade })} {...toggleListeners}>
-        <ConnectionLineLine innerRef={this.lineRef} className={classNames({ highlight })} />
-        <ConnectionLineLabel innerRef={this.labelRef} connectionLine={connectionLine} />
+      <g className={classNames(className, { fade })} {...toggleListeners}>
+        <ConnectionLineLine innerRef={this.updateLineRef} className={classNames({ highlight })} />
+        <ConnectionLineLabel innerRef={this.updateLabelRef} connectionLine={connectionLine} />
       </g>
     );
   }
 
+  @action
+  private updateLineRef = (ref: SVGLineElement | null) => {
+    this.lineRef = ref;
+  };
+
+  @action
+  private updateLabelRef = (ref: SVGGElement | null) => {
+    this.labelRef = ref;
+  };
+
   private style = () => {
+    if (this.lineRef == null || this.labelRef == null) {
+      return;
+    }
+
     const { from, to, strokeWidth } = this.props.connectionLine;
 
-    const line = this.lineRef.current!;
-    const label = this.labelRef.current!;
     const vector = to.point.subtract(from.point);
     const distance = to.point.distanceTo(from.point);
 
@@ -86,11 +99,11 @@ class ConnectionLine extends Component<IProps> {
     );
     const vectorPart = toPart.subtract(fromPart);
 
-    line.setAttribute('stroke-width', String(strokeWidth));
-    line.setAttribute('x1', String(fromPart.x));
-    line.setAttribute('y1', String(fromPart.y));
-    line.setAttribute('x2', String(toPart.x));
-    line.setAttribute('y2', String(toPart.y));
+    this.lineRef.setAttribute('stroke-width', String(strokeWidth));
+    this.lineRef.setAttribute('x1', String(fromPart.x));
+    this.lineRef.setAttribute('y1', String(fromPart.y));
+    this.lineRef.setAttribute('x2', String(toPart.x));
+    this.lineRef.setAttribute('y2', String(toPart.y));
 
     const center = fromPart.add(vectorPart.divideBy(2));
     let rotate = (Math.atan2(vector.y, vector.x) * 180) / Math.PI;
@@ -101,7 +114,10 @@ class ConnectionLine extends Component<IProps> {
       rotate += 180;
     }
 
-    label.setAttribute('transform', `translate(${center.x}, ${center.y}) rotate(${rotate})`);
+    this.labelRef.setAttribute(
+      'transform',
+      `translate(${center.x}, ${center.y}) rotate(${rotate})`
+    );
   };
 
   private handleMouseEnter = (event: SyntheticEvent) => {
@@ -127,12 +143,7 @@ export default styled(ConnectionLine)`
   pointer-events: auto;
   will-change: opacity;
   transition: opacity ${props => props.theme.transitionDuration};
-  display: none;
   opacity: 1;
-
-  &.visible {
-    display: block;
-  }
 
   &.fade {
     opacity: 0.2;
