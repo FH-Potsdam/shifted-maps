@@ -16,4 +16,6 @@ declare module 'body-scroll-lock' {
   function disableBodyScroll(element: HTMLElement): void;
 
   function enableBodyScroll(element: HTMLElement): void;
+
+  function clearAllBodyScrollLocks(): void;
 }

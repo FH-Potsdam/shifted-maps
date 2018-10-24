@@ -9,6 +9,10 @@ import Go from '../icons/go.svg';
 import Info from '../icons/info.svg';
 import Map from '../icons/map.svg';
 
+import FHP from '../icons/fhp.svg';
+import Here from '../icons/here.svg';
+import UCLab from '../icons/uclab.svg';
+
 export const Icon = styled(use())`
   fill: currentColor;
   width: 1em;
@@ -31,3 +35,11 @@ export const DownIcon = styled(
     `
   )
 )``;
+
+export const Logo = styled(use())`
+  fill: currentColor;
+`;
+
+export const FHPLogo = styled(use(Logo, FHP))``;
+export const HereLogo = styled(use(Logo, Here))``;
+export const UCLabLogo = styled(use(Logo, UCLab))``;

@@ -1,14 +1,14 @@
 import NextLink from 'next/link';
-import { lighten } from 'polished';
+import { lighten, transparentize } from 'polished';
 import { StatelessComponent } from 'react';
 import use from 'reuse';
 
 import Heading from '../common/Heading';
-import { GoIcon } from '../common/icons';
+import { FHPLogo, GoIcon, HereLogo, Logo, UCLabLogo } from '../common/icons';
 import Layout, { LayoutItem } from '../common/Layout';
 import Link from '../common/Link';
 import Paragraph from '../common/Paragraph';
-import styled, { mediaQuery } from '../styled';
+import styled from '../styled';
 
 interface IProps {
   className?: string;
@@ -19,25 +19,31 @@ const Hero: StatelessComponent<IProps> = props => {
 
   return (
     <div className={className}>
-      <Heading>Shifted Maps</Heading>
-      <Paragraph lead>Visualizing personal Movement through Map Networks</Paragraph>
+      <HeroHeader>
+        <Heading>Shifted Maps</Heading>
+        <Paragraph lead>Visualizing personal Movement through Map Networks</Paragraph>
+      </HeroHeader>
       <HeroHighlight>
         <NextLink href="/map" prefetch>
           <HeroGo>
-            Test the Demo <GoIcon />
+            Explore the
+            <br />
+            Demo
           </HeroGo>
         </NextLink>
       </HeroHighlight>
       <HeroBottom>
         <HeroSectionLayout>
-          <LayoutItem span="4">
-            <HeroDownload href="/static/downloads/ShiftedMaps_Paper_V2.pdf">
-              <GoIcon /> Paper <em>874 KB</em>
+          <LayoutItem span="6">
+            <HeroDownload href="/static/downloads/ShiftedMaps_Poster_IEEE_2015.pdf" download>
+              <GoIcon /> Poster IEEE VIS 2015
+              <em>874 KB</em>
             </HeroDownload>
           </LayoutItem>
-          <LayoutItem span="4">
-            <HeroDownload href="/static/downloads/ShiftedMaps_Plakat.pdf">
-              <GoIcon name="go" /> Poster <em>4.8 MB</em>
+          <LayoutItem span="6">
+            <HeroDownload href="/static/downloads/ShiftedMaps_Paper_IEEE_2018_VISAP.pdf" download>
+              <GoIcon name="go" /> Paper IEEE VIS / VISAP 2018
+              <em>4.8 MB</em>
             </HeroDownload>
           </LayoutItem>
         </HeroSectionLayout>
@@ -47,29 +53,23 @@ const Hero: StatelessComponent<IProps> = props => {
           <Link href="http://www.heikeotten.de">Heike Otten</Link> at the Urban Complexity Lab,
           University of Applied Sciences Potsdam.
         </HeroCreditsSection>
-        <HeroSectionLayout>
-          <LayoutItem span="2">
+        <HeroPartnerSectionLayout>
+          <LayoutItem span="3">
             <Link href="http://www.fh-potsdam.de">
-              <HeroLogo
-                src="/static/images/fhp-logo.png"
-                alt="Logo of the University of Applied Science Potsdam"
-              />
+              <FHPLogo />
             </Link>
           </LayoutItem>
-          <LayoutItem span="6">
+          <LayoutItem span="5">
             <Link href="http://uclab.fh-potsdam.de">
-              <HeroLogo
-                src="/static/images/uclab-logo.png"
-                alt="Logo of the Urban Complexity Lab"
-              />
+              <UCLabLogo />
             </Link>
           </LayoutItem>
           <LayoutItem span="3">
             <Link href="http://here.com">
-              <HeroLogo src="/static/images/here-logo.png" alt="Logo of Micrsoft HERE" />
+              <HereLogo />
             </Link>
           </LayoutItem>
-        </HeroSectionLayout>
+        </HeroPartnerSectionLayout>
       </HeroBottom>
     </div>
   );
@@ -79,36 +79,51 @@ export default styled(Hero)`
   background-color: rgba(255, 255, 255, 0.7);
   padding: ${props => props.theme.spacingUnit * 2}px;
   padding-top: ${props => props.theme.spacingUnit * 3}px;
+  min-height: 100vh;
 
-  ${mediaQuery<IProps>('tablet')` 
+  @media (min-width: 45em) {
     position: absolute;
     height: 100%;
     top: 0;
     right: 0;
     width: ${props => props.theme.spacingUnit * 20}px;
-    background-color: rgba(white, .9);
-  `};
+    background-color: rgba(white, 0.9);
+  }
 
   h1 {
     font-size: ${props => props.theme.fontSizeHero}px;
   }
 `;
 
+const HeroHeader = styled.header`
+  @media (min-width: 35em) {
+    width: 60%;
+  }
+
+  @media (min-width: 45em) {
+    width: auto;
+  }
+`;
+
 const HeroHighlight = styled(Paragraph)`
-  margin-top: ${props => props.theme.spacingUnit * 2}px;
+  position: relative;
 `;
 
 const HeroBottom = styled.div`
-  margin-top: ${props => props.theme.spacingUnit * 8}px;
+  margin-top: ${props => props.theme.spacingUnit * 12}px;
 
-  ${mediaQuery<IProps>('tablet')`
+  @media (min-width: 35em) {
+    margin-top: ${props => props.theme.spacingUnit * 4}px;
+  }
+
+  @media (min-width: 45em) {
     margin-top: 0;
     position: absolute;
     bottom: 0;
     width: 100%;
     left: 0;
     padding: ${props => props.theme.spacingUnit * 2}px;
-  `};
+  }
 `;
 
 const HeroSection = styled(use('div'))`
@@ -120,18 +135,37 @@ const HeroSection = styled(use('div'))`
 const HeroSectionLayout = use(HeroSection, Layout);
 
 const HeroGo = styled(Link)`
-  display: block;
-  line-height: ${props => props.theme.spacingUnit * 2}px;
+  display: flex;
+  position: absolute;
+  height: 140px;
+  width: 140px;
+  justify-content: center;
+  align-items: center;
+  right: -10px;
+  top: 0px;
+  text-align: center;
+  font-weight: 900;
+  transform: rotate(-10deg);
+  background-color: ${props => props.theme.highlightColor};
+  color: white;
+  border-radius: 50%;
+  line-height: 1.3;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2);
+  font-size: ${props => props.theme.fontSizeBig}px;
+  padding-top: 10px;
 
-  ${GoIcon} {
-    font-size: ${props => props.theme.spacingUnit * 2}px;
-    vertical-align: middle;
-    margin-left: ${props => props.theme.spacingUnit}px;
-    float: right;
+  &:hover {
+    color: white;
   }
 
-  & + & {
-    margin-top: $inuit-base-spacing-unit;
+  @media (min-width: 35em) {
+    top: -80px;
+    right: 0;
+  }
+
+  @media (min-width: 45em) {
+    top: 40px;
+    right: 0;
   }
 `;
 
@@ -154,7 +188,11 @@ const HeroDownload = styled(Link)`
 const HeroCredits = styled(use('div'))`
   font-size: ${props => props.theme.fontSizeSmall}px;
   font-style: italic;
-  opacity: 0.75;
+  opacity: 0.6;
+
+  ${HeroSection} + & {
+    margin-top: ${props => props.theme.spacingUnit * 2}px;
+  }
 
   a {
     color: ${props => props.theme.foregroundColor};
@@ -169,6 +207,19 @@ const HeroCredits = styled(use('div'))`
 
 const HeroCreditsSection = use(HeroCredits, HeroSection);
 
-const HeroLogo = styled.img`
-  height: 65px;
+const HeroPartnerSectionLayout = styled(HeroSectionLayout)`
+  align-items: center;
+  max-width: 320px;
+
+  ${HeroSection} + & {
+    margin-top: ${props => props.theme.spacingUnit * 2}px;
+  }
+
+  ${Link} {
+    color: ${props => transparentize(0.4, props.theme.foregroundColor)};
+
+    &:hover {
+      color: ${props => props.theme.highlightColor};
+    }
+  }
 `;
