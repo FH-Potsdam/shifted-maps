@@ -37,13 +37,13 @@ const Hero: StatelessComponent<IProps> = props => {
           <LayoutItem span="6">
             <HeroDownload href="/static/downloads/ShiftedMaps_Poster_IEEE_2015.pdf" download>
               <GoIcon /> Poster IEEE VIS 2015
-              <em>874 KB</em>
+              <em>877 KB</em>
             </HeroDownload>
           </LayoutItem>
           <LayoutItem span="6">
             <HeroDownload href="/static/downloads/ShiftedMaps_Paper_IEEE_2018_VISAP.pdf" download>
               <GoIcon name="go" /> Paper IEEE VIS / VISAP 2018
-              <em>4.8 MB</em>
+              <em>4.9 MB</em>
             </HeroDownload>
           </LayoutItem>
         </HeroSectionLayout>
