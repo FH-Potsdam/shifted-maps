@@ -521,9 +521,7 @@ const SliderRange = styled.div`
   margin-top: ${props => props.theme.spacingUnit * 0.25}px;
 
   &.active {
-    ${SliderRangeValue} strong {
-      color: ${props => props.theme.highlightColor};
-    }
+    color: ${props => props.theme.highlightColor};
   }
 `;
 
