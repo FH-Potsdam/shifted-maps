@@ -350,9 +350,12 @@ class VisualisationStore {
 
   @computed
   get connectionLineFrequencyDistanceScale() {
-    return scaleLinear()
+    const range = this.connectionLineDistanceDomain;
+
+    return scalePow()
+      .exponent(0.5)
       .domain(reverse(this.connectionLineFrequencyDomain))
-      .range(this.connectionLineDistanceDomain);
+      .range([range[0], range[1] * 0.75]);
   }
 
   project(
