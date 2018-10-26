@@ -33,7 +33,7 @@ const Hero: StatelessComponent<IProps> = props => {
         </NextLink>
       </HeroHighlight>
       <HeroBottom>
-        <HeroSectionLayout>
+        <HeroPaperSectionLayout>
           <LayoutItem span="6">
             <HeroDownload href="/static/downloads/ShiftedMaps_Poster_IEEE_2015.pdf" download>
               <GoIcon /> Poster IEEE VIS 2015
@@ -46,26 +46,35 @@ const Hero: StatelessComponent<IProps> = props => {
               <em>4.9 MB</em>
             </HeroDownload>
           </LayoutItem>
-        </HeroSectionLayout>
+        </HeroPaperSectionLayout>
         <HeroCreditsSection>
-          Shifted Maps is a student research project by{' '}
-          <Link href="http://www.lennerd.com">Lennart Hildebrandt</Link> and{' '}
-          <Link href="http://www.heikeotten.de">Heike Otten</Link> at the Urban Complexity Lab,
-          University of Applied Sciences Potsdam.
+          <p>
+            Shifted Maps is a student research project by{' '}
+            <Link href="https://www.lennerd.com">Lennart Hildebrandt</Link> and{' '}
+            <Link href="http://www.heikeotten.de">Heike Otten</Link> conducted at the Urban
+            Complexity Lab, University of Applied Sciences Potsdam.
+          </p>
+          <p>
+            The source code of this project is available under GPL-3.0 at{' '}
+            <Link href="https://github.com/FH-Potsdam/shifted-maps">
+              Github (FH-Potsdam/shifted-maps)
+            </Link>
+            .
+          </p>
         </HeroCreditsSection>
         <HeroPartnerSectionLayout>
           <LayoutItem span="3">
-            <Link href="http://www.fh-potsdam.de">
+            <Link href="https://www.fh-potsdam.de">
               <FHPLogo />
             </Link>
           </LayoutItem>
           <LayoutItem span="5">
-            <Link href="http://uclab.fh-potsdam.de">
+            <Link href="https://uclab.fh-potsdam.de">
               <UCLabLogo />
             </Link>
           </LayoutItem>
           <LayoutItem span="3">
-            <Link href="http://here.com">
+            <Link href="https://here.com">
               <HereLogo />
             </Link>
           </LayoutItem>
@@ -81,17 +90,21 @@ export default styled(Hero)`
   padding-top: ${props => props.theme.spacingUnit * 3}px;
   min-height: 100vh;
 
-  @media (min-width: 45em) {
+  @media (min-width: 47em) {
     position: absolute;
     height: 100%;
     top: 0;
-    right: 0;
+    right: ${props => props.theme.spacingUnit * 7}px;
     width: ${props => props.theme.spacingUnit * 20}px;
-    background-color: rgba(white, 0.9);
+    background-color: rgba(255, 255, 255, 0.9);
   }
 
   h1 {
     font-size: ${props => props.theme.fontSizeHero}px;
+  }
+
+  @media (min-width: 47em) and (min-height: 47em) {
+    right: 0;
   }
 `;
 
@@ -100,7 +113,7 @@ const HeroHeader = styled.header`
     width: 60%;
   }
 
-  @media (min-width: 45em) {
+  @media (min-width: 47em) {
     width: auto;
   }
 `;
@@ -116,7 +129,7 @@ const HeroBottom = styled.div`
     margin-top: ${props => props.theme.spacingUnit * 4}px;
   }
 
-  @media (min-width: 45em) {
+  @media (min-width: 47em) {
     margin-top: 0;
     position: absolute;
     bottom: 0;
@@ -163,9 +176,18 @@ const HeroGo = styled(Link)`
     right: 0;
   }
 
-  @media (min-width: 45em) {
-    top: 40px;
+  @media (min-width: 47em) {
+    top: -100px;
+    right: -110px;
+  }
+
+  @media (min-width: 47em) and (min-height: 47em) {
+    top: 0;
     right: 0;
+  }
+
+  @media (min-width: 50em) and (min-height: 50em) {
+    top: 30px;
   }
 `;
 
@@ -203,9 +225,17 @@ const HeroCredits = styled(use('div'))`
       border-bottom-color: ${props => lighten(0.4, props.theme.foregroundColor)};
     }
   }
+
+  p + p {
+    margin-top: ${props => props.theme.spacingUnit * 0.5}px;
+  }
 `;
 
 const HeroCreditsSection = use(HeroCredits, HeroSection);
+
+const HeroPaperSectionLayout = styled(HeroSectionLayout)`
+  max-width: 310px;
+`;
 
 const HeroPartnerSectionLayout = styled(HeroSectionLayout)`
   align-items: center;
