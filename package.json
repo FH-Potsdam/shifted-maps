@@ -15,7 +15,6 @@
     "prettier": "prettier --write \"{components,pages,stores}/**/*.{ts,tsx}\""
   },
   "dependencies": {
-    "@zeit/next-bundle-analyzer": "^0.1.2",
     "body-scroll-lock": "^2.5.10",
     "classnames": "^2.2.6",
     "d3-force": "^1.1.2",

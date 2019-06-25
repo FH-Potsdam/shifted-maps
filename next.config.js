@@ -1,6 +1,5 @@
 const withTypescript = require('@zeit/next-typescript');
 const withCSS = require('@zeit/next-css');
-const withBundleAnalyzer = require('@zeit/next-bundle-analyzer');
 const webpack = require('webpack');
 const flow = require('lodash/fp/flow');
 
@@ -8,8 +7,7 @@ const package = require('./package');
 
 module.exports = flow(
   withTypescript,
-  withCSS,
-  withBundleAnalyzer
+  withCSS
 )({
   publicRuntimeConfig: {
     url: process.env.NOW_URL || process.env.URL,
@@ -33,17 +31,5 @@ module.exports = flow(
     config.plugins.push(new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/));
 
     return config;
-  },
-  analyzeServer: ['server', 'both'].includes(process.env.BUNDLE_ANALYZE),
-  analyzeBrowser: ['browser', 'both'].includes(process.env.BUNDLE_ANALYZE),
-  bundleAnalyzerConfig: {
-    server: {
-      analyzerMode: 'static',
-      reportFilename: '../../bundles/server.html',
-    },
-    browser: {
-      analyzerMode: 'static',
-      reportFilename: '../bundles/client.html',
-    },
   },
 });
