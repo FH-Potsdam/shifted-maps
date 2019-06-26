@@ -4,7 +4,6 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
 
-import config from '../../config';
 import PlaceCircle from '../../stores/PlaceCircle';
 import round from '../../stores/utils/round';
 import VisualisationStore from '../../stores/VisualisationStore';
@@ -45,11 +44,11 @@ class PlaceCircleMap extends Component<IProps> {
     const { zoom, latLngBounds } = placeCircle;
     const center = latLngBounds.getCenter();
 
-    return `https://api.mapbox.com/v4/${config.mapboxStyleId}/${roundCoordinate(
+    return `https://api.mapbox.com/v4/${process.env.mapboxStyleId}/${roundCoordinate(
       center.lng
     )},${roundCoordinate(center.lat)},${zoom}/${this.imageDiameter}x${this.imageDiameter}${
       Browser.retina ? '@2x' : ''
-    }.png?access_token=${config.mapboxAccessToken}`;
+    }.png?access_token=${process.env.mapboxAccessToken}`;
   }
 
   @computed

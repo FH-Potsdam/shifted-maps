@@ -1,5 +1,8 @@
 {
+  "version": 2,
   "name": "shifted-maps-web",
-  "type": "static",
-  "alias": "shifted-maps"
+  "alias": "shifted-maps.com",
+  "builds": [
+    { "src": "next.config.js", "use": "@now/next" }
+  ]
 }

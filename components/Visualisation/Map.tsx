@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import { Component } from 'react';
 import { AttributionControl, Map as ReactLeafletMap, MapProps, TileLayer } from 'react-leaflet';
 
-import config from '../../config';
 import styled from '../styled';
 
 interface IProps {
@@ -31,10 +30,10 @@ class Map extends Component<IProps & MapProps> {
           attribution={
             '<a href="https://www.mapbox.com/about/maps/" target="_blank">&copy; Mapbox</a> <a href="http://www.openstreetmap.org/about/" target="_blank">&copy; OpenStreetMap</a>'
           }
-          styleId={config.mapboxStyleId}
-          accessToken={config.mapboxAccessToken}
+          styleId={process.env.mapboxStyleId}
+          accessToken={process.env.mapboxAccessToken}
         />
-        <AttributionControl prefix={`Version: ${config.version}`} />
+        <AttributionControl prefix={`Version: ${process.env.version}`} />
         {children}
       </ReactLeafletMap>
     );

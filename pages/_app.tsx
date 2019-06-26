@@ -7,7 +7,6 @@ import React, { Fragment } from 'react';
 import GlobalStyle from '../components/GlobalStyle';
 import { ThemeProvider } from '../components/styled';
 import theme from '../components/theme';
-import config from '../config';
 import { trimSlashesEnd } from '../utils/trimSlashes';
 
 class App extends BaseApp {
@@ -47,7 +46,7 @@ class App extends BaseApp {
           />
           <meta
             property="og:image"
-            content={`${trimSlashesEnd(config.url)}/static/images/shifted-maps-og.jpg`}
+            content={`${trimSlashesEnd(process.env.url!)}/static/images/shifted-maps-og.jpg`}
           />
           <meta property="twitter:title" content="Shifted Maps" />
           <meta
@@ -56,7 +55,7 @@ class App extends BaseApp {
           />
           <meta
             property="twitter:image"
-            content={`${trimSlashesEnd(config.url)}/static/images/shifted-maps-og.jpg`}
+            content={`${trimSlashesEnd(process.env.url!)}/static/images/shifted-maps-og.jpg`}
           />
           <meta property="twitter:card" content="summary" />
           <meta name="viewport" content="width=device-width" />

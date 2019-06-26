@@ -73,7 +73,7 @@ class Visualisation extends Component<IProps> {
     const { className, onViewChange, onTimeSpanChange } = this.props;
 
     return (
-      <Measure onResize={this.handleResize}>
+      <Measure bounds onResize={this.handleResize}>
         {({ measureRef }) => (
           <Touch>
             {touch => {
@@ -84,7 +84,7 @@ class Visualisation extends Component<IProps> {
                   <Map
                     bounds={initialBounds}
                     showTiles={view == null}
-                    // @ts-ignore outdated types
+                    // @ts-ignore Broken types
                     whenReady={this.handleMapViewDidChange}
                     onZoomEnd={this.handleMapViewDidChange}
                     onResize={this.handleMapViewDidChange}
@@ -126,7 +126,7 @@ class Visualisation extends Component<IProps> {
 
   @action
   private handleResize = (contentRect: ContentRect) => {
-    const { width } = contentRect.entry;
+    const { width } = contentRect.bounds!;
     let device;
 
     if (width >= 580) {
