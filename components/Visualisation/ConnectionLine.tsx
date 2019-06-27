@@ -1,7 +1,7 @@
 import classNames from 'classnames';
-import { action, autorun, observable } from 'mobx';
-import { disposeOnUnmount, observer } from 'mobx-react';
-import { Component, MouseEvent, SyntheticEvent } from 'react';
+import { action, autorun, observable, IAutorunOptions } from 'mobx';
+import { disposeOnUnmount, observer, useLocalStore } from 'mobx-react';
+import { Component, MouseEvent, SyntheticEvent, useEffect, useCallback, useRef } from 'react';
 
 import ConnectionLineModel from '../../stores/ConnectionLine';
 import VisualisationStore from '../../stores/VisualisationStore';
@@ -17,89 +17,98 @@ interface IProps {
   device: DEVICE;
 }
 
-@observer
-class ConnectionLine extends Component<IProps> {
-  @observable.ref
-  private ref: SVGLineElement | null = null;
-
-  componentDidMount() {
-    disposeOnUnmount(this, autorun(this.drawLine, { scheduler: requestAnimationFrame }));
-  }
-
-  render() {
-    const { className, connectionLine, touch, device } = this.props;
-    const { highlight, visible, fade, label } = connectionLine;
-
-    if (!visible) {
-      return null;
-    }
-
-    const toggleListeners = !touch
-      ? {
-          onMouseEnter: this.handleMouseEnter,
-          onMouseLeave: this.handleMouseLeave,
-        }
-      : {
-          onClick: this.handleClick,
-        };
-
-    return (
-      <g className={classNames(className, { fade })} {...toggleListeners}>
-        <ConnectionLineLine ref={this.updateRef} className={classNames({ highlight })} />
-        <ConnectionLineLabel connectionLineLabel={label} device={device} />
-      </g>
-    );
-  }
-
-  @action
-  private updateRef = (ref: SVGLineElement | null) => {
-    this.ref = ref;
-  };
-
-  private drawLine = () => {
-    if (this.ref == null) {
-      return;
-    }
-
-    const { fromPlaceCircleEdge, toPlaceCircleEdge } = this.props.connectionLine;
-
-    if (fromPlaceCircleEdge == null || toPlaceCircleEdge == null) {
-      return;
-    }
-
-    const { strokeWidth } = this.props.connectionLine;
-
-    this.ref.setAttribute('stroke-width', String(strokeWidth));
-    this.ref.setAttribute('x1', String(fromPlaceCircleEdge.x));
-    this.ref.setAttribute('y1', String(fromPlaceCircleEdge.y));
-    this.ref.setAttribute('x2', String(toPlaceCircleEdge.x));
-    this.ref.setAttribute('y2', String(toPlaceCircleEdge.y));
-  };
-
-  private handleMouseEnter = (event: SyntheticEvent) => {
-    event.stopPropagation();
-
-    this.toggle(true);
-  };
-
-  private handleMouseLeave = (event: SyntheticEvent) => {
-    event.stopPropagation();
-
-    this.toggle(false);
-  };
-
-  private handleClick = (event: MouseEvent<SVGGElement>) => {
-    event.stopPropagation();
-
-    this.toggle();
-  };
-
-  private toggle(active?: boolean) {
-    const { connectionLine, vis } = this.props;
-
-    vis.toggle(connectionLine, active);
-  }
+function useAutorun(
+  callback: () => void,
+  dependencies?: readonly any[],
+  options?: IAutorunOptions
+) {
+  return useEffect(() => autorun(callback, options), dependencies);
 }
+
+function useElementRef<T>(callback: (ref: T) => void, dependencies?: readonly any[]) {
+  const ref = useRef<T | null>(null);
+
+  useAutorun(() => {
+    if (ref.current == null) {
+      return;
+    }
+
+    callback(ref.current);
+  }, [ref.current, ...dependencies!]);
+
+  return ref;
+}
+
+export const ConnectionLine = observer((props: IProps) => {
+  const { className, connectionLine, touch, device } = props;
+  const { highlight, visible, fade, label, vis } = connectionLine;
+
+  if (!visible) {
+    return null;
+  }
+
+  const ref = useElementRef(
+    (ref: SVGLineElement) => {
+      const { fromPlaceCircleEdge, toPlaceCircleEdge } = connectionLine;
+
+      if (fromPlaceCircleEdge == null || toPlaceCircleEdge == null) {
+        return;
+      }
+
+      const { strokeWidth } = connectionLine;
+
+      ref.setAttribute('stroke-width', String(strokeWidth));
+      ref.setAttribute('x1', String(fromPlaceCircleEdge.x));
+      ref.setAttribute('y1', String(fromPlaceCircleEdge.y));
+      ref.setAttribute('x2', String(toPlaceCircleEdge.x));
+      ref.setAttribute('y2', String(toPlaceCircleEdge.y));
+    },
+    [connectionLine]
+  );
+
+  const handleMouseEnter = useCallback(
+    (event: SyntheticEvent) => {
+      event.stopPropagation();
+
+      vis.toggle(connectionLine, true);
+    },
+    [connectionLine, vis]
+  );
+
+  const handleMouseLeave = useCallback(
+    (event: SyntheticEvent) => {
+      event.stopPropagation();
+
+      vis.toggle(connectionLine, false);
+    },
+    [connectionLine, vis]
+  );
+
+  const handleClick = useCallback(
+    (event: SyntheticEvent) => {
+      event.stopPropagation();
+
+      vis.toggle(connectionLine);
+    },
+    [connectionLine, vis]
+  );
+
+  const toggleListeners = !touch
+    ? {
+        onMouseEnter: handleMouseEnter,
+        onMouseLeave: handleMouseLeave,
+      }
+    : {
+        onClick: handleClick,
+      };
+
+  return (
+    <g className={classNames(className, { fade })} {...toggleListeners}>
+      <ConnectionLineLine ref={ref} className={classNames({ highlight })} />
+      <ConnectionLineLabel connectionLineLabel={label} device={device} />
+    </g>
+  );
+});
 
 export default styled(ConnectionLine)`
   pointer-events: auto;

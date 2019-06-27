@@ -28,8 +28,8 @@ class ConnectionLineLabel extends Component<IProps> {
     this.labelCanvas = document.createElement('canvas');
     this.ctx = this.labelCanvas.getContext('2d');
 
-    disposeOnUnmount(this, autorun(this.drawLabel, { scheduler: requestAnimationFrame }));
-    disposeOnUnmount(this, autorun(this.styleLabel, { scheduler: requestAnimationFrame }));
+    disposeOnUnmount(this, autorun(this.drawLabel));
+    disposeOnUnmount(this, autorun(this.styleLabel));
 
     this.checkFont();
   }
