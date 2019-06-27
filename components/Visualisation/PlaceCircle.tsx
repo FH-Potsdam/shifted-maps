@@ -24,7 +24,7 @@ class PlaceCircle extends Component<IProps> {
   private ref: SVGGElement | null = null;
 
   componentDidMount() {
-    disposeOnUnmount(this, autorun(this.style));
+    disposeOnUnmount(this, autorun(this.style, { scheduler: requestAnimationFrame }));
   }
 
   render() {

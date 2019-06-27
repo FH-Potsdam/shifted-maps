@@ -40,7 +40,7 @@ class PlaceCircleLabel extends Component<IProps> {
     this.labelCanvas = document.createElement('canvas');
     this.ctx = this.labelCanvas.getContext('2d');
 
-    disposeOnUnmount(this, autorun(this.drawLabel));
+    disposeOnUnmount(this, autorun(this.drawLabel, { scheduler: requestAnimationFrame }));
 
     this.checkFont();
   }
@@ -167,7 +167,7 @@ class PlaceCircleLabel extends Component<IProps> {
   }
 }
 
-export default styled(withTheme<IProps>(PlaceCircleLabel))`
+export default styled(withTheme(PlaceCircleLabel))`
   transition: opacity ${props => props.theme.shortTransitionDuration};
   pointer-events: none;
   opacity: 0;

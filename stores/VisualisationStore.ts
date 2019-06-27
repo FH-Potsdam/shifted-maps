@@ -119,6 +119,7 @@ class VisualisationStore {
 
   dispose() {
     this.graph.dispose();
+    this.toggle.cancel();
   }
 
   @computed

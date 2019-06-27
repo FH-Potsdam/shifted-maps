@@ -1,24 +1,25 @@
+import { Point } from 'leaflet';
 import { computed } from 'mobx';
 
 import Connection from './Connection';
 import PlaceCircle from './PlaceCircle';
 import { VIEW } from './UIStore';
-import { formatDistance, formatDuration, formatFrequency } from './utils/formatLabel';
+import roundPoint from './utils/roundPoint';
 import VisualisationStore from './VisualisationStore';
+import ConnectionLineLabel from './ConnectionLineLabel';
+
+const roundConnectionLinePoint = roundPoint(0.2);
 
 class ConnectionLine {
-  readonly vis: VisualisationStore;
-  readonly from: PlaceCircle;
-  readonly to: PlaceCircle;
   readonly connections: Connection[] = [];
-  readonly key: string;
+  readonly label: ConnectionLineLabel = new ConnectionLineLabel(this.vis, this);
 
-  constructor(vis: VisualisationStore, key: string, from: PlaceCircle, to: PlaceCircle) {
-    this.vis = vis;
-    this.key = key;
-    this.from = from;
-    this.to = to;
-  }
+  constructor(
+    readonly vis: VisualisationStore,
+    readonly key: string,
+    readonly from: PlaceCircle,
+    readonly to: PlaceCircle
+  ) {}
 
   @computed
   get visibleFrequency() {
@@ -93,27 +94,60 @@ class ConnectionLine {
   }
 
   @computed
-  get label() {
-    const { view } = this.vis.ui;
-
-    if (view === VIEW.GEOGRAPHIC) {
-      return formatDistance(this.visibleDistance);
-    }
-
-    if (view === VIEW.FREQUENCY) {
-      return formatFrequency(this.visibleFrequency);
-    }
-
-    if (view === VIEW.DURATION) {
-      return formatDuration(this.visibleDuration);
-    }
-
-    return null;
+  get strokeWidth() {
+    return this.vis.connectionStrokeWidthScale(this.visibleFrequency);
   }
 
   @computed
-  get strokeWidth() {
-    return this.vis.connectionStrokeWidthScale(this.visibleFrequency);
+  get placeCircleCistance() {
+    return this.to.point.distanceTo(this.from.point);
+  }
+
+  @computed<Point>({
+    equals(a, b) {
+      return a.equals(b);
+    },
+  })
+  get placeCircleVector() {
+    return this.to.point.subtract(this.from.point);
+  }
+
+  @computed<Point | null>({
+    equals(a, b) {
+      return a != null && b != null && a.equals(b);
+    },
+  })
+  get fromPlaceCircleEdge() {
+    if (this.placeCircleCistance === 0) {
+      return null;
+    }
+
+    return roundConnectionLinePoint(
+      this.from.point.add(
+        this.placeCircleVector.multiplyBy(
+          (this.from.radius + this.from.strokeWidth / 2 - 0.5) / this.placeCircleCistance
+        )
+      )
+    );
+  }
+
+  @computed<Point | null>({
+    equals(a, b) {
+      return a != null && b != null && a.equals(b);
+    },
+  })
+  get toPlaceCircleEdge() {
+    if (this.placeCircleCistance === 0) {
+      return null;
+    }
+
+    return roundConnectionLinePoint(
+      this.to.point.subtract(
+        this.placeCircleVector.multiplyBy(
+          (this.to.radius + this.to.strokeWidth / 2 - 0.5) / this.placeCircleCistance
+        )
+      )
+    );
   }
 }
 

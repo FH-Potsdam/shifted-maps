@@ -20,18 +20,15 @@ interface IProps {
 @observer
 class ConnectionLine extends Component<IProps> {
   @observable.ref
-  private lineRef: SVGLineElement | null = null;
-
-  @observable.ref
-  private labelRef: SVGGElement | null = null;
+  private ref: SVGLineElement | null = null;
 
   componentDidMount() {
-    disposeOnUnmount(this, autorun(this.style));
+    disposeOnUnmount(this, autorun(this.drawLine, { scheduler: requestAnimationFrame }));
   }
 
   render() {
     const { className, connectionLine, touch, device } = this.props;
-    const { highlight, visible, fade } = connectionLine;
+    const { highlight, visible, fade, label } = connectionLine;
 
     if (!visible) {
       return null;
@@ -48,72 +45,35 @@ class ConnectionLine extends Component<IProps> {
 
     return (
       <g className={classNames(className, { fade })} {...toggleListeners}>
-        <ConnectionLineLine
-          // @ts-ignore broken types for styled-components@4
-          ref={this.updateLineRef}
-          className={classNames({ highlight })}
-        />
-        <ConnectionLineLabel
-          // @ts-ignore broken types for styled-components@4
-          ref={this.updateLabelRef}
-          connectionLine={connectionLine}
-          device={device}
-        />
+        <ConnectionLineLine ref={this.updateRef} className={classNames({ highlight })} />
+        <ConnectionLineLabel connectionLineLabel={label} device={device} />
       </g>
     );
   }
 
   @action
-  private updateLineRef = (ref: SVGLineElement | null) => {
-    this.lineRef = ref;
+  private updateRef = (ref: SVGLineElement | null) => {
+    this.ref = ref;
   };
 
-  @action
-  private updateLabelRef = (ref: SVGGElement | null) => {
-    this.labelRef = ref;
-  };
-
-  private style = () => {
-    if (this.lineRef == null || this.labelRef == null) {
+  private drawLine = () => {
+    if (this.ref == null) {
       return;
     }
 
-    const { from, to, strokeWidth } = this.props.connectionLine;
+    const { fromPlaceCircleEdge, toPlaceCircleEdge } = this.props.connectionLine;
 
-    const vector = to.point.subtract(from.point);
-    const distance = to.point.distanceTo(from.point);
-
-    if (distance === 0) {
+    if (fromPlaceCircleEdge == null || toPlaceCircleEdge == null) {
       return;
     }
 
-    const fromPart = from.point.add(
-      vector.multiplyBy((from.radius + from.strokeWidth / 2 - 0.5) / distance)
-    );
-    const toPart = to.point.subtract(
-      vector.multiplyBy((to.radius + to.strokeWidth / 2 - 0.5) / distance)
-    );
-    const vectorPart = toPart.subtract(fromPart);
+    const { strokeWidth } = this.props.connectionLine;
 
-    this.lineRef.setAttribute('stroke-width', String(strokeWidth));
-    this.lineRef.setAttribute('x1', String(fromPart.x));
-    this.lineRef.setAttribute('y1', String(fromPart.y));
-    this.lineRef.setAttribute('x2', String(toPart.x));
-    this.lineRef.setAttribute('y2', String(toPart.y));
-
-    const center = fromPart.add(vectorPart.divideBy(2));
-    let rotate = (Math.atan2(vector.y, vector.x) * 180) / Math.PI;
-
-    if (rotate > 90) {
-      rotate -= 180;
-    } else if (rotate < -90) {
-      rotate += 180;
-    }
-
-    this.labelRef.setAttribute(
-      'transform',
-      `translate(${center.x}, ${center.y}) rotate(${rotate})`
-    );
+    this.ref.setAttribute('stroke-width', String(strokeWidth));
+    this.ref.setAttribute('x1', String(fromPlaceCircleEdge.x));
+    this.ref.setAttribute('y1', String(fromPlaceCircleEdge.y));
+    this.ref.setAttribute('x2', String(toPlaceCircleEdge.x));
+    this.ref.setAttribute('y2', String(toPlaceCircleEdge.y));
   };
 
   private handleMouseEnter = (event: SyntheticEvent) => {
