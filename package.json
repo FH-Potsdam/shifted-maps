@@ -1,7 +1,7 @@
 {
   "name": "shifted-maps-web",
   "license": "GPL-3.0",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Shifted Maps visualizes personal movement data as a network of map extracts showing visited places.",
   "repository": "lennerd/shifted-maps",
   "bugs": {
