@@ -1,7 +1,7 @@
-import { NextContext } from 'next';
+import { NextStatelessComponent } from 'next';
 import dynamic from 'next/dynamic';
 import Router from 'next/router';
-import { Fragment, PureComponent } from 'react';
+import { Fragment, useCallback } from 'react';
 
 import { IMapView } from '../components/Visualisation/Visualisation';
 import demo from '../static/data/demo.json';
@@ -21,44 +21,10 @@ interface IProps {
   mapView?: IMapView;
 }
 
-class Map extends PureComponent<IProps> {
-  static getInitialProps({ query }: NextContext): IProps {
-    let timeSpan: ReadonlyArray<number> | undefined;
-    let view: VIEW | undefined;
-    let mapView: IMapView | undefined;
+const Map: NextStatelessComponent<IProps> = props => {
+  const { data, view, timeSpan, mapView } = props;
 
-    if (typeof query.timeSpan === 'string') {
-      const [start, end] = query.timeSpan.split('-');
-
-      if (start != null && end != null) {
-        timeSpan = [Number(start), Number(end)];
-      }
-    }
-
-    if (typeof query.view === 'string') {
-      view = VIEW[query.view.toUpperCase()];
-    }
-
-    if (typeof query.center === 'string' && typeof query.zoom === 'string') {
-      const [lat, lng] = query.center.split(',');
-
-      if (lat != null && lng != null) {
-        mapView = {
-          center: [Number(lat), Number(lng)],
-          zoom: Number(query.zoom),
-        };
-      }
-    }
-
-    return {
-      data: demo,
-      mapView,
-      timeSpan,
-      view,
-    };
-  }
-
-  handleViewChange = (view?: VIEW) => {
+  const handleViewChange = useCallback((view?: VIEW) => {
     const query: { view?: string } = {
       ...Router.query,
     };
@@ -70,18 +36,18 @@ class Map extends PureComponent<IProps> {
     }
 
     Router.push({ pathname: '/map', query });
-  };
+  }, []);
 
-  handleTimeSpanChange = (timeSpan: ReadonlyArray<number>) => {
+  const handleTimeSpanChange = useCallback((timeSpan: ReadonlyArray<number>) => {
     const query = {
       ...Router.query,
       timeSpan: timeSpan.join('-'),
     };
 
     Router.push({ pathname: '/map', query });
-  };
+  }, []);
 
-  handleMapViewChange = ({ center, zoom }: IMapView) => {
+  const handleMapViewChange = useCallback(({ center, zoom }: IMapView) => {
     const query = {
       ...Router.query,
       center: center.join(','),
@@ -89,25 +55,55 @@ class Map extends PureComponent<IProps> {
     };
 
     Router.replace({ pathname: '/map', query });
-  };
+  }, []);
 
-  render() {
-    const { data, view, timeSpan, mapView } = this.props;
+  return (
+    <DynamicVisualisation
+      data={data}
+      view={view}
+      timeSpan={timeSpan}
+      mapView={mapView}
+      onViewChange={handleViewChange}
+      onTimeSpanChange={handleTimeSpanChange}
+      onMapViewChange={handleMapViewChange}
+    />
+  );
+};
 
-    return (
-      <Fragment>
-        <DynamicVisualisation
-          data={data}
-          view={view}
-          timeSpan={timeSpan}
-          mapView={mapView}
-          onViewChange={this.handleViewChange}
-          onTimeSpanChange={this.handleTimeSpanChange}
-          onMapViewChange={this.handleMapViewChange}
-        />
-      </Fragment>
-    );
+Map.getInitialProps = ({ query }) => {
+  let timeSpan: ReadonlyArray<number> | undefined;
+  let view: VIEW | undefined;
+  let mapView: IMapView | undefined;
+
+  if (typeof query.timeSpan === 'string') {
+    const [start, end] = query.timeSpan.split('-');
+
+    if (start != null && end != null) {
+      timeSpan = [Number(start), Number(end)];
+    }
   }
-}
+
+  if (typeof query.view === 'string') {
+    view = VIEW[query.view.toUpperCase()];
+  }
+
+  if (typeof query.center === 'string' && typeof query.zoom === 'string') {
+    const [lat, lng] = query.center.split(',');
+
+    if (lat != null && lng != null) {
+      mapView = {
+        center: [Number(lat), Number(lng)],
+        zoom: Number(query.zoom),
+      };
+    }
+  }
+
+  return {
+    data: demo,
+    mapView,
+    timeSpan,
+    view,
+  };
+};
 
 export default Map;

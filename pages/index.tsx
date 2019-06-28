@@ -1,11 +1,9 @@
-import { PureComponent } from 'react';
+import { NextStatelessComponent } from 'next';
 
 import Home from '../components/Home/Home';
 
-class Index extends PureComponent {
-  render() {
-    return <Home />;
-  }
-}
+const Index: NextStatelessComponent = () => {
+  return <Home />;
+};
 
 export default Index;
