@@ -9,7 +9,11 @@ import { ThemeProvider } from '../components/styled';
 import theme from '../components/theme';
 import { trimSlashesEnd } from '../utils/trimSlashes';
 
-class App extends BaseApp {
+interface IProps {
+  url: string;
+}
+
+class App extends BaseApp<IProps> {
   static async getInitialProps({ Component, ctx }: AppComponentContext) {
     let pageProps = {};
 
@@ -21,11 +25,22 @@ class App extends BaseApp {
       pageProps = await Component.getInitialProps(ctx);
     }
 
-    return { pageProps };
+    let url =
+      ctx.req != null ? (ctx.req.headers['x-forwarded-host'] as string) : window.location.host;
+
+    if (url == null) {
+      if (process.env.url == null) {
+        throw new Error('Not able to get absolute URL.');
+      }
+
+      url = process.env.url;
+    }
+
+    return { pageProps, url };
   }
 
   render() {
-    const { Component, pageProps } = this.props;
+    const { Component, pageProps, url } = this.props;
 
     return (
       <Container>
@@ -46,7 +61,7 @@ class App extends BaseApp {
           />
           <meta
             property="og:image"
-            content={`${trimSlashesEnd(process.env.url!)}/static/images/shifted-maps-og.jpg`}
+            content={`${trimSlashesEnd(url)}/static/images/shifted-maps-og.jpg`}
           />
           <meta property="twitter:title" content="Shifted Maps" />
           <meta
@@ -55,7 +70,7 @@ class App extends BaseApp {
           />
           <meta
             property="twitter:image"
-            content={`${trimSlashesEnd(process.env.url!)}/static/images/shifted-maps-og.jpg`}
+            content={`${trimSlashesEnd(url)}/static/images/shifted-maps-og.jpg`}
           />
           <meta property="twitter:card" content="summary" />
           <meta name="viewport" content="width=device-width" />

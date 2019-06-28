@@ -11,7 +11,7 @@ module.exports = flow(
 )({
   target: 'serverless',
   env: {
-    url: process.env.NOW_URL || process.env.URL,
+    url: process.env.URL,
     mapboxAccessToken: 'pk.eyJ1IjoibGVubmVyZCIsImEiOiJXRjB3WGswIn0.3plnt32h0h8pfb9aZ_oGyw',
     mapboxStyleId: 'heike.6bac2bcd',
     version: package.version,
