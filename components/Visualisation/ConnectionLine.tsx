@@ -21,10 +21,6 @@ export const ConnectionLine = observer((props: IProps) => {
   const { className, connectionLine, touch, device } = props;
   const { highlight, visible, fade, label, vis } = connectionLine;
 
-  if (!visible) {
-    return null;
-  }
-
   const ref = useAutorunRef(
     (ref: SVGLineElement) => {
       const { fromPlaceCircleEdge, toPlaceCircleEdge } = connectionLine;
@@ -79,6 +75,10 @@ export const ConnectionLine = observer((props: IProps) => {
     : {
         onClick: handleClick,
       };
+
+  if (!visible) {
+    return null;
+  }
 
   return (
     <g className={classNames(className, { fade })} {...toggleListeners}>

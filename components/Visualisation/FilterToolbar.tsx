@@ -26,7 +26,7 @@ import { DEVICE } from './Visualisation';
 interface IProps {
   className?: string;
   data: DataStore;
-  ui: UIStore;
+  ui: Readonly<UIStore>;
   device: DEVICE;
   onViewChange: (view?: VIEW) => void;
   onTimeSpanChange: (timeSpan: ReadonlyArray<number>) => void;

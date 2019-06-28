@@ -10,7 +10,7 @@ import UIStore from './UIStore';
 export const DAY_IN_SEC = 60 * 60 * 24;
 
 class DataStore {
-  readonly ui: UIStore;
+  readonly ui: Readonly<UIStore>;
   readonly data: DiaryData;
 
   constructor(ui: UIStore, data: DiaryData) {

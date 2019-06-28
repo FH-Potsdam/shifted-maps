@@ -1,4 +1,5 @@
 import { LeafletEvent, Map as LeafletMap } from 'leaflet';
+import debounce from 'lodash/fp/debounce';
 import { action, configure, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
@@ -18,12 +19,19 @@ configure({
   enforceActions: 'observed',
 });
 
+export interface IMapView {
+  center: [number, number];
+  zoom: number;
+}
+
 interface IProps {
   data: DiaryData;
+  mapView?: IMapView;
   view?: VIEW;
   timeSpan?: ReadonlyArray<number>;
   onViewChange: (view?: VIEW) => void;
   onTimeSpanChange: (timeSpan: ReadonlyArray<number>) => void;
+  onMapViewChange: (mapView: IMapView) => void;
   className?: string;
 }
 
@@ -40,8 +48,15 @@ class Visualisation extends Component<IProps> {
 
   private dataStore: DataStore;
   private visStore: VisualisationStore;
-  private uiStore: UIStore;
+  private uiStore: Readonly<UIStore>;
   private map?: LeafletMap;
+
+  private debounceMapViewChange = debounce(200)((map: LeafletMap) => {
+    const center = map.getCenter();
+    const zoom = map.getZoom();
+
+    this.props.onMapViewChange({ center: [center.lat, center.lng], zoom });
+  });
 
   constructor(props: IProps) {
     super(props);
@@ -60,7 +75,10 @@ class Visualisation extends Component<IProps> {
     const { view, timeSpan } = this.props;
 
     this.uiStore.update({ view, timeSpan });
-    this.visStore.updateMap(this.map);
+
+    if (this.map != null) {
+      this.visStore.updateMap(this.map);
+    }
   }
 
   componentWillUnmount() {
@@ -70,7 +88,9 @@ class Visualisation extends Component<IProps> {
   render() {
     const { initialBounds } = this.visStore;
     const { view } = this.uiStore;
-    const { className, onViewChange, onTimeSpanChange } = this.props;
+    const { mapView, className, onViewChange, onTimeSpanChange } = this.props;
+
+    const mapProps = mapView != null ? mapView : initialBounds;
 
     return (
       <Measure bounds onResize={this.handleResize}>
@@ -82,11 +102,12 @@ class Visualisation extends Component<IProps> {
               return (
                 <div ref={measureRef} className={className} {...listener}>
                   <Map
-                    bounds={initialBounds}
+                    {...mapProps}
                     showTiles={view == null}
                     // @ts-ignore Broken types
                     whenReady={this.handleMapViewDidChange}
                     onZoomEnd={this.handleMapViewDidChange}
+                    onMoveEnd={this.handleMapViewDidChange}
                     onResize={this.handleMapViewDidChange}
                     onZoomStart={this.handleZoomStart}
                   >
@@ -111,9 +132,14 @@ class Visualisation extends Component<IProps> {
   @action
   private handleMapViewDidChange = (event: LeafletEvent) => {
     this.map = event.target;
-    this.visStore.updateMap(this.map);
-  };
 
+    if (this.map == null) {
+      return;
+    }
+
+    this.visStore.updateMap(this.map);
+    this.debounceMapViewChange(this.map);
+  };
   @action
   private handleZoomStart = () => {
     this.visStore.graph.stop();

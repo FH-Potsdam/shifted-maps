@@ -13,10 +13,12 @@ import {
   Simulation,
 } from 'd3-force';
 import { Point } from 'leaflet';
+import isEqual from 'lodash/fp/isEqual';
 import { autorun, computed, IReactionDisposer } from 'mobx';
 
 import ConnectionLineLink from './ConnectionLineLink';
 import PlaceCircleNode from './PlaceCircleNode';
+import { VIEW } from './UIStore';
 import VisualisationStore from './VisualisationStore';
 
 type SimulationEventCallback = (nodes: PlaceCircleNode[]) => void;
@@ -42,6 +44,9 @@ class GraphStore {
 
   private zoom?: number;
   private pixelOrigin?: Point;
+
+  private prevView?: VIEW;
+  private prevTimeSpan?: readonly number[];
 
   constructor(
     vis: VisualisationStore,
@@ -73,7 +78,7 @@ class GraphStore {
       .velocityDecay(0.9)
       .stop();
 
-    this.toggleDisposer = autorun(this.toggleSimulation);
+    this.toggleDisposer = autorun(this.restartSimulation);
     this.updateDisposer = autorun(this.updateSimulation);
     this.zoomDisposer = autorun(this.zoomSimulation);
   }
@@ -90,16 +95,15 @@ class GraphStore {
     this.zoomDisposer();
   }
 
-  private toggleSimulation = () => {
+  private restartSimulation = () => {
     const { ready, ui } = this.vis;
 
-    if (!ready) {
+    if (!ready || (ui.view === this.prevView && isEqual(ui.timeSpan, this.prevTimeSpan))) {
       return;
     }
 
-    if (ui.view != null && ui.timeSpan != null) {
-      console.log('How to run callback when value changed?');
-    }
+    this.prevView = ui.view;
+    this.prevTimeSpan = ui.timeSpan;
 
     this.simulation.alpha(1);
     this.simulation.restart();
@@ -154,7 +158,7 @@ class GraphStore {
 
       // Run tick to update place circles as soon as possible.
       this.onTick(this.nodes);
-      this.toggleSimulation();
+      this.restartSimulation();
     }
 
     this.zoom = nextZoom;

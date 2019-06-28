@@ -24,8 +24,8 @@ export type VisualisationElement = PlaceCircle | ConnectionLine;
 
 class VisualisationStore {
   readonly data: DataStore;
-  readonly ui: UIStore;
   readonly graph: GraphStore;
+  readonly ui: Readonly<UIStore>;
 
   @observable
   pixelOrigin?: Point;
@@ -82,11 +82,7 @@ class VisualisationStore {
   };
 
   @action
-  updateMap(map?: LeafletMap) {
-    if (map == null) {
-      return;
-    }
-
+  updateMap(map: LeafletMap) {
     this.crs = map.options.crs;
     this.zoom = map.getZoom();
     this.minZoom = map.getMinZoom();
