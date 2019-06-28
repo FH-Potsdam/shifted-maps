@@ -90,7 +90,7 @@ class Visualisation extends Component<IProps> {
     const { view } = this.uiStore;
     const { mapView, className, onViewChange, onTimeSpanChange } = this.props;
 
-    const mapProps = mapView != null ? mapView : initialBounds;
+    const mapProps = mapView != null ? mapView : { bounds: initialBounds };
 
     return (
       <Measure bounds onResize={this.handleResize}>

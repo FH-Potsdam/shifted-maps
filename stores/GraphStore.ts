@@ -38,7 +38,7 @@ class GraphStore {
   // private readonly manyBodyForce: ForceManyBody<PlaceCircleNode>;
   // private readonly collideForce: ForceCollide<PlaceCircleNode>;
 
-  private toggleDisposer: IReactionDisposer;
+  private restartDisposer: IReactionDisposer;
   private updateDisposer: IReactionDisposer;
   private zoomDisposer: IReactionDisposer;
 
@@ -47,6 +47,7 @@ class GraphStore {
 
   private prevView?: VIEW;
   private prevTimeSpan?: readonly number[];
+  private initialized = false;
 
   constructor(
     vis: VisualisationStore,
@@ -78,7 +79,7 @@ class GraphStore {
       .velocityDecay(0.9)
       .stop();
 
-    this.toggleDisposer = autorun(this.restartSimulation);
+    this.restartDisposer = autorun(this.restartSimulation);
     this.updateDisposer = autorun(this.updateSimulation);
     this.zoomDisposer = autorun(this.zoomSimulation);
   }
@@ -90,7 +91,7 @@ class GraphStore {
   dispose() {
     this.stop();
 
-    this.toggleDisposer();
+    this.restartDisposer();
     this.updateDisposer();
     this.zoomDisposer();
   }
@@ -98,10 +99,14 @@ class GraphStore {
   private restartSimulation = () => {
     const { ready, ui } = this.vis;
 
-    if (!ready || (ui.view === this.prevView && isEqual(ui.timeSpan, this.prevTimeSpan))) {
+    if (
+      !ready ||
+      (this.initialized && ui.view === this.prevView && isEqual(ui.timeSpan, this.prevTimeSpan))
+    ) {
       return;
     }
 
+    this.initialized = true;
     this.prevView = ui.view;
     this.prevTimeSpan = ui.timeSpan;
 

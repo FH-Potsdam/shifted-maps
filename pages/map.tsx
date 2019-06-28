@@ -1,7 +1,7 @@
 import { NextStatelessComponent } from 'next';
 import dynamic from 'next/dynamic';
 import Router from 'next/router';
-import { Fragment, useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { IMapView } from '../components/Visualisation/Visualisation';
 import demo from '../static/data/demo.json';
@@ -9,7 +9,7 @@ import { DiaryData } from '../stores/Diary';
 import { VIEW } from '../stores/UIStore';
 
 const DynamicVisualisation = dynamic({
-  loader: () => import('../components/Visualisation/Visualisation').then(module => module.default),
+  loader: () => import('../components/Visualisation/Visualisation'),
   loading: () => null,
   ssr: false,
 });
