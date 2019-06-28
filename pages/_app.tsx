@@ -1,3 +1,4 @@
+import { IncomingMessage } from 'http';
 import { useStaticRendering } from 'mobx-react';
 import BaseApp, { AppComponentContext, Container } from 'next/app';
 import Head from 'next/head';
@@ -13,6 +14,23 @@ interface IProps {
   url: string;
 }
 
+function getAbsoluteURL(req: IncomingMessage | undefined) {
+  const host =
+    req != null ? (req.headers['x-forwarded-host'] as string | undefined) : window.location.host;
+
+  if (host == null) {
+    if (process.env.url == null) {
+      throw new Error('Not able to get absolute URL.');
+    }
+
+    return process.env.url;
+  }
+
+  const protocol = host.indexOf('localhost') > -1 ? 'http' : 'https';
+
+  return `${protocol}://${host}`;
+}
+
 class App extends BaseApp<IProps> {
   static async getInitialProps({ Component, ctx }: AppComponentContext) {
     let pageProps = {};
@@ -25,18 +43,7 @@ class App extends BaseApp<IProps> {
       pageProps = await Component.getInitialProps(ctx);
     }
 
-    let url =
-      ctx.req != null ? (ctx.req.headers['x-forwarded-host'] as string) : window.location.host;
-
-    if (url == null) {
-      if (process.env.url == null) {
-        throw new Error('Not able to get absolute URL.');
-      }
-
-      url = process.env.url;
-    }
-
-    return { pageProps, url };
+    return { pageProps, url: getAbsoluteURL(ctx.req) };
   }
 
   render() {
