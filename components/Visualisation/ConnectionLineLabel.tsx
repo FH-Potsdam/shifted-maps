@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import { DomUtil } from 'leaflet';
-import { action, autorun } from 'mobx';
-import { disposeOnUnmount, observer } from 'mobx-react';
-import { Component } from 'react';
+import { observer } from 'mobx-react';
+import { useEffect, useRef } from 'react';
 
+import useAutorunRef from '../../hooks/useAutorunRef';
 import ConnectionLineLabelModel from '../../stores/ConnectionLineLabel';
 import checkFont from '../../utils/checkFont';
 import styled, { withTheme } from '../styled';
@@ -17,64 +17,26 @@ interface IProps {
   className?: string;
 }
 
-@observer
-class ConnectionLineLabel extends Component<IProps> {
-  private labelCanvas?: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D | null = null;
-  private ref: SVGGElement | null = null;
-  private imageRef: SVGImageElement | null = null;
+const ConnectionLineLabel = observer((props: IProps) => {
+  const { className, connectionLineLabel, theme, device } = props;
+  const labelCanvesRef = useRef<HTMLCanvasElement>();
+  const labelCtxRef = useRef<CanvasRenderingContext2D>();
+  const fontLoaded = useRef<boolean>(false);
 
-  componentDidMount() {
-    this.labelCanvas = document.createElement('canvas');
-    this.ctx = this.labelCanvas.getContext('2d');
+  useEffect(() => {
+    labelCanvesRef.current = document.createElement('canvas');
+    labelCtxRef.current = labelCanvesRef.current.getContext('2d')!;
+  }, []);
 
-    disposeOnUnmount(this, autorun(this.drawLabel));
-    disposeOnUnmount(this, autorun(this.styleLabel));
-
-    this.checkFont();
-  }
-
-  componentDidUpdate() {
-    this.checkFont();
-  }
-
-  render() {
-    const { className, connectionLineLabel } = this.props;
-
-    return (
-      <g
-        ref={this.updateRef}
-        className={classNames(className, { visible: connectionLineLabel.content != null })}
-      >
-        <image ref={this.updateImageRef} />
-      </g>
-    );
-  }
-
-  @action
-  private updateRef = (ref: SVGGElement | null) => {
-    this.ref = ref;
-  };
-
-  @action
-  private updateImageRef = (ref: SVGImageElement | null) => {
-    this.imageRef = ref;
-  };
-
-  private drawLabel = () => {
-    if (this.imageRef == null) {
-      return;
-    }
-
-    const { connectionLineLabel, theme, device } = this.props;
+  const drawLabel = (image: SVGImageElement) => {
     const { highlight, content } = connectionLineLabel;
 
     if (content == null || theme == null) {
       return;
     }
 
-    const ctx = this.ctx!;
-    const canvas = this.labelCanvas!;
+    const ctx = labelCtxRef.current!;
+    const canvas = labelCanvesRef.current!;
     const mobileOrTablet = device === DEVICE.mobile || device === DEVICE.tablet;
 
     const fontSize = mobileOrTablet ? theme.fontSizeMini : theme.fontSizeSmall;
@@ -102,41 +64,53 @@ class ConnectionLineLabel extends Component<IProps> {
 
     ctx.fillText(content, padding, fontSize * 2 - 4);
 
-    this.imageRef.setAttributeNS('http://www.w3.org/1999/xlink', 'href', canvas.toDataURL());
-    this.imageRef.setAttribute('width', String(width * 0.5));
-    this.imageRef.setAttribute('height', String(height * 0.5));
-    this.imageRef.style[DomUtil.TRANSFORM] = `translate(${width * -0.25}px, ${height * -0.25}px)`;
+    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', canvas.toDataURL());
+    image.setAttribute('width', String(width * 0.5));
+    image.setAttribute('height', String(height * 0.5));
+    image.style[DomUtil.TRANSFORM] = `translate(${width * -0.25}px, ${height * -0.25}px)`;
   };
 
-  private styleLabel = () => {
-    if (this.ref == null) {
-      return;
-    }
+  const imageRef = useAutorunRef(drawLabel, [connectionLineLabel, device, theme]);
 
-    const { centerPoint, rotation } = this.props.connectionLineLabel;
-
-    if (centerPoint == null) {
-      return;
-    }
-
-    this.ref.setAttribute(
-      'transform',
-      `translate(${centerPoint.x}, ${centerPoint.y}) rotate(${rotation})`
-    );
-  };
-
-  private checkFont() {
-    const { connectionLineLabel, theme } = this.props;
-
-    if (theme == null || connectionLineLabel.content == null) {
+  useEffect(() => {
+    if (fontLoaded.current || theme == null || connectionLineLabel.content == null) {
       return;
     }
 
     const font = `${theme.fontSizeSmall * 2}px Overpass`;
 
-    checkFont(font, connectionLineLabel.content, this.drawLabel);
-  }
-}
+    checkFont(font, connectionLineLabel.content, () => {
+      drawLabel(imageRef.current!);
+
+      fontLoaded.current = true;
+    });
+  }, [theme, connectionLineLabel.content]);
+
+  const groupRef = useAutorunRef(
+    (g: SVGGElement) => {
+      const { centerPoint, rotation } = connectionLineLabel;
+
+      if (centerPoint == null) {
+        return;
+      }
+
+      g.setAttribute(
+        'transform',
+        `translate(${centerPoint.x}, ${centerPoint.y}) rotate(${rotation})`
+      );
+    },
+    [connectionLineLabel]
+  );
+
+  return (
+    <g
+      ref={groupRef}
+      className={classNames(className, { visible: connectionLineLabel.content != null })}
+    >
+      <image ref={imageRef} />
+    </g>
+  );
+});
 
 export default styled(withTheme(ConnectionLineLabel))`
   will-change: transform;

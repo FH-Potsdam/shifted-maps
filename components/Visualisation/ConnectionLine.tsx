@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import { action, autorun, observable, IAutorunOptions } from 'mobx';
-import { disposeOnUnmount, observer, useLocalStore } from 'mobx-react';
-import { Component, MouseEvent, SyntheticEvent, useEffect, useCallback, useRef } from 'react';
+import { observer } from 'mobx-react';
+import { SyntheticEvent, useCallback } from 'react';
 
+import useAutorunRef from '../../hooks/useAutorunRef';
 import ConnectionLineModel from '../../stores/ConnectionLine';
 import VisualisationStore from '../../stores/VisualisationStore';
 import styled from '../styled';
@@ -17,28 +17,6 @@ interface IProps {
   device: DEVICE;
 }
 
-function useAutorun(
-  callback: () => void,
-  dependencies?: readonly any[],
-  options?: IAutorunOptions
-) {
-  return useEffect(() => autorun(callback, options), dependencies);
-}
-
-function useElementRef<T>(callback: (ref: T) => void, dependencies?: readonly any[]) {
-  const ref = useRef<T | null>(null);
-
-  useAutorun(() => {
-    if (ref.current == null) {
-      return;
-    }
-
-    callback(ref.current);
-  }, [ref.current, ...dependencies!]);
-
-  return ref;
-}
-
 export const ConnectionLine = observer((props: IProps) => {
   const { className, connectionLine, touch, device } = props;
   const { highlight, visible, fade, label, vis } = connectionLine;
@@ -47,7 +25,7 @@ export const ConnectionLine = observer((props: IProps) => {
     return null;
   }
 
-  const ref = useElementRef(
+  const ref = useAutorunRef(
     (ref: SVGLineElement) => {
       const { fromPlaceCircleEdge, toPlaceCircleEdge } = connectionLine;
 
