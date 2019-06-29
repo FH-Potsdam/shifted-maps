@@ -60,15 +60,23 @@ function useUIStore() {
 }
 
 function useDataStore(uiStore: UIStore, data: DiaryData) {
-  return useMemo(() => {
-    return new DataStore(uiStore, data);
-  }, [uiStore, data]);
+  const dataStoreRef = useRef<DataStore>();
+
+  if (dataStoreRef.current == null) {
+    dataStoreRef.current = new DataStore(uiStore, data);
+  }
+
+  return dataStoreRef.current;
 }
 
 function useVisStore(uiStore: UIStore, dataStore: DataStore) {
-  return useMemo(() => {
-    return new VisualisationStore(uiStore, dataStore);
-  }, [uiStore, dataStore]);
+  const visStoreRef = useRef<VisualisationStore>();
+
+  if (visStoreRef.current == null) {
+    visStoreRef.current = new VisualisationStore(uiStore, dataStore);
+  }
+
+  return visStoreRef.current;
 }
 
 function useDevice(defaultDevice: DEVICE): [DEVICE, (width: number) => void] {
