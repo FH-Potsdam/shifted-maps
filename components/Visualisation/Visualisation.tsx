@@ -109,7 +109,7 @@ const Visualisation = observer((props: IProps) => {
 
   useLayoutEffect(() => {
     uiStore.update({ view, timeSpan });
-  });
+  }, [view, timeSpan]);
 
   useEffect(
     () => () => {
