@@ -54,6 +54,10 @@ class App extends BaseApp<IProps> {
       <Container>
         <Head>
           <title>Shifted Maps</title>
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+          />
           <meta content="follow index" name="robots" />
           <meta property="description" content="Visualizing networks in personal movement data" />
           <meta property="og:title" content="Shifted Maps" />
@@ -81,7 +85,6 @@ class App extends BaseApp<IProps> {
             content={`${trimSlashesEnd(url)}/static/images/shifted-maps-og.jpg`}
           />
           <meta property="twitter:card" content="summary" />
-          <meta name="viewport" content="width=device-width" />
           <link href="/static/images/favicon.ico" rel="shortcut icon" />
         </Head>
         <ThemeProvider theme={theme}>

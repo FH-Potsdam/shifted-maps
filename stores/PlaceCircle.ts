@@ -12,7 +12,7 @@ class PlaceCircle {
   readonly vis: VisualisationStore;
   readonly place: Place;
 
-  @observable
+  @observable.ref
   graphPoint: Point = point(0, 0);
 
   constructor(vis: VisualisationStore, place: Place) {

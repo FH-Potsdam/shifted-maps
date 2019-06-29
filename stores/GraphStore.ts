@@ -151,7 +151,7 @@ class GraphStore {
     const prevZoom = this.zoom;
     const prevPixelOrigin = this.pixelOrigin;
 
-    if (prevZoom != null && prevPixelOrigin != null && nextZoom !== prevZoom) {
+    if (prevZoom != null && prevPixelOrigin != null) {
       this.nodes.forEach(node => {
         // latLngToLayerPoint for custom zoom
         const prevLatLng = this.vis.unproject(node, prevZoom, prevPixelOrigin);
