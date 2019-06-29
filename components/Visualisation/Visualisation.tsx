@@ -1,16 +1,16 @@
 import { LeafletEvent, Map as LeafletMap } from 'leaflet';
 import debounce from 'lodash/fp/debounce';
 import isEqual from 'lodash/fp/isEqual';
-import { action, configure, observable } from 'mobx';
+import { configure } from 'mobx';
 import { observer } from 'mobx-react';
-import { Component } from 'react';
-import Measure, { ContentRect } from 'react-measure';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
+import useTouch from '../../hooks/useTouch';
+import useWidth from '../../hooks/useWidth';
 import DataStore from '../../stores/DataStore';
 import { DiaryData } from '../../stores/Diary';
 import UIStore, { VIEW } from '../../stores/UIStore';
 import VisualisationStore from '../../stores/VisualisationStore';
-import Touch from '../common/Touch';
 import styled from '../styled';
 import FilterToolbar from './FilterToolbar';
 import Map from './Map';
@@ -49,144 +49,149 @@ function createMapView(map: LeafletMap): IMapView {
   return { center: [center.lat, center.lng], zoom };
 }
 
-@observer
-class Visualisation extends Component<IProps> {
-  @observable
-  device: DEVICE = DEVICE.desktop;
+function useUIStore() {
+  const uiStoreRef = useRef<UIStore>();
 
-  private dataStore: DataStore;
-  private visStore: VisualisationStore;
-  private uiStore: Readonly<UIStore>;
-  private map?: LeafletMap;
-
-  private debounceOnMapViewChange = debounce(200)(this.props.onMapViewChange);
-
-  constructor(props: IProps) {
-    super(props);
-
-    const { view, data, timeSpan } = props;
-
-    this.uiStore = new UIStore();
-    this.uiStore.update({ view, timeSpan });
-
-    this.dataStore = new DataStore(this.uiStore, data);
-    this.visStore = new VisualisationStore(this.uiStore, this.dataStore);
+  if (uiStoreRef.current == null) {
+    uiStoreRef.current = new UIStore();
   }
 
-  @action
-  componentDidUpdate() {
-    const { view, timeSpan } = this.props;
-
-    this.uiStore.update({ view, timeSpan });
-
-    if (this.map != null) {
-      this.visStore.updateMap(this.map);
-    }
-  }
-
-  componentWillUnmount() {
-    this.visStore.dispose();
-  }
-
-  render() {
-    const { initialBounds } = this.visStore;
-    const { view } = this.uiStore;
-    const { mapView, className, onViewChange, onTimeSpanChange } = this.props;
-
-    const mapProps = mapView != null ? mapView : { bounds: initialBounds };
-
-    return (
-      <Measure bounds onResize={this.handleResize}>
-        {({ measureRef }) => (
-          <Touch>
-            {touch => {
-              const listener = touch ? { onClick: this.handleClick } : {};
-
-              return (
-                <div ref={measureRef} className={className} {...listener}>
-                  <Map
-                    {...mapProps}
-                    showTiles={view == null}
-                    // @ts-ignore Broken types
-                    whenReady={this.handleWhenReady}
-                    onZoomEnd={this.handleMapViewDidChange}
-                    onMoveEnd={this.handleMapViewDidChange}
-                    onResize={this.handleMapViewDidChange}
-                    onZoomStart={this.handleZoomStart}
-                  >
-                    <SVGVisualisationLayer vis={this.visStore} touch={touch} device={this.device} />
-                  </Map>
-                  <FilterToolbar
-                    ui={this.uiStore}
-                    data={this.dataStore}
-                    onViewChange={onViewChange}
-                    onTimeSpanChange={onTimeSpanChange}
-                    device={this.device}
-                  />
-                </div>
-              );
-            }}
-          </Touch>
-        )}
-      </Measure>
-    );
-  }
-
-  @action
-  private handleWhenReady = (event: LeafletEvent) => {
-    this.map = event.target;
-
-    if (this.map == null) {
-      return;
-    }
-
-    this.visStore.updateMap(this.map);
-  };
-
-  @action
-  private handleMapViewDidChange = (event: LeafletEvent) => {
-    this.map = event.target;
-
-    if (this.map == null) {
-      return;
-    }
-
-    const { mapView: prevMapView } = this.props;
-    const mapView = createMapView(this.map);
-
-    if (isEqual(prevMapView, mapView)) {
-      return;
-    }
-
-    this.visStore.updateMap(this.map);
-    this.debounceOnMapViewChange(mapView);
-  };
-  @action
-  private handleZoomStart = () => {
-    this.visStore.graph.stop();
-  };
-
-  @action
-  private handleClick = () => {
-    this.visStore.deactivateElement();
-  };
-
-  @action
-  private handleResize = (contentRect: ContentRect) => {
-    const { width } = contentRect.bounds!;
-    let device;
-
-    if (width >= 580) {
-      device = DEVICE.desktop;
-    } else if (width >= 440) {
-      device = DEVICE.tablet;
-    } else {
-      device = DEVICE.mobile;
-    }
-
-    this.device = device;
-    this.visStore.updateWidth(width);
-  };
+  return uiStoreRef.current;
 }
+
+function useDataStore(uiStore: UIStore, data: DiaryData) {
+  return useMemo(() => {
+    return new DataStore(uiStore, data);
+  }, [uiStore, data]);
+}
+
+function useVisStore(uiStore: UIStore, dataStore: DataStore) {
+  return useMemo(() => {
+    return new VisualisationStore(uiStore, dataStore);
+  }, [uiStore, dataStore]);
+}
+
+function useDevice(defaultDevice: DEVICE): [DEVICE, (width: number) => void] {
+  const [device, setDevice] = useState(defaultDevice);
+
+  return [
+    device,
+    width =>
+      setDevice(() => {
+        if (width >= 580) {
+          return DEVICE.desktop;
+        }
+
+        if (width >= 440) {
+          return DEVICE.tablet;
+        }
+
+        return DEVICE.mobile;
+      }),
+  ];
+}
+
+const Visualisation = observer((props: IProps) => {
+  const {
+    view,
+    data,
+    timeSpan,
+    className,
+    mapView,
+    onMapViewChange,
+    onTimeSpanChange,
+    onViewChange,
+  } = props;
+
+  const uiStore = useUIStore();
+  const dataStore = useDataStore(uiStore, data);
+  const visStore = useVisStore(uiStore, dataStore);
+
+  useEffect(() => {
+    uiStore.update({ view, timeSpan });
+  }, [view, timeSpan]);
+
+  useEffect(
+    () => () => {
+      visStore.dispose();
+    },
+    []
+  );
+
+  const mapRef = useRef<LeafletMap>();
+
+  useLayoutEffect(() => {
+    if (mapRef.current != null) {
+      visStore.updateProjection(mapRef.current);
+    }
+  });
+
+  const touch = useTouch();
+  const [device, updateDevice] = useDevice(DEVICE.desktop);
+
+  const measureRef = useWidth<HTMLDivElement>(width => {
+    visStore.updateWidth(width);
+    updateDevice(width);
+  });
+
+  const handleWhenReady = useCallback((event: LeafletEvent) => {
+    const map = (mapRef.current = event.target!);
+    visStore.updateProjection(map);
+  }, []);
+
+  const debounceOnMapViewChange = useCallback(debounce(200)(onMapViewChange), [onMapViewChange]);
+
+  const handleMapViewDidChange = useCallback(
+    (event: LeafletEvent) => {
+      const map = (mapRef.current = event.target!);
+      const prevMapView = mapView;
+      const nextMapView = createMapView(map);
+
+      if (isEqual(prevMapView, nextMapView)) {
+        return;
+      }
+
+      visStore.updateProjection(map);
+      debounceOnMapViewChange(nextMapView);
+    },
+    [mapView]
+  );
+
+  const handleZoomStart = useCallback(() => {
+    visStore.graph.stop();
+  }, [visStore]);
+
+  const handleClick = useCallback(() => {
+    visStore.deactivateElement();
+  }, [visStore]);
+
+  const { initialBounds } = visStore;
+  const listener = touch ? { onClick: handleClick } : {};
+  const mapProps = mapView != null ? mapView : { bounds: initialBounds };
+
+  return (
+    <div ref={measureRef} className={className} {...listener}>
+      <Map
+        {...mapProps}
+        showTiles={view == null}
+        // @ts-ignore Broken types
+        whenReady={handleWhenReady}
+        onZoomEnd={handleMapViewDidChange}
+        onMoveEnd={handleMapViewDidChange}
+        onResize={handleMapViewDidChange}
+        onZoomStart={handleZoomStart}
+      >
+        <SVGVisualisationLayer vis={visStore} touch={touch} device={device} />
+      </Map>
+      <FilterToolbar
+        ui={uiStore}
+        data={dataStore}
+        onViewChange={onViewChange}
+        onTimeSpanChange={onTimeSpanChange}
+        device={device}
+      />
+    </div>
+  );
+});
 
 export default styled(Visualisation)``;

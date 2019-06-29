@@ -82,7 +82,7 @@ class VisualisationStore {
   };
 
   @action
-  updateMap(map: LeafletMap) {
+  updateProjection(map: LeafletMap) {
     this.crs = map.options.crs;
     this.zoom = map.getZoom();
     this.minZoom = map.getMinZoom();
