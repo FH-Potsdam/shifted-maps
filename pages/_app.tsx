@@ -8,6 +8,7 @@ import React, { Fragment } from 'react';
 import GlobalStyle from '../components/GlobalStyle';
 import { ThemeProvider } from '../components/styled';
 import theme from '../components/theme';
+import '../styles/fonts.css';
 import { trimSlashesEnd } from '../utils/trimSlashes';
 
 interface IProps {
