@@ -1,5 +1,6 @@
 import { LeafletEvent, Map as LeafletMap } from 'leaflet';
 import debounce from 'lodash/fp/debounce';
+import isEqual from 'lodash/fp/isEqual';
 import { action, configure, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
@@ -41,6 +42,13 @@ export enum DEVICE {
   desktop,
 }
 
+function createMapView(map: LeafletMap): IMapView {
+  const center = map.getCenter();
+  const zoom = map.getZoom();
+
+  return { center: [center.lat, center.lng], zoom };
+}
+
 @observer
 class Visualisation extends Component<IProps> {
   @observable
@@ -51,12 +59,7 @@ class Visualisation extends Component<IProps> {
   private uiStore: Readonly<UIStore>;
   private map?: LeafletMap;
 
-  private debounceMapViewChange = debounce(200)((map: LeafletMap) => {
-    const center = map.getCenter();
-    const zoom = map.getZoom();
-
-    this.props.onMapViewChange({ center: [center.lat, center.lng], zoom });
-  });
+  private debounceOnMapViewChange = debounce(200)(this.props.onMapViewChange);
 
   constructor(props: IProps) {
     super(props);
@@ -105,7 +108,7 @@ class Visualisation extends Component<IProps> {
                     {...mapProps}
                     showTiles={view == null}
                     // @ts-ignore Broken types
-                    whenReady={this.handleMapViewDidChange}
+                    whenReady={this.handleWhenReady}
                     onZoomEnd={this.handleMapViewDidChange}
                     onMoveEnd={this.handleMapViewDidChange}
                     onResize={this.handleMapViewDidChange}
@@ -130,7 +133,7 @@ class Visualisation extends Component<IProps> {
   }
 
   @action
-  private handleMapViewDidChange = (event: LeafletEvent) => {
+  private handleWhenReady = (event: LeafletEvent) => {
     this.map = event.target;
 
     if (this.map == null) {
@@ -138,7 +141,25 @@ class Visualisation extends Component<IProps> {
     }
 
     this.visStore.updateMap(this.map);
-    this.debounceMapViewChange(this.map);
+  };
+
+  @action
+  private handleMapViewDidChange = (event: LeafletEvent) => {
+    this.map = event.target;
+
+    if (this.map == null) {
+      return;
+    }
+
+    const { mapView: prevMapView } = this.props;
+    const mapView = createMapView(this.map);
+
+    if (isEqual(prevMapView, mapView)) {
+      return;
+    }
+
+    this.visStore.updateMap(this.map);
+    this.debounceOnMapViewChange(mapView);
   };
   @action
   private handleZoomStart = () => {
