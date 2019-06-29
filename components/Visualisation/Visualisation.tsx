@@ -107,9 +107,9 @@ const Visualisation = observer((props: IProps) => {
   const dataStore = useDataStore(uiStore, data);
   const visStore = useVisStore(uiStore, dataStore);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     uiStore.update({ view, timeSpan });
-  }, [view, timeSpan]);
+  });
 
   useEffect(
     () => () => {
