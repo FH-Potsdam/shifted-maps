@@ -79,7 +79,7 @@ const ConnectionLineLabel = observer((props: IProps) => {
 
     const font = `${theme.fontSizeSmall * 2}px Overpass`;
 
-    checkFont(font, connectionLineLabel.content, () => {
+    checkFont(font, connectionLineLabel.content).then(() => {
       drawLabel(imageRef.current!);
 
       fontLoaded.current = true;

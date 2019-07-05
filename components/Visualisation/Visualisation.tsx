@@ -3,7 +3,7 @@ import debounce from 'lodash/fp/debounce';
 import isEqual from 'lodash/fp/isEqual';
 import { configure } from 'mobx';
 import { observer } from 'mobx-react';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import useTouch from '../../hooks/useTouch';
 import useWidth from '../../hooks/useWidth';
@@ -49,34 +49,18 @@ function createMapView(map: LeafletMap): IMapView {
   return { center: [center.lat, center.lng], zoom };
 }
 
-function useUIStore() {
-  const uiStoreRef = useRef<UIStore>();
+function useFactory<T>(factory: () => T) {
+  const ref = useRef<T>();
 
-  if (uiStoreRef.current == null) {
-    uiStoreRef.current = new UIStore();
+  if (ref.current == null) {
+    ref.current = factory();
   }
 
-  return uiStoreRef.current;
+  return ref.current;
 }
 
-function useDataStore(uiStore: UIStore, data: DiaryData) {
-  const dataStoreRef = useRef<DataStore>();
-
-  if (dataStoreRef.current == null) {
-    dataStoreRef.current = new DataStore(uiStore, data);
-  }
-
-  return dataStoreRef.current;
-}
-
-function useVisStore(uiStore: UIStore, dataStore: DataStore) {
-  const visStoreRef = useRef<VisualisationStore>();
-
-  if (visStoreRef.current == null) {
-    visStoreRef.current = new VisualisationStore(uiStore, dataStore);
-  }
-
-  return visStoreRef.current;
+function useUnmount(callback: () => void) {
+  useEffect(() => callback, []);
 }
 
 function useDevice(defaultDevice: DEVICE): [DEVICE, (width: number) => void] {
@@ -99,6 +83,18 @@ function useDevice(defaultDevice: DEVICE): [DEVICE, (width: number) => void] {
   ];
 }
 
+function useDebounceCallback<T extends (...args: any) => any>(callback: T, delay: number) {
+  const debouncedCallback = useCallback(debounce(delay)(callback), [delay, callback]);
+
+  useEffect(() => {
+    return () => {
+      debouncedCallback.cancel();
+    };
+  }, [debouncedCallback]);
+
+  return debouncedCallback;
+}
+
 const Visualisation = observer((props: IProps) => {
   const {
     view,
@@ -111,20 +107,17 @@ const Visualisation = observer((props: IProps) => {
     onViewChange,
   } = props;
 
-  const uiStore = useUIStore();
-  const dataStore = useDataStore(uiStore, data);
-  const visStore = useVisStore(uiStore, dataStore);
+  const uiStore = useFactory(() => new UIStore());
+  const dataStore = useFactory(() => new DataStore(uiStore, data));
+  const visStore = useFactory(() => new VisualisationStore(uiStore, dataStore));
 
   useLayoutEffect(() => {
     uiStore.update({ view, timeSpan });
   }, [view, timeSpan]);
 
-  useEffect(
-    () => () => {
-      visStore.dispose();
-    },
-    []
-  );
+  useUnmount(() => {
+    visStore.dispose();
+  });
 
   const mapRef = useRef<LeafletMap>();
 
@@ -147,7 +140,7 @@ const Visualisation = observer((props: IProps) => {
     visStore.updateProjection(map);
   }, []);
 
-  const debounceOnMapViewChange = useCallback(debounce(200)(onMapViewChange), [onMapViewChange]);
+  const debounceOnMapViewChange = useDebounceCallback(onMapViewChange, 200);
 
   const handleMapViewDidChange = useCallback(
     (event: LeafletEvent) => {

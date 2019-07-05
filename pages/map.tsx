@@ -39,22 +39,28 @@ const Map: NextStatelessComponent<IProps> = props => {
   }, []);
 
   const handleTimeSpanChange = useCallback((timeSpan: ReadonlyArray<number>) => {
-    const query = {
-      ...Router.query,
-      timeSpan: timeSpan.join('-'),
-    };
-
-    Router.push({ pathname: '/map', query });
+    Router.push({
+      pathname: '/map',
+      query: {
+        ...Router.query,
+        timeSpan: timeSpan.join('-'),
+      },
+    });
   }, []);
 
   const handleMapViewChange = useCallback(({ center, zoom }: IMapView) => {
     const query = {
-      ...Router.query,
       center: center.join(','),
-      zoom,
+      zoom: String(zoom),
     };
 
-    Router.replace({ pathname: '/map', query });
+    Router.push({
+      pathname: '/map',
+      query: {
+        ...Router.query,
+        ...query,
+      },
+    });
   }, []);
 
   return (

@@ -159,10 +159,10 @@ class PlaceCircleLabel extends Component<IProps> {
     const clusterLabel =
       clusterSize > 0 ? `+${clusterSize} other ${clusterSize === 1 ? 'place' : 'places'}` : null;
 
-    checkFont(`${labelFontSize * 2}px "Overpass"`, label, this.drawLabel);
+    checkFont(`${labelFontSize * 2}px "Overpass"`, label).then(this.drawLabel);
 
     if (clusterLabel) {
-      checkFont(`${clusterLabelFontSize * 2}px "Overpass"`, clusterLabel, this.drawLabel);
+      checkFont(`${clusterLabelFontSize * 2}px "Overpass"`, clusterLabel).then(this.drawLabel);
     }
   }
 }

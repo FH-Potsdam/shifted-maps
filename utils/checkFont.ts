@@ -8,10 +8,12 @@ declare global {
   }
 }
 
-function preloadFont(font: string, label: string, callback: () => void) {
-  if (document.fonts != null && !document.fonts.check(font, label)) {
-    document.fonts.load(font, label).then(callback);
+function preloadFont(font: string, label?: string) {
+  if (document.fonts == null || document.fonts.check(font, label)) {
+    return Promise.resolve();
   }
+
+  return document.fonts.load(font, label);
 }
 
 export default preloadFont;
