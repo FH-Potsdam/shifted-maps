@@ -12,7 +12,7 @@ import { DiaryData } from '../../stores/Diary';
 import UIStore, { VIEW } from '../../stores/UIStore';
 import VisualisationStore from '../../stores/VisualisationStore';
 import styled from '../styled';
-import FilterToolbar from './FilterToolbar';
+import FilterToolbar from './FilterToolbar/FilterToolbar';
 import Map from './Map';
 import SVGVisualisationLayer from './SVGVisualisationLayer';
 
