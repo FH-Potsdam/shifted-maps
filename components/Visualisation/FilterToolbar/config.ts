@@ -5,12 +5,12 @@ import { VIEW } from '../../../stores/UIStore';
 import { formatDistance, formatDuration, formatFrequency } from '../../../stores/utils/formatLabel';
 import { DurationIcon, FrequencyIcon, GeographicIcon, MapIcon } from '../../common/icons/index';
 
-interface IViewStatItem {
+export interface IViewStatItem {
   name: string;
   data: (data: DataStore) => ReactNode;
 }
 
-interface IViewItem {
+export interface IViewItem {
   icon: ComponentType<any>;
   name: string;
   text: string;

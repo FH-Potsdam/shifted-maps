@@ -29,7 +29,7 @@ const FilterBar = observer((props: IProps) => {
   const mobileOrTablet = device === DEVICE.mobile || device === DEVICE.tablet;
   const [collapsed, setCollapsed] = useState(true);
   const ref = useDisableBodyScroll();
-  const activeViewIcon = getActiveViewItem(ui.view).icon;
+  const activeViewItem = getActiveViewItem(ui.view);
 
   const handleHeadingClick = useCallback(
     (event: MouseEvent<HTMLAnchorElement>) => {
@@ -50,14 +50,14 @@ const FilterBar = observer((props: IProps) => {
         <HeadlingLink onClick={handleHeadingClick}>
           <Heading use="h1">
             <span>
-              {mobileOrTablet && createElement(activeViewIcon)}
+              {mobileOrTablet && createElement(activeViewItem.icon)}
               Shifted Maps
             </span>
             {mobileOrTablet && <DownIcon />}
           </Heading>
         </HeadlingLink>
       </NextLink>
-      <ViewSection ui={ui} onViewChange={onViewChange} />
+      <ViewSection onViewChange={onViewChange} activeViewItem={activeViewItem} />
       <TimeSection ui={ui} data={data} onTimeSpanChange={onTimeSpanChange} />
     </div>
   );

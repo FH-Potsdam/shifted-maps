@@ -2,13 +2,13 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import moment from 'moment';
 import { transparentize } from 'polished';
-import { Fragment, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import DataStore, { DAY_IN_SEC } from '../../../stores/DataStore';
 import UIStore from '../../../stores/UIStore';
 import Slider from '../../common/Slider';
 import styled from '../../styled';
-import { getActiveViewItem } from './config';
+import Stats from './Stats';
 
 interface IProps {
   className?: string;
@@ -19,15 +19,16 @@ interface IProps {
 
 const TimeSection = observer((props: IProps) => {
   const { className, ui, data, onTimeSpanChange } = props;
-  const activeViewItem = getActiveViewItem(ui.view);
-
   const timeSpan = ui.timeSpan || data.timeSpan;
   const timeSliderActive = timeSpan[0] !== data.timeSpan[0] || timeSpan[1] !== data.timeSpan[1];
   const [currentTimeSpan, setCurrentTimeSpan] = useState<ReadonlyArray<number>>();
-  const handleTimeSpanChange = useCallback((timeSpan: ReadonlyArray<number>) => {
-    setCurrentTimeSpan(undefined);
-    onTimeSpanChange(timeSpan);
-  }, []);
+  const handleTimeSpanChange = useCallback(
+    (timeSpan: ReadonlyArray<number>) => {
+      setCurrentTimeSpan(undefined);
+      onTimeSpanChange(timeSpan);
+    },
+    [onTimeSpanChange]
+  );
 
   const [timeSpanStart, timeSpanEnd] = currentTimeSpan || timeSpan;
   const timeSpanStartMoment = moment.unix(timeSpanStart);
@@ -35,14 +36,7 @@ const TimeSection = observer((props: IProps) => {
 
   return (
     <section className={className}>
-      <Stats>
-        {activeViewItem.stats.map((statItem, index) => (
-          <Fragment key={index}>
-            <dt>{statItem.name}:</dt>
-            <dd>{statItem.data(data)}</dd>
-          </Fragment>
-        ))}
-      </Stats>
+      <Stats ui={ui} data={data} />
       <TimeSlider
         className={classNames({ active: timeSliderActive })}
         onChange={handleTimeSpanChange}
@@ -75,33 +69,6 @@ export default styled(TimeSection)`
 
   @media (min-width: 580px) {
     margin-top: ${props => props.theme.spacingUnit * 1.5}px;
-  }
-`;
-
-const Stats = styled.dl`
-  display: flex;
-  margin: 0;
-  flex-wrap: wrap;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: none;
-  user-select: none;
-
-  dt,
-  dd {
-    margin: 0;
-    width: 50%;
-  }
-
-  dt {
-    white-space: nowrap;
-  }
-
-  dd {
-    text-align: right;
-    font-weight: 900;
-    font-variant-numeric: tabular-nums;
-    font-feature-settings: 'tnum' 1;
-    color: ${props => props.theme.highlightColor};
   }
 `;
 
