@@ -28,7 +28,7 @@ const ViewButton = observer((props: IProps) => {
 
   return (
     <button className={classNames(className, { active })} onClick={handleClick}>
-      {createElement(viewItem.icon)}}
+      {createElement(viewItem.icon)}
     </button>
   );
 });
