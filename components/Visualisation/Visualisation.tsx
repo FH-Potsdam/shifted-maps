@@ -3,7 +3,7 @@ import debounce from 'lodash/fp/debounce';
 import isEqual from 'lodash/fp/isEqual';
 import { configure } from 'mobx';
 import { observer } from 'mobx-react';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 
 import useTouch from '../../hooks/useTouch';
 import useWidth from '../../hooks/useWidth';
@@ -47,20 +47,6 @@ function createMapView(map: LeafletMap): IMapView {
   const zoom = map.getZoom();
 
   return { center: [center.lat, center.lng], zoom };
-}
-
-function useFactory<T>(factory: () => T) {
-  const ref = useRef<T>();
-
-  if (ref.current == null) {
-    ref.current = factory();
-  }
-
-  return ref.current;
-}
-
-function useUnmount(callback: () => void) {
-  useEffect(() => callback, []);
 }
 
 function useDevice(defaultDevice: DEVICE): [DEVICE, (width: number) => void] {
@@ -107,17 +93,23 @@ const Visualisation = observer((props: IProps) => {
     onViewChange,
   } = props;
 
-  const uiStore = useFactory(() => new UIStore());
-  const dataStore = useFactory(() => new DataStore(uiStore, data));
-  const visStore = useFactory(() => new VisualisationStore(uiStore, dataStore));
+  // Use memo to no reinitialize stores on every render.
+  // TODO Use useRef with dependency array for semantic guarantee.
+  // See https://reactjs.org/docs/hooks-reference.html#usememo
+  const uiStore = useMemo(() => new UIStore(), []);
+  const dataStore = useMemo(() => new DataStore(uiStore, data), [data]);
+  const visStore = useMemo(() => new VisualisationStore(uiStore, dataStore), []);
 
   useLayoutEffect(() => {
     uiStore.update({ view, timeSpan });
   }, [view, timeSpan]);
 
-  useUnmount(() => {
-    visStore.dispose();
-  });
+  useEffect(
+    () => () => {
+      visStore.dispose();
+    },
+    []
+  );
 
   const mapRef = useRef<LeafletMap>();
 
