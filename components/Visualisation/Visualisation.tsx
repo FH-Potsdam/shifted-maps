@@ -97,8 +97,8 @@ const Visualisation = observer((props: IProps) => {
   // TODO Use useRef with dependency array for semantic guarantee.
   // See https://reactjs.org/docs/hooks-reference.html#usememo
   const uiStore = useMemo(() => new UIStore(), []);
-  const dataStore = useMemo(() => new DataStore(uiStore, data), [data]);
-  const visStore = useMemo(() => new VisualisationStore(uiStore, dataStore), []);
+  const dataStore = useMemo(() => new DataStore(uiStore, data), [uiStore, data]);
+  const visStore = useMemo(() => new VisualisationStore(uiStore, dataStore), [uiStore, dataStore]);
 
   useLayoutEffect(() => {
     uiStore.update({ view, timeSpan });
