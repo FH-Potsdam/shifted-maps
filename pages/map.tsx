@@ -1,10 +1,10 @@
-import { NextStatelessComponent } from 'next';
 import dynamic from 'next/dynamic';
 import Router from 'next/router';
 import { useCallback } from 'react';
+import { NextPage } from 'next';
 
 import { IMapView } from '../components/Visualisation/Visualisation';
-import demo from '../static/data/demo.json';
+import demo from '../data/demo.json';
 import { DiaryData } from '../stores/Diary';
 import { VIEW } from '../stores/UIStore';
 
@@ -21,7 +21,7 @@ interface IProps {
   mapView?: IMapView;
 }
 
-const Map: NextStatelessComponent<IProps> = props => {
+const Map: NextPage<IProps> = props => {
   const { data, view, timeSpan, mapView } = props;
 
   const handleViewChange = useCallback((view?: VIEW) => {

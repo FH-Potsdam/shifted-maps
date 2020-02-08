@@ -1,13 +1,14 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import NextLink from 'next/link';
-import { createElement, MouseEvent, useCallback, useState } from 'react';
+import { MouseEvent, useCallback, useState } from 'react';
 
 import useDisableBodyScroll from '../../../hooks/useDIsableBodyScroll';
 import DataStore from '../../../stores/DataStore';
 import UIStore, { VIEW } from '../../../stores/UIStore';
 import Heading from '../../common/Heading';
-import { DownIcon, DurationIcon, FrequencyIcon, GeographicIcon, MapIcon } from '../../common/icons';
+import DownIcon from '../../common/icons/down.svg';
+import { StrokeIcon, Icon } from '../../common/icons/components';
 import styled from '../../styled';
 import { DEVICE } from '../Visualisation';
 import { getActiveViewItem } from './config';
@@ -28,7 +29,7 @@ const FilterBar = observer((props: IProps) => {
 
   const mobileOrTablet = device === DEVICE.mobile || device === DEVICE.tablet;
   const [collapsed, setCollapsed] = useState(true);
-  const ref = useDisableBodyScroll();
+  const ref = useDisableBodyScroll<HTMLDivElement>();
   const activeViewItem = getActiveViewItem(ui.view);
 
   const handleHeadingClick = useCallback(
@@ -48,12 +49,12 @@ const FilterBar = observer((props: IProps) => {
     <div className={classNames(className, { collapsed: mobileOrTablet && collapsed })} ref={ref}>
       <NextLink href="/">
         <HeadlingLink onClick={handleHeadingClick}>
-          <Heading use="h1">
+          <Heading as="h1">
             <span>
-              {mobileOrTablet && createElement(activeViewItem.icon)}
+              {mobileOrTablet && activeViewItem.icon}
               Shifted Maps
             </span>
-            {mobileOrTablet && <DownIcon />}
+            {mobileOrTablet && <StrokeIcon as={DownIcon} />}
           </Heading>
         </HeadlingLink>
       </NextLink>
@@ -87,15 +88,12 @@ export default styled(FilterBar)`
     align-items: center;
     cursor: pointer;
 
-    ${GeographicIcon},
-    ${DurationIcon},
-    ${FrequencyIcon},
-    ${MapIcon} {
+    ${Icon} {
       margin-right: ${props => props.theme.spacingUnit}px;
     }
   }
 
-  ${DownIcon} {
+  ${StrokeIcon} {
     transition: transform ${props => props.theme.shortTransitionDuration};
     transform: rotateX(180deg);
   }
@@ -104,7 +102,7 @@ export default styled(FilterBar)`
     height: ${props => props.theme.spacingUnit * 3}px;
     top: 0;
 
-    ${DownIcon} {
+    ${StrokeIcon} {
       transform: rotateX(0deg);
     }
   }
@@ -127,8 +125,7 @@ export default styled(FilterBar)`
 
   @media (min-width: 580px) {
     display: block;
-    padding: ${props => props.theme.spacingUnit * 1.5}px
-      ${props => props.theme.spacingUnit * 1.25}px;
+    padding: ${props => props.theme.spacingUnit * 1.5}px ${props => props.theme.spacingUnit * 1.25}px;
     top: ${props => props.theme.spacingUnit}px;
     left: ${props => props.theme.spacingUnit}px;
     width: ${props => props.theme.spacingUnit * 16}px;

@@ -1,8 +1,8 @@
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 import { useEffect, useRef } from 'react';
 
-export default function useDisableBodyScroll() {
-  const ref = useRef<HTMLElement>();
+export default function useDisableBodyScroll<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
 
   useEffect(() => {
     if (ref.current == null) {

@@ -1,10 +1,13 @@
 import NextLink from 'next/link';
 import { lighten, transparentize } from 'polished';
 import { StatelessComponent } from 'react';
-import use from 'reuse';
 
 import Heading from '../common/Heading';
-import { FHPLogo, GoIcon, HereLogo, Logo, UCLabLogo } from '../common/icons';
+import FHPLogo from '../common/icons/fhp.svg';
+import HereLogo from '../common/icons/here.svg';
+import UCLabLogo from '../common/icons/uclab.svg';
+import GoIcon from '../common/icons/go.svg';
+import { Icon, Logo } from '../common/icons/components';
 import Layout, { LayoutItem } from '../common/Layout';
 import Link from '../common/Link';
 import Paragraph from '../common/Paragraph';
@@ -24,7 +27,7 @@ const Hero: StatelessComponent<IProps> = props => {
         <Paragraph lead>Visualizing personal Movement through Map Networks</Paragraph>
       </HeroHeader>
       <HeroHighlight>
-        <NextLink href="/map" prefetch>
+        <NextLink href="/map">
           <HeroGo>
             Explore the
             <br />
@@ -33,52 +36,53 @@ const Hero: StatelessComponent<IProps> = props => {
         </NextLink>
       </HeroHighlight>
       <HeroBottom>
-        <HeroPaperSectionLayout>
-          <LayoutItem span="6">
-            <HeroDownload href="/static/downloads/ShiftedMaps_Poster_IEEE_2015.pdf" download>
-              <GoIcon /> Poster IEEE VIS 2015
-              <em>877 KB</em>
-            </HeroDownload>
-          </LayoutItem>
-          <LayoutItem span="6">
-            <HeroDownload href="/static/downloads/ShiftedMaps_Paper_IEEE_2018_VISAP.pdf" download>
-              <GoIcon name="go" /> Paper IEEE VIS / VISAP 2018
-              <em>4.9 MB</em>
-            </HeroDownload>
-          </LayoutItem>
-        </HeroPaperSectionLayout>
-        <HeroCreditsSection>
+        <HeroSection as={HeroPaper}>
+          <Layout>
+            <LayoutItem span="6">
+              <HeroDownload href="/static/downloads/ShiftedMaps_Poster_IEEE_2015.pdf" download>
+                <Icon as={GoIcon} /> Poster IEEE VIS 2015
+                <em>877 KB</em>
+              </HeroDownload>
+            </LayoutItem>
+            <LayoutItem span="6">
+              <HeroDownload href="/static/downloads/ShiftedMaps_Paper_IEEE_2018_VISAP.pdf" download>
+                <Icon as={GoIcon} /> Paper IEEE VIS / VISAP 2018
+                <em>4.9 MB</em>
+              </HeroDownload>
+            </LayoutItem>
+          </Layout>
+        </HeroSection>
+        <HeroSection as={HeroCredits}>
           <p>
             Shifted Maps is a student research project by{' '}
             <Link href="https://www.lennerd.com">Lennart Hildebrandt</Link> and{' '}
-            <Link href="http://www.heikeotten.de">Heike Otten</Link> conducted at the Urban
-            Complexity Lab, University of Applied Sciences Potsdam.
+            <Link href="http://www.heikeotten.de">Heike Otten</Link> conducted at the Urban Complexity Lab, University
+            of Applied Sciences Potsdam.
           </p>
           <p>
             The source code of this project is available under GPL-3.0 at{' '}
-            <Link href="https://github.com/FH-Potsdam/shifted-maps">
-              Github (FH-Potsdam/shifted-maps)
-            </Link>
-            .
+            <Link href="https://github.com/FH-Potsdam/shifted-maps">Github (FH-Potsdam/shifted-maps)</Link>.
           </p>
-        </HeroCreditsSection>
-        <HeroPartnerSectionLayout>
-          <LayoutItem span="3">
-            <Link href="https://www.fh-potsdam.de">
-              <FHPLogo />
-            </Link>
-          </LayoutItem>
-          <LayoutItem span="5">
-            <Link href="https://uclab.fh-potsdam.de">
-              <UCLabLogo />
-            </Link>
-          </LayoutItem>
-          <LayoutItem span="3">
-            <Link href="https://here.com">
-              <HereLogo />
-            </Link>
-          </LayoutItem>
-        </HeroPartnerSectionLayout>
+        </HeroSection>
+        <HeroSection as={HeroPartner}>
+          <Layout>
+            <LayoutItem span="3">
+              <Link href="https://www.fh-potsdam.de">
+                <Logo as={FHPLogo} />
+              </Link>
+            </LayoutItem>
+            <LayoutItem span="5">
+              <Link href="https://uclab.fh-potsdam.de">
+                <Logo as={UCLabLogo} />
+              </Link>
+            </LayoutItem>
+            <LayoutItem span="3">
+              <Link href="https://here.com">
+                <Logo as={HereLogo} />
+              </Link>
+            </LayoutItem>
+          </Layout>
+        </HeroSection>
       </HeroBottom>
     </div>
   );
@@ -139,13 +143,11 @@ const HeroBottom = styled.div`
   }
 `;
 
-const HeroSection = styled(use('div'))`
+const HeroSection = styled.div`
   & + & {
     margin-top: ${props => props.theme.spacingUnit}px;
   }
 `;
-
-const HeroSectionLayout = use(HeroSection, Layout);
 
 const HeroGo = styled(Link)`
   display: flex;
@@ -194,7 +196,7 @@ const HeroGo = styled(Link)`
 const HeroDownload = styled(Link)`
   display: block;
 
-  ${GoIcon} {
+  ${Icon} {
     display: block;
     font-size: ${props => props.theme.spacingUnit * 2}px;
     margin-bottom: ${props => props.theme.spacingUnit * 0.5}px;
@@ -207,7 +209,7 @@ const HeroDownload = styled(Link)`
   }
 `;
 
-const HeroCredits = styled(use('div'))`
+const HeroCredits = styled.div`
   font-size: ${props => props.theme.fontSizeSmall}px;
   font-style: italic;
   opacity: 0.6;
@@ -231,13 +233,11 @@ const HeroCredits = styled(use('div'))`
   }
 `;
 
-const HeroCreditsSection = use(HeroCredits, HeroSection);
-
-const HeroPaperSectionLayout = styled(HeroSectionLayout)`
+const HeroPaper = styled.div`
   max-width: 310px;
 `;
 
-const HeroPartnerSectionLayout = styled(HeroSectionLayout)`
+const HeroPartner = styled.div`
   align-items: center;
   max-width: 320px;
 

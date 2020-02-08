@@ -1,6 +1,6 @@
 import { IncomingMessage } from 'http';
 import { useStaticRendering } from 'mobx-react';
-import BaseApp, { AppComponentContext, Container } from 'next/app';
+import BaseApp, { AppContext } from 'next/app';
 import Head from 'next/head';
 import 'normalize.css';
 import React, { Fragment } from 'react';
@@ -33,7 +33,7 @@ function getAbsoluteURL(req: IncomingMessage | undefined) {
 }
 
 class App extends BaseApp<IProps> {
-  static async getInitialProps({ Component, ctx }: AppComponentContext) {
+  static async getInitialProps({ Component, ctx }: AppContext) {
     let pageProps = {};
 
     if (ctx.req != null) {
@@ -51,7 +51,7 @@ class App extends BaseApp<IProps> {
     const { Component, pageProps, url } = this.props;
 
     return (
-      <Container>
+      <>
         <Head>
           <title>Shifted Maps</title>
           <meta
@@ -93,7 +93,7 @@ class App extends BaseApp<IProps> {
             <GlobalStyle />
           </Fragment>
         </ThemeProvider>
-      </Container>
+      </>
     );
   }
 }

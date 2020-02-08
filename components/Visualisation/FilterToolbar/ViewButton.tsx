@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import { createElement, MouseEvent, useCallback } from 'react';
+import { MouseEvent, useCallback } from 'react';
 
 import { VIEW } from '../../../stores/UIStore';
-import { Icon } from '../../common/icons/index';
+import { Icon } from '../../common/icons/components';
 import styled from '../../styled';
 import { IViewItem } from './config';
 
@@ -28,7 +28,7 @@ const ViewButton = observer((props: IProps) => {
 
   return (
     <button className={classNames(className, { active })} onClick={handleClick}>
-      {createElement(viewItem.icon)}
+      {viewItem.icon}
     </button>
   );
 });

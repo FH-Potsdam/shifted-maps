@@ -29,7 +29,7 @@ export function switchProp<P>(
   return (props: P) => cases[String(props[key])];
 }
 
-export function mediaQuery<P>(name: Breakpoints) {
+export function mediaQuery<P extends object>(name: Breakpoints) {
   return (
     strings: TemplateStringsArray,
     ...interpolations: Array<

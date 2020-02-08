@@ -1,8 +1,8 @@
-import { NextStatelessComponent } from 'next';
+import { NextPage } from 'next';
 
 import Home from '../components/Home/Home';
 
-const Index: NextStatelessComponent = () => {
+const Index: NextPage = () => {
   return <Home />;
 };
 

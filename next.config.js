@@ -1,14 +1,9 @@
-const withTypescript = require('@zeit/next-typescript');
 const withCSS = require('@zeit/next-css');
 const webpack = require('webpack');
-const flow = require('lodash/fp/flow');
 
 const package = require('./package');
 
-module.exports = flow(
-  withTypescript,
-  withCSS
-)({
+module.exports = withCSS({
   target: 'serverless',
   env: {
     url: process.env.URL,
