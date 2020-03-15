@@ -1,4 +1,3 @@
-import { GetServerSideProps } from 'next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
@@ -12,15 +11,34 @@ const DynamicVisualisation = dynamic({
   ssr: false,
 });
 
-interface MapProps {
-  view?: VIEW;
-  timeSpan?: ReadonlyArray<number>;
-  mapView?: MapView;
-}
-
-const Map = (props: MapProps) => {
-  const { view, timeSpan, mapView } = props;
+const Map = () => {
   const router = useRouter();
+  let view: VIEW | undefined;
+  let timeSpan: ReadonlyArray<number> | undefined;
+  let mapView: MapView | undefined;
+
+  if (typeof router.query.timeSpan === 'string') {
+    const [start, end] = router.query.timeSpan.split('-');
+
+    if (start != null && end != null) {
+      timeSpan = [Number(start), Number(end)];
+    }
+  }
+
+  if (typeof router.query.view === 'string') {
+    view = VIEW[router.query.view.toUpperCase()];
+  }
+
+  if (typeof router.query.center === 'string' && typeof router.query.zoom === 'string') {
+    const [lat, lng] = router.query.center.split(',');
+
+    if (lat != null && lng != null) {
+      mapView = {
+        center: [Number(lat), Number(lng)],
+        zoom: Number(router.query.zoom),
+      };
+    }
+  }
 
   const handleViewChange = useCallback(
     (view?: VIEW) => {
@@ -81,37 +99,6 @@ const Map = (props: MapProps) => {
       onMapViewChange={handleMapViewChange}
     />
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  const props: Partial<MapProps> = {};
-
-  if (typeof query.timeSpan === 'string') {
-    const [start, end] = query.timeSpan.split('-');
-
-    if (start != null && end != null) {
-      props.timeSpan = [Number(start), Number(end)];
-    }
-  }
-
-  if (typeof query.view === 'string') {
-    props.view = VIEW[query.view.toUpperCase()];
-  }
-
-  if (typeof query.center === 'string' && typeof query.zoom === 'string') {
-    const [lat, lng] = query.center.split(',');
-
-    if (lat != null && lng != null) {
-      props.mapView = {
-        center: [Number(lat), Number(lng)],
-        zoom: Number(query.zoom),
-      };
-    }
-  }
-
-  return {
-    props,
-  };
 };
 
 export default Map;
