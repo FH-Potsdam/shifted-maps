@@ -13,3 +13,5 @@
 # Other
 /npm-debug.log
 .sass-cache
+
+.now
