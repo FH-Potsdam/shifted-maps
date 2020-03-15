@@ -3,12 +3,12 @@ import { useStaticRendering } from 'mobx-react';
 import BaseApp, { AppContext } from 'next/app';
 import Head from 'next/head';
 import 'normalize.css';
-import React, { Fragment, StrictMode } from 'react';
+import React, { Fragment } from 'react';
 import GlobalStyle from '../components/GlobalStyle';
-import { ThemeProvider } from '../components/styled';
 import theme from '../components/theme';
 import '../styles/fonts.css';
 import { trimSlashesEnd } from '../utils/trimSlashes';
+import { ThemeProvider } from 'styled-components';
 
 interface AppProps {
   url: string;
@@ -49,7 +49,7 @@ class App extends BaseApp<AppProps> {
     const { Component, pageProps, url } = this.props;
 
     return (
-      <StrictMode>
+      <>
         <Head>
           <title>Shifted Maps</title>
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -82,7 +82,7 @@ class App extends BaseApp<AppProps> {
             <GlobalStyle />
           </Fragment>
         </ThemeProvider>
-      </StrictMode>
+      </>
     );
   }
 }

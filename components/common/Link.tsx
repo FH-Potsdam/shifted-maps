@@ -1,4 +1,5 @@
-import styled, { theme } from '../styled';
+import styled from 'styled-components';
+import { theme } from '../styled';
 
 const Link = styled.a`
   transition: color ${theme('shortTransitionDuration')};

@@ -1,6 +1,5 @@
-import { Fragment } from 'react';
 import { Handles, Rail, Slider as BaseSlider, SliderItem, TrackItem, Tracks } from 'react-compound-slider';
-import styled from '../styled';
+import styled from 'styled-components';
 
 interface SliderProps {
   domain: ReadonlyArray<number>;
@@ -12,31 +11,31 @@ interface SliderProps {
   mode?: number;
 }
 
-function Slider(props: SliderProps) {
+const Slider = (props: SliderProps) => {
   return (
     <BaseSlider {...props}>
       <Rail>{({ getRailProps }) => <SliderRail {...getRailProps()} />}</Rail>
       <Tracks left={false} right={false}>
         {({ tracks, getTrackProps }) => (
-          <Fragment>
+          <>
             {tracks.map(track => (
               <SliderTrack key={track.id} {...getTrackProps()} {...track} />
             ))}
-          </Fragment>
+          </>
         )}
       </Tracks>
       <Handles>
         {({ handles, getHandleProps }) => (
-          <Fragment>
+          <>
             {handles.map(handle => (
               <SliderHandle key={handle.id} {...getHandleProps(handle.id)} {...handle} />
             ))}
-          </Fragment>
+          </>
         )}
       </Handles>
     </BaseSlider>
   );
-}
+};
 
 export default styled(Slider)`
   position: relative;

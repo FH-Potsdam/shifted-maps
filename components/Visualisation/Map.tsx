@@ -1,7 +1,7 @@
 import { LatLngBounds } from 'leaflet';
 import { observer } from 'mobx-react';
 import { AttributionControl, Map as ReactLeafletMap, MapProps as LeafletMapProps, TileLayer } from 'react-leaflet';
-import styled from '../styled';
+import styled from 'styled-components';
 
 interface MapProps {
   className?: string;

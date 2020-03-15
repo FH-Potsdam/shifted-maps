@@ -1,6 +1,7 @@
 import NextLink from 'next/link';
 import { lighten, transparentize } from 'polished';
 import { StatelessComponent } from 'react';
+import styled from 'styled-components';
 import Heading from '../common/Heading';
 import { Icon, Logo } from '../common/icons/components';
 import FHPLogo from '../common/icons/fhp.svg';
@@ -10,7 +11,6 @@ import UCLabLogo from '../common/icons/uclab.svg';
 import Layout, { LayoutItem } from '../common/Layout';
 import Link from '../common/Link';
 import Paragraph from '../common/Paragraph';
-import styled from '../styled';
 
 interface HeroProps {
   className?: string;

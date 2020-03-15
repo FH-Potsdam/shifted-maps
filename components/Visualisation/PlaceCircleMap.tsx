@@ -2,10 +2,10 @@ import classNames from 'classnames';
 import { Browser } from 'leaflet';
 import { observer } from 'mobx-react';
 import { useMemo, useRef } from 'react';
+import styled from 'styled-components';
 import PlaceCircle from '../../stores/PlaceCircle';
 import round from '../../stores/utils/round';
 import VisualisationStore from '../../stores/VisualisationStore';
-import styled from '../styled';
 import PlaceCircleMapImage from './PlaceCircleMapImage';
 
 interface PlaceCircleMapProps {

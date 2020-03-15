@@ -1,23 +1,8 @@
-export interface Theme {
-  spacingUnit: number;
-  foregroundColor: string;
-  backgroundColor: string;
-  highlightColor: string;
-  fontSize: number;
-  fontSizeBig: number;
-  fontSizeHero: number;
-  fontSizeMini: number;
-  fontSizeSmall: number;
-  shortTransitionDuration: string;
-  transitionDuration: string;
-  breakpoints: { [name in Breakpoints]: number };
-}
-
-export type Breakpoints = 'tablet' | 'desktop';
+import { DefaultTheme } from 'styled-components';
 
 const spacingUnit = 16;
 
-const theme: Theme = {
+const theme: DefaultTheme = {
   backgroundColor: '#ffffff',
   breakpoints: {
     desktop: 1000,

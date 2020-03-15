@@ -2,18 +2,17 @@ import classNames from 'classnames';
 import { DomUtil } from 'leaflet';
 import { observer } from 'mobx-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import styled, { DefaultTheme, withTheme } from 'styled-components';
+import useAutorun from '../../hooks/useAutorun';
 import PlaceCircle from '../../stores/PlaceCircle';
 import checkFont from '../../utils/checkFont';
-import styled, { withTheme } from '../styled';
-import { Theme } from '../theme';
 import { DEVICE } from './Visualisation';
-import useAutorun from '../../hooks/useAutorun';
 
 interface PlaceCircleLabelProps {
   placeCircle: PlaceCircle;
   device: DEVICE;
   className?: string;
-  theme?: Theme;
+  theme?: DefaultTheme;
 }
 
 const PlaceCircleLabel = observer(({ className, placeCircle, theme, device }: PlaceCircleLabelProps) => {

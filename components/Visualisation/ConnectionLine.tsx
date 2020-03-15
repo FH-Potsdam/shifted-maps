@@ -1,10 +1,10 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import { SyntheticEvent, useCallback } from 'react';
+import styled from 'styled-components';
 import useAutorunRef from '../../hooks/useAutorunRef';
 import ConnectionLineModel from '../../stores/ConnectionLine';
 import VisualisationStore from '../../stores/VisualisationStore';
-import styled from '../styled';
 import ConnectionLineLabel from './ConnectionLineLabel';
 import { DEVICE } from './Visualisation';
 

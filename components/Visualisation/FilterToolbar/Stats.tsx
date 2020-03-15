@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react';
 import { Fragment } from 'react';
+import styled from 'styled-components';
 import DataStore from '../../../stores/DataStore';
 import UIStore from '../../../stores/UIStore';
-import styled from '../../styled';
 import { getActiveViewItem } from './config';
 
 interface StatsProps {

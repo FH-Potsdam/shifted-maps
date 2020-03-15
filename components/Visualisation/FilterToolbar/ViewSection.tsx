@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import { transparentize } from 'polished';
+import styled from 'styled-components';
 import { VIEW } from '../../../stores/UIStore';
-import styled from '../../styled';
 import { ViewItem, VIEW_LIST } from './config';
 import ViewButton from './ViewButton';
 

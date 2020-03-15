@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import { MouseEvent, useCallback } from 'react';
+import styled from 'styled-components';
 import { VIEW } from '../../../stores/UIStore';
 import { Icon } from '../../common/icons/components';
-import styled from '../../styled';
 import { ViewItem } from './config';
 
 interface ViewButtonProps {

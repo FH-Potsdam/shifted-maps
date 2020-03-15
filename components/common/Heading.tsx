@@ -1,4 +1,5 @@
-import styled, { theme } from '../styled';
+import styled from 'styled-components';
+import { theme } from '../styled';
 
 const Heading = styled.h1`
   color: ${theme('highlightColor')};

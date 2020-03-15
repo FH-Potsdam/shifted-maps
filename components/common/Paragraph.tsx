@@ -1,4 +1,5 @@
-import styled, { css, ifProp, theme } from '../styled';
+import styled, { css } from 'styled-components';
+import { ifProp, theme } from '../styled';
 
 interface ParagraphProps {
   lead?: boolean;

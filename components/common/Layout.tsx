@@ -1,4 +1,5 @@
-import styled, { theme } from '../styled';
+import styled from 'styled-components';
+import { theme } from '../styled';
 
 const Layout = styled.div`
   display: grid;

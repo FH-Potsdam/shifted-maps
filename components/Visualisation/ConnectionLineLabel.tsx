@@ -1,18 +1,17 @@
 import classNames from 'classnames';
 import { DomUtil } from 'leaflet';
 import { observer } from 'mobx-react';
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import styled, { DefaultTheme, withTheme } from 'styled-components';
 import useAutorunRef from '../../hooks/useAutorunRef';
 import ConnectionLineLabelModel from '../../stores/ConnectionLineLabel';
 import checkFont from '../../utils/checkFont';
-import styled, { withTheme } from '../styled';
-import { Theme } from '../theme';
 import { DEVICE } from './Visualisation';
 
 interface ConnectionLineProps {
   connectionLineLabel: ConnectionLineLabelModel;
   device: DEVICE;
-  theme?: Theme;
+  theme?: DefaultTheme;
   className?: string;
 }
 

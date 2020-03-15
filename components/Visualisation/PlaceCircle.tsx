@@ -1,10 +1,10 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import { MouseEvent } from 'react';
+import styled from 'styled-components';
 import useAutorunRef from '../../hooks/useAutorunRef';
 import PlaceCircleModel from '../../stores/PlaceCircle';
 import VisualisationStore from '../../stores/VisualisationStore';
-import styled from '../styled';
 import PlaceCircleLabel from './PlaceCircleLabel';
 import PlaceCircleMap from './PlaceCircleMap';
 import { DEVICE } from './Visualisation';
