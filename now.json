@@ -1,5 +1,0 @@
-{
-  "version": 2,
-  "alias": "shifted-maps.com",
-  "builds": [{ "src": "next.config.js", "use": "@now/next" }]
-}
