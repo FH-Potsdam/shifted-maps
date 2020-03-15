@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { DomUtil } from 'leaflet';
 import { observer } from 'mobx-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import useAutorunRef from '../../hooks/useAutorunRef';
 import ConnectionLineLabelModel from '../../stores/ConnectionLineLabel';
 import checkFont from '../../utils/checkFont';
@@ -18,58 +18,53 @@ interface ConnectionLineProps {
 
 const ConnectionLineLabel = observer((props: ConnectionLineProps) => {
   const { className, connectionLineLabel, theme, device } = props;
-  const labelCanvesRef = useRef<HTMLCanvasElement>();
-  const labelCtxRef = useRef<CanvasRenderingContext2D>();
   const fontLoaded = useRef<boolean>(false);
+  const [canvas] = useState(() => document.createElement('canvas'));
+  const [ctx] = useState(() => canvas.getContext('2d')!);
 
-  useEffect(() => {
-    labelCanvesRef.current = document.createElement('canvas');
-    labelCtxRef.current = labelCanvesRef.current.getContext('2d')!;
-  }, []);
+  const drawLabel = useCallback(
+    (image: SVGImageElement) => {
+      const { highlight, content } = connectionLineLabel;
 
-  const drawLabel = (image: SVGImageElement) => {
-    const { highlight, content } = connectionLineLabel;
+      if (content == null || theme == null) {
+        return;
+      }
 
-    if (content == null || theme == null) {
-      return;
-    }
+      const mobileOrTablet = device === DEVICE.mobile || device === DEVICE.tablet;
+      const fontSize = mobileOrTablet ? theme.fontSizeMini : theme.fontSizeSmall;
 
-    const ctx = labelCtxRef.current!;
-    const canvas = labelCanvesRef.current!;
-    const mobileOrTablet = device === DEVICE.mobile || device === DEVICE.tablet;
+      ctx.font = `${fontSize * 2}px Overpass`;
+      const metrics = ctx.measureText(content);
 
-    const fontSize = mobileOrTablet ? theme.fontSizeMini : theme.fontSizeSmall;
+      const padding = theme.spacingUnit * 0.5;
+      const width = Math.round(metrics.width) + padding * 2;
+      const height = Math.round(
+        metrics.emHeightAscent && metrics.emHeightDescent
+          ? metrics.emHeightAscent + metrics.emHeightDescent
+          : fontSize * 2
+      );
 
-    ctx.font = `${fontSize * 2}px Overpass`;
-    const metrics = ctx.measureText(content);
+      canvas.setAttribute('width', String(width));
+      canvas.setAttribute('height', String(height));
 
-    const padding = theme.spacingUnit * 0.5;
-    const width = Math.round(metrics.width) + padding * 2;
-    const height = Math.round(
-      metrics.emHeightAscent && metrics.emHeightDescent
-        ? metrics.emHeightAscent + metrics.emHeightDescent
-        : fontSize * 2
-    );
+      ctx.fillStyle = theme.backgroundColor;
+      ctx.rect(0, 0, width, height);
+      ctx.fill();
 
-    canvas.setAttribute('width', String(width));
-    canvas.setAttribute('height', String(height));
+      ctx.font = `${fontSize * 2}px "Overpass"`;
+      ctx.fillStyle = highlight ? theme.highlightColor : theme.foregroundColor;
 
-    ctx.fillStyle = theme.backgroundColor;
-    ctx.rect(0, 0, width, height);
-    ctx.fill();
+      ctx.fillText(content, padding, fontSize * 2 - 4);
 
-    ctx.font = `${fontSize * 2}px "Overpass"`;
-    ctx.fillStyle = highlight ? theme.highlightColor : theme.foregroundColor;
+      image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', canvas.toDataURL());
+      image.setAttribute('width', String(width * 0.5));
+      image.setAttribute('height', String(height * 0.5));
+      image.style[DomUtil.TRANSFORM] = `translate(${width * -0.25}px, ${height * -0.25}px)`;
+    },
+    [connectionLineLabel, device, theme]
+  );
 
-    ctx.fillText(content, padding, fontSize * 2 - 4);
-
-    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', canvas.toDataURL());
-    image.setAttribute('width', String(width * 0.5));
-    image.setAttribute('height', String(height * 0.5));
-    image.style[DomUtil.TRANSFORM] = `translate(${width * -0.25}px, ${height * -0.25}px)`;
-  };
-
-  const imageRef = useAutorunRef(drawLabel, [connectionLineLabel, device, theme]);
+  const imageRef = useAutorunRef(drawLabel, [drawLabel]);
 
   useEffect(() => {
     if (fontLoaded.current || theme == null || connectionLineLabel.content == null) {
@@ -79,11 +74,13 @@ const ConnectionLineLabel = observer((props: ConnectionLineProps) => {
     const font = `${theme.fontSizeSmall * 2}px Overpass`;
 
     checkFont(font, connectionLineLabel.content).then(() => {
-      drawLabel(imageRef.current!);
+      if (imageRef.current != null) {
+        drawLabel(imageRef.current);
+      }
 
       fontLoaded.current = true;
     });
-  }, [theme, connectionLineLabel.content]);
+  }, [theme, connectionLineLabel.content, drawLabel]);
 
   const groupRef = useAutorunRef(
     (g: SVGGElement) => {

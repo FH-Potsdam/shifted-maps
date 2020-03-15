@@ -1,7 +1,7 @@
 import classNames from 'classnames';
-import { autorun } from 'mobx';
 import { observer } from 'mobx-react';
-import { MouseEvent, useEffect, useRef } from 'react';
+import { MouseEvent } from 'react';
+import useAutorunRef from '../../hooks/useAutorunRef';
 import PlaceCircleModel from '../../stores/PlaceCircle';
 import VisualisationStore from '../../stores/VisualisationStore';
 import styled from '../styled';
@@ -19,25 +19,15 @@ interface PlaceCircleProps {
 
 const PlaceCircle = observer(({ placeCircle, className, vis, touch, device }: PlaceCircleProps) => {
   const { radius, strokeWidth, active, visible, fade } = placeCircle;
-  const ref = useRef<SVGGElement>(null);
 
-  useEffect(() => {
-    if (ref.current == null) {
-      return;
-    }
-
-    const style = () => {
+  const ref = useAutorunRef(
+    (element: SVGGElement) => {
       const { point } = placeCircle;
 
-      ref.current!.setAttribute('transform', `translate(${point.x}, ${point.y})`);
-    };
-
-    return autorun(style);
-  }, [ref.current]);
-
-  if (!visible) {
-    return null;
-  }
+      element.setAttribute('transform', `translate(${point.x}, ${point.y})`);
+    },
+    [placeCircle]
+  );
 
   const toggle = (active?: boolean) => {
     vis.toggle(placeCircle, active);
@@ -59,14 +49,18 @@ const PlaceCircle = observer(({ placeCircle, className, vis, touch, device }: Pl
             },
           })}
     >
-      <PlaceCircleBackground r={radius} />
-      <PlaceCircleMap placeCircle={placeCircle} vis={vis} />
-      <PlaceCircleStroke
-        r={radius}
-        style={{ strokeWidth: `${strokeWidth}px` }}
-        className={classNames({ highlight: active })}
-      />
-      <PlaceCircleLabel placeCircle={placeCircle} device={device} />
+      {visible && (
+        <>
+          <PlaceCircleBackground r={radius} />
+          <PlaceCircleMap placeCircle={placeCircle} vis={vis} />
+          <PlaceCircleStroke
+            r={radius}
+            style={{ strokeWidth: `${strokeWidth}px` }}
+            className={classNames({ highlight: active })}
+          />
+          <PlaceCircleLabel placeCircle={placeCircle} device={device} />
+        </>
+      )}
     </g>
   );
 });
