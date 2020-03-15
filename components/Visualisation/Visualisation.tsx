@@ -3,8 +3,7 @@ import debounce from 'lodash/fp/debounce';
 import isEqual from 'lodash/fp/isEqual';
 import { configure } from 'mobx';
 import { observer } from 'mobx-react';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
-
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import useTouch from '../../hooks/useTouch';
 import useWidth from '../../hooks/useWidth';
 import DataStore from '../../stores/DataStore';
@@ -20,19 +19,19 @@ configure({
   enforceActions: 'observed',
 });
 
-export interface IMapView {
+export interface MapView {
   center: [number, number];
   zoom: number;
 }
 
-interface IProps {
+interface VisualisationProps {
   data: DiaryData;
-  mapView?: IMapView;
+  mapView?: MapView;
   view?: VIEW;
   timeSpan?: ReadonlyArray<number>;
   onViewChange: (view?: VIEW) => void;
   onTimeSpanChange: (timeSpan: ReadonlyArray<number>) => void;
-  onMapViewChange: (mapView: IMapView) => void;
+  onMapViewChange: (mapView: MapView) => void;
   className?: string;
 }
 
@@ -42,7 +41,7 @@ export enum DEVICE {
   desktop,
 }
 
-function createMapView(map: LeafletMap): IMapView {
+function createMapView(map: LeafletMap): MapView {
   const center = map.getCenter();
   const zoom = map.getZoom();
 
@@ -52,8 +51,7 @@ function createMapView(map: LeafletMap): IMapView {
 function useDevice(defaultDevice: DEVICE): [DEVICE, (width: number) => void] {
   const [device, setDevice] = useState(defaultDevice);
 
-  return [
-    device,
+  const callback = useCallback(
     width =>
       setDevice(() => {
         if (width >= 580) {
@@ -66,7 +64,10 @@ function useDevice(defaultDevice: DEVICE): [DEVICE, (width: number) => void] {
 
         return DEVICE.mobile;
       }),
-  ];
+    []
+  );
+
+  return [device, callback];
 }
 
 function useDebounceCallback<T extends (...args: any) => any>(callback: T, delay: number) {
@@ -81,17 +82,8 @@ function useDebounceCallback<T extends (...args: any) => any>(callback: T, delay
   return debouncedCallback;
 }
 
-const Visualisation = observer((props: IProps) => {
-  const {
-    view,
-    data,
-    timeSpan,
-    className,
-    mapView,
-    onMapViewChange,
-    onTimeSpanChange,
-    onViewChange,
-  } = props;
+const Visualisation = observer((props: VisualisationProps) => {
+  const { view, data, timeSpan, className, mapView, onMapViewChange, onTimeSpanChange, onViewChange } = props;
 
   // Use memo to no reinitialize stores on every render.
   // TODO Use useRef with dependency array for semantic guarantee.
@@ -102,13 +94,13 @@ const Visualisation = observer((props: IProps) => {
 
   useLayoutEffect(() => {
     uiStore.update({ view, timeSpan });
-  }, [view, timeSpan]);
+  }, [uiStore, view, timeSpan]);
 
   useEffect(
     () => () => {
       visStore.dispose();
     },
-    []
+    [visStore]
   );
 
   const mapRef = useRef<LeafletMap>();
@@ -117,20 +109,26 @@ const Visualisation = observer((props: IProps) => {
     if (mapRef.current != null) {
       visStore.updateProjection(mapRef.current);
     }
-  });
+  }, [mapRef.current, visStore]);
 
   const touch = useTouch();
   const [device, updateDevice] = useDevice(DEVICE.desktop);
 
-  const measureRef = useWidth<HTMLDivElement>(width => {
-    visStore.updateWidth(width);
-    updateDevice(width);
-  });
+  const measureRef = useWidth<HTMLDivElement>(
+    width => {
+      visStore.updateWidth(width);
+      updateDevice(width);
+    },
+    [visStore, updateDevice]
+  );
 
-  const handleWhenReady = useCallback((event: LeafletEvent) => {
-    const map = (mapRef.current = event.target!);
-    visStore.updateProjection(map);
-  }, []);
+  const handleWhenReady = useCallback(
+    (event: LeafletEvent) => {
+      const map = (mapRef.current = event.target!);
+      visStore.updateProjection(map);
+    },
+    [visStore]
+  );
 
   const debounceOnMapViewChange = useDebounceCallback(onMapViewChange, 200);
 
@@ -147,7 +145,7 @@ const Visualisation = observer((props: IProps) => {
       visStore.updateProjection(map);
       debounceOnMapViewChange(nextMapView);
     },
-    [mapView]
+    [mapView, visStore, debounceOnMapViewChange]
   );
 
   const handleZoomStart = useCallback(() => {

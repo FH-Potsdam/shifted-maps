@@ -3,21 +3,20 @@ import { observer } from 'mobx-react';
 import moment from 'moment';
 import { transparentize } from 'polished';
 import { useCallback, useState } from 'react';
-
 import DataStore, { DAY_IN_SEC } from '../../../stores/DataStore';
 import UIStore from '../../../stores/UIStore';
 import Slider from '../../common/Slider';
 import styled from '../../styled';
 import Stats from './Stats';
 
-interface IProps {
+interface TimeSectionProps {
   className?: string;
   ui: UIStore;
   data: DataStore;
   onTimeSpanChange: (timeSpan: ReadonlyArray<number>) => void;
 }
 
-const TimeSection = observer((props: IProps) => {
+const TimeSection = observer((props: TimeSectionProps) => {
   const { className, ui, data, onTimeSpanChange } = props;
   const timeSpan = ui.timeSpan || data.timeSpan;
   const timeSliderActive = timeSpan[0] !== data.timeSpan[0] || timeSpan[1] !== data.timeSpan[1];

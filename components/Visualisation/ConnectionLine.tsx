@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import { SyntheticEvent, useCallback } from 'react';
-
 import useAutorunRef from '../../hooks/useAutorunRef';
 import ConnectionLineModel from '../../stores/ConnectionLine';
 import VisualisationStore from '../../stores/VisualisationStore';
@@ -9,7 +8,7 @@ import styled from '../styled';
 import ConnectionLineLabel from './ConnectionLineLabel';
 import { DEVICE } from './Visualisation';
 
-interface IProps {
+interface ConnectionLineProps {
   connectionLine: ConnectionLineModel;
   vis: VisualisationStore;
   touch: boolean;
@@ -17,7 +16,7 @@ interface IProps {
   device: DEVICE;
 }
 
-export const ConnectionLine = observer((props: IProps) => {
+export const ConnectionLine = observer((props: ConnectionLineProps) => {
   const { className, connectionLine, touch, device } = props;
   const { highlight, visible, fade, label, vis } = connectionLine;
 

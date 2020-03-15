@@ -1,8 +1,7 @@
 import classNames from 'classnames';
-import { action, autorun, observable } from 'mobx';
-import { disposeOnUnmount, observer } from 'mobx-react';
-import { Component, MouseEvent } from 'react';
-
+import { autorun } from 'mobx';
+import { observer } from 'mobx-react';
+import { MouseEvent, useEffect, useRef } from 'react';
 import PlaceCircleModel from '../../stores/PlaceCircle';
 import VisualisationStore from '../../stores/VisualisationStore';
 import styled from '../styled';
@@ -10,7 +9,7 @@ import PlaceCircleLabel from './PlaceCircleLabel';
 import PlaceCircleMap from './PlaceCircleMap';
 import { DEVICE } from './Visualisation';
 
-interface IProps {
+interface PlaceCircleProps {
   placeCircle: PlaceCircleModel;
   vis: VisualisationStore;
   className?: string;
@@ -18,81 +17,59 @@ interface IProps {
   device: DEVICE;
 }
 
-@observer
-class PlaceCircle extends Component<IProps> {
-  @observable.ref
-  private ref: SVGGElement | null = null;
+const PlaceCircle = observer(({ placeCircle, className, vis, touch, device }: PlaceCircleProps) => {
+  const { radius, strokeWidth, active, visible, fade } = placeCircle;
+  const ref = useRef<SVGGElement>(null);
 
-  componentDidMount() {
-    disposeOnUnmount(this, autorun(this.style));
-  }
-
-  render() {
-    const { placeCircle, className, vis, touch, device } = this.props;
-    const { radius, strokeWidth, active, visible, fade } = placeCircle;
-
-    if (!visible) {
-      return null;
-    }
-
-    const toggleListeners = !touch
-      ? {
-          onMouseEnter: this.handleMouseEnter,
-          onMouseLeave: this.handleMouseLeave,
-        }
-      : {
-          onClick: this.handleClick,
-        };
-
-    return (
-      <g ref={this.updateRef} className={classNames(className, { fade })} {...toggleListeners}>
-        <PlaceCircleBackground r={radius} />
-        <PlaceCircleMap placeCircle={placeCircle} vis={vis} />
-        <PlaceCircleStroke
-          r={radius}
-          style={{ strokeWidth: `${strokeWidth}px` }}
-          className={classNames({ highlight: active })}
-        />
-        <PlaceCircleLabel placeCircle={placeCircle} device={device} />
-      </g>
-    );
-  }
-
-  @action
-  private updateRef = (ref: SVGGElement | null) => {
-    this.ref = ref;
-  };
-
-  private style = () => {
-    if (this.ref == null) {
+  useEffect(() => {
+    if (ref.current == null) {
       return;
     }
 
-    const { point } = this.props.placeCircle;
+    const style = () => {
+      const { point } = placeCircle;
 
-    this.ref.setAttribute('transform', `translate(${point.x}, ${point.y})`);
-  };
+      ref.current!.setAttribute('transform', `translate(${point.x}, ${point.y})`);
+    };
 
-  private handleMouseEnter = () => {
-    this.toggle(true);
-  };
+    return autorun(style);
+  }, [ref.current]);
 
-  private handleMouseLeave = () => {
-    this.toggle(false);
-  };
-
-  private handleClick = (event: MouseEvent<SVGGElement>) => {
-    event.stopPropagation();
-
-    this.toggle();
-  };
-
-  private toggle(active?: boolean) {
-    const { placeCircle, vis } = this.props;
-
-    vis.toggle(placeCircle, active);
+  if (!visible) {
+    return null;
   }
-}
+
+  const toggle = (active?: boolean) => {
+    vis.toggle(placeCircle, active);
+  };
+
+  return (
+    <g
+      ref={ref}
+      className={classNames(className, { fade })}
+      {...(!touch
+        ? {
+            onMouseEnter: () => toggle(true),
+            onMouseLeave: () => toggle(false),
+          }
+        : {
+            onClick: (event: MouseEvent<SVGGElement>) => {
+              event.stopPropagation();
+              toggle();
+            },
+          })}
+    >
+      <PlaceCircleBackground r={radius} />
+      <PlaceCircleMap placeCircle={placeCircle} vis={vis} />
+      <PlaceCircleStroke
+        r={radius}
+        style={{ strokeWidth: `${strokeWidth}px` }}
+        className={classNames({ highlight: active })}
+      />
+      <PlaceCircleLabel placeCircle={placeCircle} device={device} />
+    </g>
+  );
+});
 
 export default styled(PlaceCircle)`
   will-change: transform, opacity;

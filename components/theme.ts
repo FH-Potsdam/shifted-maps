@@ -1,4 +1,4 @@
-export interface ITheme {
+export interface Theme {
   spacingUnit: number;
   foregroundColor: string;
   backgroundColor: string;
@@ -17,7 +17,7 @@ export type Breakpoints = 'tablet' | 'desktop';
 
 const spacingUnit = 16;
 
-const theme: ITheme = {
+const theme: Theme = {
   backgroundColor: '#ffffff',
   breakpoints: {
     desktop: 1000,

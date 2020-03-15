@@ -1,10 +1,10 @@
 import styled, { css, ifProp, theme } from '../styled';
 
-interface IProps {
+interface ParagraphProps {
   lead?: boolean;
 }
 
-export default styled.p<IProps>`
+export default styled.p<ParagraphProps>`
   margin: 0;
 
   & + & {

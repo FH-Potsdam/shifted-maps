@@ -8,10 +8,10 @@ const Layout = styled.div`
 
 export default Layout;
 
-interface IProps {
+interface LayoutItemProps {
   span: string;
 }
 
-export const LayoutItem = styled.div<IProps>`
+export const LayoutItem = styled.div<LayoutItemProps>`
   grid-column: span ${props => props.span};
 `;

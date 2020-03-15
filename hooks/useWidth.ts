@@ -1,24 +1,25 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useRef } from 'react';
 
-export default function useWidth<T extends HTMLElement>(callback: (width: number) => void) {
+export default function useWidth<T extends HTMLElement>(callback: (width: number) => void, deps: any[] = []) {
   const measureRef = useRef<T | null>(null);
-
-  const updateWidth = () => {
-    if (measureRef.current == null) {
-      throw new Error('Cannot update width. Element is missing.');
-    }
-
-    callback(measureRef.current.offsetWidth);
-  };
+  callback = useCallback(callback, deps);
 
   useLayoutEffect(() => {
+    const updateWidth = () => {
+      if (measureRef.current == null) {
+        throw new Error('Cannot update width. Element is missing.');
+      }
+
+      callback(measureRef.current.offsetWidth);
+    };
+
     updateWidth();
     window.addEventListener('resize', updateWidth);
 
     return () => {
       window.removeEventListener('resize', updateWidth);
     };
-  }, [measureRef.current]);
+  }, [measureRef.current, callback]);
 
   return measureRef;
 }

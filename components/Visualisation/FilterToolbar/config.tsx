@@ -4,25 +4,25 @@ import DataStore from '../../../stores/DataStore';
 import { VIEW } from '../../../stores/UIStore';
 import { formatDistance, formatDuration, formatFrequency } from '../../../stores/utils/formatLabel';
 import { Icon } from '../../common/icons/components';
-import DurationIcon from '../common/icons/duration.svg';
-import FrequencyIcon from '../common/icons/frequency.svg';
-import GeographicIcon from '../common/icons/geographic.svg';
-import MapIcon from '../common/icons/map.svg';
+import DurationIcon from '../../common/icons/duration.svg';
+import FrequencyIcon from '../../common/icons/frequency.svg';
+import GeographicIcon from '../../common/icons/geographic.svg';
+import MapIcon from '../../common/icons/map.svg';
 
-export interface IViewStatItem {
+export interface ViewStatItem {
   name: string;
   data: (data: DataStore) => ReactNode;
 }
 
-export interface IViewItem {
+export interface ViewItem {
   icon: ReactNode;
   name: string;
   text: string;
-  stats: IViewStatItem[];
+  stats: ViewStatItem[];
   type?: VIEW;
 }
 
-export const VIEW_LIST: IViewItem[] = [
+export const VIEW_LIST: ViewItem[] = [
   {
     icon: <Icon as={MapIcon} />,
     name: 'Map',

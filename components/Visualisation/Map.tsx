@@ -1,44 +1,32 @@
 import { LatLngBounds } from 'leaflet';
 import { observer } from 'mobx-react';
-import { Component } from 'react';
-import { AttributionControl, Map as ReactLeafletMap, MapProps, TileLayer } from 'react-leaflet';
-
+import { AttributionControl, Map as ReactLeafletMap, MapProps as LeafletMapProps, TileLayer } from 'react-leaflet';
 import styled from '../styled';
 
-interface IProps {
+interface MapProps {
   className?: string;
   children?: any;
   bounds: LatLngBounds;
   showTiles: boolean;
 }
 
-@observer
-class Map extends Component<IProps & MapProps> {
-  render() {
-    const { className, children, showTiles, ...props } = this.props;
-
-    return (
-      <ReactLeafletMap
-        {...props}
-        className={className}
-        zoomControl={false}
-        attributionControl={false}
-      >
-        <TileLayer
-          opacity={showTiles ? 0.25 : 0}
-          url="https://api.tiles.mapbox.com/v4/{styleId}/{z}/{x}/{y}{r}.png?access_token={accessToken}"
-          attribution={
-            '<a href="https://www.mapbox.com/about/maps/" target="_blank">&copy; Mapbox</a> <a href="http://www.openstreetmap.org/about/" target="_blank">&copy; OpenStreetMap</a>'
-          }
-          styleId={process.env.mapboxStyleId}
-          accessToken={process.env.mapboxAccessToken}
-        />
-        <AttributionControl prefix={`Version: ${process.env.version}`} />
-        {children}
-      </ReactLeafletMap>
-    );
-  }
-}
+const Map = observer(({ className, children, showTiles, ...props }: MapProps & LeafletMapProps) => {
+  return (
+    <ReactLeafletMap {...props} className={className} zoomControl={false} attributionControl={false}>
+      <TileLayer
+        opacity={showTiles ? 0.25 : 0}
+        url="https://api.tiles.mapbox.com/v4/{styleId}/{z}/{x}/{y}{r}.png?access_token={accessToken}"
+        attribution={
+          '<a href="https://www.mapbox.com/about/maps/" target="_blank">&copy; Mapbox</a> <a href="http://www.openstreetmap.org/about/" target="_blank">&copy; OpenStreetMap</a>'
+        }
+        styleId={process.env.mapboxStyleId}
+        accessToken={process.env.mapboxAccessToken}
+      />
+      <AttributionControl prefix={`Version: ${process.env.version}`} />
+      {children}
+    </ReactLeafletMap>
+  );
+});
 
 export default styled(Map)`
   @import url('//unpkg.com/leaflet/dist/leaflet.css');

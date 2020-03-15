@@ -1,14 +1,13 @@
 import { DomUtil, SVG } from 'leaflet';
 import { createPortal } from 'react-dom';
 import { MapLayer, MapLayerProps, withLeaflet, WrappedProps } from 'react-leaflet';
-
 import styled from '../styled';
 
-interface IProps {
+interface SVGLayerProps {
   className?: string;
 }
 
-class SVGLayer extends MapLayer<MapLayerProps & WrappedProps & IProps, SVG> {
+class SVGLayer extends MapLayer<MapLayerProps & WrappedProps & SVGLayerProps, SVG> {
   createLeafletElement() {
     return new SVG();
   }

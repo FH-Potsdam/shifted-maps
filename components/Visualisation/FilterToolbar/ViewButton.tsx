@@ -1,20 +1,19 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import { MouseEvent, useCallback } from 'react';
-
 import { VIEW } from '../../../stores/UIStore';
 import { Icon } from '../../common/icons/components';
 import styled from '../../styled';
-import { IViewItem } from './config';
+import { ViewItem } from './config';
 
-interface IProps {
+interface ViewButtonProps {
   className?: string;
   active: boolean;
-  viewItem: IViewItem;
+  viewItem: ViewItem;
   onClick: (view?: VIEW) => void;
 }
 
-const ViewButton = observer((props: IProps) => {
+const ViewButton = observer((props: ViewButtonProps) => {
   const { className, viewItem, onClick, active } = props;
 
   const handleClick = useCallback(

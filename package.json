@@ -22,7 +22,7 @@
     "mobx": "^5.10.1",
     "mobx-react": "^6.1.1",
     "moment": "^2.22.2",
-    "next": "^9.2.1",
+    "next": "^9.3.0",
     "normalize.css": "^8.0.0",
     "polished": "^2.3.0",
     "popmotion": "^8.4.1",

@@ -2,20 +2,19 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import NextLink from 'next/link';
 import { MouseEvent, useCallback, useState } from 'react';
-
 import useDisableBodyScroll from '../../../hooks/useDIsableBodyScroll';
 import DataStore from '../../../stores/DataStore';
 import UIStore, { VIEW } from '../../../stores/UIStore';
 import Heading from '../../common/Heading';
+import { Icon, StrokeIcon } from '../../common/icons/components';
 import DownIcon from '../../common/icons/down.svg';
-import { StrokeIcon, Icon } from '../../common/icons/components';
 import styled from '../../styled';
 import { DEVICE } from '../Visualisation';
 import { getActiveViewItem } from './config';
 import TimeSection from './TimeSection';
 import ViewSection from './ViewSection';
 
-interface IProps {
+interface FilterBarProps {
   className?: string;
   data: DataStore;
   ui: Readonly<UIStore>;
@@ -24,7 +23,7 @@ interface IProps {
   onTimeSpanChange: (timeSpan: ReadonlyArray<number>) => void;
 }
 
-const FilterBar = observer((props: IProps) => {
+const FilterBar = observer((props: FilterBarProps) => {
   const { className, device, ui, data, onViewChange, onTimeSpanChange } = props;
 
   const mobileOrTablet = device === DEVICE.mobile || device === DEVICE.tablet;

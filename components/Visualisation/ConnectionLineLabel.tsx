@@ -2,22 +2,21 @@ import classNames from 'classnames';
 import { DomUtil } from 'leaflet';
 import { observer } from 'mobx-react';
 import { useEffect, useRef } from 'react';
-
 import useAutorunRef from '../../hooks/useAutorunRef';
 import ConnectionLineLabelModel from '../../stores/ConnectionLineLabel';
 import checkFont from '../../utils/checkFont';
 import styled, { withTheme } from '../styled';
-import { ITheme } from '../theme';
+import { Theme } from '../theme';
 import { DEVICE } from './Visualisation';
 
-interface IProps {
+interface ConnectionLineProps {
   connectionLineLabel: ConnectionLineLabelModel;
   device: DEVICE;
-  theme?: ITheme;
+  theme?: Theme;
   className?: string;
 }
 
-const ConnectionLineLabel = observer((props: IProps) => {
+const ConnectionLineLabel = observer((props: ConnectionLineProps) => {
   const { className, connectionLineLabel, theme, device } = props;
   const labelCanvesRef = useRef<HTMLCanvasElement>();
   const labelCtxRef = useRef<CanvasRenderingContext2D>();
@@ -94,19 +93,13 @@ const ConnectionLineLabel = observer((props: IProps) => {
         return;
       }
 
-      g.setAttribute(
-        'transform',
-        `translate(${centerPoint.x}, ${centerPoint.y}) rotate(${rotation})`
-      );
+      g.setAttribute('transform', `translate(${centerPoint.x}, ${centerPoint.y}) rotate(${rotation})`);
     },
     [connectionLineLabel]
   );
 
   return (
-    <g
-      ref={groupRef}
-      className={classNames(className, { visible: connectionLineLabel.content != null })}
-    >
+    <g ref={groupRef} className={classNames(className, { visible: connectionLineLabel.content != null })}>
       <image ref={imageRef} />
     </g>
   );

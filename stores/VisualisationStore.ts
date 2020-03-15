@@ -193,9 +193,7 @@ class VisualisationStore {
       let newConnectionLine = false;
 
       if (connectionLine == null) {
-        connectionLine = this.connectionLinesCache.find(
-          connectionLine => connectionLine.key === key
-        );
+        connectionLine = this.connectionLinesCache.find(connectionLine => connectionLine.key === key);
         newConnectionLine = true;
       }
 
@@ -355,11 +353,7 @@ class VisualisationStore {
       .range([range[0], range[1] * 0.75]);
   }
 
-  project(
-    latLng: LatLng,
-    zoom: number | undefined = this.zoom,
-    pixelOrigin: Point | undefined = this.pixelOrigin
-  ) {
+  project(latLng: LatLng, zoom: number | undefined = this.zoom, pixelOrigin: Point | undefined = this.pixelOrigin) {
     if (this.crs == null) {
       throw new Error('No CRS.');
     }
@@ -371,11 +365,7 @@ class VisualisationStore {
     return this.crs.latLngToPoint(latLng, zoom).subtract(pixelOrigin);
   }
 
-  unproject(
-    point: Point,
-    zoom: number | undefined = this.zoom,
-    pixelOrigin: Point | undefined = this.pixelOrigin
-  ) {
+  unproject(point: Point, zoom: number | undefined = this.zoom, pixelOrigin: Point | undefined = this.pixelOrigin) {
     if (this.crs == null) {
       throw new Error('No CRS.');
     }

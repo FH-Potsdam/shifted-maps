@@ -1,23 +1,22 @@
 import NextLink from 'next/link';
 import { lighten, transparentize } from 'polished';
 import { StatelessComponent } from 'react';
-
 import Heading from '../common/Heading';
+import { Icon, Logo } from '../common/icons/components';
 import FHPLogo from '../common/icons/fhp.svg';
+import GoIcon from '../common/icons/go.svg';
 import HereLogo from '../common/icons/here.svg';
 import UCLabLogo from '../common/icons/uclab.svg';
-import GoIcon from '../common/icons/go.svg';
-import { Icon, Logo } from '../common/icons/components';
 import Layout, { LayoutItem } from '../common/Layout';
 import Link from '../common/Link';
 import Paragraph from '../common/Paragraph';
 import styled from '../styled';
 
-interface IProps {
+interface HeroProps {
   className?: string;
 }
 
-const Hero: StatelessComponent<IProps> = props => {
+const Hero: StatelessComponent<HeroProps> = props => {
   const { className } = props;
 
   return (

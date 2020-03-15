@@ -1,11 +1,9 @@
+import { GetServerSideProps } from 'next';
 import dynamic from 'next/dynamic';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 import { useCallback } from 'react';
-import { NextPage } from 'next';
-
-import { IMapView } from '../components/Visualisation/Visualisation';
-import demo from '../data/demo.json';
-import { DiaryData } from '../stores/Diary';
+import { MapView } from '../components/Visualisation/Visualisation';
+import data from '../data/demo.json';
 import { VIEW } from '../stores/UIStore';
 
 const DynamicVisualisation = dynamic({
@@ -14,54 +12,63 @@ const DynamicVisualisation = dynamic({
   ssr: false,
 });
 
-interface IProps {
-  data: DiaryData;
+interface MapProps {
   view?: VIEW;
   timeSpan?: ReadonlyArray<number>;
-  mapView?: IMapView;
+  mapView?: MapView;
 }
 
-const Map: NextPage<IProps> = props => {
-  const { data, view, timeSpan, mapView } = props;
+const Map = (props: MapProps) => {
+  const { view, timeSpan, mapView } = props;
+  const router = useRouter();
 
-  const handleViewChange = useCallback((view?: VIEW) => {
-    const query: { view?: string } = {
-      ...Router.query,
-    };
+  const handleViewChange = useCallback(
+    (view?: VIEW) => {
+      const query: { view?: string } = {
+        ...router.query,
+      };
 
-    if (view != null) {
-      query.view = VIEW[view].toLowerCase();
-    } else {
-      delete query.view;
-    }
+      if (view != null) {
+        query.view = VIEW[view].toLowerCase();
+      } else {
+        delete query.view;
+      }
 
-    Router.push({ pathname: '/map', query });
-  }, []);
+      router.push({ pathname: '/map', query });
+    },
+    [router]
+  );
 
-  const handleTimeSpanChange = useCallback((timeSpan: ReadonlyArray<number>) => {
-    Router.push({
-      pathname: '/map',
-      query: {
-        ...Router.query,
-        timeSpan: timeSpan.join('-'),
-      },
-    });
-  }, []);
+  const handleTimeSpanChange = useCallback(
+    (timeSpan: ReadonlyArray<number>) => {
+      router.push({
+        pathname: '/map',
+        query: {
+          ...router.query,
+          timeSpan: timeSpan.join('-'),
+        },
+      });
+    },
+    [router]
+  );
 
-  const handleMapViewChange = useCallback(({ center, zoom }: IMapView) => {
-    const query = {
-      center: center.join(','),
-      zoom: String(zoom),
-    };
+  const handleMapViewChange = useCallback(
+    ({ center, zoom }: MapView) => {
+      const query = {
+        center: center.join(','),
+        zoom: String(zoom),
+      };
 
-    Router.push({
-      pathname: '/map',
-      query: {
-        ...Router.query,
-        ...query,
-      },
-    });
-  }, []);
+      router.push({
+        pathname: '/map',
+        query: {
+          ...router.query,
+          ...query,
+        },
+      });
+    },
+    [router]
+  );
 
   return (
     <DynamicVisualisation
@@ -76,28 +83,26 @@ const Map: NextPage<IProps> = props => {
   );
 };
 
-Map.getInitialProps = ({ query }) => {
-  let timeSpan: ReadonlyArray<number> | undefined;
-  let view: VIEW | undefined;
-  let mapView: IMapView | undefined;
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  const props: Partial<MapProps> = {};
 
   if (typeof query.timeSpan === 'string') {
     const [start, end] = query.timeSpan.split('-');
 
     if (start != null && end != null) {
-      timeSpan = [Number(start), Number(end)];
+      props.timeSpan = [Number(start), Number(end)];
     }
   }
 
   if (typeof query.view === 'string') {
-    view = VIEW[query.view.toUpperCase()];
+    props.view = VIEW[query.view.toUpperCase()];
   }
 
   if (typeof query.center === 'string' && typeof query.zoom === 'string') {
     const [lat, lng] = query.center.split(',');
 
     if (lat != null && lng != null) {
-      mapView = {
+      props.mapView = {
         center: [Number(lat), Number(lng)],
         zoom: Number(query.zoom),
       };
@@ -105,10 +110,7 @@ Map.getInitialProps = ({ query }) => {
   }
 
   return {
-    data: demo,
-    mapView,
-    timeSpan,
-    view,
+    props,
   };
 };
 

@@ -1,18 +1,17 @@
 import { observer } from 'mobx-react';
 import { Fragment } from 'react';
-
 import DataStore from '../../../stores/DataStore';
 import UIStore from '../../../stores/UIStore';
 import styled from '../../styled';
 import { getActiveViewItem } from './config';
 
-interface IProps {
+interface StatsProps {
   className?: string;
   ui: UIStore;
   data: DataStore;
 }
 
-const Stats = observer((props: IProps) => {
+const Stats = observer((props: StatsProps) => {
   const { className, ui, data } = props;
   const activeViewItem = getActiveViewItem(ui.view);
 

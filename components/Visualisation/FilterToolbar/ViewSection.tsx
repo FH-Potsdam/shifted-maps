@@ -1,30 +1,24 @@
 import { observer } from 'mobx-react';
 import { transparentize } from 'polished';
-
 import { VIEW } from '../../../stores/UIStore';
 import styled from '../../styled';
-import { IViewItem, VIEW_LIST } from './config';
+import { ViewItem, VIEW_LIST } from './config';
 import ViewButton from './ViewButton';
 
-interface IProps {
+interface ViewSectionProps {
   className?: string;
   onViewChange: (view?: VIEW) => void;
-  activeViewItem: IViewItem;
+  activeViewItem: ViewItem;
 }
 
-const ViewSection = observer((props: IProps) => {
+const ViewSection = observer((props: ViewSectionProps) => {
   const { className, activeViewItem, onViewChange } = props;
 
   return (
     <section className={className}>
       <ViewList>
         {VIEW_LIST.map((viewItem, index) => (
-          <ViewButton
-            key={index}
-            onClick={onViewChange}
-            active={activeViewItem === viewItem}
-            viewItem={viewItem}
-          />
+          <ViewButton key={index} onClick={onViewChange} active={activeViewItem === viewItem} viewItem={viewItem} />
         ))}
       </ViewList>
       <ViewInfo>

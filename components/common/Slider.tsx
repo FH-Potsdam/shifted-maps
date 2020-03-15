@@ -1,16 +1,8 @@
 import { Fragment } from 'react';
-import {
-  Handles,
-  Rail,
-  Slider as BaseSlider,
-  SliderItem,
-  TrackItem,
-  Tracks,
-} from 'react-compound-slider';
-
+import { Handles, Rail, Slider as BaseSlider, SliderItem, TrackItem, Tracks } from 'react-compound-slider';
 import styled from '../styled';
 
-interface IProps {
+interface SliderProps {
   domain: ReadonlyArray<number>;
   values: ReadonlyArray<number>;
   onUpdate?: (values: ReadonlyArray<number>) => void;
@@ -20,7 +12,7 @@ interface IProps {
   mode?: number;
 }
 
-function Slider(props: IProps) {
+function Slider(props: SliderProps) {
   return (
     <BaseSlider {...props}>
       <Rail>{({ getRailProps }) => <SliderRail {...getRailProps()} />}</Rail>
@@ -106,12 +98,7 @@ const SliderHandle = styled(({ percent, ...props }: SliderItem) => {
 `;
 
 const SliderTrack = styled(({ source, target, ...props }: TrackItem) => {
-  return (
-    <div
-      style={{ left: `${source.percent}%`, width: `${target.percent - source.percent}%` }}
-      {...props}
-    />
-  );
+  return <div style={{ left: `${source.percent}%`, width: `${target.percent - source.percent}%` }} {...props} />;
 })`
   position: absolute;
   top: 0;
