@@ -25,18 +25,24 @@ const Map = observer(({ className, children, showTiles, ...props }: MapProps & L
       </Head>
       <TileLayer
         opacity={showTiles ? 0.25 : 0}
-        url="https://api.tiles.mapbox.com/v4/{styleId}/{z}/{x}/{y}{r}.png?access_token={accessToken}"
+        url="https://api.mapbox.com/styles/v1/{styleId}/tiles/{z}/{x}/{y}?access_token={accessToken}"
         attribution={
-          '<a href="https://www.mapbox.com/about/maps/" target="_blank">&copy; Mapbox</a> <a href="http://www.openstreetmap.org/about/" target="_blank">&copy; OpenStreetMap</a>'
+          '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }
-        styleId={process.env.mapboxStyleId}
+        styleId={process.env.mapboxStaticStyleId}
         accessToken={process.env.mapboxAccessToken}
+        tileSize={512}
+        maxZoom={18}
+        zoomOffset={-1}
       />
       <AttributionControl prefix={`Version: ${process.env.version}`} />
       {children}
     </ReactLeafletMap>
   );
 });
+
+// https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/13.3842,52.5114,11/600x600@2x.png?access_token=pk.eyJ1IjoibGVubmVyZCIsImEiOiJXRjB3WGswIn0.3plnt32h0h8pfb9aZ_oGyw
+// https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/-115.84178,37.21776,12/556x556@2x?access_token=pk.eyJ1IjoibGVubmVyZCIsImEiOiJXRjB3WGswIn0.3plnt32h0h8pfb9aZ_oGyw
 
 export default styled(Map)`
   font: inherit;

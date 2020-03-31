@@ -32,11 +32,11 @@ const PlaceCircleMap = observer(({ className, placeCircle, vis }: PlaceCircleMap
   const href = useMemo(() => {
     const center = latLngBounds.getCenter();
 
-    return `https://api.mapbox.com/v4/${process.env.mapboxStyleId}/${roundCoordinate(center.lng)},${roundCoordinate(
-      center.lat
-    )},${zoom}/${imageDiameter}x${imageDiameter}${Browser.retina ? '@2x' : ''}.png?access_token=${
-      process.env.mapboxAccessToken
-    }`;
+    return `https://api.mapbox.com/styles/v1/${process.env.mapboxStaticStyleId}/static/${roundCoordinate(
+      center.lng
+    )},${roundCoordinate(center.lat)},${zoom}/${imageDiameter}x${imageDiameter}${
+      Browser.retina ? '@2x' : ''
+    }?access_token=${process.env.mapboxAccessToken}`;
   }, [zoom, latLngBounds, imageDiameter]);
 
   const images = useMemo(() => {
