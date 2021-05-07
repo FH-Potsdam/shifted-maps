@@ -18,7 +18,7 @@
     "debug": "^4.1.0",
     "isomorphic-fetch": "^2.2.1",
     "leaflet": "^1.6.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.2",
     "moment": "^2.27.0",
