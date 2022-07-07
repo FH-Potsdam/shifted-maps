@@ -21,7 +21,7 @@
     "lodash": "^4.17.19",
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.2",
-    "moment": "^2.27.0",
+    "moment": "^2.29.4",
     "next": "^9.4.4",
     "normalize.css": "^8.0.0",
     "polished": "^3.6.5",
