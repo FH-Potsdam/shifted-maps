@@ -5,7 +5,7 @@
 The geographic map dissolves and creates a flexible network layout, which reveals unique movement structures based on
 geographic positions, travel time or travel frequency.
 
-Shifted Maps is a student research project by [Lennart Hildebrandt](https://lennerd.com/) and [Heike Otten](http://www.heikeotten.de/) conducted at the Urban Complexity Lab, University of Applied Sciences Potsdam.
+Shifted Maps is a student research project by [Lennart Hildebrandt](https://lennerd.com/) and [Heike Otten](http://www.heikeotten.de/) conducted at the [Urban Complexity Lab](https://uclab.fh-potsdam.de/), [University of Applied Sciences Potsdam](https://www.fh-potsdam.de/).
 
 ## Installation
 
