@@ -14,7 +14,7 @@
     "body-scroll-lock": "^3.0.3",
     "classnames": "^2.2.6",
     "d3-force": "^2.0.1",
-    "d3-scale": "^3.2.1",
+    "d3-scale": "^4.0.2",
     "debug": "^4.1.0",
     "isomorphic-fetch": "^2.2.1",
     "leaflet": "^1.6.0",
