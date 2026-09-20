@@ -26,7 +26,12 @@ const ViewButton = observer((props: ViewButtonProps) => {
   );
 
   return (
-    <button className={classNames(className, { active })} onClick={handleClick}>
+    <button
+      aria-label={viewItem.name}
+      aria-pressed={active}
+      className={classNames(className, { active })}
+      onClick={handleClick}
+    >
       {viewItem.icon}
     </button>
   );

@@ -10,6 +10,10 @@
 /public
 /bundles
 
+# Test artifacts
+/playwright-report
+/test-results
+
 # Other
 /npm-debug.log
 .sass-cache

@@ -26,7 +26,7 @@ const Hero: StatelessComponent<HeroProps> = props => {
         <Paragraph lead>Visualizing personal Movement through Map Networks</Paragraph>
       </HeroHeader>
       <HeroHighlight>
-        <NextLink href="/map">
+        <NextLink href="/map" passHref>
           <HeroGo>
             Explore the
             <br />

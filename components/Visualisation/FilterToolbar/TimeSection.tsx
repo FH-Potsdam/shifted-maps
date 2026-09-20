@@ -42,6 +42,7 @@ const TimeSection = observer((props: TimeSectionProps) => {
         onUpdate={setCurrentTimeSpan}
         domain={data.timeSpan}
         values={timeSpan}
+        handleLabels={['Start date', 'End date']}
         step={DAY_IN_SEC}
       />
       <SliderRange className={classNames({ active: timeSliderActive })}>

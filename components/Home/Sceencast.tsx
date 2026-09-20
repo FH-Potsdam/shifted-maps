@@ -7,7 +7,7 @@ interface ScreencastProps {
 function Screencast({ className }: ScreencastProps) {
   return (
     <div className={className}>
-      <video autoPlay preload="auto" loop>
+      <video autoPlay muted playsInline preload="auto" loop>
         <source src="/static/videos/screencast-hd.mp4" type="video/mp4" />
         <source src="/static/videos/screencast-hd.webm" type="video/webm" />
       </video>

@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import { ServerStyleSheet } from 'styled-components';
 
 interface DocumentProps {
-  styleTags: Array<ReactElement<HTMLStyleElement>>;
+  styleTags: ReactElement<HTMLStyleElement>[];
 }
 
 class Document extends BaseDocument<DocumentProps> {

@@ -22,7 +22,7 @@ export function switchProp<P>(key: keyof P, cases: { [key: string]: Interpolatio
 export function mediaQuery<P extends object>(name: Breakpoints) {
   return (
     strings: TemplateStringsArray,
-    ...interpolations: Array<Interpolation<ThemedStyledProps<P, DefaultTheme>>>
+    ...interpolations: Interpolation<ThemedStyledProps<P, DefaultTheme>>[]
   ) => {
     return css<P>`
       @media (min-width: ${props => props.theme.breakpoints[name] / 16}em) {

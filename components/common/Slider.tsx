@@ -1,9 +1,11 @@
 import { Handles, Rail, Slider as BaseSlider, SliderItem, TrackItem, Tracks } from 'react-compound-slider';
+import { HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 interface SliderProps {
   domain: ReadonlyArray<number>;
   values: ReadonlyArray<number>;
+  handleLabels?: ReadonlyArray<string>;
   onUpdate?: (values: ReadonlyArray<number>) => void;
   onChange?: (values: ReadonlyArray<number>) => void;
   className?: string;
@@ -12,8 +14,10 @@ interface SliderProps {
 }
 
 const Slider = (props: SliderProps) => {
+  const { handleLabels, ...sliderProps } = props;
+
   return (
-    <BaseSlider {...props}>
+    <BaseSlider {...sliderProps}>
       <Rail>{({ getRailProps }) => <SliderRail {...getRailProps()} />}</Rail>
       <Tracks left={false} right={false}>
         {({ tracks, getTrackProps }) => (
@@ -27,8 +31,18 @@ const Slider = (props: SliderProps) => {
       <Handles>
         {({ handles, getHandleProps }) => (
           <>
-            {handles.map(handle => (
-              <SliderHandle key={handle.id} {...getHandleProps(handle.id)} {...handle} />
+            {handles.map((handle, index) => (
+              <SliderHandle
+                key={handle.id}
+                {...getHandleProps(handle.id)}
+                {...handle}
+                aria-label={handleLabels && handleLabels[index]}
+                aria-valuemax={sliderProps.domain[1]}
+                aria-valuemin={sliderProps.domain[0]}
+                aria-valuenow={handle.value}
+                role="slider"
+                tabIndex={0}
+              />
             ))}
           </>
         )}
@@ -61,7 +75,9 @@ const SliderRail = styled.div`
   }
 `;
 
-const SliderHandle = styled(({ percent, ...props }: SliderItem) => {
+type SliderHandleProps = SliderItem & Omit<HTMLAttributes<HTMLDivElement>, 'id'>;
+
+const SliderHandle = styled(({ percent, ...props }: SliderHandleProps) => {
   return <div style={{ left: `${percent}%` }} {...props} />;
 })`
   transition: transform ${props => props.theme.shortTransitionDuration};

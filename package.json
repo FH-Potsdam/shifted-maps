@@ -8,7 +8,14 @@
     "url": "https://github.com/lennerd/shifted-maps/issues"
   },
   "scripts": {
-    "start": "URL=http://localhost:3000/ next"
+    "build": "URL=http://localhost:3000/ NODE_OPTIONS=--openssl-legacy-provider next build",
+    "dev": "URL=http://localhost:3000/ NODE_OPTIONS=--openssl-legacy-provider next",
+    "format:check": "prettier --check \"tests/**/*.ts\" playwright.config.js",
+    "lint": "tslint --project tsconfig.json",
+    "start": "URL=http://localhost:3000/ next",
+    "test": "playwright test",
+    "test:e2e": "playwright test",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "body-scroll-lock": "^3.0.3",
@@ -36,6 +43,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/plugin-proposal-decorators": "^7.10.5",
+    "@playwright/test": "1.63.0",
     "@svgr/webpack": "^5.4.0",
     "@types/classnames": "^2.2.10",
     "@types/d3-force": "^1.1.1",
