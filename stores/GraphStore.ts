@@ -14,7 +14,7 @@ import {
 } from 'd3-force';
 import { Point } from 'leaflet';
 import isEqual from 'lodash/fp/isEqual';
-import { autorun, computed, IReactionDisposer } from 'mobx';
+import { autorun, computed, IReactionDisposer, makeObservable } from 'mobx';
 
 import ConnectionLineLink from './ConnectionLineLink';
 import PlaceCircleNode from './PlaceCircleNode';
@@ -49,21 +49,22 @@ class GraphStore {
   private prevTimeSpan?: readonly number[];
   private initialized = false;
 
-  constructor(
-    vis: VisualisationStore,
-    onTick: SimulationEventCallback,
-    onEnd: SimulationEventCallback
-  ) {
+  constructor(vis: VisualisationStore, onTick: SimulationEventCallback, onEnd: SimulationEventCallback) {
+    makeObservable(this, {
+      nodes: computed,
+      links: computed,
+    });
+
     this.vis = vis;
     this.onTick = onTick;
     this.onEnd = onEnd;
 
     this.linkForce = forceLink<PlaceCircleNode, ConnectionLineLink>()
-      .id(node => node.key)
-      .distance(link => link.connectionLine.viewLength);
+      .id((node) => node.key)
+      .distance((link) => link.connectionLine.viewLength);
 
-    this.xForce = forceX<PlaceCircleNode>().x(node => node.placeCircle.mapPoint.x);
-    this.yForce = forceY<PlaceCircleNode>().y(node => node.placeCircle.mapPoint.y);
+    this.xForce = forceX<PlaceCircleNode>().x((node) => node.placeCircle.mapPoint.x);
+    this.yForce = forceY<PlaceCircleNode>().y((node) => node.placeCircle.mapPoint.y);
 
     // this.manyBodyForce = forceManyBody<PlaceCircleNode>();
     // this.collideForce = forceCollide<PlaceCircleNode>().strength(0.1);
@@ -99,10 +100,7 @@ class GraphStore {
   private restartSimulation = () => {
     const { ready, ui } = this.vis;
 
-    if (
-      !ready ||
-      (this.initialized && ui.view === this.prevView && isEqual(ui.timeSpan, this.prevTimeSpan))
-    ) {
+    if (!ready || (this.initialized && ui.view === this.prevView && isEqual(ui.timeSpan, this.prevTimeSpan))) {
       return;
     }
 
@@ -125,9 +123,7 @@ class GraphStore {
 
     this.simulation.nodes(this.nodes);
 
-    this.linkForce
-      .links(this.links)
-      .strength(link => (viewActive && link.connectionLine.visible ? 0.7 : 0));
+    this.linkForce.links(this.links).strength((link) => (viewActive && link.connectionLine.visible ? 0.7 : 0));
 
     this.xForce.strength(viewActive ? 0.1 : 1);
     this.yForce.strength(viewActive ? 0.1 : 1);
@@ -152,7 +148,7 @@ class GraphStore {
     const prevPixelOrigin = this.pixelOrigin;
 
     if (prevZoom != null && prevPixelOrigin != null) {
-      this.nodes.forEach(node => {
+      this.nodes.forEach((node) => {
         // latLngToLayerPoint for custom zoom
         const prevLatLng = this.vis.unproject(node, prevZoom, prevPixelOrigin);
         const nextPoint = this.vis.project(prevLatLng, nextZoom, nextPixelOrigin);
@@ -170,12 +166,11 @@ class GraphStore {
     this.pixelOrigin = nextPixelOrigin;
   };
 
-  @computed
   get nodes() {
     const nodes: PlaceCircleNode[] = [];
 
-    this.vis.placeCircles.forEach(placeCircle => {
-      let node = this.cachedNodes.find(node => node.placeCircle === placeCircle);
+    this.vis.placeCircles.forEach((placeCircle) => {
+      let node = this.cachedNodes.find((node) => node.placeCircle === placeCircle);
 
       if (node == null) {
         node = new PlaceCircleNode(placeCircle);
@@ -187,12 +182,11 @@ class GraphStore {
     return (this.cachedNodes = nodes);
   }
 
-  @computed
   get links() {
     const links: ConnectionLineLink[] = [];
 
-    this.vis.connectionLines.forEach(connectionLine => {
-      let link = this.cachedLinks.find(link => link.connectionLine === connectionLine);
+    this.vis.connectionLines.forEach((connectionLine) => {
+      let link = this.cachedLinks.find((link) => link.connectionLine === connectionLine);
 
       if (link == null) {
         link = new ConnectionLineLink(connectionLine);

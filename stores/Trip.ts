@@ -1,4 +1,4 @@
-import { computed } from 'mobx';
+import { computed, makeObservable } from 'mobx';
 
 import DataStore from './DataStore';
 
@@ -32,6 +32,12 @@ class Trip {
   readonly duration: number;
 
   constructor(store: DataStore, data: ITripData) {
+    makeObservable(this, {
+      from: computed,
+      to: computed,
+      visible: computed,
+    });
+
     this.store = store;
 
     this.fromPlaceId = data.from;
@@ -42,9 +48,8 @@ class Trip {
     this.duration = data.duration;
   }
 
-  @computed
   get from() {
-    const from = this.store.places.find(place => place.id === this.fromPlaceId);
+    const from = this.store.places.find((place) => place.id === this.fromPlaceId);
 
     if (from == null) {
       throw new Error('Missing place.');
@@ -53,9 +58,8 @@ class Trip {
     return from;
   }
 
-  @computed
   get to() {
-    const to = this.store.places.find(place => place.id === this.toPlaceId);
+    const to = this.store.places.find((place) => place.id === this.toPlaceId);
 
     if (to == null) {
       throw new Error('Missing place.');
@@ -64,7 +68,6 @@ class Trip {
     return to;
   }
 
-  @computed
   get visible() {
     const { timeSpan } = this.store.ui;
 

@@ -1,5 +1,5 @@
 import { latLng } from 'leaflet';
-import { computed } from 'mobx';
+import { computed, makeObservable } from 'mobx';
 
 import DataStore from './DataStore';
 
@@ -25,6 +25,17 @@ class Place {
   readonly name: string;
 
   constructor(store: DataStore, data: IPlaceData) {
+    makeObservable(this, {
+      latLng: computed,
+      stays: computed,
+      visibleStays: computed,
+      duration: computed,
+      visibleDuration: computed,
+      frequency: computed,
+      visibleFrequency: computed,
+      visible: computed,
+    });
+
     this.store = store;
 
     this.id = data.id;
@@ -32,44 +43,36 @@ class Place {
     this.name = data.name;
   }
 
-  @computed
   get latLng() {
     const { lat, lon } = this.location;
 
     return latLng({ lat, lng: lon });
   }
 
-  @computed
   get stays() {
-    return this.store.stays.filter(stay => stay.at === this);
+    return this.store.stays.filter((stay) => stay.at === this);
   }
 
-  @computed
   get visibleStays() {
-    return this.stays.filter(stay => stay.visible);
+    return this.stays.filter((stay) => stay.visible);
   }
 
-  @computed
   get duration() {
     return this.stays.reduce((duration, stay) => duration + stay.duration, 0);
   }
 
-  @computed
   get visibleDuration() {
     return this.visibleStays.reduce((duration, stay) => duration + stay.duration, 0);
   }
 
-  @computed
   get frequency() {
     return this.stays.length;
   }
 
-  @computed
   get visibleFrequency() {
     return this.visibleStays.length;
   }
 
-  @computed
   get visible() {
     return this.visibleStays.length > 0;
   }

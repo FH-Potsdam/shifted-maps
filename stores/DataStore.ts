@@ -1,4 +1,4 @@
-import { computed } from 'mobx';
+import { computed, makeObservable } from 'mobx';
 
 import Connection from './Connection';
 import { DiaryData } from './Diary';
@@ -14,15 +14,30 @@ class DataStore {
   readonly data: DiaryData;
 
   constructor(ui: UIStore, data: DiaryData) {
+    makeObservable(this, {
+      places: computed,
+      stays: computed,
+      trips: computed,
+      connections: computed,
+      timeSpan: computed,
+      visiblePlaces: computed,
+      visibleConnections: computed,
+      totalConnectionDistance: computed,
+      averageConnectionDistance: computed,
+      totalConnectionDuration: computed,
+      averageConnectionDuration: computed,
+      totalConnectionFrequency: computed,
+      averageConnectionFrequency: computed,
+    });
+
     this.ui = ui;
     this.data = data;
   }
 
-  @computed
   get places() {
     const places: Place[] = [];
 
-    this.data.forEach(item => {
+    this.data.forEach((item) => {
       if (item.place != null && isPlaceData(item.place)) {
         places.push(new Place(this, item.place));
       }
@@ -31,11 +46,10 @@ class DataStore {
     return places;
   }
 
-  @computed
   get stays() {
     const stays: Stay[] = [];
 
-    this.data.forEach(item => {
+    this.data.forEach((item) => {
       if (item.stay != null && isStayData(item.stay)) {
         stays.push(new Stay(this, item.stay));
       }
@@ -44,11 +58,10 @@ class DataStore {
     return stays;
   }
 
-  @computed
   get trips() {
     const trips: Trip[] = [];
 
-    this.data.forEach(item => {
+    this.data.forEach((item) => {
       if (item.trip != null && isTripData(item.trip)) {
         trips.push(new Trip(this, item.trip));
       }
@@ -57,11 +70,10 @@ class DataStore {
     return trips;
   }
 
-  @computed
   get connections() {
     const connections: { [id: string]: Connection } = {};
 
-    this.trips.forEach(trip => {
+    this.trips.forEach((trip) => {
       // Ignore trips where start and end is at the same place.
       if (trip.from === trip.to || trip.from.latLng.equals(trip.to.latLng)) {
         return;
@@ -86,7 +98,6 @@ class DataStore {
     return Object.values(connections);
   }
 
-  @computed
   get timeSpan(): ReadonlyArray<number> {
     return this.stays.reduce<[number, number]>(
       ([start, end], stay: Stay) => {
@@ -104,24 +115,20 @@ class DataStore {
     );
   }
 
-  @computed
   get visiblePlaces() {
-    return this.places.filter(place => place.visible);
+    return this.places.filter((place) => place.visible);
   }
 
-  @computed
   get visibleConnections() {
-    return this.connections.filter(connection => connection.visible);
+    return this.connections.filter((connection) => connection.visible);
   }
 
-  @computed
   get totalConnectionDistance() {
     return this.visibleConnections.reduce((distance, connection) => {
       return distance + connection.totalVisibleDistance;
     }, 0);
   }
 
-  @computed
   get averageConnectionDistance() {
     if (this.visibleConnections.length === 0) {
       return 0;
@@ -130,14 +137,12 @@ class DataStore {
     return this.totalConnectionDistance / this.visibleConnections.length;
   }
 
-  @computed
   get totalConnectionDuration() {
     return this.visibleConnections.reduce((distance, connection) => {
       return distance + connection.totalVisibleDuration;
     }, 0);
   }
 
-  @computed
   get averageConnectionDuration() {
     if (this.visibleConnections.length === 0) {
       return 0;
@@ -146,14 +151,12 @@ class DataStore {
     return this.totalConnectionDuration / this.visibleConnections.length;
   }
 
-  @computed
   get totalConnectionFrequency() {
     return this.visibleConnections.reduce((distance, connection) => {
       return distance + connection.visibleFrequency;
     }, 0);
   }
 
-  @computed
   get averageConnectionFrequency() {
     if (this.visibleConnections.length === 0) {
       return 0;

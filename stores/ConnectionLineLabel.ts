@@ -1,5 +1,5 @@
 import { Point } from 'leaflet';
-import { computed } from 'mobx';
+import { computed, makeObservable } from 'mobx';
 
 import ConnectionLine from './ConnectionLine';
 import { VIEW } from './UIStore';
@@ -10,9 +10,21 @@ import VisualisationStore from './VisualisationStore';
 const roundConnectionLinePoint = roundPoint(0.2);
 
 class ConnectionLineLabel {
-  constructor(readonly vis: VisualisationStore, readonly connectionLine: ConnectionLine) {}
+  constructor(readonly vis: VisualisationStore, readonly connectionLine: ConnectionLine) {
+    makeObservable(this, {
+      content: computed,
+      highlight: computed,
 
-  @computed
+      centerPoint: computed<Point | null>({
+        equals(a, b) {
+          return a != null && b != null && a.equals(b);
+        },
+      }),
+
+      rotation: computed,
+    });
+  }
+
   get content() {
     const { view } = this.vis.ui;
 
@@ -31,16 +43,10 @@ class ConnectionLineLabel {
     return null;
   }
 
-  @computed
   get highlight() {
     return this.connectionLine.highlight;
   }
 
-  @computed<Point | null>({
-    equals(a, b) {
-      return a != null && b != null && a.equals(b);
-    },
-  })
   get centerPoint() {
     const { fromPlaceCircleEdge, toPlaceCircleEdge } = this.connectionLine;
 
@@ -53,7 +59,6 @@ class ConnectionLineLabel {
     );
   }
 
-  @computed
   get rotation() {
     const { placeCircleVector } = this.connectionLine;
 

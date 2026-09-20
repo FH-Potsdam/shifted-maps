@@ -1,4 +1,4 @@
-import { computed } from 'mobx';
+import { computed, makeObservable } from 'mobx';
 
 import DataStore from './DataStore';
 
@@ -21,6 +21,11 @@ class Stay {
   readonly startAt: number;
 
   constructor(store: DataStore, data: IStayData) {
+    makeObservable(this, {
+      visible: computed,
+      at: computed,
+    });
+
     this.store = store;
 
     this.atPlaceId = data.at;
@@ -29,7 +34,6 @@ class Stay {
     this.startAt = data.startAt;
   }
 
-  @computed
   get visible() {
     const { timeSpan } = this.store.ui;
 
@@ -42,9 +46,8 @@ class Stay {
     return this.startAt >= start && this.endAt <= end;
   }
 
-  @computed
   get at() {
-    return this.store.places.find(place => place.id === this.atPlaceId);
+    return this.store.places.find((place) => place.id === this.atPlaceId);
   }
 }
 

@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx';
+import { action, observable, makeObservable } from 'mobx';
 
 export enum VIEW {
   GEOGRAPHIC,
@@ -7,13 +7,18 @@ export enum VIEW {
 }
 
 class UIStore {
-  @observable
   timeSpan?: ReadonlyArray<number>;
 
-  @observable
   view?: VIEW;
 
-  @action
+  constructor() {
+    makeObservable(this, {
+      timeSpan: observable,
+      view: observable,
+      update: action,
+    });
+  }
+
   update({ view, timeSpan }: { timeSpan?: ReadonlyArray<number>; view?: VIEW }) {
     this.view = view;
     this.timeSpan = timeSpan;

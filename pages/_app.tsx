@@ -1,5 +1,5 @@
 import { IncomingMessage } from 'http';
-import { useStaticRendering } from 'mobx-react';
+import { enableStaticRendering } from 'mobx-react';
 import BaseApp, { AppContext } from 'next/app';
 import Head from 'next/head';
 import 'normalize.css';
@@ -35,7 +35,7 @@ class App extends BaseApp<AppProps> {
     let pageProps = {};
 
     if (ctx.req != null) {
-      useStaticRendering(true);
+      enableStaticRendering(true);
     }
 
     if (Component.getInitialProps) {

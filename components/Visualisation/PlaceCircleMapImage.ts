@@ -1,12 +1,16 @@
-import { action, observable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 
 class PlaceCircleMapImage {
   readonly href: string;
 
-  @observable
   loaded = false;
 
   constructor(href: string) {
+    makeObservable(this, {
+      loaded: observable,
+      handleLoaded: action,
+    });
+
     this.href = href;
 
     const image = new Image();
@@ -14,7 +18,6 @@ class PlaceCircleMapImage {
     image.onload = this.handleLoaded;
   }
 
-  @action
   handleLoaded = () => {
     this.loaded = true;
   };
