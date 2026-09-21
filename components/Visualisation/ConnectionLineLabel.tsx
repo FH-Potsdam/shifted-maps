@@ -58,7 +58,9 @@ const ConnectionLineLabel = observer((props: ConnectionLineProps) => {
       image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', canvas.toDataURL());
       image.setAttribute('width', String(width * 0.5));
       image.setAttribute('height', String(height * 0.5));
-      image.style[DomUtil.TRANSFORM] = `translate(${width * -0.25}px, ${height * -0.25}px)`;
+      Object.assign(image.style, {
+        [DomUtil.TRANSFORM]: `translate(${width * -0.25}px, ${height * -0.25}px)`,
+      });
     },
     [connectionLineLabel, device, theme]
   );

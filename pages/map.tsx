@@ -26,7 +26,11 @@ const Map = () => {
   }
 
   if (typeof router.query.view === 'string') {
-    view = VIEW[router.query.view.toUpperCase()];
+    const viewName = router.query.view.toUpperCase();
+
+    if (viewName in VIEW) {
+      view = VIEW[viewName as keyof typeof VIEW];
+    }
   }
 
   if (typeof router.query.center === 'string' && typeof router.query.zoom === 'string') {

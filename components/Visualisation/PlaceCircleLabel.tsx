@@ -99,7 +99,9 @@ const PlaceCircleLabel = observer(({ className, placeCircle, theme, device }: Pl
     element.setAttributeNS('http://www.w3.org/1999/xlink', 'href', canvas.toDataURL());
     element.setAttribute('width', String(width * 0.5));
     element.setAttribute('height', String(height * 0.5));
-    element.style[DomUtil.TRANSFORM] = `translateX(${Math.round(width * -0.25)}px)`;
+    Object.assign(element.style, {
+      [DomUtil.TRANSFORM]: `translateX(${Math.round(width * -0.25)}px)`,
+    });
   }, [theme, placeCircle, device, ref.current]);
 
   useAutorun(drawLabel);
