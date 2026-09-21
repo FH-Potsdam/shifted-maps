@@ -40,6 +40,8 @@ class PlaceCircle {
       dots: computed,
       visible: computed,
       connectionLines: computed,
+      pixelBounds: computed,
+      intersectsViewBounds: computed,
     });
 
     this.vis = vis;
@@ -183,6 +185,19 @@ class PlaceCircle {
     return this.vis.connectionLines.filter(
       (connectionLine) => connectionLine.from === this || connectionLine.to === this
     );
+  }
+
+  get pixelBounds() {
+    const outerRadius = this.radius + this.strokeWidth / 2;
+
+    return bounds(
+      point(this.point.x - outerRadius, this.point.y - outerRadius),
+      point(this.point.x + outerRadius, this.point.y + outerRadius)
+    );
+  }
+
+  get intersectsViewBounds() {
+    return this.vis.viewBounds == null || this.vis.viewBounds.intersects(this.pixelBounds);
   }
 }
 

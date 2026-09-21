@@ -1,4 +1,4 @@
-import { Point } from 'leaflet';
+import { LineUtil, Point } from 'leaflet';
 import { computed, makeObservable } from 'mobx';
 
 import Connection from './Connection';
@@ -52,6 +52,8 @@ class ConnectionLine {
           return a != null && b != null && a.equals(b);
         },
       }),
+
+      clippedPoints: computed,
     });
   }
 
@@ -151,6 +153,24 @@ class ConnectionLine {
         this.placeCircleVector.multiplyBy((this.to.radius + this.to.strokeWidth / 2 - 0.5) / this.placeCircleCistance)
       )
     );
+  }
+
+  get clippedPoints(): [Point, Point] | null {
+    const { fromPlaceCircleEdge, toPlaceCircleEdge } = this;
+
+    if (fromPlaceCircleEdge == null || toPlaceCircleEdge == null) {
+      return null;
+    }
+
+    const { viewBounds } = this.vis;
+
+    if (viewBounds == null) {
+      return [fromPlaceCircleEdge, toPlaceCircleEdge];
+    }
+
+    const clippedLine = LineUtil.clipSegment(fromPlaceCircleEdge, toPlaceCircleEdge, viewBounds);
+
+    return clippedLine === false ? null : clippedLine;
   }
 }
 

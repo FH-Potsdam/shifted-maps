@@ -58,6 +58,7 @@ const ConnectionLineLabel = observer((props: ConnectionLineProps) => {
       image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', canvas.toDataURL());
       image.setAttribute('width', String(width * 0.5));
       image.setAttribute('height', String(height * 0.5));
+      connectionLineLabel.updateSize(width * 0.5, height * 0.5);
       Object.assign(image.style, {
         [DomUtil.TRANSFORM]: `translate(${width * -0.25}px, ${height * -0.25}px)`,
       });
@@ -86,12 +87,14 @@ const ConnectionLineLabel = observer((props: ConnectionLineProps) => {
   const groupRef = useAutorunRef(
     useCallback(
       (g: SVGGElement) => {
-        const { centerPoint, rotation } = connectionLineLabel;
+        const { centerPoint, rotation, intersectsViewBounds } = connectionLineLabel;
 
-        if (centerPoint == null) {
+        if (!intersectsViewBounds || centerPoint == null) {
+          g.style.display = 'none';
           return;
         }
 
+        g.style.removeProperty('display');
         g.setAttribute('transform', `translate(${centerPoint.x}, ${centerPoint.y}) rotate(${rotation})`);
       },
       [connectionLineLabel]
@@ -106,7 +109,6 @@ const ConnectionLineLabel = observer((props: ConnectionLineProps) => {
 });
 
 export default styled(withTheme(ConnectionLineLabel))`
-  will-change: transform;
   display: none;
 
   &.visible {

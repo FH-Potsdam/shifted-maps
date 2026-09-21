@@ -1,5 +1,5 @@
-import { Point } from 'leaflet';
-import { computed, makeObservable } from 'mobx';
+import { bounds, point, Point } from 'leaflet';
+import { action, computed, makeObservable, observableRef } from 'mobx';
 
 import ConnectionLine from './ConnectionLine';
 import { VIEW } from './UIStore';
@@ -10,8 +10,11 @@ import VisualisationStore from './VisualisationStore';
 const roundConnectionLinePoint = roundPoint(0.2);
 
 class ConnectionLineLabel {
+  size: Point | null = null;
+
   constructor(readonly vis: VisualisationStore, readonly connectionLine: ConnectionLine) {
     makeObservable(this, {
+      size: observableRef,
       content: computed,
       highlight: computed,
 
@@ -22,7 +25,18 @@ class ConnectionLineLabel {
       }),
 
       rotation: computed,
+      pixelBounds: computed,
+      intersectsViewBounds: computed,
+      updateSize: action,
     });
+  }
+
+  updateSize(width: number, height: number) {
+    const size = point(width, height);
+
+    if (this.size == null || !this.size.equals(size)) {
+      this.size = size;
+    }
   }
 
   get content() {
@@ -71,6 +85,35 @@ class ConnectionLineLabel {
     }
 
     return rotation;
+  }
+
+  get pixelBounds() {
+    const { centerPoint } = this;
+    const { size } = this;
+
+    if (centerPoint == null || size == null) {
+      return null;
+    }
+
+    const radians = (this.rotation * Math.PI) / 180;
+    const cosine = Math.abs(Math.cos(radians));
+    const sine = Math.abs(Math.sin(radians));
+    const halfWidth = size.x / 2;
+    const halfHeight = size.y / 2;
+    const extentX = cosine * halfWidth + sine * halfHeight;
+    const extentY = sine * halfWidth + cosine * halfHeight;
+
+    return bounds(
+      point(centerPoint.x - extentX, centerPoint.y - extentY),
+      point(centerPoint.x + extentX, centerPoint.y + extentY)
+    );
+  }
+
+  get intersectsViewBounds() {
+    const { pixelBounds } = this;
+    const { viewBounds } = this.vis;
+
+    return pixelBounds != null && (viewBounds == null || viewBounds.intersects(pixelBounds));
   }
 }
 

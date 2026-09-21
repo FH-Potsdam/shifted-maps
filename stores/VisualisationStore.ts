@@ -1,8 +1,8 @@
 import { scaleLinear, scalePow } from 'd3-scale';
-import { CRS as LeafletCRS, LatLng, latLngBounds, Map as LeafletMap, Point } from 'leaflet';
+import { bounds, Bounds, CRS as LeafletCRS, LatLng, latLngBounds, Map as LeafletMap, point, Point } from 'leaflet';
 import debounce from 'lodash/fp/debounce';
 import reverse from 'lodash/fp/reverse';
-import { action, computed, observable, makeObservable } from 'mobx';
+import { action, computed, makeObservable, observable, observableRef } from 'mobx';
 
 import {
   createConnectionStrokeWidthRangeScale,
@@ -35,6 +35,8 @@ class VisualisationStore {
 
   width: number | undefined = undefined;
 
+  viewBounds: Bounds | undefined = undefined;
+
   maxPlaceCircleRadius: number | undefined = undefined;
 
   toggle = debounce(50)(
@@ -58,6 +60,7 @@ class VisualisationStore {
       zoom: observable,
       activeElement: observable,
       width: observable,
+      viewBounds: observableRef,
       maxPlaceCircleRadius: observable,
       crs: observable,
       minZoom: observable,
@@ -111,6 +114,23 @@ class VisualisationStore {
     this.minZoom = map.getMinZoom();
     this.maxZoom = Math.min(MAX_ZOOM, map.getMaxZoom());
 
+    const size = map.getSize();
+    const padding = 0.1;
+    const min = map.containerPointToLayerPoint(point(size.x * -padding, size.y * -padding)).round();
+    const paddedSize = size.multiplyBy(1 + padding * 2).round();
+    const viewBounds = bounds(min, min.add(paddedSize));
+
+    if (
+      this.viewBounds?.min == null ||
+      this.viewBounds.max == null ||
+      viewBounds.min == null ||
+      viewBounds.max == null ||
+      !this.viewBounds.min.equals(viewBounds.min) ||
+      !this.viewBounds.max.equals(viewBounds.max)
+    ) {
+      this.viewBounds = viewBounds;
+    }
+
     const pixelOrigin = map.getPixelOrigin();
 
     if (this.pixelOrigin == null || !this.pixelOrigin.equals(pixelOrigin)) {
@@ -140,7 +160,7 @@ class VisualisationStore {
   }
 
   get ready() {
-    return this.pixelOrigin != null && this.zoom != null && this.width != null;
+    return this.pixelOrigin != null && this.zoom != null && this.width != null && this.viewBounds != null;
   }
 
   get zoomScale() {

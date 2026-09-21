@@ -26,9 +26,10 @@ const PlaceCircle = observer(({ placeCircle, className, vis, touch, device }: Pl
   const ref = useAutorunRef(
     useCallback(
       (element: SVGGElement) => {
-        const { point } = placeCircle;
+        const { point: circlePoint, intersectsViewBounds } = placeCircle;
 
-        element.setAttribute('transform', `translate(${point.x}, ${point.y})`);
+        element.style.willChange = intersectsViewBounds ? 'opacity' : 'auto';
+        element.setAttribute('transform', `translate(${circlePoint.x}, ${circlePoint.y})`);
       },
       [placeCircle]
     )
@@ -94,7 +95,6 @@ const PlaceCircle = observer(({ placeCircle, className, vis, touch, device }: Pl
 });
 
 export default styled(PlaceCircle)`
-  will-change: transform, opacity;
   pointer-events: auto;
   transition: opacity ${(props) => props.theme.transitionDuration};
   opacity: 1;

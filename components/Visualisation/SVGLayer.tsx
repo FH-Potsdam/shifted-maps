@@ -50,5 +50,5 @@ const SVGLayer = ({ children, className }: SVGLayerProps) => {
 };
 
 export default styled(SVGLayer)`
-  overflow: visible;
+  overflow: hidden;
 `;

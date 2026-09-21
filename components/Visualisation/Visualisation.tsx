@@ -134,11 +134,12 @@ const Visualisation = observer((props: VisualisationProps) => {
       const prevMapView = mapView;
       const nextMapView = createMapView(map);
 
+      visStore.updateProjection(map);
+
       if (isEqual(prevMapView, nextMapView)) {
         return;
       }
 
-      visStore.updateProjection(map);
       debounceOnMapViewChange(nextMapView);
     },
     [mapView, visStore, debounceOnMapViewChange]

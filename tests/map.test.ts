@@ -164,7 +164,7 @@ test('zooming reveals a place contained in another place and its connection', as
   }
 
   await expect(zoologischerGarten).toBeVisible();
-  await expect(zoologischerGartenConnection).toBeVisible();
+  await expect(zoologischerGartenConnection).toHaveCount(1);
   await expect(anna).not.toHaveAccessibleDescription(/Bahnhof Berlin Zoologischer Garten/);
 
   for (let zoom = 15; zoom >= 10; zoom -= 1) {

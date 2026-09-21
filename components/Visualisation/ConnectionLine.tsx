@@ -26,19 +26,24 @@ export const ConnectionLine = observer((props: ConnectionLineProps) => {
   const ref = useAutorunRef(
     useCallback(
       (ref: SVGLineElement) => {
-        const { fromPlaceCircleEdge, toPlaceCircleEdge } = connectionLine;
+        const { clippedPoints } = connectionLine;
 
-        if (fromPlaceCircleEdge == null || toPlaceCircleEdge == null) {
+        if (clippedPoints == null) {
+          ref.style.display = 'none';
           return;
         }
+
+        const [fromPoint, toPoint] = clippedPoints;
+
+        ref.style.removeProperty('display');
 
         const { strokeWidth } = connectionLine;
 
         ref.setAttribute('stroke-width', String(strokeWidth));
-        ref.setAttribute('x1', String(fromPlaceCircleEdge.x));
-        ref.setAttribute('y1', String(fromPlaceCircleEdge.y));
-        ref.setAttribute('x2', String(toPlaceCircleEdge.x));
-        ref.setAttribute('y2', String(toPlaceCircleEdge.y));
+        ref.setAttribute('x1', String(fromPoint.x));
+        ref.setAttribute('y1', String(fromPoint.y));
+        ref.setAttribute('x2', String(toPoint.x));
+        ref.setAttribute('y2', String(toPoint.y));
       },
       [connectionLine]
     )
@@ -109,7 +114,6 @@ export const ConnectionLine = observer((props: ConnectionLineProps) => {
 
 export default styled(ConnectionLine)`
   pointer-events: auto;
-  will-change: opacity;
   transition: opacity ${(props) => props.theme.transitionDuration};
   opacity: 1;
 
