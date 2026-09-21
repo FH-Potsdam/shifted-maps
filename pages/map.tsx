@@ -1,6 +1,5 @@
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { useCallback } from 'react';
 import { MapView } from '../components/Visualisation/Visualisation';
 import data from '../data/demo.json';
 import { VIEW } from '../stores/UIStore';
@@ -44,53 +43,44 @@ const Map = () => {
     }
   }
 
-  const handleViewChange = useCallback(
-    (view?: VIEW) => {
-      const query: { view?: string } = {
+  const handleViewChange = (view?: VIEW) => {
+    const query: { view?: string } = {
+      ...router.query,
+    };
+
+    if (view != null) {
+      query.view = VIEW[view].toLowerCase();
+    } else {
+      delete query.view;
+    }
+
+    router.push({ pathname: '/map', query });
+  };
+
+  const handleTimeSpanChange = (timeSpan: ReadonlyArray<number>) => {
+    router.push({
+      pathname: '/map',
+      query: {
         ...router.query,
-      };
+        timeSpan: timeSpan.join('-'),
+      },
+    });
+  };
 
-      if (view != null) {
-        query.view = VIEW[view].toLowerCase();
-      } else {
-        delete query.view;
-      }
+  const handleMapViewChange = ({ center, zoom }: MapView) => {
+    const query = {
+      center: center.join(','),
+      zoom: String(zoom),
+    };
 
-      router.push({ pathname: '/map', query });
-    },
-    [router]
-  );
-
-  const handleTimeSpanChange = useCallback(
-    (timeSpan: ReadonlyArray<number>) => {
-      router.push({
-        pathname: '/map',
-        query: {
-          ...router.query,
-          timeSpan: timeSpan.join('-'),
-        },
-      });
-    },
-    [router]
-  );
-
-  const handleMapViewChange = useCallback(
-    ({ center, zoom }: MapView) => {
-      const query = {
-        center: center.join(','),
-        zoom: String(zoom),
-      };
-
-      router.push({
-        pathname: '/map',
-        query: {
-          ...router.query,
-          ...query,
-        },
-      });
-    },
-    [router]
-  );
+    router.push({
+      pathname: '/map',
+      query: {
+        ...router.query,
+        ...query,
+      },
+    });
+  };
 
   if (!router.isReady) {
     return null;

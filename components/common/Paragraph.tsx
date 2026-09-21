@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 import { ifProp, theme } from '../styled';
 
 interface ParagraphProps {
-  lead?: boolean;
+  $lead?: boolean;
 }
 
 export default styled.p<ParagraphProps>`
@@ -16,8 +16,8 @@ export default styled.p<ParagraphProps>`
     margin-top: ${theme('spacingUnit')}px;
   }
 
-  ${ifProp(
-    'lead',
+  ${ifProp<ParagraphProps>(
+    '$lead',
     css`
       font-style: italic;
       font-size: ${theme('fontSizeBig')}px;

@@ -11,13 +11,21 @@ export interface ITripData {
   readonly duration: number;
 }
 
-export function isTripData(value: any): value is ITripData {
+export function isTripData(value: unknown): value is ITripData {
   return (
+    typeof value === 'object' &&
+    value != null &&
+    'from' in value &&
     value.from != null &&
+    'to' in value &&
     value.to != null &&
+    'startAt' in value &&
     value.startAt != null &&
+    'endAt' in value &&
     value.endAt != null &&
+    'distance' in value &&
     value.distance != null &&
+    'duration' in value &&
     value.duration != null
   );
 }

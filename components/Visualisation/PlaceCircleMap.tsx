@@ -29,25 +29,22 @@ const PlaceCircleMap = observer(({ className, placeCircle, vis }: PlaceCircleMap
   const cachedImagesRef = useRef<PlaceCircleMapImage[]>([]);
   const imageDiameter = imageRadius * 2;
 
-  const href = useMemo(() => {
-    const center = latLngBounds.getCenter();
-
-    return `https://api.mapbox.com/styles/v1/${process.env.mapboxStaticStyleId}/static/${roundCoordinate(
-      center.lng
-    )},${roundCoordinate(center.lat)},${zoom}/${imageDiameter}x${imageDiameter}${
-      Browser.retina ? '@2x' : ''
-    }?access_token=${process.env.mapboxAccessToken}`;
-  }, [zoom, latLngBounds, imageDiameter]);
+  const center = latLngBounds.getCenter();
+  const href = `https://api.mapbox.com/styles/v1/${process.env.mapboxStaticStyleId}/static/${roundCoordinate(
+    center.lng
+  )},${roundCoordinate(center.lat)},${zoom}/${imageDiameter}x${imageDiameter}${
+    Browser.retina ? '@2x' : ''
+  }?access_token=${process.env.mapboxAccessToken}`;
 
   const images = useMemo(() => {
     const images = [];
-    let image = cachedImagesRef.current.find(image => image.href === href);
+    let image = cachedImagesRef.current.find((image) => image.href === href);
 
     if (image == null) {
       image = new PlaceCircleMapImage(href);
     }
 
-    const fallbackImages = cachedImagesRef.current.filter(image => image.loaded && image.href !== href);
+    const fallbackImages = cachedImagesRef.current.filter((image) => image.loaded && image.href !== href);
     images.push(...fallbackImages, image);
 
     return (cachedImagesRef.current = images);
@@ -60,7 +57,7 @@ const PlaceCircleMap = observer(({ className, placeCircle, vis }: PlaceCircleMap
           <circle r={radius} cx={imageRadius} cy={imageRadius} />
         </clipPath>
       </defs>
-      {images.map(image => (
+      {images.map((image) => (
         <image
           className={classNames({ active: image.loaded })}
           key={image.href}
@@ -79,7 +76,7 @@ const PlaceCircleMap = observer(({ className, placeCircle, vis }: PlaceCircleMap
 });
 
 const PlaceMapDot = styled.circle`
-  fill: ${props => props.theme.foregroundColor};
+  fill: ${(props) => props.theme.foregroundColor};
   stroke-width: 2;
   stroke: white;
 `;
@@ -96,7 +93,7 @@ export default styled(PlaceCircleMap)`
 
   &.highlight {
     ${PlaceMapDot} {
-      fill: ${props => props.theme.highlightColor};
+      fill: ${(props) => props.theme.highlightColor};
     }
   }
 `;

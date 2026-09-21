@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This is a Next.js 16 Pages Router application using React 19, TypeScript 5, MobX 6, and React Leaflet 5. Routes live in `pages/`; reusable UI is grouped under `components/Home`, `components/Visualisation`, and `components/common`. Domain and visualization state belongs in `stores/`, shared hooks in `hooks/`, and small pure helpers in `utils/`. Playwright behavior tests live in `tests/`. Public fonts, downloads, images, and videos belong in `public/`; styles, type declarations, and sanitized demo data live in `styles/`, `types/`, and `data/demo.json`.
+This is a Next.js 16 Pages Router application using React 19, TypeScript 6, MobX 7, and React Leaflet 5. Routes live in `pages/`; reusable UI is grouped under `components/Home`, `components/Visualisation`, and `components/common`. Domain and visualization state belongs in `stores/`, shared hooks in `hooks/`, and small pure helpers in `utils/`. Playwright behavior tests live in `tests/`. Public fonts, downloads, images, and videos belong in `public/`; styles, type declarations, and sanitized demo data live in `styles/`, `types/`, and `data/demo.json`.
 
 ## Build, Test, and Development Commands
 
@@ -12,17 +12,17 @@ Run `nvm use` before project commands to select the version in `.nvmrc`.
 - `npm run dev` starts the application at `http://localhost:3000`.
 - `npm run build` creates and validates the production build.
 - `npm run typecheck` runs strict TypeScript checks.
-- `npm run lint` runs the repository's TSLint rules.
+- `npm run lint` runs the Next.js ESLint rules; `npm run lint:fix` applies safe automatic fixes.
 - `npm run format:check` checks test and Playwright formatting.
 - `npm test` runs all Playwright behavior tests. Use `PLAYWRIGHT_PORT=3100 npm test` when port 3000 is occupied.
 
 Resolve peer-dependency conflicts by choosing compatible package versions. Do not use `--legacy-peer-deps`.
 
-Development and production builds use Turbopack. Keep SVG imports as React components through the `@svgr/webpack` rule in `next.config.js`.
+Development uses Turbopack; production builds use webpack for React Compiler compatibility. Keep SVG imports as React components through both `@svgr/webpack` rules in `next.config.mjs`.
 
 ## Coding Style & Naming Conventions
 
-Use two-space indentation, single quotes, semicolons, and trailing commas where supported. Follow the checked-in Prettier and TSLint configuration. Name React components and store classes in `PascalCase`, functions and values in `camelCase`, and hooks with the `use` prefix. Keep route files lowercase and visualization-specific behavior close to `components/Visualisation` or its store.
+Use two-space indentation, single quotes, semicolons, and trailing commas where supported. Follow the checked-in Prettier and ESLint configuration. Name React components and store classes in `PascalCase`, functions and values in `camelCase`, and hooks with the `use` prefix. Keep route files lowercase and visualization-specific behavior close to `components/Visualisation` or its store.
 
 ## Testing Guidelines
 
@@ -34,7 +34,7 @@ Use short, imperative commit subjects such as `Add browser test baseline.` Keep 
 
 ## Configuration & Security
 
-Values exposed through `next.config.js` are browser-visible. Never commit private API keys, personal movement data, or local configuration; use sanitized fixtures under `data/`.
+Values exposed through `next.config.mjs` are browser-visible. Never commit private API keys, personal movement data, or local configuration; use sanitized fixtures under `data/`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

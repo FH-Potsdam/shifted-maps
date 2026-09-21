@@ -1,13 +1,7 @@
-declare module '*.json' {
-  const value: any;
-
-  export default value;
-}
-
 declare module '*.svg' {
-  import { StatelessComponent, SVGProps } from 'react';
+  import { FunctionComponent, SVGProps } from 'react';
 
-  const SVGComponent: StatelessComponent<SVGProps<SVGSVGElement>>;
+  const SVGComponent: FunctionComponent<SVGProps<SVGSVGElement>>;
 
   export default SVGComponent;
 }

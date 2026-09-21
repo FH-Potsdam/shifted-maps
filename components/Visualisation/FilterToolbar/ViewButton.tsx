@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import { MouseEvent, useCallback } from 'react';
+import { MouseEvent } from 'react';
 import styled from 'styled-components';
 import { VIEW } from '../../../stores/UIStore';
 import { Icon } from '../../common/icons/components';
@@ -16,14 +16,11 @@ interface ViewButtonProps {
 const ViewButton = observer((props: ViewButtonProps) => {
   const { className, viewItem, onClick, active } = props;
 
-  const handleClick = useCallback(
-    (event: MouseEvent) => {
-      event.stopPropagation();
+  const handleClick = (event: MouseEvent) => {
+    event.stopPropagation();
 
-      onClick(viewItem.type);
-    },
-    [viewItem.type, onClick]
-  );
+    onClick(viewItem.type);
+  };
 
   return (
     <button
@@ -38,15 +35,16 @@ const ViewButton = observer((props: ViewButtonProps) => {
 });
 
 export default styled(ViewButton)`
-  transition: color ${props => props.theme.shortTransitionDuration},
-    transform ${props => props.theme.shortTransitionDuration};
+  transition:
+    color ${(props) => props.theme.shortTransitionDuration},
+    transform ${(props) => props.theme.shortTransitionDuration};
   border: 0;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   border-radius: 50%;
   cursor: pointer;
-  color: ${props => props.theme.foregroundColor};
+  color: ${(props) => props.theme.foregroundColor};
   padding: 0;
   background-color: white;
   transform: scale(1);
@@ -58,12 +56,12 @@ export default styled(ViewButton)`
   }
 
   & + & {
-    margin-left: ${props => props.theme.spacingUnit * 1}px;
+    margin-left: ${(props) => props.theme.spacingUnit * 1}px;
   }
 
   &:hover,
   &.active {
-    color: ${props => props.theme.highlightColor};
+    color: ${(props) => props.theme.highlightColor};
   }
 
   &:active,

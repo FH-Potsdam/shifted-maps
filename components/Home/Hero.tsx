@@ -16,14 +16,14 @@ interface HeroProps {
   className?: string;
 }
 
-const Hero: FC<HeroProps> = props => {
+const Hero: FC<HeroProps> = (props) => {
   const { className } = props;
 
   return (
     <div className={className}>
       <HeroHeader>
         <Heading>Shifted Maps</Heading>
-        <Paragraph lead>Visualizing personal Movement through Map Networks</Paragraph>
+        <Paragraph $lead>Visualizing personal Movement through Map Networks</Paragraph>
       </HeroHeader>
       <HeroHighlight>
         <HeroGo href="/map">
@@ -35,13 +35,13 @@ const Hero: FC<HeroProps> = props => {
       <HeroBottom>
         <HeroSection as={HeroPaper}>
           <Layout>
-            <LayoutItem span="6">
+            <LayoutItem $span="6">
               <HeroDownload href="/downloads/ShiftedMaps_Poster_IEEE_2015.pdf" download>
                 <Icon as={GoIcon} /> Poster IEEE VIS 2015
                 <em>877 KB</em>
               </HeroDownload>
             </LayoutItem>
-            <LayoutItem span="6">
+            <LayoutItem $span="6">
               <HeroDownload href="/downloads/ShiftedMaps_Paper_IEEE_2018_VISAP.pdf" download>
                 <Icon as={GoIcon} /> Paper IEEE VIS / VISAP 2018
                 <em>4.9 MB</em>
@@ -63,17 +63,17 @@ const Hero: FC<HeroProps> = props => {
         </HeroSection>
         <HeroSection as={HeroPartner}>
           <Layout>
-            <LayoutItem span="3">
+            <LayoutItem $span="3">
               <Link href="https://www.fh-potsdam.de">
                 <Logo as={FHPLogo} />
               </Link>
             </LayoutItem>
-            <LayoutItem span="5">
+            <LayoutItem $span="5">
               <Link href="https://uclab.fh-potsdam.de">
                 <Logo as={UCLabLogo} />
               </Link>
             </LayoutItem>
-            <LayoutItem span="3">
+            <LayoutItem $span="3">
               <Link href="https://here.com">
                 <Logo as={HereLogo} />
               </Link>
@@ -87,21 +87,21 @@ const Hero: FC<HeroProps> = props => {
 
 export default styled(Hero)`
   background-color: rgba(255, 255, 255, 0.7);
-  padding: ${props => props.theme.spacingUnit * 2}px;
-  padding-top: ${props => props.theme.spacingUnit * 3}px;
+  padding: ${(props) => props.theme.spacingUnit * 2}px;
+  padding-top: ${(props) => props.theme.spacingUnit * 3}px;
   min-height: 100vh;
 
   @media (min-width: 47em) {
     position: absolute;
     height: 100%;
     top: 0;
-    right: ${props => props.theme.spacingUnit * 7}px;
-    width: ${props => props.theme.spacingUnit * 20}px;
+    right: ${(props) => props.theme.spacingUnit * 7}px;
+    width: ${(props) => props.theme.spacingUnit * 20}px;
     background-color: rgba(255, 255, 255, 0.9);
   }
 
   h1 {
-    font-size: ${props => props.theme.fontSizeHero}px;
+    font-size: ${(props) => props.theme.fontSizeHero}px;
   }
 
   @media (min-width: 47em) and (min-height: 47em) {
@@ -124,10 +124,10 @@ const HeroHighlight = styled(Paragraph)`
 `;
 
 const HeroBottom = styled.div`
-  margin-top: ${props => props.theme.spacingUnit * 12}px;
+  margin-top: ${(props) => props.theme.spacingUnit * 12}px;
 
   @media (min-width: 35em) {
-    margin-top: ${props => props.theme.spacingUnit * 4}px;
+    margin-top: ${(props) => props.theme.spacingUnit * 4}px;
   }
 
   @media (min-width: 47em) {
@@ -136,20 +136,20 @@ const HeroBottom = styled.div`
     bottom: 0;
     width: 100%;
     left: 0;
-    padding: ${props => props.theme.spacingUnit * 2}px;
+    padding: ${(props) => props.theme.spacingUnit * 2}px;
   }
 `;
 
 const HeroSection = styled.div`
   & + & {
-    margin-top: ${props => props.theme.spacingUnit}px;
+    margin-top: ${(props) => props.theme.spacingUnit}px;
   }
 `;
 
 const HeroGo = styled(NextLink)`
-  transition: color ${props => props.theme.shortTransitionDuration};
+  transition: color ${(props) => props.theme.shortTransitionDuration};
   text-decoration: none;
-  color: ${props => props.theme.foregroundColor};
+  color: ${(props) => props.theme.foregroundColor};
   cursor: pointer;
   display: flex;
   position: absolute;
@@ -162,16 +162,16 @@ const HeroGo = styled(NextLink)`
   text-align: center;
 
   &:hover {
-    color: ${props => props.theme.highlightColor};
+    color: ${(props) => props.theme.highlightColor};
   }
   font-weight: 900;
   transform: rotate(-10deg);
-  background-color: ${props => props.theme.highlightColor};
+  background-color: ${(props) => props.theme.highlightColor};
   color: white;
   border-radius: 50%;
   line-height: 1.3;
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2);
-  font-size: ${props => props.theme.fontSizeBig}px;
+  font-size: ${(props) => props.theme.fontSizeBig}px;
   padding-top: 10px;
 
   &:hover {
@@ -203,38 +203,38 @@ const HeroDownload = styled(Link)`
 
   ${Icon} {
     display: block;
-    font-size: ${props => props.theme.spacingUnit * 2}px;
-    margin-bottom: ${props => props.theme.spacingUnit * 0.5}px;
+    font-size: ${(props) => props.theme.spacingUnit * 2}px;
+    margin-bottom: ${(props) => props.theme.spacingUnit * 0.5}px;
     transform: rotate(90deg);
   }
 
   em {
     display: block;
-    font-size: ${props => props.theme.fontSizeSmall}px;
+    font-size: ${(props) => props.theme.fontSizeSmall}px;
   }
 `;
 
 const HeroCredits = styled.div`
-  font-size: ${props => props.theme.fontSizeSmall}px;
+  font-size: ${(props) => props.theme.fontSizeSmall}px;
   font-style: italic;
   opacity: 0.6;
 
   ${HeroSection} + & {
-    margin-top: ${props => props.theme.spacingUnit * 2}px;
+    margin-top: ${(props) => props.theme.spacingUnit * 2}px;
   }
 
   a {
-    color: ${props => props.theme.foregroundColor};
+    color: ${(props) => props.theme.foregroundColor};
     transition: border-bottom 400ms;
-    border-bottom: 1px solid ${props => lighten(0.6, props.theme.foregroundColor)};
+    border-bottom: 1px solid ${(props) => lighten(0.6, props.theme.foregroundColor)};
 
     &:hover {
-      border-bottom-color: ${props => lighten(0.4, props.theme.foregroundColor)};
+      border-bottom-color: ${(props) => lighten(0.4, props.theme.foregroundColor)};
     }
   }
 
   p + p {
-    margin-top: ${props => props.theme.spacingUnit * 0.5}px;
+    margin-top: ${(props) => props.theme.spacingUnit * 0.5}px;
   }
 `;
 
@@ -247,14 +247,14 @@ const HeroPartner = styled.div`
   max-width: 320px;
 
   ${HeroSection} + & {
-    margin-top: ${props => props.theme.spacingUnit * 2}px;
+    margin-top: ${(props) => props.theme.spacingUnit * 2}px;
   }
 
   ${Link} {
-    color: ${props => transparentize(0.4, props.theme.foregroundColor)};
+    color: ${(props) => transparentize(0.4, props.theme.foregroundColor)};
 
     &:hover {
-      color: ${props => props.theme.highlightColor};
+      color: ${(props) => props.theme.highlightColor};
     }
   }
 `;

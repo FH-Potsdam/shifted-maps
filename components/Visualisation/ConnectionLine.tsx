@@ -24,63 +24,53 @@ export const ConnectionLine = observer((props: ConnectionLineProps) => {
   const tripLabel = connectionLine.visibleFrequency === 1 ? 'trip' : 'trips';
 
   const ref = useAutorunRef(
-    (ref: SVGLineElement) => {
-      const { fromPlaceCircleEdge, toPlaceCircleEdge } = connectionLine;
+    useCallback(
+      (ref: SVGLineElement) => {
+        const { fromPlaceCircleEdge, toPlaceCircleEdge } = connectionLine;
 
-      if (fromPlaceCircleEdge == null || toPlaceCircleEdge == null) {
-        return;
-      }
+        if (fromPlaceCircleEdge == null || toPlaceCircleEdge == null) {
+          return;
+        }
 
-      const { strokeWidth } = connectionLine;
+        const { strokeWidth } = connectionLine;
 
-      ref.setAttribute('stroke-width', String(strokeWidth));
-      ref.setAttribute('x1', String(fromPlaceCircleEdge.x));
-      ref.setAttribute('y1', String(fromPlaceCircleEdge.y));
-      ref.setAttribute('x2', String(toPlaceCircleEdge.x));
-      ref.setAttribute('y2', String(toPlaceCircleEdge.y));
-    },
-    [connectionLine]
+        ref.setAttribute('stroke-width', String(strokeWidth));
+        ref.setAttribute('x1', String(fromPlaceCircleEdge.x));
+        ref.setAttribute('y1', String(fromPlaceCircleEdge.y));
+        ref.setAttribute('x2', String(toPlaceCircleEdge.x));
+        ref.setAttribute('y2', String(toPlaceCircleEdge.y));
+      },
+      [connectionLine]
+    )
   );
 
-  const handleMouseEnter = useCallback(
-    (event: SyntheticEvent) => {
-      event.stopPropagation();
+  const handleMouseEnter = (event: SyntheticEvent) => {
+    event.stopPropagation();
 
-      vis.toggle(connectionLine, true);
-    },
-    [connectionLine, vis]
-  );
+    vis.toggle(connectionLine, true);
+  };
 
-  const handleMouseLeave = useCallback(
-    (event: SyntheticEvent) => {
-      event.stopPropagation();
+  const handleMouseLeave = (event: SyntheticEvent) => {
+    event.stopPropagation();
 
-      vis.toggle(connectionLine, false);
-    },
-    [connectionLine, vis]
-  );
+    vis.toggle(connectionLine, false);
+  };
 
-  const handleClick = useCallback(
-    (event: SyntheticEvent) => {
-      event.stopPropagation();
+  const handleClick = (event: SyntheticEvent) => {
+    event.stopPropagation();
 
-      vis.toggle(connectionLine);
-    },
-    [connectionLine, vis]
-  );
+    vis.toggle(connectionLine);
+  };
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent<SVGGElement>) => {
-      if (event.key !== 'Enter' && event.key !== ' ') {
-        return;
-      }
+  const handleKeyDown = (event: KeyboardEvent<SVGGElement>) => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
 
-      event.preventDefault();
-      event.stopPropagation();
-      vis.toggle(connectionLine);
-    },
-    [connectionLine, vis]
-  );
+    event.preventDefault();
+    event.stopPropagation();
+    vis.toggle(connectionLine);
+  };
 
   const toggleListeners = !touch
     ? {

@@ -1,8 +1,9 @@
-const { defineConfig } = require('@playwright/test');
+import { defineConfig } from '@playwright/test';
+
 const port = process.env.PLAYWRIGHT_PORT || '3000';
 const baseURL = `http://localhost:${port}`;
 
-module.exports = defineConfig({
+export default defineConfig({
   testDir: './tests',
   fullyParallel: false,
   reporter: 'list',

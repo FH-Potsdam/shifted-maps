@@ -3,7 +3,7 @@ import debounce from 'lodash/fp/debounce';
 import isEqual from 'lodash/fp/isEqual';
 import { configure } from 'mobx';
 import { observer } from 'mobx-react';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import useTouch from '../../hooks/useTouch';
 import useWidth from '../../hooks/useWidth';
@@ -70,8 +70,8 @@ function useDevice(defaultDevice: DEVICE): [DEVICE, (width: number) => void] {
   return [device, callback];
 }
 
-function useDebounceCallback<T extends (...args: any) => any>(callback: T, delay: number) {
-  const debouncedCallback = useCallback(debounce(delay)(callback), [delay, callback]);
+function useDebounceCallback(callback: (mapView: MapView) => void, delay: number) {
+  const debouncedCallback = useMemo(() => debounce(delay)(callback), [delay, callback]);
 
   useEffect(() => {
     return () => {
@@ -103,38 +103,34 @@ const Visualisation = observer((props: VisualisationProps) => {
     [visStore]
   );
 
-  const mapRef = useRef<LeafletMap | null>(null);
+  const [map, setMap] = useState<LeafletMap | null>(null);
 
   useLayoutEffect(() => {
-    if (mapRef.current != null) {
-      visStore.updateProjection(mapRef.current);
+    if (map != null) {
+      visStore.updateProjection(map);
     }
-  }, [mapRef.current, visStore]);
+  }, [map, visStore]);
 
   const touch = useTouch();
   const [device, updateDevice] = useDevice(DEVICE.desktop);
 
-  const measureRef = useWidth<HTMLDivElement>(
-    (width) => {
+  const handleWidthChange = useCallback(
+    (width: number) => {
       visStore.updateWidth(width);
       updateDevice(width);
     },
     [visStore, updateDevice]
   );
+  const measureRef = useWidth<HTMLDivElement>(handleWidthChange);
 
-  const handleWhenReady = useCallback(
-    (map: LeafletMap) => {
-      mapRef.current = map;
-      visStore.updateProjection(map);
-    },
-    [visStore]
-  );
+  const handleWhenReady = useCallback((readyMap: LeafletMap) => {
+    setMap(readyMap);
+  }, []);
 
   const debounceOnMapViewChange = useDebounceCallback(onMapViewChange, 200);
 
   const handleMapViewDidChange = useCallback(
     (map: LeafletMap) => {
-      mapRef.current = map;
       const prevMapView = mapView;
       const nextMapView = createMapView(map);
 
@@ -152,9 +148,9 @@ const Visualisation = observer((props: VisualisationProps) => {
     visStore.graph.stop();
   }, [visStore]);
 
-  const handleClick = useCallback(() => {
+  const handleClick = () => {
     visStore.deactivateElement();
-  }, [visStore]);
+  };
 
   const { initialBounds } = visStore;
   const listener = touch ? { onClick: handleClick } : {};

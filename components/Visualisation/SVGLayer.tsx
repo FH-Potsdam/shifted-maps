@@ -19,15 +19,25 @@ const SVGLayer = ({ children, className }: SVGLayerProps) => {
   const [container, setContainer] = useState<HTMLElement>();
 
   useEffect(() => {
+    const handleAdd = () => {
+      const element = renderer._container;
+
+      if (element == null) {
+        return;
+      }
+
+      if (className != null) {
+        DomUtil.addClass(element, className);
+      }
+
+      setContainer(element);
+    };
+
+    renderer.on('add', handleAdd);
     renderer.addTo(map);
 
-    if (renderer._container != null && className != null) {
-      DomUtil.addClass(renderer._container, className);
-    }
-
-    setContainer(renderer._container);
-
     return () => {
+      renderer.off('add', handleAdd);
       renderer.remove();
     };
   }, [className, map, renderer]);

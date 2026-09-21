@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import NextLink from 'next/link';
-import { MouseEvent, useCallback, useState } from 'react';
+import { MouseEvent, useState } from 'react';
 import styled from 'styled-components';
 import useDisableBodyScroll from '../../../hooks/useDIsableBodyScroll';
 import DataStore from '../../../stores/DataStore';
@@ -31,18 +31,15 @@ const FilterBar = observer((props: FilterBarProps) => {
   const ref = useDisableBodyScroll<HTMLDivElement>();
   const activeViewItem = getActiveViewItem(ui.view);
 
-  const handleHeadingClick = useCallback(
-    (event: MouseEvent<HTMLAnchorElement>) => {
-      if (!mobileOrTablet) {
-        return;
-      }
+  const handleHeadingClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!mobileOrTablet) {
+      return;
+    }
 
-      event.stopPropagation();
-      event.preventDefault();
-      setCollapsed(!collapsed);
-    },
-    [mobileOrTablet, collapsed]
-  );
+    event.stopPropagation();
+    event.preventDefault();
+    setCollapsed(!collapsed);
+  };
 
   return (
     <div className={classNames(className, { collapsed: mobileOrTablet && collapsed })} ref={ref}>
@@ -66,10 +63,10 @@ export default styled(FilterBar)`
   grid-template-columns: 1fr;
   grid-template-rows: auto auto auto;
   grid-template-areas: 'heading' 'view' 'time';
-  grid-column-gap: ${props => props.theme.spacingUnit * 1.25}px;
+  grid-column-gap: ${(props) => props.theme.spacingUnit * 1.25}px;
   background-color: rgba(255, 255, 255, 0.9);
-  padding: 0 ${props => props.theme.spacingUnit * 1.25}px;
-  padding-bottom: ${props => props.theme.spacingUnit * 1.5}px;
+  padding: 0 ${(props) => props.theme.spacingUnit * 1.25}px;
+  padding-bottom: ${(props) => props.theme.spacingUnit * 1.5}px;
   width: 100%;
   position: absolute;
   z-index: 1;
@@ -78,25 +75,25 @@ export default styled(FilterBar)`
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
   ${Heading} {
-    font-size: ${props => props.theme.fontSizeBig}px;
-    height: ${props => props.theme.spacingUnit * 3}px;
+    font-size: ${(props) => props.theme.fontSizeBig}px;
+    height: ${(props) => props.theme.spacingUnit * 3}px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
 
     ${Icon} {
-      margin-right: ${props => props.theme.spacingUnit}px;
+      margin-right: ${(props) => props.theme.spacingUnit}px;
     }
   }
 
   ${StrokeIcon} {
-    transition: transform ${props => props.theme.shortTransitionDuration};
+    transition: transform ${(props) => props.theme.shortTransitionDuration};
     transform: rotateX(180deg);
   }
 
   &.collapsed {
-    height: ${props => props.theme.spacingUnit * 3}px;
+    height: ${(props) => props.theme.spacingUnit * 3}px;
     top: 0;
 
     ${StrokeIcon} {
@@ -108,26 +105,26 @@ export default styled(FilterBar)`
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto auto;
     grid-template-areas: 'heading heading' 'view time' 'view time';
-    padding-left: ${props => props.theme.spacingUnit * 1.5}px;
-    padding-right: ${props => props.theme.spacingUnit * 1.5}px;
+    padding-left: ${(props) => props.theme.spacingUnit * 1.5}px;
+    padding-right: ${(props) => props.theme.spacingUnit * 1.5}px;
 
     ${Heading} {
-      height: ${props => props.theme.spacingUnit * 3.5}px;
+      height: ${(props) => props.theme.spacingUnit * 3.5}px;
     }
 
     &.collapsed {
-      height: ${props => props.theme.spacingUnit * 3.5}px;
+      height: ${(props) => props.theme.spacingUnit * 3.5}px;
     }
   }
 
   @media (min-width: 580px) {
     display: block;
-    padding: ${props => props.theme.spacingUnit * 1.5}px ${props => props.theme.spacingUnit * 1.25}px;
-    top: ${props => props.theme.spacingUnit}px;
-    left: ${props => props.theme.spacingUnit}px;
-    width: ${props => props.theme.spacingUnit * 16}px;
+    padding: ${(props) => props.theme.spacingUnit * 1.5}px ${(props) => props.theme.spacingUnit * 1.25}px;
+    top: ${(props) => props.theme.spacingUnit}px;
+    left: ${(props) => props.theme.spacingUnit}px;
+    width: ${(props) => props.theme.spacingUnit * 16}px;
     height: auto;
-    max-height: calc(100% - ${props => props.theme.spacingUnit * 2}px);
+    max-height: calc(100% - ${(props) => props.theme.spacingUnit * 2}px);
     overflow: auto;
 
     ${Heading} {

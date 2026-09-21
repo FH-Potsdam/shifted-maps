@@ -62,10 +62,10 @@ const ConnectionLineLabel = observer((props: ConnectionLineProps) => {
         [DomUtil.TRANSFORM]: `translate(${width * -0.25}px, ${height * -0.25}px)`,
       });
     },
-    [connectionLineLabel, device, theme]
+    [canvas, connectionLineLabel, ctx, device, theme]
   );
 
-  const imageRef = useAutorunRef(drawLabel, [drawLabel]);
+  const imageRef = useAutorunRef(drawLabel);
 
   useEffect(() => {
     if (fontLoaded.current || theme == null || connectionLineLabel.content == null) {
@@ -81,19 +81,21 @@ const ConnectionLineLabel = observer((props: ConnectionLineProps) => {
 
       fontLoaded.current = true;
     });
-  }, [theme, connectionLineLabel.content, drawLabel]);
+  }, [theme, connectionLineLabel.content, drawLabel, imageRef]);
 
   const groupRef = useAutorunRef(
-    (g: SVGGElement) => {
-      const { centerPoint, rotation } = connectionLineLabel;
+    useCallback(
+      (g: SVGGElement) => {
+        const { centerPoint, rotation } = connectionLineLabel;
 
-      if (centerPoint == null) {
-        return;
-      }
+        if (centerPoint == null) {
+          return;
+        }
 
-      g.setAttribute('transform', `translate(${centerPoint.x}, ${centerPoint.y}) rotate(${rotation})`);
-    },
-    [connectionLineLabel]
+        g.setAttribute('transform', `translate(${centerPoint.x}, ${centerPoint.y}) rotate(${rotation})`);
+      },
+      [connectionLineLabel]
+    )
   );
 
   return (

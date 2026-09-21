@@ -1,5 +1,5 @@
 import { bounds, point, Point } from 'leaflet';
-import { computed, observable, makeObservable } from 'mobx';
+import { computed, makeObservable, observableRef } from 'mobx';
 
 import { CRS, MAX_ZOOM, PLACE_DOT_RADIUS_SCALE } from './config';
 import Place from './Place';
@@ -16,7 +16,7 @@ class PlaceCircle {
 
   constructor(vis: VisualisationStore, place: Place) {
     makeObservable(this, {
-      graphPoint: observable.ref,
+      graphPoint: observableRef,
       active: computed,
       highlight: computed,
       fade: computed,

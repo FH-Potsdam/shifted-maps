@@ -14,8 +14,17 @@ export interface ILocation {
   readonly lon: number;
 }
 
-export function isPlaceData(value: any): value is IPlaceData {
-  return value.id != null && value.location != null && value.name != null;
+export function isPlaceData(value: unknown): value is IPlaceData {
+  return (
+    typeof value === 'object' &&
+    value != null &&
+    'id' in value &&
+    value.id != null &&
+    'location' in value &&
+    value.location != null &&
+    'name' in value &&
+    value.name != null
+  );
 }
 
 class Place {

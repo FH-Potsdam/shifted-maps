@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import { KeyboardEvent, MouseEvent } from 'react';
+import { KeyboardEvent, MouseEvent, useCallback } from 'react';
 import styled from 'styled-components';
 import useAutorunRef from '../../hooks/useAutorunRef';
 import PlaceCircleModel from '../../stores/PlaceCircle';
@@ -24,12 +24,14 @@ const PlaceCircle = observer(({ placeCircle, className, vis, touch, device }: Pl
   const descriptionId = `place-${place.id}-description`;
 
   const ref = useAutorunRef(
-    (element: SVGGElement) => {
-      const { point } = placeCircle;
+    useCallback(
+      (element: SVGGElement) => {
+        const { point } = placeCircle;
 
-      element.setAttribute('transform', `translate(${point.x}, ${point.y})`);
-    },
-    [placeCircle]
+        element.setAttribute('transform', `translate(${point.x}, ${point.y})`);
+      },
+      [placeCircle]
+    )
   );
 
   const toggle = (active?: boolean) => {

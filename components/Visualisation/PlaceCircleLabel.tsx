@@ -102,7 +102,7 @@ const PlaceCircleLabel = observer(({ className, placeCircle, theme, device }: Pl
     Object.assign(element.style, {
       [DomUtil.TRANSFORM]: `translateX(${Math.round(width * -0.25)}px)`,
     });
-  }, [theme, placeCircle, device, ref.current]);
+  }, [canvas, ctx, theme, placeCircle, device]);
 
   useAutorun(drawLabel);
 
@@ -130,7 +130,7 @@ const PlaceCircleLabel = observer(({ className, placeCircle, theme, device }: Pl
 });
 
 export default styled(withTheme(PlaceCircleLabel))`
-  transition: opacity ${props => props.theme.shortTransitionDuration};
+  transition: opacity ${(props) => props.theme.shortTransitionDuration};
   pointer-events: none;
   opacity: 0;
 

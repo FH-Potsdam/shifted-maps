@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import { transparentize } from 'polished';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import DataStore, { DAY_IN_SEC } from '../../../stores/DataStore';
 import UIStore from '../../../stores/UIStore';
@@ -21,13 +21,10 @@ const TimeSection = observer((props: TimeSectionProps) => {
   const timeSpan = ui.timeSpan || data.timeSpan;
   const timeSliderActive = timeSpan[0] !== data.timeSpan[0] || timeSpan[1] !== data.timeSpan[1];
   const [currentTimeSpan, setCurrentTimeSpan] = useState<ReadonlyArray<number>>();
-  const handleTimeSpanChange = useCallback(
-    (timeSpan: ReadonlyArray<number>) => {
-      setCurrentTimeSpan(undefined);
-      onTimeSpanChange(timeSpan);
-    },
-    [onTimeSpanChange]
-  );
+  const handleTimeSpanChange = (timeSpan: ReadonlyArray<number>) => {
+    setCurrentTimeSpan(undefined);
+    onTimeSpanChange(timeSpan);
+  };
 
   const [timeSpanStart, timeSpanEnd] = currentTimeSpan || timeSpan;
 
@@ -59,24 +56,24 @@ const TimeSection = observer((props: TimeSectionProps) => {
 
 export default styled(TimeSection)`
   grid-area: time;
-  margin-top: ${props => props.theme.spacingUnit * 1.5}px;
+  margin-top: ${(props) => props.theme.spacingUnit * 1.5}px;
 
   @media (min-width: 440px) {
-    margin-top: ${props => props.theme.spacingUnit * 0.75}px;
+    margin-top: ${(props) => props.theme.spacingUnit * 0.75}px;
   }
 
   @media (min-width: 580px) {
-    margin-top: ${props => props.theme.spacingUnit * 1.5}px;
+    margin-top: ${(props) => props.theme.spacingUnit * 1.5}px;
   }
 `;
 
 const TimeSlider = styled(Slider)`
-  margin-top: ${props => props.theme.spacingUnit * 3}px;
+  margin-top: ${(props) => props.theme.spacingUnit * 3}px;
   margin-left: 5px;
   margin-right: 5px;
 
   &.active {
-    color: ${props => props.theme.highlightColor};
+    color: ${(props) => props.theme.highlightColor};
   }
 `;
 
@@ -88,16 +85,16 @@ const SliderRangeValue = styled.div`
   }
 
   span {
-    color: ${props => transparentize(0.4, props.theme.foregroundColor)};
+    color: ${(props) => transparentize(0.4, props.theme.foregroundColor)};
   }
 `;
 
 const SliderRange = styled.div`
   display: flex;
-  margin-top: ${props => props.theme.spacingUnit * 0.25}px;
+  margin-top: ${(props) => props.theme.spacingUnit * 0.25}px;
 
   &.active {
-    color: ${props => props.theme.highlightColor};
+    color: ${(props) => props.theme.highlightColor};
   }
 `;
 

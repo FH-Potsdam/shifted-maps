@@ -10,9 +10,9 @@ const Layout = styled.div`
 export default Layout;
 
 interface LayoutItemProps {
-  span: string;
+  $span: string;
 }
 
 export const LayoutItem = styled.div<LayoutItemProps>`
-  grid-column: span ${props => props.span};
+  grid-column: span ${(props) => props.$span};
 `;

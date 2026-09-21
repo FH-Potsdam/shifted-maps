@@ -1,7 +1,6 @@
 import { enableStaticRendering } from 'mobx-react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-// tslint:disable-next-line:no-submodule-imports
 import 'leaflet/dist/leaflet.css';
 import 'normalize.css';
 import GlobalStyle from '../components/GlobalStyle';

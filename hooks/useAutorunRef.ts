@@ -1,16 +1,18 @@
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import useAutorun from './useAutorun';
 
-export default function useAutorunRef<T>(callback: (ref: T) => void, dependencies?: readonly any[]) {
+export default function useAutorunRef<T>(callback: (ref: T) => void) {
   const ref = useRef<T | null>(null);
 
-  useAutorun(() => {
+  const run = useCallback(() => {
     if (ref.current == null) {
       return;
     }
 
     callback(ref.current);
-  }, [ref.current, ...dependencies!]);
+  }, [callback]);
+
+  useAutorun(run);
 
   return ref;
 }

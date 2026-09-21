@@ -1,8 +1,7 @@
-import { useCallback, useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
-export default function useWidth<T extends HTMLElement>(callback: (width: number) => void, deps: any[] = []) {
+export default function useWidth<T extends HTMLElement>(callback: (width: number) => void) {
   const measureRef = useRef<T | null>(null);
-  callback = useCallback(callback, deps);
 
   useLayoutEffect(() => {
     const updateWidth = () => {
@@ -19,7 +18,7 @@ export default function useWidth<T extends HTMLElement>(callback: (width: number
     return () => {
       window.removeEventListener('resize', updateWidth);
     };
-  }, [measureRef.current, callback]);
+  }, [callback]);
 
   return measureRef;
 }

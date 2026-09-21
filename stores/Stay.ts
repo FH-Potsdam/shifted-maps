@@ -9,8 +9,19 @@ export interface IStayData {
   readonly startAt: number;
 }
 
-export function isStayData(value: any): value is IStayData {
-  return value.at != null && value.duration != null && value.endAt != null && value.startAt != null;
+export function isStayData(value: unknown): value is IStayData {
+  return (
+    typeof value === 'object' &&
+    value != null &&
+    'at' in value &&
+    value.at != null &&
+    'duration' in value &&
+    value.duration != null &&
+    'endAt' in value &&
+    value.endAt != null &&
+    'startAt' in value &&
+    value.startAt != null
+  );
 }
 
 class Stay {
