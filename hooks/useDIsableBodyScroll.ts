@@ -5,16 +5,18 @@ export default function useDisableBodyScroll<T extends HTMLElement>() {
   const ref = useRef<T>(null);
 
   useEffect(() => {
-    if (ref.current == null) {
+    const targetElement = ref.current;
+
+    if (targetElement == null) {
       return;
     }
 
-    disableBodyScroll(ref.current!);
+    disableBodyScroll(targetElement);
 
     return () => {
-      enableBodyScroll(ref.current!);
+      enableBodyScroll(targetElement);
     };
-  }, [ref.current]);
+  }, []);
 
   return ref;
 }

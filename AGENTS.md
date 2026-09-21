@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This is a Next.js 15 Pages Router application using React 19, TypeScript 5, MobX 6, and React Leaflet 5. Routes live in `pages/`; reusable UI is grouped under `components/Home`, `components/Visualisation`, and `components/common`. Domain and visualization state belongs in `stores/`, shared hooks in `hooks/`, and small pure helpers in `utils/`. Playwright behavior tests live in `tests/`. Public fonts, downloads, images, and videos belong in `public/`; styles, type declarations, and sanitized demo data live in `styles/`, `types/`, and `data/demo.json`.
+This is a Next.js 16 Pages Router application using React 19, TypeScript 5, MobX 6, and React Leaflet 5. Routes live in `pages/`; reusable UI is grouped under `components/Home`, `components/Visualisation`, and `components/common`. Domain and visualization state belongs in `stores/`, shared hooks in `hooks/`, and small pure helpers in `utils/`. Playwright behavior tests live in `tests/`. Public fonts, downloads, images, and videos belong in `public/`; styles, type declarations, and sanitized demo data live in `styles/`, `types/`, and `data/demo.json`.
 
 ## Build, Test, and Development Commands
 
@@ -17,6 +17,8 @@ Run `nvm use` before project commands to select the version in `.nvmrc`.
 - `npm test` runs all Playwright behavior tests. Use `PLAYWRIGHT_PORT=3100 npm test` when port 3000 is occupied.
 
 Resolve peer-dependency conflicts by choosing compatible package versions. Do not use `--legacy-peer-deps`.
+
+The development and build scripts intentionally use Webpack until the custom SVG and Moment configuration in `next.config.js` is migrated to Turbopack.
 
 ## Coding Style & Naming Conventions
 
@@ -33,3 +35,13 @@ Use short, imperative commit subjects such as `Add browser test baseline.` Keep 
 ## Configuration & Security
 
 Values exposed through `next.config.js` are browser-visible. Never commit private API keys, personal movement data, or local configuration; use sanitized fixtures under `data/`.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

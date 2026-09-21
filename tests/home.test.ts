@@ -10,6 +10,18 @@ test('user can navigate from the landing page to the demo', async ({ page }) => 
   await expect(page.getByRole('heading', { level: 1, name: 'Shifted Maps' })).toBeVisible();
 });
 
+test('user can return from the visualization to the landing page', async ({ page }) => {
+  await page.setViewportSize({ width: 600, height: 400 });
+  await page.route('https://api.mapbox.com/**', (route) => route.abort());
+  await page.goto('/map');
+
+  await page.getByRole('link', { name: 'Shifted Maps' }).click();
+
+  await expect(page).toHaveURL('/');
+  await page.mouse.wheel(0, 1000);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+});
+
 test('landing page exposes its referenced public assets', async ({ page, request }) => {
   await page.goto('/');
 
