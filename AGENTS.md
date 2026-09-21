@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This is a Next.js 15 Pages Router application using React 18, TypeScript 5, MobX 6, and React Leaflet 4. Routes live in `pages/`; reusable UI is grouped under `components/Home`, `components/Visualisation`, and `components/common`. Domain and visualization state belongs in `stores/`, shared hooks in `hooks/`, and small pure helpers in `utils/`. Playwright behavior tests live in `tests/`. Public fonts, downloads, images, and videos belong in `public/`; styles, type declarations, and sanitized demo data live in `styles/`, `types/`, and `data/demo.json`.
+This is a Next.js 15 Pages Router application using React 19, TypeScript 5, MobX 6, and React Leaflet 5. Routes live in `pages/`; reusable UI is grouped under `components/Home`, `components/Visualisation`, and `components/common`. Domain and visualization state belongs in `stores/`, shared hooks in `hooks/`, and small pure helpers in `utils/`. Playwright behavior tests live in `tests/`. Public fonts, downloads, images, and videos belong in `public/`; styles, type declarations, and sanitized demo data live in `styles/`, `types/`, and `data/demo.json`.
 
 ## Build, Test, and Development Commands
 
@@ -24,7 +24,7 @@ Use two-space indentation, single quotes, semicolons, and trailing commas where 
 
 ## Testing Guidelines
 
-Write Playwright tests against public user behavior and accessible roles. Mock only system boundaries such as Mapbox requests. For feature and bug work, follow `.agents/skills/tdd/SKILL.md`: agree on the public seam, make one test fail, implement the smallest vertical slice, then repeat. Preserve coverage for landing-page navigation, visualization selection, URL restoration, map navigation, and keyboard-operated time filtering.
+Write Playwright tests against public user behavior and accessible roles. Mock only system boundaries such as Mapbox requests. For feature and bug work, follow `.agents/skills/tdd/SKILL.md`: agree on the public seam, make one test fail, implement the smallest vertical slice, then repeat. Preserve coverage for landing-page navigation, visualization selection, URL restoration, time filtering, keyboard exploration, zoom reactions, and place clustering.
 
 ## Commit & Pull Request Guidelines
 

@@ -103,7 +103,7 @@ const Visualisation = observer((props: VisualisationProps) => {
     [visStore]
   );
 
-  const mapRef = useRef<LeafletMap>();
+  const mapRef = useRef<LeafletMap | null>(null);
 
   useLayoutEffect(() => {
     if (mapRef.current != null) {
