@@ -87,6 +87,20 @@ test('user can explore a place with the keyboard and see it respond to map zoom'
     .toBeGreaterThan(radiusBeforeZoom);
 });
 
+test('longer stays are shown as larger places', async ({ page }) => {
+  await page.route('https://api.mapbox.com/**', (route) => route.abort());
+  await page.goto('/map?center=52.494601,13.364713&zoom=16');
+
+  const longerStay = page.getByRole('button', { name: 'Place Anna' });
+  const shorterStay = page.getByRole('button', { name: 'Place Bahnhof Berlin Zoologischer Garten' });
+
+  await expect(longerStay).toBeVisible();
+  await expect(shorterStay).toBeVisible();
+  expect(Number(await longerStay.getAttribute('data-visual-radius'))).toBeGreaterThan(
+    Number(await shorterStay.getAttribute('data-visual-radius'))
+  );
+});
+
 test('user can explore a connection with the keyboard and see it respond to map zoom', async ({ page }) => {
   await page.route('https://api.mapbox.com/**', (route) => route.abort());
   await page.goto('/map?center=52.494601,13.364713&zoom=16');
