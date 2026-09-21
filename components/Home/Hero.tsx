@@ -36,13 +36,13 @@ const Hero: FC<HeroProps> = props => {
         <HeroSection as={HeroPaper}>
           <Layout>
             <LayoutItem span="6">
-              <HeroDownload href="/static/downloads/ShiftedMaps_Poster_IEEE_2015.pdf" download>
+              <HeroDownload href="/downloads/ShiftedMaps_Poster_IEEE_2015.pdf" download>
                 <Icon as={GoIcon} /> Poster IEEE VIS 2015
                 <em>877 KB</em>
               </HeroDownload>
             </LayoutItem>
             <LayoutItem span="6">
-              <HeroDownload href="/static/downloads/ShiftedMaps_Paper_IEEE_2018_VISAP.pdf" download>
+              <HeroDownload href="/downloads/ShiftedMaps_Paper_IEEE_2018_VISAP.pdf" download>
                 <Icon as={GoIcon} /> Paper IEEE VIS / VISAP 2018
                 <em>4.9 MB</em>
               </HeroDownload>

@@ -8,8 +8,8 @@ function Screencast({ className }: ScreencastProps) {
   return (
     <div className={className}>
       <video autoPlay muted playsInline preload="auto" loop>
-        <source src="/static/videos/screencast-hd.mp4" type="video/mp4" />
-        <source src="/static/videos/screencast-hd.webm" type="video/webm" />
+        <source src="/videos/screencast-hd.mp4" type="video/mp4" />
+        <source src="/videos/screencast-hd.webm" type="video/webm" />
       </video>
     </div>
   );
