@@ -12,7 +12,7 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: `npm run dev -- -p ${port}`,
+    command: `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.test-mapbox-token npm run dev -- -p ${port}`,
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120000,

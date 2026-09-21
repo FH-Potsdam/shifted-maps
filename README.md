@@ -9,9 +9,17 @@ Shifted Maps is a student research project by [Lennart Hildebrandt](https://lenn
 
 ## Installation
 
-1. Install dependencies via `npm install`.
-2. Use `npm start` to start the application.
-3. Visit your own Shifted Maps application on [localhost:3000](http://localhost:3000).
+1. Select the configured Node.js version with `nvm use`.
+2. Install dependencies via `npm ci`.
+3. Copy `.env.example` to `.env.local` and add a Mapbox public token if map imagery should be enabled locally.
+4. Use `npm start` to start the application.
+5. Visit your own Shifted Maps application on [localhost:3000](http://localhost:3000).
+
+The Mapbox token only needs the public `styles:tiles` scope. Restrict the development token to
+`http://localhost:3000`. Production uses a separate token restricted to `https://shifted-maps.com`; configure it as
+`NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` in Vercel's Production environment only. Preview deployments intentionally run
+without map imagery. The token is public browser configuration and must never receive secret or write scopes. Maps
+use `mapbox/streets-v12` by default; `NEXT_PUBLIC_MAPBOX_STYLE_ID` can override that style.
 
 ## Feedback
 

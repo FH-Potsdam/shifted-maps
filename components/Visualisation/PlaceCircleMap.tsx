@@ -28,15 +28,25 @@ const PlaceCircleMap = observer(({ className, placeCircle, vis }: PlaceCircleMap
 
   const cachedImagesRef = useRef<PlaceCircleMapImage[]>([]);
   const imageDiameter = imageRadius * 2;
+  const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN?.trim() || null;
+  const mapboxStyleId = process.env.NEXT_PUBLIC_MAPBOX_STYLE_ID || 'mapbox/streets-v12';
 
   const center = latLngBounds.getCenter();
-  const href = `https://api.mapbox.com/styles/v1/${process.env.mapboxStaticStyleId}/static/${roundCoordinate(
-    center.lng
-  )},${roundCoordinate(center.lat)},${zoom}/${imageDiameter}x${imageDiameter}${
-    Browser.retina ? '@2x' : ''
-  }?access_token=${process.env.mapboxAccessToken}`;
+  const href =
+    mapboxAccessToken == null
+      ? null
+      : `https://api.mapbox.com/styles/v1/${mapboxStyleId}/static/${roundCoordinate(
+          center.lng
+        )},${roundCoordinate(center.lat)},${zoom}/${imageDiameter}x${imageDiameter}${
+          Browser.retina ? '@2x' : ''
+        }?access_token=${mapboxAccessToken}&logo=false&attribution=false`;
 
   const images = useMemo(() => {
+    if (href == null) {
+      cachedImagesRef.current = [];
+      return [];
+    }
+
     const images = [];
     let image = cachedImagesRef.current.find((image) => image.href === href);
 

@@ -4,6 +4,8 @@
 # Senstive configuration files
 /config/server.json
 /config/client.json
+.env*
+!.env.example
 
 # Compiled versions
 /.next

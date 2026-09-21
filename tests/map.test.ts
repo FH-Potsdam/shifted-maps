@@ -1,14 +1,61 @@
 import { expect, test } from '@playwright/test';
 
-test('user can select a visualization view', async ({ page }) => {
+test('map requests tiles from the Streets v12 style', async ({ page }) => {
+  const tileRequests: string[] = [];
+  await page.route('https://api.mapbox.com/**', (route) => {
+    if (route.request().url().includes('/tiles/')) {
+      tileRequests.push(route.request().url());
+    }
+    return route.abort();
+  });
+
+  await page.goto('/map');
+  await expect(page.getByRole('region', { name: 'Movement map' })).toBeVisible();
+
+  expect(tileRequests[0]).toMatch(
+    /^https:\/\/api\.mapbox\.com\/styles\/v1\/mapbox\/streets-v12\/tiles\/\d+\/\d+\/\d+\?access_token=pk\.[^&]+$/
+  );
+});
+
+test('place maps request uncluttered Streets v12 images', async ({ page }) => {
+  const imageRequests: string[] = [];
+  await page.route('https://api.mapbox.com/**', (route) => {
+    if (route.request().url().includes('/static/')) {
+      imageRequests.push(route.request().url());
+    }
+    return route.abort();
+  });
+
+  await page.goto('/map');
+  await expect(page.getByRole('region', { name: 'Movement map' })).toBeVisible();
+
+  await expect
+    .poll(() => imageRequests[0])
+    .toMatch(
+      /^https:\/\/api\.mapbox\.com\/styles\/v1\/mapbox\/streets-v12\/static\/-?\d+\.\d+,-?\d+\.\d+,\d+\/\d+x\d+(?:@2x)?\?access_token=pk\.[^&]+&logo=false&attribution=false$/
+    );
+});
+
+test('map content displays the required attribution', async ({ page }) => {
   await page.route('https://api.mapbox.com/**', (route) => route.abort());
+
   await page.goto('/map');
 
-  await expect(page.getByText('Places are positioned by their geospatial location.')).toBeVisible();
-  await page.getByRole('button', { name: 'Travel Frequency' }).click();
-
-  await expect(page).toHaveURL(/\/map\?view=frequency$/);
-  await expect(page.getByText('Network is arranged by average distance travelled between places.')).toBeVisible();
+  const attribution = page.getByRole('group', { name: 'Map attribution' });
+  await expect(attribution).toContainText('— Version: 1.6.1');
+  await expect(attribution.getByRole('link', { name: 'Mapbox', exact: true })).toBeVisible();
+  await expect(attribution.getByRole('link', { name: '© Mapbox' })).toHaveAttribute(
+    'href',
+    'https://www.mapbox.com/about/maps'
+  );
+  await expect(attribution.getByRole('link', { name: '© OpenStreetMap' })).toHaveAttribute(
+    'href',
+    'https://www.openstreetmap.org/copyright'
+  );
+  await expect(attribution.getByRole('link', { name: 'Improve this map' })).toHaveAttribute(
+    'href',
+    'https://apps.mapbox.com/feedback/'
+  );
 });
 
 test('user can restore a visualization view from a shared URL', async ({ page }) => {
