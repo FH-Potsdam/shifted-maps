@@ -18,7 +18,7 @@ Run `nvm use` before project commands to select the version in `.nvmrc`.
 
 Resolve peer-dependency conflicts by choosing compatible package versions. Do not use `--legacy-peer-deps`.
 
-The development and build scripts intentionally use Webpack until the custom SVG and Moment configuration in `next.config.js` is migrated to Turbopack.
+Development and production builds use Turbopack. Keep SVG imports as React components through the `@svgr/webpack` rule in `next.config.js`.
 
 ## Coding Style & Naming Conventions
 

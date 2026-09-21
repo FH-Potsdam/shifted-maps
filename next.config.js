@@ -1,4 +1,3 @@
-const webpack = require('webpack');
 const package = require('./package');
 
 module.exports = {
@@ -11,21 +10,19 @@ module.exports = {
     mapboxStaticStyleId: 'mapbox/streets-v11',
     version: package.version,
   },
-  webpack(config, { isServer }) {
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: [
-        {
-          loader: '@svgr/webpack',
-          options: {
-            ref: true,
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: [
+          {
+            loader: '@svgr/webpack',
+            options: {
+              ref: true,
+            },
           },
-        },
-      ],
-    });
-
-    config.plugins.push(new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/));
-
-    return config;
+        ],
+        as: '*.js',
+      },
+    },
   },
 };

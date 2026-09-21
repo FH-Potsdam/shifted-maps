@@ -92,6 +92,10 @@ const Map = () => {
     [router]
   );
 
+  if (!router.isReady) {
+    return null;
+  }
+
   return (
     <DynamicVisualisation
       data={data}

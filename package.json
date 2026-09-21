@@ -8,11 +8,11 @@
     "url": "https://github.com/lennerd/shifted-maps/issues"
   },
   "scripts": {
-    "build": "URL=http://localhost:3000/ next build --webpack",
-    "dev": "URL=http://localhost:3000/ next dev --webpack",
+    "build": "URL=http://localhost:3000/ next build",
+    "dev": "URL=http://localhost:3000/ next dev",
     "format:check": "prettier --check \"tests/**/*.ts\" playwright.config.js",
     "lint": "tslint --project tsconfig.json",
-    "start": "URL=http://localhost:3000/ next dev --webpack",
+    "start": "URL=http://localhost:3000/ next dev",
     "test": "playwright test",
     "test:e2e": "playwright test",
     "typecheck": "next typegen && tsc --noEmit"
@@ -27,7 +27,6 @@
     "lodash": "^4.17.19",
     "mobx": "6.16.1",
     "mobx-react": "9.2.2",
-    "moment": "^2.27.0",
     "next": "16.3.5",
     "normalize.css": "^8.0.0",
     "polished": "^3.6.5",
@@ -55,6 +54,6 @@
     "prettier": "2.0.5",
     "tslint": "^6.1.2",
     "tslint-config-prettier": "^1.15.0",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   }
 }

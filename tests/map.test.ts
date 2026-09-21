@@ -54,13 +54,13 @@ test('user can adjust the time range and restore it from a shared URL', async ({
   await page.keyboard.press('ArrowRight');
 
   await expect(startDate).toHaveAttribute('aria-valuenow', '1449014400');
-  await expect(page.getByText('2. Dec ‘15')).toBeVisible();
+  await expect(page.getByText('2 Dec 15')).toBeVisible();
   await expect.poll(() => new URL(page.url()).searchParams.get('timeSpan')).toBe('1449014400-1456358400');
 
   await page.reload();
 
   await expect(page.getByRole('slider', { name: 'Start date' })).toHaveAttribute('aria-valuenow', '1449014400');
-  await expect(page.getByText('2. Dec ‘15')).toBeVisible();
+  await expect(page.getByText('2 Dec 15')).toBeVisible();
 });
 
 test('user can explore a place with the keyboard and see it respond to map zoom', async ({ page }) => {
@@ -111,6 +111,19 @@ test('user can explore a connection with the keyboard and see it respond to map 
   await expect
     .poll(async () => Number(await connection.getAttribute('data-visual-stroke-width')))
     .toBeGreaterThan(strokeWidthBeforeZoom);
+});
+
+test('user sees longer travel times rounded to hours', async ({ page }) => {
+  await page.route('https://api.mapbox.com/**', (route) => route.abort());
+  await page.goto('/map?center=52.494601,13.364713&zoom=16');
+  await page.getByRole('button', { name: 'Travel Time' }).click();
+
+  const connection = page.getByRole('button', {
+    name: 'Connection between University of Potsdam and Potsdamer Straße 118, Berlin',
+  });
+  await expect(connection).toHaveAccessibleDescription(
+    '1 trip with 38 km average distance and 1 hour average travel time.'
+  );
 });
 
 test('zooming reveals a place contained in another place and its connection', async ({ page }) => {
