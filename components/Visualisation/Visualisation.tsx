@@ -52,7 +52,7 @@ function useDevice(defaultDevice: DEVICE): [DEVICE, (width: number) => void] {
   const [device, setDevice] = useState(defaultDevice);
 
   const callback = useCallback(
-    (width) =>
+    (width: number) =>
       setDevice(() => {
         if (width >= 580) {
           return DEVICE.desktop;

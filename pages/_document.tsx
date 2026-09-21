@@ -1,24 +1,33 @@
-import BaseDocument, { DocumentContext, Head, Html, Main, NextScript } from 'next/document';
-import { ReactElement } from 'react';
+import BaseDocument, { DocumentContext, DocumentInitialProps, Head, Html, Main, NextScript } from 'next/document';
+import { Children } from 'react';
 import { ServerStyleSheet } from 'styled-components';
 
-interface DocumentProps {
-  styleTags: ReactElement<HTMLStyleElement>[];
-}
-
-class Document extends BaseDocument<DocumentProps> {
-  static async getInitialProps({ renderPage }: DocumentContext) {
+class Document extends BaseDocument {
+  static async getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
     const sheet = new ServerStyleSheet();
-    const page = renderPage((App) => (props) => sheet.collectStyles(<App {...props} />));
-    const styleTags = sheet.getStyleElement();
+    const originalRenderPage = ctx.renderPage;
 
-    return { ...page, styleTags };
+    try {
+      ctx.renderPage = () =>
+        originalRenderPage({
+          enhanceApp: App => props => sheet.collectStyles(<App {...props} />),
+        });
+
+      const initialProps = await BaseDocument.getInitialProps(ctx);
+
+      return {
+        ...initialProps,
+        styles: [...Children.toArray(initialProps.styles), ...sheet.getStyleElement()],
+      };
+    } finally {
+      sheet.seal();
+    }
   }
 
   render() {
     return (
       <Html>
-        <Head>{this.props.styleTags}</Head>
+        <Head />
         <body>
           <Main />
           <NextScript />

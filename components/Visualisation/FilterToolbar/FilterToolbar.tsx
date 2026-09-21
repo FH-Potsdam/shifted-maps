@@ -46,17 +46,15 @@ const FilterBar = observer((props: FilterBarProps) => {
 
   return (
     <div className={classNames(className, { collapsed: mobileOrTablet && collapsed })} ref={ref}>
-      <NextLink href="/">
-        <HeadlingLink onClick={handleHeadingClick}>
-          <Heading as="h1">
-            <span>
-              {mobileOrTablet && activeViewItem.icon}
-              Shifted Maps
-            </span>
-            {mobileOrTablet && <StrokeIcon as={DownIcon} />}
-          </Heading>
-        </HeadlingLink>
-      </NextLink>
+      <HeadlingLink href="/" onClick={handleHeadingClick}>
+        <Heading as="h1">
+          <span>
+            {mobileOrTablet && activeViewItem.icon}
+            Shifted Maps
+          </span>
+          {mobileOrTablet && <StrokeIcon as={DownIcon} />}
+        </Heading>
+      </HeadlingLink>
       <ViewSection onViewChange={onViewChange} activeViewItem={activeViewItem} />
       <TimeSection ui={ui} data={data} onTimeSpanChange={onTimeSpanChange} />
     </div>
@@ -138,7 +136,7 @@ export default styled(FilterBar)`
   }
 `;
 
-const HeadlingLink = styled.a`
+const HeadlingLink = styled(NextLink)`
   text-decoration: none;
   grid-area: heading;
 `;

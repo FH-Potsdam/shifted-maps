@@ -1,6 +1,6 @@
 import NextLink from 'next/link';
 import { lighten, transparentize } from 'polished';
-import { StatelessComponent } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
 import Heading from '../common/Heading';
 import { Icon, Logo } from '../common/icons/components';
@@ -16,7 +16,7 @@ interface HeroProps {
   className?: string;
 }
 
-const Hero: StatelessComponent<HeroProps> = props => {
+const Hero: FC<HeroProps> = props => {
   const { className } = props;
 
   return (
@@ -26,13 +26,11 @@ const Hero: StatelessComponent<HeroProps> = props => {
         <Paragraph lead>Visualizing personal Movement through Map Networks</Paragraph>
       </HeroHeader>
       <HeroHighlight>
-        <NextLink href="/map" passHref>
-          <HeroGo>
-            Explore the
-            <br />
-            Demo
-          </HeroGo>
-        </NextLink>
+        <HeroGo href="/map">
+          Explore the
+          <br />
+          Demo
+        </HeroGo>
       </HeroHighlight>
       <HeroBottom>
         <HeroSection as={HeroPaper}>
@@ -148,7 +146,11 @@ const HeroSection = styled.div`
   }
 `;
 
-const HeroGo = styled(Link)`
+const HeroGo = styled(NextLink)`
+  transition: color ${props => props.theme.shortTransitionDuration};
+  text-decoration: none;
+  color: ${props => props.theme.foregroundColor};
+  cursor: pointer;
   display: flex;
   position: absolute;
   height: 140px;
@@ -158,6 +160,10 @@ const HeroGo = styled(Link)`
   right: -10px;
   top: 0px;
   text-align: center;
+
+  &:hover {
+    color: ${props => props.theme.highlightColor};
+  }
   font-weight: 900;
   transform: rotate(-10deg);
   background-color: ${props => props.theme.highlightColor};
