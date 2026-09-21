@@ -19,3 +19,8 @@ declare module 'body-scroll-lock' {
 
   function clearAllBodyScrollLocks(): void;
 }
+
+interface TextMetrics {
+  readonly emHeightAscent?: number;
+  readonly emHeightDescent?: number;
+}

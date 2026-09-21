@@ -121,7 +121,7 @@ class PlaceCircle {
     return parent;
   }
 
-  get children() {
+  get children(): PlaceCircle[] {
     if (this.parent != null) {
       return [];
     }
@@ -167,7 +167,7 @@ class PlaceCircle {
     return zoom - 1;
   }
 
-  get dots() {
+  get dots(): Point[] {
     const center = CRS.latLngToPoint(this.latLngBounds.getCenter(), this.zoom);
 
     return [...this.children, this].map((placeCircle) =>

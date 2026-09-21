@@ -1,43 +1,44 @@
 import { DomUtil, SVG } from 'leaflet';
+import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { MapLayer, MapLayerProps, withLeaflet, WrappedProps } from 'react-leaflet';
+import { useMap } from 'react-leaflet';
 import styled from 'styled-components';
 
 interface SVGLayerProps {
   className?: string;
+  children?: ReactNode;
 }
 
-class SVGLayer extends MapLayer<MapLayerProps & WrappedProps & SVGLayerProps, SVG> {
-  createLeafletElement() {
-    return new SVG();
-  }
-
-  componentDidMount() {
-    if (super.componentDidMount) {
-      super.componentDidMount();
-    }
-
-    this.forceUpdate();
-  }
-
-  render() {
-    const { className } = this.props;
-    // @ts-ignore private property
-    const container: HTMLElement | void = this.leafletElement._container;
-
-    if (container == null) {
-      return null;
-    }
-
-    if (className != null) {
-      DomUtil.addClass(container, className);
-    }
-
-    return createPortal(this.props.children, container);
-  }
+interface SVGWithContainer extends SVG {
+  _container?: HTMLElement;
 }
 
-// @TODO Use withLeaflet as decorator once types are updated.
-export default styled(withLeaflet(SVGLayer))`
+const SVGLayer = ({ children, className }: SVGLayerProps) => {
+  const map = useMap();
+  const [renderer] = useState<SVGWithContainer>(() => new SVG());
+  const [container, setContainer] = useState<HTMLElement>();
+
+  useEffect(() => {
+    renderer.addTo(map);
+
+    if (renderer._container != null && className != null) {
+      DomUtil.addClass(renderer._container, className);
+    }
+
+    setContainer(renderer._container);
+
+    return () => {
+      renderer.remove();
+    };
+  }, [className, map, renderer]);
+
+  if (container == null) {
+    return null;
+  }
+
+  return createPortal(children, container);
+};
+
+export default styled(SVGLayer)`
   overflow: visible;
 `;

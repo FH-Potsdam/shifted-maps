@@ -1,4 +1,12 @@
-import { Handles, Rail, Slider as BaseSlider, SliderItem, TrackItem, Tracks } from 'react-compound-slider';
+import {
+  Handles,
+  Rail,
+  Slider as BaseSlider,
+  SliderItem,
+  SliderProps as BaseSliderProps,
+  TrackItem,
+  Tracks,
+} from 'react-compound-slider';
 import { HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
@@ -10,7 +18,7 @@ interface SliderProps {
   onChange?: (values: ReadonlyArray<number>) => void;
   className?: string;
   step?: number;
-  mode?: number;
+  mode?: BaseSliderProps['mode'];
 }
 
 const Slider = (props: SliderProps) => {
@@ -22,7 +30,7 @@ const Slider = (props: SliderProps) => {
       <Tracks left={false} right={false}>
         {({ tracks, getTrackProps }) => (
           <>
-            {tracks.map(track => (
+            {tracks.map((track) => (
               <SliderTrack key={track.id} {...getTrackProps()} {...track} />
             ))}
           </>
@@ -70,7 +78,7 @@ const SliderRail = styled.div`
     left: 0;
     width: 100%;
     height: 1px;
-    background-color: ${props => props.theme.foregroundColor};
+    background-color: ${(props) => props.theme.foregroundColor};
     opacity: 0.2;
   }
 `;
@@ -80,7 +88,7 @@ type SliderHandleProps = SliderItem & Omit<HTMLAttributes<HTMLDivElement>, 'id'>
 const SliderHandle = styled(({ percent, ...props }: SliderHandleProps) => {
   return <div style={{ left: `${percent}%` }} {...props} />;
 })`
-  transition: transform ${props => props.theme.shortTransitionDuration};
+  transition: transform ${(props) => props.theme.shortTransitionDuration};
   width: 32px;
   height: 32px;
   position: absolute;
@@ -90,7 +98,7 @@ const SliderHandle = styled(({ percent, ...props }: SliderHandleProps) => {
   touch-action: pan-x;
 
   &:after {
-    transition: color ${props => props.theme.shortTransitionDuration};
+    transition: color ${(props) => props.theme.shortTransitionDuration};
     content: '';
     position: absolute;
     top: 12px;
@@ -106,7 +114,7 @@ const SliderHandle = styled(({ percent, ...props }: SliderHandleProps) => {
     transform: translate(-16px, -8px) scale(1.2);
 
     &:after {
-      background-color: ${props => props.theme.highlightColor};
+      background-color: ${(props) => props.theme.highlightColor};
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
     }
   }

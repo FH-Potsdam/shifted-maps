@@ -23,7 +23,8 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "incremental": true
   },
   "types": ["./types"],
   "exclude": ["node_modules", "tests"],

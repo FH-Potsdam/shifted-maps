@@ -12,7 +12,7 @@ const roundConnectionLinePoint = roundPoint(0.2);
 
 class ConnectionLine {
   readonly connections: Connection[] = [];
-  readonly label: ConnectionLineLabel = new ConnectionLineLabel(this.vis, this);
+  readonly label: ConnectionLineLabel;
 
   constructor(
     readonly vis: VisualisationStore,
@@ -20,6 +20,8 @@ class ConnectionLine {
     readonly from: PlaceCircle,
     readonly to: PlaceCircle
   ) {
+    this.label = new ConnectionLineLabel(vis, this);
+
     makeObservable(this, {
       visibleFrequency: computed,
       visibleDistance: computed,

@@ -7,9 +7,9 @@ export enum VIEW {
 }
 
 class UIStore {
-  timeSpan?: ReadonlyArray<number>;
+  timeSpan: ReadonlyArray<number> | undefined = undefined;
 
-  view?: VIEW;
+  view: VIEW | undefined = undefined;
 
   constructor() {
     makeObservable(this, {

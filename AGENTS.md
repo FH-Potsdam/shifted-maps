@@ -2,29 +2,34 @@
 
 ## Project Structure & Module Organization
 
-This is a Next.js 9 application written in TypeScript. Route entry points live in `pages/`; `pages/index.tsx` renders the landing page and `pages/map.tsx` hosts the visualization. Reusable UI is under `components/`, grouped into `Home`, `Visualisation`, and `common`. MobX domain and UI state belongs in `stores/`; shared React hooks and small helpers live in `hooks/` and `utils/`. Static styles, icons, type declarations, and sample input are in `styles/`, `components/common/icons/`, `types/`, and `data/demo.json` respectively.
+This is a Next.js 12 Pages Router application using React 17, TypeScript, MobX 6, and React Leaflet. Routes live in `pages/`; reusable UI is grouped under `components/Home`, `components/Visualisation`, and `components/common`. Domain and visualization state belongs in `stores/`, shared hooks in `hooks/`, and small pure helpers in `utils/`. Playwright behavior tests live in `tests/`. Static media remains under `static/`, while styles, type declarations, and sanitized demo data are in `styles/`, `types/`, and `data/demo.json`.
 
 ## Build, Test, and Development Commands
 
-- `npm install` installs the locked dependency set from `package-lock.json`.
-- `npm start` starts the local Next.js development server at `http://localhost:3000`.
-- `npx next build` creates a production build and catches route or bundling failures.
-- `npx tsc --noEmit` runs the strict TypeScript checks configured in `tsconfig.json`.
-- `npx tslint --project tsconfig.json` checks the repository's TSLint rules.
-- `npx prettier --check "{pages,components,stores,hooks,utils}/**/*.{ts,tsx}"` verifies formatting.
+Run `nvm use` before project commands to select the version in `.nvmrc`.
+
+- `npm ci` installs the exact locked dependency tree.
+- `npm run dev` starts the application at `http://localhost:3000`.
+- `npm run build` creates and validates the production build.
+- `npm run typecheck` runs strict TypeScript checks.
+- `npm run lint` runs the repository's TSLint rules.
+- `npm run format:check` checks test and Playwright formatting.
+- `npm test` runs all Playwright behavior tests. Use `PLAYWRIGHT_PORT=3100 npm test` when port 3000 is occupied.
+
+Resolve peer-dependency conflicts by choosing compatible package versions. Do not use `--legacy-peer-deps`.
 
 ## Coding Style & Naming Conventions
 
-Use two-space indentation, single quotes, semicolons, and trailing commas where supported; let the checked-in Prettier and TSLint configuration settle formatting details. Name React components and store classes in `PascalCase`, functions and values in `camelCase`, and hooks with the `use` prefix. Keep route files lowercase. Prefer typed, focused modules and preserve the strict compiler settings. Place visualization-specific code near `components/Visualisation` or its corresponding store instead of expanding generic helpers.
+Use two-space indentation, single quotes, semicolons, and trailing commas where supported. Follow the checked-in Prettier and TSLint configuration. Name React components and store classes in `PascalCase`, functions and values in `camelCase`, and hooks with the `use` prefix. Keep route files lowercase and visualization-specific behavior close to `components/Visualisation` or its store.
 
 ## Testing Guidelines
 
-No automated test framework or coverage threshold is currently configured. Before submitting, run the build, type checker, and linter above. Manually exercise `/` and `/map`, including toolbar filters, view changes, map zooming, and touch behavior when relevant. If introducing tests, colocate them as `*.test.ts` or `*.test.tsx` and add a documented `npm test` script.
+Write Playwright tests against public user behavior and accessible roles. Mock only system boundaries such as Mapbox requests. For feature and bug work, follow `.agents/skills/tdd/SKILL.md`: agree on the public seam, make one test fail, implement the smallest vertical slice, then repeat. Preserve coverage for landing-page navigation, visualization selection, URL restoration, map navigation, and keyboard-operated time filtering.
 
 ## Commit & Pull Request Guidelines
 
-History favors short, imperative summaries such as `Fix typo on view buttons.` Keep each commit scoped to one change; reserve version-only messages for releases. Pull requests should explain the user-visible effect, list verification performed, link related issues, and include screenshots or recordings for layout, map, or animation changes. Call out dependency, data-format, or configuration changes explicitly.
+Use short, imperative commit subjects such as `Add browser test baseline.` Keep commits focused. Pull requests should describe the user-visible effect, verification performed, linked issues, and include screenshots or recordings for visual changes. Call out dependency, data-format, and configuration changes explicitly.
 
 ## Configuration & Security
 
-Treat values exposed through `next.config.js` as browser-visible. Never commit private API keys, personal movement data, or local configuration files; use sanitized fixtures under `data/`.
+Values exposed through `next.config.js` are browser-visible. Never commit private API keys, personal movement data, or local configuration; use sanitized fixtures under `data/`.

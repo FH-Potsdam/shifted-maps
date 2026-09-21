@@ -1,43 +1,60 @@
-import { LatLngBounds } from 'leaflet';
+import { Map as LeafletMap } from 'leaflet';
 import { observer } from 'mobx-react';
-import { AttributionControl, Map as ReactLeafletMap, MapProps as LeafletMapProps, TileLayer } from 'react-leaflet';
+import { ReactNode, useEffect } from 'react';
+import { AttributionControl, MapContainer, MapContainerProps, TileLayer, useMapEvents } from 'react-leaflet';
 import styled from 'styled-components';
-import Head from 'next/head';
 
-interface MapProps {
-  className?: string;
-  children?: any;
-  bounds: LatLngBounds;
+interface MapProps extends Omit<MapContainerProps, 'whenCreated' | 'whenReady'> {
+  children?: ReactNode;
   showTiles: boolean;
+  onMapReady: (map: LeafletMap) => void;
+  onMapViewChange: (map: LeafletMap) => void;
+  onMapZoomStart: () => void;
 }
 
-const Map = observer(({ className, children, showTiles, ...props }: MapProps & LeafletMapProps) => {
+interface MapEventsProps {
+  onMapReady: (map: LeafletMap) => void;
+  onMapViewChange: (map: LeafletMap) => void;
+  onMapZoomStart: () => void;
+}
+
+const MapEvents = ({ onMapReady, onMapViewChange, onMapZoomStart }: MapEventsProps) => {
+  const map = useMapEvents({
+    moveend: () => onMapViewChange(map),
+    resize: () => onMapViewChange(map),
+    zoomend: () => onMapViewChange(map),
+    zoomstart: onMapZoomStart,
+  });
+
+  useEffect(() => {
+    const container = map.getContainer();
+    container.setAttribute('aria-label', 'Movement map');
+    container.setAttribute('role', 'region');
+    map.whenReady(() => onMapReady(map));
+  }, [map, onMapReady]);
+
+  return null;
+};
+
+const Map = observer(({ children, showTiles, onMapReady, onMapViewChange, onMapZoomStart, ...props }: MapProps) => {
+  const tileUrl = `https://api.mapbox.com/styles/v1/${process.env.mapboxStaticStyleId}/tiles/{z}/{x}/{y}?access_token=${process.env.mapboxAccessToken}`;
+
   return (
-    <ReactLeafletMap {...props} className={className} zoomControl={false} attributionControl={false}>
-      <Head>
-        <link
-          key="mapbox-styles"
-          rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-          integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-          crossOrigin=""
-        />
-      </Head>
+    <MapContainer {...props} zoomControl={false} attributionControl={false}>
       <TileLayer
         opacity={showTiles ? 0.25 : 0}
-        url="https://api.mapbox.com/styles/v1/{styleId}/tiles/{z}/{x}/{y}?access_token={accessToken}"
+        url={tileUrl}
         attribution={
           '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }
-        styleId={process.env.mapboxStaticStyleId}
-        accessToken={process.env.mapboxAccessToken}
         tileSize={512}
         maxZoom={18}
         zoomOffset={-1}
       />
       <AttributionControl prefix={`Version: ${process.env.version}`} />
+      <MapEvents onMapReady={onMapReady} onMapViewChange={onMapViewChange} onMapZoomStart={onMapZoomStart} />
       {children}
-    </ReactLeafletMap>
+    </MapContainer>
   );
 });
 
@@ -46,7 +63,7 @@ const Map = observer(({ className, children, showTiles, ...props }: MapProps & L
 
 export default styled(Map)`
   font: inherit;
-  color: ${props => props.theme.foregroundColor};
+  color: ${(props) => props.theme.foregroundColor};
   z-index: 0;
   position: absolute;
   top: 0;
@@ -55,18 +72,18 @@ export default styled(Map)`
   transform: translate(0px);
 
   &.leaflet-container {
-    background-color: ${props => props.theme.backgroundColor};
+    background-color: ${(props) => props.theme.backgroundColor};
   }
 
   .leaflet-left .leaflet-control {
-    margin-left: ${props => props.theme.spacingUnit}px;
+    margin-left: ${(props) => props.theme.spacingUnit}px;
   }
 
   .leaflet-top .leaflet-control {
-    margin-top: ${props => props.theme.spacingUnit}px;
+    margin-top: ${(props) => props.theme.spacingUnit}px;
   }
 
   .leaflet-layer {
-    transition: opacity ${props => props.theme.shortTransitionDuration};
+    transition: opacity ${(props) => props.theme.shortTransitionDuration};
   }
 `;

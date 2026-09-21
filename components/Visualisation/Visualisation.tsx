@@ -1,4 +1,4 @@
-import { LeafletEvent, Map as LeafletMap } from 'leaflet';
+import { Map as LeafletMap } from 'leaflet';
 import debounce from 'lodash/fp/debounce';
 import isEqual from 'lodash/fp/isEqual';
 import { configure } from 'mobx';
@@ -52,7 +52,7 @@ function useDevice(defaultDevice: DEVICE): [DEVICE, (width: number) => void] {
   const [device, setDevice] = useState(defaultDevice);
 
   const callback = useCallback(
-    width =>
+    (width) =>
       setDevice(() => {
         if (width >= 580) {
           return DEVICE.desktop;
@@ -115,7 +115,7 @@ const Visualisation = observer((props: VisualisationProps) => {
   const [device, updateDevice] = useDevice(DEVICE.desktop);
 
   const measureRef = useWidth<HTMLDivElement>(
-    width => {
+    (width) => {
       visStore.updateWidth(width);
       updateDevice(width);
     },
@@ -123,8 +123,8 @@ const Visualisation = observer((props: VisualisationProps) => {
   );
 
   const handleWhenReady = useCallback(
-    (event: LeafletEvent) => {
-      const map = (mapRef.current = event.target!);
+    (map: LeafletMap) => {
+      mapRef.current = map;
       visStore.updateProjection(map);
     },
     [visStore]
@@ -133,8 +133,8 @@ const Visualisation = observer((props: VisualisationProps) => {
   const debounceOnMapViewChange = useDebounceCallback(onMapViewChange, 200);
 
   const handleMapViewDidChange = useCallback(
-    (event: LeafletEvent) => {
-      const map = (mapRef.current = event.target!);
+    (map: LeafletMap) => {
+      mapRef.current = map;
       const prevMapView = mapView;
       const nextMapView = createMapView(map);
 
@@ -165,12 +165,9 @@ const Visualisation = observer((props: VisualisationProps) => {
       <Map
         {...mapProps}
         showTiles={view == null}
-        // @ts-ignore Broken types
-        whenReady={handleWhenReady}
-        onZoomEnd={handleMapViewDidChange}
-        onMoveEnd={handleMapViewDidChange}
-        onResize={handleMapViewDidChange}
-        onZoomStart={handleZoomStart}
+        onMapReady={handleWhenReady}
+        onMapViewChange={handleMapViewDidChange}
+        onMapZoomStart={handleZoomStart}
       >
         <SVGVisualisationLayer vis={visStore} touch={touch} device={device} />
       </Map>

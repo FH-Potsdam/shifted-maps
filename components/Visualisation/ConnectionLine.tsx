@@ -1,10 +1,11 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import { SyntheticEvent, useCallback } from 'react';
+import { KeyboardEvent, SyntheticEvent, useCallback } from 'react';
 import styled from 'styled-components';
 import useAutorunRef from '../../hooks/useAutorunRef';
 import ConnectionLineModel from '../../stores/ConnectionLine';
 import VisualisationStore from '../../stores/VisualisationStore';
+import { formatDistance, formatDuration } from '../../stores/utils/formatLabel';
 import ConnectionLineLabel from './ConnectionLineLabel';
 import { DEVICE } from './Visualisation';
 
@@ -18,7 +19,9 @@ interface ConnectionLineProps {
 
 export const ConnectionLine = observer((props: ConnectionLineProps) => {
   const { className, connectionLine, touch, device } = props;
-  const { highlight, visible, fade, label, vis } = connectionLine;
+  const { active, highlight, visible, fade, label, vis } = connectionLine;
+  const descriptionId = `connection-${connectionLine.key}-description`;
+  const tripLabel = connectionLine.visibleFrequency === 1 ? 'trip' : 'trips';
 
   const ref = useAutorunRef(
     (ref: SVGLineElement) => {
@@ -66,6 +69,19 @@ export const ConnectionLine = observer((props: ConnectionLineProps) => {
     [connectionLine, vis]
   );
 
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<SVGGElement>) => {
+      if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      vis.toggle(connectionLine);
+    },
+    [connectionLine, vis]
+  );
+
   const toggleListeners = !touch
     ? {
         onMouseEnter: handleMouseEnter,
@@ -80,7 +96,21 @@ export const ConnectionLine = observer((props: ConnectionLineProps) => {
   }
 
   return (
-    <g className={classNames(className, { fade })} {...toggleListeners}>
+    <g
+      aria-describedby={descriptionId}
+      aria-label={`Connection between ${connectionLine.from.place.name} and ${connectionLine.to.place.name}`}
+      aria-pressed={active}
+      className={classNames(className, { fade })}
+      data-visual-stroke-width={connectionLine.strokeWidth}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      {...toggleListeners}
+    >
+      <desc id={descriptionId}>
+        {connectionLine.visibleFrequency} {tripLabel} with {formatDistance(connectionLine.visibleDistance)} average
+        distance and {formatDuration(connectionLine.visibleDuration)} average travel time.
+      </desc>
       <ConnectionLineLine ref={ref} className={classNames({ highlight })} />
       <ConnectionLineLabel connectionLineLabel={label} device={device} />
     </g>
@@ -90,7 +120,7 @@ export const ConnectionLine = observer((props: ConnectionLineProps) => {
 export default styled(ConnectionLine)`
   pointer-events: auto;
   will-change: opacity;
-  transition: opacity ${props => props.theme.transitionDuration};
+  transition: opacity ${(props) => props.theme.transitionDuration};
   opacity: 1;
 
   &.fade {
@@ -99,9 +129,9 @@ export default styled(ConnectionLine)`
 `;
 
 const ConnectionLineLine = styled.line`
-  stroke: ${props => props.theme.foregroundColor};
+  stroke: ${(props) => props.theme.foregroundColor};
 
   &.highlight {
-    stroke: ${props => props.theme.highlightColor};
+    stroke: ${(props) => props.theme.highlightColor};
   }
 `;

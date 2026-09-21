@@ -1,4 +1,4 @@
-import BaseDocument, { DocumentContext, Head, Main, NextScript } from 'next/document';
+import BaseDocument, { DocumentContext, Head, Html, Main, NextScript } from 'next/document';
 import { ReactElement } from 'react';
 import { ServerStyleSheet } from 'styled-components';
 
@@ -9,7 +9,7 @@ interface DocumentProps {
 class Document extends BaseDocument<DocumentProps> {
   static async getInitialProps({ renderPage }: DocumentContext) {
     const sheet = new ServerStyleSheet();
-    const page = renderPage(App => props => sheet.collectStyles(<App {...props} />));
+    const page = renderPage((App) => (props) => sheet.collectStyles(<App {...props} />));
     const styleTags = sheet.getStyleElement();
 
     return { ...page, styleTags };
@@ -17,13 +17,13 @@ class Document extends BaseDocument<DocumentProps> {
 
   render() {
     return (
-      <html>
+      <Html>
         <Head>{this.props.styleTags}</Head>
         <body>
           <Main />
           <NextScript />
         </body>
-      </html>
+      </Html>
     );
   }
 }

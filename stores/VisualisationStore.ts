@@ -27,15 +27,15 @@ class VisualisationStore {
   readonly graph: GraphStore;
   readonly ui: Readonly<UIStore>;
 
-  pixelOrigin?: Point;
+  pixelOrigin: Point | undefined = undefined;
 
-  zoom?: number;
+  zoom: number | undefined = undefined;
 
   activeElement: VisualisationElement | null = null;
 
-  width?: number;
+  width: number | undefined = undefined;
 
-  maxPlaceCircleRadius?: number;
+  maxPlaceCircleRadius: number | undefined = undefined;
 
   toggle = debounce(50)(
     action((element: VisualisationElement, active: boolean = !element.active) => {
@@ -46,11 +46,11 @@ class VisualisationStore {
   private placeCirclesCache: PlaceCircle[] = [];
   private connectionLinesCache: ConnectionLine[] = [];
 
-  private crs?: LeafletCRS;
+  private crs: LeafletCRS | undefined = undefined;
 
-  private minZoom?: number;
+  private minZoom: number | undefined = undefined;
 
-  private maxZoom?: number;
+  private maxZoom: number | undefined = undefined;
 
   constructor(ui: UIStore, data: DataStore) {
     makeObservable<VisualisationStore, 'crs' | 'minZoom' | 'maxZoom'>(this, {

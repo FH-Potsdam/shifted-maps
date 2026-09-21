@@ -1,10 +1,11 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
-import { MouseEvent } from 'react';
+import { KeyboardEvent, MouseEvent } from 'react';
 import styled from 'styled-components';
 import useAutorunRef from '../../hooks/useAutorunRef';
 import PlaceCircleModel from '../../stores/PlaceCircle';
 import VisualisationStore from '../../stores/VisualisationStore';
+import { formatDuration } from '../../stores/utils/formatLabel';
 import PlaceCircleLabel from './PlaceCircleLabel';
 import PlaceCircleMap from './PlaceCircleMap';
 import { DEVICE } from './Visualisation';
@@ -18,7 +19,9 @@ interface PlaceCircleProps {
 }
 
 const PlaceCircle = observer(({ placeCircle, className, vis, touch, device }: PlaceCircleProps) => {
-  const { radius, strokeWidth, active, visible, fade } = placeCircle;
+  const { radius, strokeWidth, active, visible, fade, children } = placeCircle;
+  const { place } = placeCircle;
+  const descriptionId = `place-${place.id}-description`;
 
   const ref = useAutorunRef(
     (element: SVGGElement) => {
@@ -33,10 +36,28 @@ const PlaceCircle = observer(({ placeCircle, className, vis, touch, device }: Pl
     vis.toggle(placeCircle, active);
   };
 
+  const handleKeyDown = (event: KeyboardEvent<SVGGElement>) => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    toggle();
+  };
+
   return (
     <g
       ref={ref}
       className={classNames(className, { fade })}
+      aria-describedby={visible ? descriptionId : undefined}
+      aria-hidden={visible ? undefined : true}
+      aria-label={visible ? `Place ${place.name}` : undefined}
+      aria-pressed={visible ? active : undefined}
+      data-visual-radius={visible ? radius : undefined}
+      onKeyDown={visible ? handleKeyDown : undefined}
+      role={visible ? 'button' : undefined}
+      tabIndex={visible ? 0 : undefined}
       {...(!touch
         ? {
             onMouseEnter: () => toggle(true),
@@ -51,6 +72,11 @@ const PlaceCircle = observer(({ placeCircle, className, vis, touch, device }: Pl
     >
       {visible && (
         <>
+          <desc id={descriptionId}>
+            Visited {place.visibleFrequency} times with {formatDuration(place.visibleDuration)} total stay.
+            {children.length > 0 &&
+              ` Contains ${children.length} nearby places: ${children.map((child) => child.place.name).join(', ')}.`}
+          </desc>
           <PlaceCircleBackground r={radius} />
           <PlaceCircleMap placeCircle={placeCircle} vis={vis} />
           <PlaceCircleStroke
@@ -68,7 +94,7 @@ const PlaceCircle = observer(({ placeCircle, className, vis, touch, device }: Pl
 export default styled(PlaceCircle)`
   will-change: transform, opacity;
   pointer-events: auto;
-  transition: opacity ${props => props.theme.transitionDuration};
+  transition: opacity ${(props) => props.theme.transitionDuration};
   opacity: 1;
 
   &.fade {
@@ -82,16 +108,16 @@ export default styled(PlaceCircle)`
 `;
 
 const PlaceCircleBackground = styled.circle`
-  fill: ${props => props.theme.backgroundColor};
+  fill: ${(props) => props.theme.backgroundColor};
   stroke: none;
 `;
 
 const PlaceCircleStroke = styled.circle`
-  transition: stroke ${props => props.theme.shortTransitionDuration};
+  transition: stroke ${(props) => props.theme.shortTransitionDuration};
   fill: none;
-  stroke: ${props => props.theme.foregroundColor};
+  stroke: ${(props) => props.theme.foregroundColor};
 
   &.highlight {
-    stroke: ${props => props.theme.highlightColor};
+    stroke: ${(props) => props.theme.highlightColor};
   }
 `;
