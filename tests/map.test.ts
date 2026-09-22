@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import packageInfo from '../package.json';
 
 test('map requests tiles from the Streets v12 style', async ({ page }) => {
   const tileRequests: string[] = [];
@@ -42,7 +43,7 @@ test('map content displays the required attribution', async ({ page }) => {
   await page.goto('/map');
 
   const attribution = page.getByRole('group', { name: 'Map attribution' });
-  await expect(attribution).toContainText('— Version: 1.6.1');
+  await expect(attribution).toContainText(`— Version: ${packageInfo.version}`);
   await expect(attribution.getByRole('link', { name: 'Mapbox', exact: true })).toBeVisible();
   await expect(attribution.getByRole('link', { name: '© Mapbox' })).toHaveAttribute(
     'href',
@@ -55,6 +56,29 @@ test('map content displays the required attribution', async ({ page }) => {
   await expect(attribution.getByRole('link', { name: 'Improve this map' })).toHaveAttribute(
     'href',
     'https://apps.mapbox.com/feedback/'
+  );
+});
+
+test('visualization elements have room to move beyond the map viewport', async ({ page }) => {
+  await page.route('https://api.mapbox.com/**', (route) => route.abort());
+  await page.goto('/map');
+
+  const mapBounds = await page.getByRole('region', { name: 'Movement map' }).boundingBox();
+  const overlayBounds = await page.locator('.leaflet-overlay-pane svg').boundingBox();
+
+  expect(mapBounds).not.toBeNull();
+  expect(overlayBounds).not.toBeNull();
+
+  const horizontalMargin = mapBounds!.width * 0.25;
+  const verticalMargin = mapBounds!.height * 0.25;
+
+  expect(overlayBounds!.x).toBeLessThanOrEqual(mapBounds!.x - horizontalMargin);
+  expect(overlayBounds!.y).toBeLessThanOrEqual(mapBounds!.y - verticalMargin);
+  expect(overlayBounds!.x + overlayBounds!.width).toBeGreaterThanOrEqual(
+    mapBounds!.x + mapBounds!.width + horizontalMargin
+  );
+  expect(overlayBounds!.y + overlayBounds!.height).toBeGreaterThanOrEqual(
+    mapBounds!.y + mapBounds!.height + verticalMargin
   );
 });
 
@@ -108,6 +132,24 @@ test('user can adjust the time range and restore it from a shared URL', async ({
 
   await expect(page.getByRole('slider', { name: 'Start date' })).toHaveAttribute('aria-valuenow', '1449014400');
   await expect(page.getByText('2 Dec 15')).toBeVisible();
+});
+
+test('time filtering makes a clustered place explorable', async ({ page }) => {
+  await page.route('https://api.mapbox.com/**', (route) => route.abort());
+  await page.goto('/map?timeSpan=1452297600-1456358400');
+  const parent = page.getByRole('button', { name: 'Place Bar' });
+  const child = page.getByRole('button', { name: 'Place Rigaer Straße 31, Berlin' });
+
+  await expect(parent).toHaveAccessibleDescription(/Contains .*Rigaer Straße 31, Berlin/);
+  await expect(child).toHaveCount(0);
+
+  const filteredStartDate = page.getByRole('slider', { name: 'Start date' });
+  await filteredStartDate.focus();
+  await page.keyboard.press('ArrowRight');
+
+  await expect(filteredStartDate).toHaveAttribute('aria-valuenow', '1452384000');
+  await expect(child).toBeVisible();
+  await expect(child).toHaveAccessibleDescription(/^Visited /);
 });
 
 test('user can explore a place with the keyboard and see it respond to map zoom', async ({ page }) => {

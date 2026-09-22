@@ -19,17 +19,36 @@ interface PlaceCircleProps {
 }
 
 const PlaceCircle = observer(({ placeCircle, className, vis, touch, device }: PlaceCircleProps) => {
-  const { radius, strokeWidth, active, visible, fade, children } = placeCircle;
+  const { radius, active, visible, presentationVisible, fade, children } = placeCircle;
   const { place } = placeCircle;
   const descriptionId = `place-${place.id}-description`;
 
   const ref = useAutorunRef(
     useCallback(
       (element: SVGGElement) => {
-        const { point: circlePoint, intersectsViewBounds } = placeCircle;
+        const { point: circlePoint, intersectsViewBounds, presentationRadius, visible } = placeCircle;
 
         element.style.willChange = intersectsViewBounds ? 'opacity' : 'auto';
         element.setAttribute('transform', `translate(${circlePoint.x}, ${circlePoint.y})`);
+        if (visible) {
+          element.setAttribute('data-visual-radius', String(presentationRadius));
+        } else {
+          element.removeAttribute('data-visual-radius');
+        }
+      },
+      [placeCircle]
+    )
+  );
+
+  const visualRef = useAutorunRef(
+    useCallback(
+      (element: SVGGElement) => {
+        const { radius, presentationRadius, presentationStrokeWidth } = placeCircle;
+        const scale = radius === 0 ? 1 : presentationRadius / radius;
+        const stroke = element.querySelector<SVGCircleElement>('[data-place-stroke]');
+
+        element.setAttribute('transform', `scale(${scale})`);
+        stroke?.setAttribute('stroke-width', String(presentationStrokeWidth / scale));
       },
       [placeCircle]
     )
@@ -52,41 +71,42 @@ const PlaceCircle = observer(({ placeCircle, className, vis, touch, device }: Pl
   return (
     <g
       ref={ref}
-      className={classNames(className, { fade })}
+      className={classNames(className, { fade, presentation: presentationVisible && !visible })}
       aria-describedby={visible ? descriptionId : undefined}
       aria-hidden={visible ? undefined : true}
       aria-label={visible ? `Place ${place.name}` : undefined}
       aria-pressed={visible ? active : undefined}
-      data-visual-radius={visible ? radius : undefined}
       onKeyDown={visible ? handleKeyDown : undefined}
       role={visible ? 'button' : undefined}
       tabIndex={visible ? 0 : undefined}
-      {...(!touch
-        ? {
-            onMouseEnter: () => toggle(true),
-            onMouseLeave: () => toggle(false),
-          }
-        : {
-            onClick: (event: MouseEvent<SVGGElement>) => {
-              event.stopPropagation();
-              toggle();
-            },
-          })}
+      {...(visible
+        ? !touch
+          ? {
+              onMouseEnter: () => toggle(true),
+              onMouseLeave: () => toggle(false),
+            }
+          : {
+              onClick: (event: MouseEvent<SVGGElement>) => {
+                event.stopPropagation();
+                toggle();
+              },
+            }
+        : {})}
     >
-      {visible && (
+      {presentationVisible && (
         <>
-          <desc id={descriptionId}>
-            Visited {place.visibleFrequency} times with {formatDuration(place.visibleDuration)} total stay.
-            {children.length > 0 &&
-              ` Contains ${children.length} nearby places: ${children.map((child) => child.place.name).join(', ')}.`}
-          </desc>
-          <PlaceCircleBackground r={radius} />
-          <PlaceCircleMap placeCircle={placeCircle} vis={vis} />
-          <PlaceCircleStroke
-            r={radius}
-            style={{ strokeWidth: `${strokeWidth}px` }}
-            className={classNames({ highlight: active })}
-          />
+          {visible && (
+            <desc id={descriptionId}>
+              Visited {place.visibleFrequency} times with {formatDuration(place.visibleDuration)} total stay.
+              {children.length > 0 &&
+                ` Contains ${children.length} nearby places: ${children.map((child) => child.place.name).join(', ')}.`}
+            </desc>
+          )}
+          <g ref={visualRef}>
+            <PlaceCircleBackground r={radius} />
+            <PlaceCircleMap placeCircle={placeCircle} vis={vis} />
+            <PlaceCircleStroke data-place-stroke r={radius} className={classNames({ highlight: active })} />
+          </g>
           <PlaceCircleLabel placeCircle={placeCircle} device={device} />
         </>
       )}
@@ -101,6 +121,10 @@ export default styled(PlaceCircle)`
 
   &.fade {
     opacity: 0.2;
+  }
+
+  &.presentation {
+    pointer-events: none;
   }
 
   .leaflet-dragging & {

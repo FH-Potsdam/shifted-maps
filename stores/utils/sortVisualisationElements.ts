@@ -9,6 +9,14 @@ function sortVisualisationElements(elements: VisualisationElement[]): Visualisat
     }
 
     if (a instanceof PlaceCircle && b instanceof PlaceCircle) {
+      if (a.transitionParent === b) {
+        return -1;
+      }
+
+      if (b.transitionParent === a) {
+        return 1;
+      }
+
       if (a.active !== b.active) {
         return Number(a.active) - Number(b.active);
       }

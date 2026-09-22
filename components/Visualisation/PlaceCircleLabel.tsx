@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styled, { DefaultTheme, withTheme } from 'styled-components';
 import useAutorun from '../../hooks/useAutorun';
+import useAutorunRef from '../../hooks/useAutorunRef';
 import PlaceCircle from '../../stores/PlaceCircle';
 import checkFont from '../../utils/checkFont';
 import { DEVICE } from './Visualisation';
@@ -16,9 +17,18 @@ interface PlaceCircleLabelProps {
 }
 
 const PlaceCircleLabel = observer(({ className, placeCircle, theme, device }: PlaceCircleLabelProps) => {
-  const { highlight, strokeWidth, radius, children, place } = placeCircle;
+  const { highlight, children, place } = placeCircle;
   const ref = useRef<SVGImageElement>(null);
-  const offset = strokeWidth * 0.5 + 4 + radius;
+  const groupRef = useAutorunRef(
+    useCallback(
+      (element: SVGGElement) => {
+        const { presentationRadius, presentationStrokeWidth } = placeCircle;
+        const offset = presentationStrokeWidth * 0.5 + 4 + presentationRadius;
+        element.setAttribute('transform', `translate(0, ${Math.round(offset)})`);
+      },
+      [placeCircle]
+    )
+  );
 
   if (theme == null) {
     throw new Error('Missing theme.');
@@ -123,7 +133,7 @@ const PlaceCircleLabel = observer(({ className, placeCircle, theme, device }: Pl
   }, [children, place, theme, drawLabel]);
 
   return (
-    <g className={classNames(className, { visible: highlight })} transform={`translate(0, ${Math.round(offset)})`}>
+    <g ref={groupRef} className={classNames(className, { visible: highlight })}>
       <image ref={ref} />
     </g>
   );

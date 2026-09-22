@@ -1,5 +1,5 @@
 import { LineUtil, Point } from 'leaflet';
-import { computed, makeObservable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 
 import Connection from './Connection';
 import PlaceCircle from './PlaceCircle';
@@ -13,6 +13,7 @@ const roundConnectionLinePoint = roundPoint(0.2);
 class ConnectionLine {
   readonly connections: Connection[] = [];
   readonly label: ConnectionLineLabel;
+  presentation = false;
 
   constructor(
     readonly vis: VisualisationStore,
@@ -54,7 +55,13 @@ class ConnectionLine {
       }),
 
       clippedPoints: computed,
+      presentation: observable,
+      setPresentation: action,
     });
+  }
+
+  setPresentation(presentation: boolean) {
+    this.presentation = presentation;
   }
 
   get visibleFrequency() {
@@ -137,7 +144,8 @@ class ConnectionLine {
     return roundConnectionLinePoint(
       this.from.point.add(
         this.placeCircleVector.multiplyBy(
-          (this.from.radius + this.from.strokeWidth / 2 - 0.5) / this.placeCircleCistance
+          (this.from.presentationRadius + this.from.presentationStrokeWidth / 2 - 0.5) /
+            this.placeCircleCistance
         )
       )
     );
@@ -150,7 +158,9 @@ class ConnectionLine {
 
     return roundConnectionLinePoint(
       this.to.point.subtract(
-        this.placeCircleVector.multiplyBy((this.to.radius + this.to.strokeWidth / 2 - 0.5) / this.placeCircleCistance)
+        this.placeCircleVector.multiplyBy(
+          (this.to.presentationRadius + this.to.presentationStrokeWidth / 2 - 0.5) / this.placeCircleCistance
+        )
       )
     );
   }

@@ -3,6 +3,7 @@ import { CRS as LeafletCRS } from 'leaflet';
 
 export const MAX_ZOOM = 18;
 export const CRS = LeafletCRS.EPSG3857;
+export const SVG_RENDER_PADDING = 0.35;
 
 export const SCREEN_WIDTH_DOMAIN = [300, 1200];
 

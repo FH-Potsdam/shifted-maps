@@ -93,8 +93,8 @@ const Visualisation = observer((props: VisualisationProps) => {
   const visStore = useMemo(() => new VisualisationStore(uiStore, dataStore), [uiStore, dataStore]);
 
   useLayoutEffect(() => {
-    uiStore.update({ view, timeSpan });
-  }, [uiStore, view, timeSpan]);
+    visStore.updateUI({ view, timeSpan });
+  }, [visStore, view, timeSpan]);
 
   useEffect(
     () => () => {
@@ -146,7 +146,7 @@ const Visualisation = observer((props: VisualisationProps) => {
   );
 
   const handleZoomStart = useCallback(() => {
-    visStore.graph.stop();
+    visStore.graph.prepareClusterTransition();
   }, [visStore]);
 
   const handleClick = () => {

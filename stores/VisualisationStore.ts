@@ -1,6 +1,7 @@
 import { scaleLinear, scalePow } from 'd3-scale';
 import { bounds, Bounds, CRS as LeafletCRS, LatLng, latLngBounds, Map as LeafletMap, point, Point } from 'leaflet';
 import debounce from 'lodash/fp/debounce';
+import isEqual from 'lodash/fp/isEqual';
 import reverse from 'lodash/fp/reverse';
 import { action, computed, makeObservable, observable, observableRef } from 'mobx';
 
@@ -9,6 +10,7 @@ import {
   createPlaceRadiusRangeScale,
   createPlaceStrokeWidthRangeScale,
   MAX_ZOOM,
+  SVG_RENDER_PADDING,
 } from './config';
 import Connection from './Connection';
 import ConnectionLine from './ConnectionLine';
@@ -16,7 +18,7 @@ import DataStore from './DataStore';
 import GraphStore from './GraphStore';
 import PlaceCircle from './PlaceCircle';
 import PlaceCircleNode from './PlaceCircleNode';
-import UIStore from './UIStore';
+import UIStore, { VIEW } from './UIStore';
 import extent from './utils/extent';
 import sortVisualisationElements from './utils/sortVisualisationElements';
 
@@ -38,6 +40,8 @@ class VisualisationStore {
   viewBounds: Bounds | undefined = undefined;
 
   maxPlaceCircleRadius: number | undefined = undefined;
+  transitionConnectionLines: ConnectionLine[] = [];
+  transitionConnectionOpacity = 0;
 
   toggle = debounce(50)(
     action((element: VisualisationElement, active: boolean = !element.active) => {
@@ -53,6 +57,11 @@ class VisualisationStore {
   private minZoom: number | undefined = undefined;
 
   private maxZoom: number | undefined = undefined;
+  private uiInitialized = false;
+  private previousConnectionLines?: Array<{
+    connectionLine: ConnectionLine;
+    connections: Connection[];
+  }>;
 
   constructor(ui: UIStore, data: DataStore) {
     makeObservable<VisualisationStore, 'crs' | 'minZoom' | 'maxZoom'>(this, {
@@ -62,6 +71,8 @@ class VisualisationStore {
       width: observable,
       viewBounds: observableRef,
       maxPlaceCircleRadius: observable,
+      transitionConnectionLines: observable,
+      transitionConnectionOpacity: observable,
       crs: observable,
       minZoom: observable,
       maxZoom: observable,
@@ -69,6 +80,11 @@ class VisualisationStore {
       handleGraphEnd: action,
       updateProjection: action,
       updateWidth: action,
+      updateUI: action,
+      prepareConnectionTransitions: action,
+      commitConnectionTransitions: action,
+      endConnectionTransitions: action,
+      updateConnectionTransitionOpacity: action,
       deactivateElement: action,
       ready: computed,
       zoomScale: computed,
@@ -115,7 +131,7 @@ class VisualisationStore {
     this.maxZoom = Math.min(MAX_ZOOM, map.getMaxZoom());
 
     const size = map.getSize();
-    const padding = 0.1;
+    const padding = SVG_RENDER_PADDING;
     const min = map.containerPointToLayerPoint(point(size.x * -padding, size.y * -padding)).round();
     const paddedSize = size.multiplyBy(1 + padding * 2).round();
     const viewBounds = bounds(min, min.add(paddedSize));
@@ -136,6 +152,8 @@ class VisualisationStore {
     if (this.pixelOrigin == null || !this.pixelOrigin.equals(pixelOrigin)) {
       this.pixelOrigin = pixelOrigin;
     }
+
+    this.graph.updateProjection();
   }
 
   updateWidth(width: number) {
@@ -150,12 +168,83 @@ class VisualisationStore {
     this.maxPlaceCircleRadius = Math.ceil(maxPlaceCircleRadius);
   }
 
+  updateUI({ view, timeSpan }: { timeSpan?: ReadonlyArray<number>; view?: VIEW }) {
+    const timeSpanChanged = this.uiInitialized && !isEqual(this.ui.timeSpan, timeSpan);
+
+    if (timeSpanChanged && this.ready) {
+      this.graph.prepareClusterTransition();
+    }
+
+    this.ui.update({ view, timeSpan });
+    this.uiInitialized = true;
+
+    if (timeSpanChanged && this.ready) {
+      this.graph.commitClusterTransition();
+    }
+  }
+
+  prepareConnectionTransitions() {
+    this.previousConnectionLines = this.connectionLines.map((connectionLine) => ({
+      connectionLine,
+      connections: [...connectionLine.connections],
+    }));
+  }
+
+  commitConnectionTransitions() {
+    const currentConnectionLines = this.connectionLines;
+    const currentConnectionLineSet = new Set(currentConnectionLines);
+    const currentConnectionLineKeys = new Set(currentConnectionLines.map((connectionLine) => connectionLine.key));
+    const previousConnectionLines = this.previousConnectionLines || [];
+    const transitionConnectionLines = this.transitionConnectionLines.filter(
+      (connectionLine) => !currentConnectionLineKeys.has(connectionLine.key)
+    );
+
+    previousConnectionLines.forEach(({ connectionLine, connections }) => {
+      if (
+        currentConnectionLineSet.has(connectionLine) ||
+        (connectionLine.from.transitionParent == null && connectionLine.to.transitionParent == null)
+      ) {
+        return;
+      }
+
+      connectionLine.connections.length = 0;
+      connectionLine.connections.push(...connections);
+      connectionLine.setPresentation(true);
+
+      if (!transitionConnectionLines.includes(connectionLine)) {
+        transitionConnectionLines.push(connectionLine);
+      }
+    });
+
+    currentConnectionLines.forEach((connectionLine) => connectionLine.setPresentation(false));
+    this.connectionLinesCache = this.connectionLinesCache.filter(
+      (connectionLine) => !transitionConnectionLines.includes(connectionLine)
+    );
+    this.transitionConnectionLines = transitionConnectionLines;
+    this.transitionConnectionOpacity = transitionConnectionLines.length > 0 ? 1 : 0;
+    this.previousConnectionLines = undefined;
+  }
+
+  endConnectionTransitions() {
+    this.transitionConnectionLines.forEach((connectionLine) => connectionLine.setPresentation(false));
+    this.transitionConnectionLines = [];
+    this.transitionConnectionOpacity = 0;
+    this.previousConnectionLines = undefined;
+  }
+
+  updateConnectionTransitionOpacity(opacity: number) {
+    if (this.transitionConnectionLines.length > 0) {
+      this.transitionConnectionOpacity = opacity;
+    }
+  }
+
   deactivateElement() {
     this.activeElement = null;
   }
 
   dispose() {
     this.graph.dispose();
+    this.endConnectionTransitions();
     this.toggle.cancel();
   }
 
@@ -265,7 +354,11 @@ class VisualisationStore {
   }
 
   get elements() {
-    return sortVisualisationElements([...this.placeCircles, ...this.connectionLines]);
+    return sortVisualisationElements([
+      ...this.placeCircles,
+      ...this.connectionLines,
+      ...this.transitionConnectionLines,
+    ]);
   }
 
   get visiblePlaceCircles() {

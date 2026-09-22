@@ -1,5 +1,5 @@
 import { bounds, point, Point } from 'leaflet';
-import { computed, makeObservable, observableRef } from 'mobx';
+import { action, computed, makeObservable, observable, observableRef } from 'mobx';
 
 import { CRS, MAX_ZOOM, PLACE_DOT_RADIUS_SCALE } from './config';
 import Place from './Place';
@@ -13,10 +13,16 @@ class PlaceCircle {
   readonly place: Place;
 
   graphPoint: Point = point(0, 0);
+  transitionParent: PlaceCircle | undefined = undefined;
+  visualRadius: number | undefined = undefined;
+  visualStrokeWidth: number | undefined = undefined;
 
   constructor(vis: VisualisationStore, place: Place) {
     makeObservable(this, {
       graphPoint: observableRef,
+      transitionParent: observableRef,
+      visualRadius: observable,
+      visualStrokeWidth: observable,
       active: computed,
       highlight: computed,
       fade: computed,
@@ -30,18 +36,24 @@ class PlaceCircle {
 
       key: computed,
       radius: computed,
+      presentationRadius: computed,
       dotRadius: computed,
       diameter: computed,
       strokeWidth: computed,
+      presentationStrokeWidth: computed,
       parent: computed,
       children: computed,
       latLngBounds: computed,
       zoom: computed,
       dots: computed,
       visible: computed,
+      presentationVisible: computed,
       connectionLines: computed,
       pixelBounds: computed,
       intersectsViewBounds: computed,
+      beginClusterTransition: action,
+      endClusterTransition: action,
+      updatePresentationSize: action,
     });
 
     this.vis = vis;
@@ -76,6 +88,10 @@ class PlaceCircle {
     return this.vis.placeCircleRadiusScale(this.place.visibleDuration);
   }
 
+  get presentationRadius() {
+    return this.visualRadius ?? this.radius;
+  }
+
   get dotRadius() {
     if (this.vis.width == null) {
       throw new Error('Unknown width.');
@@ -90,6 +106,10 @@ class PlaceCircle {
 
   get strokeWidth() {
     return this.vis.placeStrokeWidthScale(this.place.visibleFrequency);
+  }
+
+  get presentationStrokeWidth() {
+    return this.visualStrokeWidth ?? this.strokeWidth;
   }
 
   get parent(): PlaceCircle | undefined {
@@ -181,6 +201,23 @@ class PlaceCircle {
     return this.parent == null && this.place.visible;
   }
 
+  get presentationVisible() {
+    return this.visible || this.transitionParent != null;
+  }
+
+  beginClusterTransition(parent: PlaceCircle) {
+    this.transitionParent = parent;
+  }
+
+  endClusterTransition() {
+    this.transitionParent = undefined;
+  }
+
+  updatePresentationSize(radius: number, strokeWidth: number) {
+    this.visualRadius = radius;
+    this.visualStrokeWidth = strokeWidth;
+  }
+
   get connectionLines() {
     return this.vis.connectionLines.filter(
       (connectionLine) => connectionLine.from === this || connectionLine.to === this
@@ -188,7 +225,7 @@ class PlaceCircle {
   }
 
   get pixelBounds() {
-    const outerRadius = this.radius + this.strokeWidth / 2;
+    const outerRadius = this.presentationRadius + this.presentationStrokeWidth / 2;
 
     return bounds(
       point(this.point.x - outerRadius, this.point.y - outerRadius),

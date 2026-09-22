@@ -5,6 +5,7 @@ const baseURL = `http://localhost:${port}`;
 
 export default defineConfig({
   testDir: './tests',
+  testIgnore: '**/motion/**',
   fullyParallel: false,
   reporter: 'list',
   use: {

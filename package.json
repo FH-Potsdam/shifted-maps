@@ -1,7 +1,7 @@
 {
   "name": "shifted-maps-web",
   "license": "GPL-3.0",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Shifted Maps visualizes personal movement data as a network of map extracts showing visited places.",
   "repository": "lennerd/shifted-maps",
   "bugs": {
@@ -10,12 +10,13 @@
   "scripts": {
     "build": "URL=http://localhost:3000/ next build --webpack",
     "dev": "URL=http://localhost:3000/ next dev",
-    "format:check": "prettier --check \"tests/**/*.ts\" playwright.config.mjs",
+    "format:check": "prettier --check \"tests/**/*.ts\" playwright.config.mjs vitest.config.mts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "start": "URL=http://localhost:3000/ next dev",
-    "test": "playwright test",
+    "test": "npm run test:unit && npm run test:e2e",
     "test:e2e": "playwright test",
+    "test:unit": "vitest run",
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
@@ -51,6 +52,7 @@
     "eslint-config-next": "16.3.5",
     "eslint-config-prettier": "10.1.8",
     "prettier": "3.9.8",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vitest": "5.0.1"
   }
 }

@@ -19,7 +19,7 @@ interface ConnectionLineProps {
 
 export const ConnectionLine = observer((props: ConnectionLineProps) => {
   const { className, connectionLine, touch, device } = props;
-  const { active, highlight, visible, fade, label, vis } = connectionLine;
+  const { active, highlight, visible, presentation, fade, label, vis } = connectionLine;
   const descriptionId = `connection-${connectionLine.key}-description`;
   const tripLabel = connectionLine.visibleFrequency === 1 ? 'trip' : 'trips';
 
@@ -46,6 +46,19 @@ export const ConnectionLine = observer((props: ConnectionLineProps) => {
         ref.setAttribute('y2', String(toPoint.y));
       },
       [connectionLine]
+    )
+  );
+
+  const groupRef = useAutorunRef(
+    useCallback(
+      (element: SVGGElement) => {
+        if (connectionLine.presentation) {
+          element.style.opacity = String(vis.transitionConnectionOpacity);
+        } else {
+          element.style.removeProperty('opacity');
+        }
+      },
+      [connectionLine, vis]
     )
   );
 
@@ -86,21 +99,27 @@ export const ConnectionLine = observer((props: ConnectionLineProps) => {
         onClick: handleClick,
       };
 
-  if (!visible) {
+  if (!visible && !presentation) {
     return null;
   }
 
   return (
     <g
-      aria-describedby={descriptionId}
-      aria-label={`Connection between ${connectionLine.from.place.name} and ${connectionLine.to.place.name}`}
-      aria-pressed={active}
-      className={classNames(className, { fade })}
-      data-visual-stroke-width={connectionLine.strokeWidth}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-      {...toggleListeners}
+      ref={groupRef}
+      aria-describedby={presentation ? undefined : descriptionId}
+      aria-hidden={presentation ? true : undefined}
+      aria-label={
+        presentation
+          ? undefined
+          : `Connection between ${connectionLine.from.place.name} and ${connectionLine.to.place.name}`
+      }
+      aria-pressed={presentation ? undefined : active}
+      className={classNames(className, { fade, presentation })}
+      data-visual-stroke-width={presentation ? undefined : connectionLine.strokeWidth}
+      onKeyDown={presentation ? undefined : handleKeyDown}
+      role={presentation ? undefined : 'button'}
+      tabIndex={presentation ? undefined : 0}
+      {...(presentation ? {} : toggleListeners)}
     >
       <desc id={descriptionId}>
         {connectionLine.visibleFrequency} {tripLabel} with {formatDistance(connectionLine.visibleDistance)} average
@@ -119,6 +138,11 @@ export default styled(ConnectionLine)`
 
   &.fade {
     opacity: 0.2;
+  }
+
+  &.presentation {
+    pointer-events: none;
+    transition: none;
   }
 `;
 

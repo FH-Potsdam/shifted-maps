@@ -11,6 +11,8 @@ class PlaceCircleNode extends Point implements SimulationNodeDatum {
   vy?: number;
   fx?: number | null;
   fy?: number | null;
+  radiusVelocity = 0;
+  strokeWidthVelocity = 0;
 
   constructor(placeCircle: PlaceCircle) {
     super(placeCircle.mapPoint.x, placeCircle.mapPoint.y);

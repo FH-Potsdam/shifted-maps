@@ -3,6 +3,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useMap } from 'react-leaflet';
 import styled from 'styled-components';
+import { SVG_RENDER_PADDING } from '../../stores/config';
 
 interface SVGLayerProps {
   className?: string;
@@ -15,7 +16,7 @@ interface SVGWithContainer extends SVG {
 
 const SVGLayer = ({ children, className }: SVGLayerProps) => {
   const map = useMap();
-  const [renderer] = useState<SVGWithContainer>(() => new SVG());
+  const [renderer] = useState<SVGWithContainer>(() => new SVG({ padding: SVG_RENDER_PADDING }));
   const [container, setContainer] = useState<HTMLElement>();
 
   useEffect(() => {
